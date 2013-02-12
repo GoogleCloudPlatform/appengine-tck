@@ -25,7 +25,7 @@
         <!-- Testing -->
         <version.junit>[4.10]</version.junit>
         <version.arquillian>1.0.3.Final</version.arquillian>
-        <version.arquillian.gae>1.0.0.Alpha3</version.arquillian.gae>
+        <version.arquillian.gae>1.0.0.Alpha6</version.arquillian.gae>
         <version.shrinkwrap>1.1.0</version.shrinkwrap>
         <version.shrinkwrap.maven-resolver>2.0.0-alpha-4</version.shrinkwrap.maven-resolver>
 
@@ -210,7 +210,7 @@
 
             <dependency>
                 <groupId>org.jboss.arquillian.container</groupId>
-                <artifactId>arquillian-gae-remote</artifactId>
+                <artifactId>arquillian-gae-tools</artifactId>
                 <version>${version.arquillian.gae}</version>
                 <scope>test</scope>
             </dependency>
@@ -255,11 +255,11 @@
 
         <!-- GAE -->
         <profile>
-            <id>gae</id>
+            <id>sdk</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
                 <property>
-                    <name>appengine.sdk.root</name>
+                    <name>sdk</name>
                 </property>
             </activation>
 
@@ -305,11 +305,11 @@
 
         <!-- GAE remote - AppSpot -->
         <profile>
-            <id>gae-remote</id>
+            <id>appspot</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
                 <property>
-                    <name>gae-remote</name>
+                    <name>appspot</name>
                 </property>
             </activation>
             <build>
@@ -329,7 +329,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.jboss.arquillian.container</groupId>
-                    <artifactId>arquillian-gae-remote</artifactId>
+                    <artifactId>arquillian-gae-tools</artifactId>
                     <scope>test</scope>
                 </dependency>
             </dependencies>

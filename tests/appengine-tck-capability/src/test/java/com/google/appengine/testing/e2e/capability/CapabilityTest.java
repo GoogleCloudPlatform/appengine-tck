@@ -13,6 +13,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.test.capedwarf.common.support.All;
 import org.jboss.test.capedwarf.common.test.BaseTest;
+import org.jboss.test.capedwarf.common.test.TestContext;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -34,7 +35,9 @@ public class CapabilityTest extends BaseTest {
 
     @Deployment
     public static WebArchive getDeployment() {
-        return getCapedwarfDeployment();
+        TestContext context = TestContext.asDefault();
+        context.setAppEngineWebXmlFile("tck/appengine-web.xml");
+        return getCapedwarfDeployment(context);
     }
 
     @Test
@@ -46,7 +49,7 @@ public class CapabilityTest extends BaseTest {
       //
     }
     */
-        Capability capability = null;
+        Capability capability;
         for (String p : TEST_DATA) {
             if (p.indexOf(',') > 0) {
                 String in[] = p.split(",");

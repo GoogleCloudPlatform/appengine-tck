@@ -10,6 +10,7 @@ import java.util.Set;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.test.capedwarf.common.test.BaseTest;
+import org.jboss.test.capedwarf.common.test.TestContext;
 
 /**
  * Tests Cache.
@@ -44,7 +45,9 @@ public class AbstractCacheTest extends BaseTest {
 
     @Deployment
     public static WebArchive getDeployment() {
-        WebArchive war = getCapedwarfDeployment();
+        TestContext context = TestContext.asDefault();
+        context.setAppEngineWebXmlFile("tck/appengine-web.xml");
+        WebArchive war = getCapedwarfDeployment(context);
         war.addClass(AbstractCacheTest.class);
         war.addClass(ComboType.class);
         return war;
