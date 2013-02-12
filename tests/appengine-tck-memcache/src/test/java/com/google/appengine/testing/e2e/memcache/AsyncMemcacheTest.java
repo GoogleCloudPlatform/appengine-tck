@@ -3,39 +3,29 @@
 package com.google.appengine.testing.e2e.memcache;
 
 
-import static org.junit.Assert.assertArrayEquals;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Future;
+
+import com.google.appengine.api.memcache.AsyncMemcacheService;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.api.memcache.Stats;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.test.capedwarf.common.support.All;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
-import com.google.appengine.api.memcache.AsyncMemcacheService;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheService.CasValues;
-import com.google.appengine.api.memcache.MemcacheService.IdentifiableValue;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
-import com.google.appengine.api.memcache.Stats;
-import com.google.appengine.api.utils.SystemProperty;
-
-import org.jboss.arquillian.junit.Arquillian;
 //import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.test.capedwarf.common.support.All;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-
-import org.junit.experimental.categories.Category;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 
 /**
@@ -47,37 +37,37 @@ import java.util.concurrent.Future;
 @RunWith(Arquillian.class)
 @Category(All.class)
 public class AsyncMemcacheTest extends AbstractCacheTest {
-  private MemcacheService memcache;
-  private AsyncMemcacheService asyncMemcache;
-  private int overhead = 1024;   // space for key value
-  private String str1mb = getBigString(1024 * 1024 - overhead);
-  private String str1K = getBigString(1024);
+    private MemcacheService memcache;
+    private AsyncMemcacheService asyncMemcache;
+    private int overhead = 1024;   // space for key value
+    private String str1mb = getBigString(1024 * 1024 - overhead);
+    private String str1K = getBigString(1024);
 
-  @Before
-  public void setUp() {
-    try {
-      //Thread.sleep(60000);
-      Thread.sleep(1);
-    } catch (InterruptedException ie) {
-      //
+    @Before
+    public void setUp() {
+        try {
+            //Thread.sleep(60000);
+            Thread.sleep(1);
+        } catch (InterruptedException ie) {
+            //
+        }
+        memcache = MemcacheServiceFactory.getMemcacheService();
+        asyncMemcache = MemcacheServiceFactory.getAsyncMemcacheService();
+        //memcache.clearAll();
     }
-    memcache = MemcacheServiceFactory.getMemcacheService();
-    asyncMemcache = MemcacheServiceFactory.getAsyncMemcacheService();
-    //memcache.clearAll();
-  }
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-  /**
-   * Tests single put/get.
-   */
-  @Test
-  public void testPutAndGet_basic() {
-    verifyAsyncGet(KEY1, VALUE1);
-  }
+    /**
+     * Tests single put/get.
+     */
+    @Test
+    public void testPutAndGet_basic() {
+        verifyAsyncGet(KEY1, VALUE1);
+    }
 
-//  /**
+    //  /**
 //   * Tests different data type put/get.
 //   */
 //  @Test
@@ -159,24 +149,25 @@ public class AsyncMemcacheTest extends AbstractCacheTest {
 //    }
 //  }
 //
-  private void verifyCancel() {
-    Future<Void> future = asyncMemcache.putAll(getBatchDat());
-    boolean cancelled = future.cancel(true);
-    // N.B., there's no guarantee that the cancel succeeded.
-    if (cancelled) {
-      assertNull("bkey1 should have null value after successful cancel", memcache.get("bkey1"));
-      assertNull("bkey30 should have null value after successful cancel", memcache.get("bkey30"));
-    } else {
-      Object cached = memcache.get("bkey1");
-      assertNotNull("bkey1 should have cached data", cached);
-      assertEquals(str1mb, cached);
-      cached = memcache.get("bkey30");
-      assertNotNull("bkey30 should have cached data", cached);
-      assertEquals(str1mb, cached);
+    private void verifyCancel() {
+        Future<Void> future = asyncMemcache.putAll(getBatchDat());
+        boolean cancelled = future.cancel(true);
+        // N.B., there's no guarantee that the cancel succeeded.
+        if (cancelled) {
+            assertNull("bkey1 should have null value after successful cancel", memcache.get("bkey1"));
+            assertNull("bkey30 should have null value after successful cancel", memcache.get("bkey30"));
+        } else {
+            Object cached = memcache.get("bkey1");
+            assertNotNull("bkey1 should have cached data", cached);
+            assertEquals(str1mb, cached);
+            cached = memcache.get("bkey30");
+            assertNotNull("bkey30 should have cached data", cached);
+            assertEquals(str1mb, cached);
+        }
+        waitOnFuture(future);
     }
-    waitOnFuture(future);
-  }
-//
+
+    //
 //  /**
 //   * Tests increments.
 //   * @throws InterruptedException
@@ -258,71 +249,71 @@ public class AsyncMemcacheTest extends AbstractCacheTest {
 //  }
 //
 //
-  private static String getBigString(int len) {
-    char[] chars = new char[len];
-    for (int i = 0; i < len; i++) {
-      chars[i] = 'x';
+    private static String getBigString(int len) {
+        char[] chars = new char[len];
+        for (int i = 0; i < len; i++) {
+            chars[i] = 'x';
+        }
+        return new String(chars);
     }
-    return new String(chars);
-  }
 
-  private Map<Object, Object> getBatchDat() {
-    Map<Object, Object> cacheDat = new HashMap<Object, Object>();
-    for (int i = 0; i < 31; i++) {
-      cacheDat.put("bkey" + i, str1mb);
+    private Map<Object, Object> getBatchDat() {
+        Map<Object, Object> cacheDat = new HashMap<Object, Object>();
+        for (int i = 0; i < 31; i++) {
+            cacheDat.put("bkey" + i, str1mb);
+        }
+        return cacheDat;
     }
-    return cacheDat;
-  }
 
-  private Map<Object, Object> getSmallBatchData() {
-    Map<Object, Object> cacheDat = new HashMap<Object, Object>();
-    for (int i = 0; i < 31; i++) {
-      cacheDat.put("bkey" + i, str1K);
+    private Map<Object, Object> getSmallBatchData() {
+        Map<Object, Object> cacheDat = new HashMap<Object, Object>();
+        for (int i = 0; i < 31; i++) {
+            cacheDat.put("bkey" + i, str1K);
+        }
+        return cacheDat;
     }
-    return cacheDat;
-  }
 
-  private Map<Object, Object> getBatchIntDat() {
-    Map<Object, Object> cacheDat = new HashMap<Object, Object> ();
-    for (int i = 0; i < 31; i++) {
-      cacheDat.put("ikey" + i, i);
+    private Map<Object, Object> getBatchIntDat() {
+        Map<Object, Object> cacheDat = new HashMap<Object, Object>();
+        for (int i = 0; i < 31; i++) {
+            cacheDat.put("ikey" + i, i);
+        }
+        return cacheDat;
     }
-    return cacheDat;
-  }
 
-  private void verifyAsyncGet(Object key, Object value) {
-    Future<Void> putFuture = asyncMemcache.put(key, value);
-    waitOnFuture(putFuture);
-    Future<Object> getFuture = asyncMemcache.get(key);
-    waitOnFuture(getFuture);
-    assertFalse("future shouldn't be cancelled", getFuture.isCancelled());
-    assertEquals(value, memcache.get(key));
-  }
-
-  private void waitOnFuture(Future<?> future) {
-    while (!future.isDone()) {
-      try {
-        Thread.sleep(50);
-      } catch (InterruptedException e) {
-        // Nothing to do but try again
-      }
+    private void verifyAsyncGet(Object key, Object value) {
+        Future<Void> putFuture = asyncMemcache.put(key, value);
+        waitOnFuture(putFuture);
+        Future<Object> getFuture = asyncMemcache.get(key);
+        waitOnFuture(getFuture);
+        assertFalse("future shouldn't be cancelled", getFuture.isCancelled());
+        assertEquals(value, memcache.get(key));
     }
-  }
 
-  // A debugging aid to show cache stats along with a failure message
-  @SuppressWarnings("unused")
-  private String failure(String msg) {
-    Stats statistics = memcache.getStatistics();
-    StringBuilder sb = new StringBuilder();
-    sb
-      .append(msg)
-      .append(" (")
-      .append(statistics.getItemCount())
-      .append("/")
-      .append(statistics.getHitCount())
-      .append("/")
-      .append(statistics.getMissCount())
-      .append(")");
-    return sb.toString();
-  }
+    private void waitOnFuture(Future<?> future) {
+        while (!future.isDone()) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // Nothing to do but try again
+            }
+        }
+    }
+
+    // A debugging aid to show cache stats along with a failure message
+    @SuppressWarnings("unused")
+    private String failure(String msg) {
+        Stats statistics = memcache.getStatistics();
+        StringBuilder sb = new StringBuilder();
+        sb
+                .append(msg)
+                .append(" (")
+                .append(statistics.getItemCount())
+                .append("/")
+                .append(statistics.getHitCount())
+                .append("/")
+                .append(statistics.getMissCount())
+                .append(")");
+        return sb.toString();
+    }
 }
