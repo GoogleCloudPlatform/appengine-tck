@@ -12,7 +12,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.test.capedwarf.common.support.All;
-import org.jboss.test.capedwarf.common.test.BaseTest;
+import org.jboss.test.capedwarf.common.test.TestBase;
 import org.jboss.test.capedwarf.common.test.TestContext;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(Arquillian.class)
 @Category(All.class)
-public class CapabilityTest extends BaseTest {
+public class CapabilityTest extends TestBase {
     private CapabilitiesService capabilitiesService = CapabilitiesServiceFactory.getCapabilitiesService();
     private String[] TEST_DATA = {"blobstore", "datastore_v3", "datastore_v3,write", "images",
             "mail", "memcache", "taskqueue", "urlfetch", "xmpp"};

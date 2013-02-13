@@ -36,7 +36,7 @@ import static org.junit.Assert.assertNull;
  */
 @RunWith(Arquillian.class)
 @Category(All.class)
-public class AsyncMemcacheTest extends AbstractCacheTest {
+public class AsyncMemcacheTest extends CacheTestBase {
     private MemcacheService memcache;
     private AsyncMemcacheService asyncMemcache;
     private int overhead = 1024;   // space for key value

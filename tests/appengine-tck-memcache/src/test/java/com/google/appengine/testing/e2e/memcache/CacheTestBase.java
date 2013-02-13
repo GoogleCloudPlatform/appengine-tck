@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.test.capedwarf.common.test.BaseTest;
+import org.jboss.test.capedwarf.common.test.TestBase;
 import org.jboss.test.capedwarf.common.test.TestContext;
 
 /**
@@ -18,7 +18,7 @@ import org.jboss.test.capedwarf.common.test.TestContext;
  * @author kjin@google.com (Kevin Jin)
  * @author hchen@google.com (Hannah Chen)
  */
-public class AbstractCacheTest extends BaseTest {
+public abstract class CacheTestBase extends TestBase {
     protected static final String VALUE1 = "value1";
     protected static final String KEY1 = "key1";
 
@@ -26,8 +26,7 @@ public class AbstractCacheTest extends BaseTest {
     // array, custom type
     protected static final ComboType COMBO1 = new ComboType(101, 123456789L, KEY1, new Date());
     protected static final ComboType COMBO2 = new ComboType(0, 0, null, new Date(0));
-    protected static final ComboType COMBO3 =
-            new ComboType(-1, -123456789L, VALUE1, new Date(-123456789L));
+    protected static final ComboType COMBO3 = new ComboType(-1, -123456789L, VALUE1, new Date(-123456789L));
     protected static final Set<?> EMPTY_SET;
     protected static final Set<Object> SET1;
 
@@ -40,15 +39,14 @@ public class AbstractCacheTest extends BaseTest {
     protected static final int[] ARRAY1 = {1, -1, 0};
     protected static final Object[] ARRAY2 = {1, VALUE1, COMBO2};
 
-    protected static final Object[] TEST_DATA =
-            {KEY1, 101, -1, 0, 123456789L, -987654321L, new Date(0), COMBO1, EMPTY_SET, SET1};
+    protected static final Object[] TEST_DATA = {KEY1, 101, -1, 0, 123456789L, -987654321L, new Date(0), COMBO1, EMPTY_SET, SET1};
 
     @Deployment
     public static WebArchive getDeployment() {
         TestContext context = TestContext.asDefault();
         context.setAppEngineWebXmlFile("tck/appengine-web.xml");
         WebArchive war = getCapedwarfDeployment(context);
-        war.addClass(AbstractCacheTest.class);
+        war.addClass(CacheTestBase.class);
         war.addClass(ComboType.class);
         return war;
     }
