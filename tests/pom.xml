@@ -15,6 +15,9 @@
     <description>Google AppEngine Test Compatability Kit</description>
 
     <modules>
+        <!-- Utils -->
+        <module>appengine-tck-common</module>
+        <!-- APIs -->
         <module>appengine-tck-capability</module>
         <module>appengine-tck-memcache</module>
     </modules>

@@ -12,11 +12,9 @@ import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.memcache.Stats;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.test.capedwarf.common.support.All;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
@@ -35,7 +33,6 @@ import static org.junit.Assert.assertNull;
  * @author smithd@google.com (Dave Smith)
  */
 @RunWith(Arquillian.class)
-@Category(All.class)
 public class AsyncMemcacheTest extends CacheTestBase {
     private MemcacheService memcache;
     private AsyncMemcacheService asyncMemcache;

@@ -17,8 +17,10 @@
         <version.com.google.gae.api>1.7.4</version.com.google.gae.api>
         <version.net.sf.jsr107cache>1.1</version.net.sf.jsr107cache>
 
-        <!-- CapeDwarf - TODO: remove -->
-        <version.org.jboss.capedwarf>1.0.0-SNAPSHOT</version.org.jboss.capedwarf>
+        <!-- Ext -->
+        <version.metainf>1.1</version.metainf>
+
+        <!-- CapeDwarf -->
         <version.jboss.as7>7.2.0.Alpha1-SNAPSHOT</version.jboss.as7>
         <version.org.jboss.xnio>3.0.7.GA</version.org.jboss.xnio>
 
@@ -126,6 +128,12 @@
 
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
                 <artifactId>appengine-tck-memcache</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -154,20 +162,16 @@
                 <version>${version.net.sf.jsr107cache}</version>
             </dependency>
 
+            <!-- Ext -->
+
+            <dependency>
+                <groupId>org.kohsuke.metainf-services</groupId>
+                <artifactId>metainf-services</artifactId>
+                <version>${version.metainf}</version>
+            </dependency>
+
+
             <!-- CapeDwarf -->
-
-            <dependency>
-                <groupId>org.jboss.capedwarf.blue</groupId>
-                <artifactId>capedwarf-common</artifactId>
-                <version>${version.org.jboss.capedwarf}</version>
-                <type>test-jar</type>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jboss.capedwarf.blue</groupId>
-                <artifactId>capedwarf-arquillian</artifactId>
-                <version>${version.org.jboss.capedwarf}</version>
-            </dependency>
 
             <dependency>
                 <groupId>org.jboss.as</groupId>
@@ -194,7 +198,6 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${version.junit}</version>
-                <scope>test</scope>
             </dependency>
 
             <dependency>

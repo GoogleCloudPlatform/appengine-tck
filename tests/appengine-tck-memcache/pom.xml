@@ -22,15 +22,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jboss.capedwarf.blue</groupId>
-            <artifactId>capedwarf-common</artifactId>
-            <type>test-jar</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.capedwarf.blue</groupId>
-            <artifactId>capedwarf-arquillian</artifactId>
-            <scope>test</scope>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-common</artifactId>
         </dependency>
 
         <dependency>

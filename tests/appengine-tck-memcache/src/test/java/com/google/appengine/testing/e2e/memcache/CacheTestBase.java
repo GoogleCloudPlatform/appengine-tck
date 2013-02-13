@@ -7,10 +7,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.appengine.testing.e2e.common.TestBase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.test.capedwarf.common.test.TestBase;
-import org.jboss.test.capedwarf.common.test.TestContext;
 
 /**
  * Tests Cache.
@@ -43,9 +42,7 @@ public abstract class CacheTestBase extends TestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        TestContext context = TestContext.asDefault();
-        context.setAppEngineWebXmlFile("tck/appengine-web.xml");
-        WebArchive war = getCapedwarfDeployment(context);
+        WebArchive war = getTckDeployment();
         war.addClass(CacheTestBase.class);
         war.addClass(ComboType.class);
         return war;
