@@ -27,6 +27,10 @@
 
     <defaultProtocol type="Servlet 2.5"/>
 
+    <extension qualifier="suite">
+        <property name="deploymentClass">com.google.appengine.testing.e2e.multisuite.MultiDeployment</property>
+    </extension>
+
     <!-- engine>
         <property name="deploymentExportPath">target/deployments</property>
     </engine -->

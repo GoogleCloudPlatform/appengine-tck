@@ -134,6 +134,12 @@
 
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-multisuite</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
                 <artifactId>appengine-tck-memcache</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -403,6 +409,5 @@
             </dependencies>
         </profile>
     </profiles>
-
 
 </project>

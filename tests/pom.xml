@@ -17,6 +17,7 @@
     <modules>
         <!-- Utils -->
         <module>appengine-tck-common</module>
+        <module>appengine-tck-multisuite</module>
         <!-- APIs -->
         <module>appengine-tck-capability</module>
         <module>appengine-tck-memcache</module>
