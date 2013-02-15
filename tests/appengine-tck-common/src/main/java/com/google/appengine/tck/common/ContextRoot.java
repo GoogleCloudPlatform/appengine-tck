@@ -1,4 +1,4 @@
-package com.google.appengine.testing.e2e.common;
+package com.google.appengine.tck.common;
 
 /**
  * Describe context root.

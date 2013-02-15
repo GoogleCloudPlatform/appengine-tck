@@ -1,13 +1,14 @@
 // Copyright 2009 Google Inc. All Rights Reserved.
 
-package com.google.appengine.testing.e2e.memcache;
+package com.google.appengine.tck.memcache;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.google.appengine.testing.e2e.common.TestBase;
+import com.google.appengine.tck.common.TestBase;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 

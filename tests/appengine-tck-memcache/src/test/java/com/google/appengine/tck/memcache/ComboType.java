@@ -1,6 +1,6 @@
 // Copyright 2009 Google Inc. All Rights Reserved.
 
-package com.google.appengine.testing.e2e.memcache;
+package com.google.appengine.tck.memcache;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;

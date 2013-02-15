@@ -1,6 +1,6 @@
 // Copyright 2012 Google Inc. All Rights Reserved.
 
-package com.google.appengine.testing.e2e.capability;
+package com.google.appengine.tck.capability;
 
 import com.google.appengine.api.capabilities.CapabilitiesService;
 import com.google.appengine.api.capabilities.CapabilitiesServiceFactory;
@@ -8,7 +8,8 @@ import com.google.appengine.api.capabilities.Capability;
 import com.google.appengine.api.capabilities.CapabilityState;
 import com.google.appengine.api.capabilities.CapabilityStatus;
 import com.google.appengine.api.utils.SystemProperty;
-import com.google.appengine.testing.e2e.common.TestBase;
+import com.google.appengine.tck.common.TestBase;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -35,13 +36,6 @@ public class CapabilityTest extends TestBase {
 
     @Test
     public void testGetStatus() {
-    /*
-    try {
-      Thread.sleep(60000);
-    } catch (InterruptedException ie) {
-      //
-    }
-    */
         Capability capability;
         for (String p : TEST_DATA) {
             if (p.indexOf(',') > 0) {

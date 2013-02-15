@@ -1,4 +1,4 @@
-package com.google.appengine.testing.e2e.arquillian;
+package com.google.appengine.tck.arquillian;
 
 import java.io.File;
 import java.util.Set;
