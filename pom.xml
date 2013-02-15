@@ -284,7 +284,7 @@
                         <configuration>
                             <redirectTestOutputToFile>true</redirectTestOutputToFile>
                             <includes>
-                                <include>com/google/appengine/testing/e2e/**/*Test.java</include>
+                                <include>com/google/appengine/tck/**/*Test.java</include>
                             </includes>
                         </configuration>
                     </plugin>
@@ -366,7 +366,7 @@
                             <!-- Ignore groups for now - weird output -->
                             <!-- groups>org.jboss.test.capedwarf.common.support.JBoss</groups -->
                             <includes>
-                                <include>com/google/appengine/testing/e2e/**/*Test.java</include>
+                                <include>com/google/appengine/tck/**/*Test.java</include>
                             </includes>
                         </configuration>
                     </plugin>
