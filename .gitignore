@@ -2,3 +2,10 @@
 *.ipr
 *.iws
 .idea/
+target/
+tests/appengine-tck-capability/target/
+tests/appengine-tck-common/target/
+tests/appengine-tck-memcache/target/
+tests/appengine-tck-multisuite/target/
+tests/target/
+
