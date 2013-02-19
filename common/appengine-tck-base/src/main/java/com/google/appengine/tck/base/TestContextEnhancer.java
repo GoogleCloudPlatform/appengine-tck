@@ -1,4 +1,4 @@
-package com.google.appengine.tck.common;
+package com.google.appengine.tck.base;
 
 /**
  * Enhance TestContext just before we create web archive.

@@ -8,7 +8,7 @@ import com.google.appengine.api.capabilities.Capability;
 import com.google.appengine.api.capabilities.CapabilityState;
 import com.google.appengine.api.capabilities.CapabilityStatus;
 import com.google.appengine.api.utils.SystemProperty;
-import com.google.appengine.tck.common.TestBase;
+import com.google.appengine.tck.base.TestBase;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

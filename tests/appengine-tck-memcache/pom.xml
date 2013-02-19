@@ -23,7 +23,7 @@
 
         <dependency>
             <groupId>com.google.appengine.tck</groupId>
-            <artifactId>appengine-tck-common</artifactId>
+            <artifactId>appengine-tck-base</artifactId>
         </dependency>
 
         <dependency>

@@ -1,4 +1,4 @@
-package com.google.appengine.tck.common;
+package com.google.appengine.tck.base;
 
 /**
  * Describe context root.

@@ -5,11 +5,12 @@
     <artifactId>appengine-tck</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <name>GAE Test Compatability Kit</name>
     <description>GAE Test Compatability Kit</description>
 
     <modules>
+        <module>common</module>
         <module>tests</module>
-        <!-- <module>multisuite</module> -->
     </modules>
 
     <properties>
@@ -128,7 +129,7 @@
 
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>
-                <artifactId>appengine-tck-common</artifactId>
+                <artifactId>appengine-tck-base</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -139,14 +140,20 @@
             </dependency>
 
             <dependency>
+                <groupId>com.google.appgengine.tck</groupId>
+                <artifactId>appengine-tck-capability</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>com.google.appengine.tck</groupId>
                 <artifactId>appengine-tck-memcache</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.google.appgengine.tck</groupId>
-                <artifactId>appengine-tck-capability</artifactId>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-urlfetch</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -175,7 +182,6 @@
                 <artifactId>metainf-services</artifactId>
                 <version>${version.metainf}</version>
             </dependency>
-
 
             <!-- CapeDwarf -->
 
@@ -295,22 +301,6 @@
                 <dependency>
                     <groupId>org.jboss.arquillian.container</groupId>
                     <artifactId>arquillian-gae-local</artifactId>
-                    <scope>test</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.jboss.shrinkwrap</groupId>
-                    <artifactId>shrinkwrap-api</artifactId>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.jboss.shrinkwrap.resolver</groupId>
-                    <artifactId>shrinkwrap-resolver-api-maven</artifactId>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.jboss.shrinkwrap.resolver</groupId>
-                    <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
                     <scope>test</scope>
                 </dependency>
             </dependencies>

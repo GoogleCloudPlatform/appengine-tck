@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.google.appengine.tck.common.TestBase;
+import com.google.appengine.tck.base.TestBase;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;

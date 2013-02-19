@@ -9,17 +9,16 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>com.google.appengine.tck</groupId>
-    <artifactId>appengine-tck-tests</artifactId>
+    <artifactId>appengine-tck-common</artifactId>
     <packaging>pom</packaging>
-    <name>GAE TCK Tests</name>
+    <name>GAE TCK Common</name>
     <url>https://developers.google.com/appengine/</url>
     <description>Google AppEngine Test Compatability Kit</description>
 
     <modules>
-        <!-- APIs -->
-        <module>appengine-tck-capability</module>
-        <module>appengine-tck-memcache</module>
-        <module>appengine-tck-urlfetch</module>
+        <!-- Utils -->
+        <module>appengine-tck-base</module>
+        <module>appengine-tck-multisuite</module>
     </modules>
 
 </project>

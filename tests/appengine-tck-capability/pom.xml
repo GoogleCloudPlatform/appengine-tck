@@ -14,7 +14,6 @@
     <name>GAE TCK Capability Test</name>
     <url>https://developers.google.com/appengine/</url>
     <description>GAE TCK Capability Tests</description>
-    <!--    <version>1.0.0-SNAPSHOT</version> -->
 
     <dependencies>
         <dependency>
@@ -24,7 +23,7 @@
 
         <dependency>
             <groupId>com.google.appengine.tck</groupId>
-            <artifactId>appengine-tck-common</artifactId>
+            <artifactId>appengine-tck-base</artifactId>
         </dependency>
 
         <dependency>
