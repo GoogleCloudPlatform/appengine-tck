@@ -1,0 +1,113 @@
+package com.google.appengine.tck.urlfetch;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import com.google.appengine.api.urlfetch.FetchOptions;
+import com.google.appengine.api.urlfetch.HTTPMethod;
+import com.google.appengine.api.urlfetch.HTTPRequest;
+import com.google.appengine.api.urlfetch.HTTPResponse;
+import com.google.appengine.api.urlfetch.URLFetchService;
+import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
+import com.google.appengine.tck.common.TestBase;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+
+/**
+ * URLFetchService tests
+ */
+@RunWith(Arquillian.class)
+public class URLFetchServiceTest extends TestBase {
+  public String appUrlBase;
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
+  @Deployment
+  public static WebArchive getDeployment() {
+      return getTckDeployment();
+  }
+
+  @Test
+  public void fetchExistingPage() throws Exception {
+    String content = fetchUrl("http://www.google.org/", 200);
+  }
+
+  @Test
+  public void fetchNonExistentPage() throws Exception {
+    String content = fetchUrl("http://www.google.com/404", 404);
+  }
+
+  @Test
+  public void fetchNonExistentSite() throws Exception {
+    thrown.expect(IOException.class);
+    String content = fetchUrl("http://i.do.not.exist/", 503);
+  }
+
+  protected String fetchUrl(String url, int expectedResponse) throws IOException {
+    URLFetchService urlFetchService = URLFetchServiceFactory.getURLFetchService();
+    HTTPResponse httpResponse = urlFetchService.fetch(new URL(url));
+    assertEquals(url, expectedResponse, httpResponse.getResponseCode());
+    return new String(httpResponse.getContent());
+  }
+
+  // N.B. Tests below this point bypass FastNet
+
+  @Before
+  public void setUp() {
+    appUrlBase = System.getProperty(AppUrlBaseFilter.APP_URL_BASE);
+  }
+
+//  @Test
+//  public void verifyFetchingFromOurselves() throws Exception {
+//    URL selfURL = new URL(appUrlBase + "/respond/");
+//    FetchOptions fetchOptions = FetchOptions.Builder.withDefaults()
+//        // N.B. Turning off redirects has the (barely documented) side-effect of
+//        //  bypassing FastNet by using http_over_rpc
+//        .doNotFollowRedirects()
+//        .setDeadline(10.0);
+//    HTTPRequest httpRequest = new HTTPRequest(selfURL, HTTPMethod.GET, fetchOptions);
+//    URLFetchService urlFetchService = URLFetchServiceFactory.getURLFetchService();
+//    HTTPResponse httpResponse = urlFetchService.fetch(httpRequest);
+//    assertEquals(200, httpResponse.getResponseCode());
+//    assertEquals(ResponderServlet.DEFAULT_CONTENT, new String(httpResponse.getContent()));
+//  }
+
+  @Test
+  public void fetchNonExistentLocalAppThrowsException() throws Exception {
+    thrown.expect(IOException.class);
+    URL selfURL = new URL("BOGUS-" + appUrlBase + "/");
+    FetchOptions fetchOptions = FetchOptions.Builder.withDefaults()
+        .doNotFollowRedirects()
+        .setDeadline(10.0);
+    HTTPRequest httpRequest = new HTTPRequest(selfURL, HTTPMethod.GET, fetchOptions);
+    URLFetchService urlFetchService = URLFetchServiceFactory.getURLFetchService();
+    HTTPResponse httpResponse = urlFetchService.fetch(httpRequest);
+    fail("expected exception, got " + httpResponse.getResponseCode());
+  }
+
+//  @Test
+//  public void timeoutRaiseSocketTimeoutException() throws Exception {
+//    thrown.expect(SocketTimeoutException.class);
+//    URL selfURL = new URL(appUrlBase + "/respond/?action=sleep10");
+//    FetchOptions fetchOptions = FetchOptions.Builder.withDefaults()
+//      .doNotFollowRedirects()
+//      .setDeadline(1.0);
+//    HTTPRequest httpRequest = new HTTPRequest(selfURL, HTTPMethod.GET, fetchOptions);
+//    URLFetchService urlFetchService = URLFetchServiceFactory.getURLFetchService();
+//    HTTPResponse httpResponse = urlFetchService.fetch(httpRequest);
+//    fail("expected a timeout exception, but got " + httpResponse.getResponseCode());
+//  }
+}

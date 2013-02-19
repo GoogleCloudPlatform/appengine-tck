@@ -21,6 +21,7 @@
         <!-- APIs -->
         <module>appengine-tck-capability</module>
         <module>appengine-tck-memcache</module>
+        <module>appengine-tck-urlfetch</module>
     </modules>
 
 </project>
