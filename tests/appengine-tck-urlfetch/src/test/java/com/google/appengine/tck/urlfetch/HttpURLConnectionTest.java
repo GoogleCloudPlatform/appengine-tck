@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import com.google.appengine.tck.base.TestBase;
+import junit.framework.Assert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -49,15 +50,18 @@ public class HttpURLConnectionTest extends TestBase {
         String content = fetchUrl("http://i.do.not.exist/", 503);
     }
 
-    protected String fetchUrl(String url, int expectedResponseCode)
-            throws IOException {
+    protected String fetchUrl(String url, int expectedResponseCode) throws IOException {
         URLConnection conn = new URL(url).openConnection();
-        if (conn instanceof HttpURLConnection) {
-            HttpURLConnection connection = (HttpURLConnection) conn;
-            connection.connect();
-            assertEquals(url, expectedResponseCode, connection.getResponseCode());
+        Assert.assertTrue("URLConenction is not HttpURLConnection: " + conn, conn instanceof HttpURLConnection);
+        HttpURLConnection connection = (HttpURLConnection) conn;
+        connection.connect();
+        try {
+            int responseCode = connection.getResponseCode();
+            assertEquals(url, expectedResponseCode, responseCode);
+            return getContent(conn);
+        } finally {
+            connection.disconnect();
         }
-        return getContent(conn);
     }
 
     private String getContent(URLConnection connection) throws IOException {
