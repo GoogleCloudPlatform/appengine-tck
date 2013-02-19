@@ -14,7 +14,7 @@
 
     <properties>
         <!-- GAE -->
-        <version.com.google.gae.api>1.7.4</version.com.google.gae.api>
+        <version.com.google.gae.api>1.7.5</version.com.google.gae.api>
         <version.net.sf.jsr107cache>1.1</version.net.sf.jsr107cache>
 
         <!-- Ext -->
@@ -333,7 +333,7 @@
                         <configuration>
                             <redirectTestOutputToFile>true</redirectTestOutputToFile>
                             <includes>
-                                <include>com/google/appengine/testing/e2e/**/*Test.java</include>
+                                <include>com/google/appengine/tck/**/*Test.java</include>
                             </includes>
                         </configuration>
                     </plugin>
