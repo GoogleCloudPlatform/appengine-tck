@@ -22,8 +22,6 @@
 
 package com.google.appengine.tck.logservice;
 
-import com.google.appengine.tck.base.TestBase;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -36,7 +34,7 @@ import org.junit.runner.RunWith;
  * @author Ales Justin
  */
 @RunWith(Arquillian.class)
-public class Log4jTest extends TestBase {
+public class Log4jTest extends LoggingTestBase {
     @Deployment
     public static WebArchive getDeployment() throws Exception {
         WebArchive war = getTckDeployment();

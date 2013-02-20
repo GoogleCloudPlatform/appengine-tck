@@ -166,5 +166,37 @@
                 </dependency>
             </dependencies>
         </profile>
+
+        <!-- Multisuite -->
+        <profile>
+            <id>multisuite</id>
+            <activation>
+                <property>
+                    <name>multisuite</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                            <excludedGroups>com.google.appengine.tck.category.IgnoreMultisuite</excludedGroups>
+                            <includes>
+                                <include>com/google/appengine/tck/**/*Test.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>com.google.appengine.tck</groupId>
+                    <artifactId>appengine-tck-multisuite</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 </project>

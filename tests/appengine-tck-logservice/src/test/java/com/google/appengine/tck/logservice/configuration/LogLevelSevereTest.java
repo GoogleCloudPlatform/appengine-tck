@@ -24,16 +24,19 @@ package com.google.appengine.tck.logservice.configuration;
 
 import java.util.logging.Level;
 
+import com.google.appengine.tck.category.IgnoreMultisuite;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 @RunWith(Arquillian.class)
+@Category(IgnoreMultisuite.class)
 public class LogLevelSevereTest extends LoggingConfigurationTestBase {
 
     @Deployment

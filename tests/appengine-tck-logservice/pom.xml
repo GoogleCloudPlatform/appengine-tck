@@ -40,23 +40,4 @@
 
     </dependencies>
 
-    <profiles>
-        <!-- Multisuite -->
-        <profile>
-            <id>multisuite</id>
-            <activation>
-                <property>
-                    <name>multisuite</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.google.appengine.tck</groupId>
-                    <artifactId>appengine-tck-multisuite</artifactId>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
-
 </project>

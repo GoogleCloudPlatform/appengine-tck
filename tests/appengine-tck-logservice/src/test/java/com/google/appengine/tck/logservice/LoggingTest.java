@@ -82,17 +82,16 @@ public class LoggingTest extends LoggingTestBase {
         assertLogContains(text);
     }
 
-// TODO: Renable after compiles
-//    @Test
-//    public void testLogMessageIsFormatted() {
-//        // GAE dev server doesn't handle this properly (see http://code.google.com/p/googleappengine/issues/detail?id=8666)
-//       
-//        log.log(Level.INFO, "Parameterized message with params {0} and {1}", new Object[] {"param1", 222});
-//        flush(log);
-//
-//        AppLogLine logLine = findLogLineContaining("Parameterized message with params");
-//        assertNotNull("log should contain 'Parameterized message with params param1 and 222', but it does not", logLine);
-//        assertEquals("Parameterized message with params param1 and 222", logLine.getLogMessage());
-//    }
+    @Test
+    public void testLogMessageIsFormatted() {
+        // GAE dev server doesn't handle this properly (see http://code.google.com/p/googleappengine/issues/detail?id=8666)
+
+        log.log(Level.INFO, "Parameterized message with params {0} and {1}", new Object[] {"param1", 222});
+        flush(log);
+
+        AppLogLine logLine = findLogLineContaining("Parameterized message with params");
+        assertNotNull("log should contain 'Parameterized message with params param1 and 222', but it does not", logLine);
+        assertEquals("Parameterized message with params param1 and 222", logLine.getLogMessage());
+    }
 
 }

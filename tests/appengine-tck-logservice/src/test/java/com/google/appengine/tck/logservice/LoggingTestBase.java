@@ -33,7 +33,6 @@ import com.google.appengine.api.log.RequestLogs;
 import com.google.appengine.tck.base.ServicesLifecycle;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
-import com.google.appengine.tck.logservice.configuration.LoggingConfigurationTestBase;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
@@ -67,7 +66,6 @@ public abstract class LoggingTestBase extends TestBase {
         context.setAppEngineWebXmlFile("appengine-web-with-logging-properties.xml");
         WebArchive war = getTckDeployment(context);
         war.addClass(LoggingTestBase.class)
-           .addClass(LoggingConfigurationTestBase.class)
            .addAsWebInfResource("currentTimeUsec.jsp")
            .addAsWebInfResource("doNothing.jsp")
            .addAsWebInfResource("storeTestData.jsp")
