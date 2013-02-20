@@ -37,7 +37,7 @@ import org.junit.runner.RunWith;
 public class Log4jTest extends LoggingTestBase {
     @Deployment
     public static WebArchive getDeployment() throws Exception {
-        WebArchive war = getTckDeployment();
+        WebArchive war = getDefaultDeployment(newTestContext());
         war.addAsResource("log4j-test.properties", "log4j.properties");
         return war;
     }

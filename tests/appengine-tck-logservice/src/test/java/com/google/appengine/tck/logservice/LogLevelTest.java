@@ -25,8 +25,6 @@ package com.google.appengine.tck.logservice;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.log.LogService;
-import com.google.appengine.tck.base.TestContext;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -41,8 +39,7 @@ public class LogLevelTest extends LoggingTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        TestContext context = newTestContext().setAppEngineWebXmlFile("appengine-web-with-logging-properties.xml");
-        return getDefaultDeployment(context).addAsWebInfResource("logging-all.properties", "logging.properties");
+        return getDefaultDeployment(newTestContext()).addAsWebInfResource("logging-all.properties", "logging.properties");
     }
 
     @Test
