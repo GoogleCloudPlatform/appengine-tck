@@ -47,7 +47,7 @@ public class LoggingTest extends LoggingTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        return getTckDeployment(newTestContext());
+        return getDefaultDeployment(newTestContext());
     }
 
     @Before

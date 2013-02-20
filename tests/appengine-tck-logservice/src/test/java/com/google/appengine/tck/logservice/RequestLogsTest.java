@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -40,6 +41,7 @@ import com.google.appengine.api.log.LogService;
 import com.google.appengine.api.log.LogServiceFactory;
 import com.google.appengine.api.log.RequestLogs;
 import com.google.apphosting.api.ApiProxy;
+import junit.framework.Assert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -77,8 +79,7 @@ public class RequestLogsTest extends LoggingTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        //WebArchive war = getDefaultDeployment(newTestContext());
-        WebArchive war = getTckDeployment(newTestContext());
+        WebArchive war = getDefaultDeployment(newTestContext());
         war.addAsWebResource("doNothing.jsp", "index.jsp");
         war.addAsWebResource("doNothing.jsp", "index2.jsp");
         war.addAsWebResource("throwException.jsp", "index3.jsp");
@@ -93,16 +94,16 @@ public class RequestLogsTest extends LoggingTestBase {
 
     @Before
     public void setUp() throws Exception {
-        //if (isInContainer()) {
+        if (isInContainer()) {
             service = LogServiceFactory.getLogService();
-        //}
+        }
     }
 
     @AfterClass
     public static void afterClass() throws Exception {
-        //if (isInContainer()) {
+        if (isInContainer()) {
             clear();
-        //}
+        }
     }
 
     @Test @RunAsClient
@@ -322,7 +323,6 @@ public class RequestLogsTest extends LoggingTestBase {
         assertFalse(getCurrentRequestLogs().isFinished());
     }
 
-
     private RequestLogs getCurrentRequestLogs() {
         return getRequestLogs(getCurrentRequestId());
     }
@@ -340,7 +340,10 @@ public class RequestLogsTest extends LoggingTestBase {
     }
 
     private RequestLogs getRequestLogs(String request1Id) {
-        return service.fetch(new LogQuery().requestIds(Collections.singletonList(request1Id))).iterator().next();
+        LogQuery logQuery = new LogQuery().requestIds(Collections.singletonList(request1Id));
+        Iterator<RequestLogs> iterator = service.fetch(logQuery).iterator();
+        Assert.assertTrue(iterator.hasNext());
+        return iterator.next();
     }
 
     private String getRequest1Id() throws EntityNotFoundException {

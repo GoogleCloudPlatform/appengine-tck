@@ -42,8 +42,7 @@ public class LogLevelTest extends LoggingTestBase {
     @Deployment
     public static WebArchive getDeployment() {
         TestContext context = newTestContext().setAppEngineWebXmlFile("appengine-web-with-logging-properties.xml");
-        return getTckDeployment(context)
-                .addAsWebInfResource("logging-all.properties", "logging.properties");
+        return getDefaultDeployment(context).addAsWebInfResource("logging-all.properties", "logging.properties");
     }
 
     @Test

@@ -68,7 +68,7 @@ public abstract class LoggingConfigurationTestBase extends LoggingTestBase {
 
     protected static Archive getDeploymentWithLoggingLevelSetTo(Level level) {
         TestContext context = newTestContext().setAppEngineWebXmlFile("appengine-web-with-logging-properties.xml");
-        WebArchive war = getTckDeployment(context);
+        WebArchive war = getDefaultDeployment(context);
         war.addClass(LoggingConfigurationTestBase.class);
         war.addAsWebInfResource(new StringAsset(".level=" + level.getName()), "logging.properties");
         return war;

@@ -22,7 +22,6 @@
 
 package com.google.appengine.tck.logservice;
 
-import java.lang.reflect.Method;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 
@@ -31,12 +30,11 @@ import com.google.appengine.api.log.LogQuery;
 import com.google.appengine.api.log.LogService;
 import com.google.appengine.api.log.LogServiceFactory;
 import com.google.appengine.api.log.RequestLogs;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
+import com.google.appengine.tck.base.ServicesLifecycle;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.logservice.configuration.LoggingConfigurationTestBase;
-import com.google.apphosting.utils.servlet.WarmupServlet;
-
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
 
@@ -81,31 +79,23 @@ public abstract class LoggingTestBase extends TestBase {
 
     @Before
     public void before() {
-        //if (clearLogAfterEachTestMethod && isInContainer()) {
-        if (clearLogAfterEachTestMethod) {
+        if (clearLogAfterEachTestMethod && isInContainer()) {
             clear();
         }
     }
 
     @After
     public void after() {
-        //if (clearLogAfterEachTestMethod && isInContainer()) {
-        if (clearLogAfterEachTestMethod) {
+        if (clearLogAfterEachTestMethod && isInContainer()) {
             clear();
         }
     }
 
     protected static void clear() {
         LogService service = LogServiceFactory.getLogService();
-//        if (isJBossImpl(service)) {
-//            final Class<? extends LogService> clazz = service.getClass();
-//            try {
-//                Method clearLog = clazz.getMethod("clearLog");
-//                clearLog.invoke(service);
-//            } catch (Exception e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
+        for (ServicesLifecycle sl : getServicesLifecycles()) {
+            sl.after(service);
+        }
     }
 
     protected void flush(Logger log) {

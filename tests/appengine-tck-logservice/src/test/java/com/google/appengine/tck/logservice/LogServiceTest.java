@@ -55,7 +55,7 @@ public class LogServiceTest extends LoggingTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        return getTckDeployment(newTestContext());
+        return getDefaultDeployment(newTestContext());
     }
 
     @Test

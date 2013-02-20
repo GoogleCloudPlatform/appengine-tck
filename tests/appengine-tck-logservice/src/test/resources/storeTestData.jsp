@@ -1,7 +1,7 @@
 <%@ page import="com.google.appengine.api.datastore.DatastoreService" %>
 <%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory" %>
 <%@ page import="com.google.appengine.api.datastore.Entity" %>
-<%@ page import="org.jboss.test.capedwarf.log.test.RequestLogsTest" %>
+<%@ page import="com.google.appengine.tck.logservice.RequestLogsTest" %>
 <%--
   ~ JBoss, Home of Professional Open Source.
   ~ Copyright 2013, Red Hat, Inc., and individual contributors

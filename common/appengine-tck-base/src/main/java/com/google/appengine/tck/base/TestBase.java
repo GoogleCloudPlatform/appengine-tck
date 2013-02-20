@@ -5,6 +5,9 @@ import java.io.StringWriter;
 import java.util.ServiceLoader;
 import java.util.logging.Logger;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.utils.SystemProperty;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -25,6 +28,10 @@ public class TestBase {
         for (TestContextEnhancer enhancer : ServiceLoader.load(TestContextEnhancer.class, TestBase.class.getClassLoader())) {
             enhancer.enhance(context);
         }
+    }
+
+    protected static Iterable<ServicesLifecycle> getServicesLifecycles() {
+        return ServiceLoader.load(ServicesLifecycle.class, TestBase.class.getClassLoader());
     }
 
     protected static WebArchive getTckDeployment() {
@@ -83,6 +90,26 @@ public class TestBase {
         }
 
         return war;
+    }
+
+    /**
+     * Should work in all envs?
+     * A bit complex / overkill ...
+     *
+     * @return true if in-container, false otherewise
+     */
+    protected static boolean isInContainer() {
+        try {
+            DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+            Transaction tx = ds.beginTransaction();
+            try {
+                return (ds.getCurrentTransaction() != null);
+            } finally {
+                tx.rollback();
+            }
+        } catch (Throwable ignored) {
+            return false;
+        }
     }
 
     protected static void assertRegexpMatches(String regexp, String str) {

@@ -59,7 +59,7 @@ public class LogQueryTest extends LoggingTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        return getTckDeployment(newTestContext());
+        return getDefaultDeployment(newTestContext());
     }
 
     public LogQueryTest() {
