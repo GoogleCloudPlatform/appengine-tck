@@ -40,7 +40,7 @@ import java.util.concurrent.Future;
  * @author smithd@google.com (Dave Smith)
  */
 @RunWith(Arquillian.class)
-public class AsyncMemcacheTest extends CacheTestBase {
+public class MemcacheAsync2Test extends CacheTestBase {
   private MemcacheService memcache;
   private AsyncMemcacheService asyncMemcache;
   private int overhead = 1024;   // space for key value
