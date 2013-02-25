@@ -27,10 +27,10 @@ package com.google.appengine.tck.memcache;
 import com.google.appengine.api.NamespaceManager;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.tck.base.TestBase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.test.capedwarf.common.test.TestBase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -46,7 +46,7 @@ public class MemcacheMultitenancyTest extends TestBase {
 
     @Deployment
     public static Archive getDeployment() {
-        return getCapedwarfDeployment();
+        return getTckDeployment();
     }
 
     @Test

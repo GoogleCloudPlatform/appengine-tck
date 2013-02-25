@@ -9,6 +9,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.utils.SystemProperty;
+import com.google.appengine.tck.category.IgnoreMultisuite;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -53,7 +54,8 @@ public class TestBase {
 
         // this package
         war.addPackage(TestBase.class.getPackage());
-        // categories -- TODO
+        // categories
+        war.addPackage(IgnoreMultisuite.class.getPackage());
 
         // web.xml
         if (context.getWebXmlFile() != null) {
