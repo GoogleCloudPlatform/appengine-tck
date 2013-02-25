@@ -118,7 +118,11 @@ public class TestBase {
         Assert.assertTrue("Expected to match regexp " + regexp + " but was: " + str, str != null && str.matches(regexp));
     }
 
-    protected boolean isRunningInsideDevServer() {
+    protected boolean isRuntimeProduction() {
+        return SystemProperty.environment.value() == SystemProperty.Environment.Value.Production;
+    }
+
+    protected boolean isRuntimeDev() {
         return SystemProperty.environment.value() == SystemProperty.Environment.Value.Development;
     }
 

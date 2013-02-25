@@ -33,10 +33,6 @@ public class UserServiceTest extends UserTestBase {
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
-  private boolean isRuntimeProduction() {
-    return SystemProperty.environment.value() == SystemProperty.Environment.Value.Production;
-  }
-
   @Before
   public void setUp() {
     userService = UserServiceFactory.getUserService();
