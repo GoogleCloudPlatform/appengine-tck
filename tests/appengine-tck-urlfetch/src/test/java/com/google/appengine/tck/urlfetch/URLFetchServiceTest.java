@@ -9,11 +9,9 @@ import com.google.appengine.api.urlfetch.HTTPRequest;
 import com.google.appengine.api.urlfetch.HTTPResponse;
 import com.google.appengine.api.urlfetch.URLFetchService;
 import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
-import com.google.appengine.tck.base.TestBase;
 
-import org.jboss.arquillian.container.test.api.Deployment;
+import com.google.appengine.tck.urlfetch.support.AppUrlBaseFilter;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,16 +26,11 @@ import java.net.URL;
  * URLFetchService tests
  */
 @RunWith(Arquillian.class)
-public class URLFetchServiceTest extends TestBase {
+public class URLFetchServiceTest extends URLFetchTestBase {
   public String appUrlBase;
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
-
-  @Deployment
-  public static WebArchive getDeployment() {
-      return getTckDeployment();
-  }
 
   @Test
   public void fetchExistingPage() throws Exception {

@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.google.appengine.tck.urlfetch;
+package com.google.appengine.tck.urlfetch.support;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

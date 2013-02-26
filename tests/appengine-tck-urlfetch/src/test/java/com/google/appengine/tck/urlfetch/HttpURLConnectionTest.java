@@ -8,11 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
-import com.google.appengine.tck.base.TestBase;
 import junit.framework.Assert;
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -24,15 +21,10 @@ import static org.junit.Assert.assertEquals;
  * HttpURLConnection tests
  */
 @RunWith(Arquillian.class)
-public class HttpURLConnectionTest extends TestBase {
+public class HttpURLConnectionTest extends URLFetchTestBase {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-
-    @Deployment
-    public static WebArchive getDeployment() {
-        return getTckDeployment();
-    }
 
     @Test
     public void fetchExistingPage() throws Exception {

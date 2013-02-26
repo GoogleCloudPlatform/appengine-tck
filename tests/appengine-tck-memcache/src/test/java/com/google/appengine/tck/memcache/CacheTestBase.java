@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.google.appengine.tck.base.TestBase;
 
+import com.google.appengine.tck.memcache.support.ComboType;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 

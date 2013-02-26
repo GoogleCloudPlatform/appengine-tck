@@ -1,39 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ JBoss, Home of Professional Open Source.
-  ~ Copyright 2013, Red Hat, Inc., and individual contributors
-  ~ as indicated by the @author tags. See the copyright.txt file in the
-  ~ distribution for a full listing of individual contributors.
-  ~
-  ~ This is free software; you can redistribute it and/or modify it
-  ~ under the terms of the GNU Lesser General Public License as
-  ~ published by the Free Software Foundation; either version 2.1 of
-  ~ the License, or (at your option) any later version.
-  ~
-  ~ This software is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  ~ Lesser General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Lesser General Public
-  ~ License along with this software; if not, write to the Free
-  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
-  -->
+<!DOCTYPE web-app
+        PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
 
-<web-app version="2.5"
-         xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         metadata-complete="false">
+    <filter>
+        <filter-name>appUrlBaseFilter</filter-name>
+        <filter-class>com.google.appengine.tck.urlfetch.support.AppUrlBaseFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>appUrlBaseFilter</filter-name>
+        <url-pattern>/watr/*</url-pattern>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>responderServlet</servlet-name>
+        <servlet-class>com.google.appengine.tck.urlfetch.support.ResponderServlet</servlet-class>
+    </servlet>
 
     <servlet>
         <servlet-name>fetch</servlet-name>
-        <servlet-class>com.google.appengine.tck.urlfetch.FetchServlet</servlet-class>
+        <servlet-class>com.google.appengine.tck.urlfetch.support.FetchServlet</servlet-class>
     </servlet>
+
+    <servlet-mapping>
+        <servlet-name>responderServlet</servlet-name>
+        <url-pattern>/respond/*</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>fetch</servlet-name>
         <url-pattern>/fetch</url-pattern>
     </servlet-mapping>
+
+    <!--
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+    -->
+
+    <security-constraint>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
 
 </web-app>

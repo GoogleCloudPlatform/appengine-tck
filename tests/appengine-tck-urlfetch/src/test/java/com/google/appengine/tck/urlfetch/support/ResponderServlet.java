@@ -1,4 +1,4 @@
-package com.google.appengine.tck.urlfetch;
+package com.google.appengine.tck.urlfetch.support;
 
 import java.io.IOException;
 import java.io.PrintWriter;
