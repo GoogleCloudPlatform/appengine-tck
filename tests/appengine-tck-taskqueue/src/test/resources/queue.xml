@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queue-entries>
+  <queue>
+    <name>default</name>
+    <rate>5/s</rate>
+    <bucket-size>10</bucket-size>
+  </queue>
+
+  <queue>
+    <name>E2E-Testing</name>
+    <rate>5/s</rate>
+    <bucket-size>10</bucket-size>
+  </queue>
+
+  <queue>
+    <name>E2E-Testing-Deferred</name>
+    <rate>5/s</rate>
+    <bucket-size>10</bucket-size>
+  </queue>
+
+  <queue>
+    <name>E2E-Testing-Retry</name>
+    <mode>push</mode>
+    <rate>5/s</rate>
+    <bucket-size>10</bucket-size>
+    <retry-parameters>
+      <task-retry-limit>100</task-retry-limit>
+      <task-age-limit>1e-3d</task-age-limit>
+      <min-backoff-seconds>0.5</min-backoff-seconds>
+      <max-backoff-seconds>900</max-backoff-seconds>
+      <max-doublings>10</max-doublings>
+    </retry-parameters>
+  </queue>
+
+  <queue>
+    <name>E2E-Testing-Pull</name>
+    <mode>pull</mode>
+    <acl>
+      <user-email>terryok@google.com</user-email>
+    </acl>
+  </queue>
+
+  <queue>
+    <name>E2E-Testing-AsyncPull</name>
+    <mode>pull</mode>
+    <acl>
+      <writer-email>terryok@google.com</writer-email>
+    </acl>
+    <retry-parameters>
+      <task-retry-limit>3</task-retry-limit>
+    </retry-parameters>
+  </queue>
+
+  <queue>
+    <name>E2E-Testing-Remote</name>
+    <rate>1/d</rate>
+    <bucket-size>1</bucket-size>
+  </queue>
+</queue-entries>
