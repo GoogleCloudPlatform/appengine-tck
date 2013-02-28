@@ -57,7 +57,7 @@ public class LoggingTest extends LoggingTestBase {
 
     @Test
     public void testLogging() {
-        String text = "hello_testLogging";
+        String text = "hello_testLogging_" + getTimeStampRandom();
         assertLogDoesntContain(text);
 
         log.info(text);
@@ -89,7 +89,8 @@ public class LoggingTest extends LoggingTestBase {
         log.log(Level.INFO, "Parameterized message with params {0} and {1}", new Object[] {"param1", 222});
         flush(log);
 
-        AppLogLine logLine = findLogLineContaining("Parameterized message with params");
+        int retryMax = 5;
+        AppLogLine logLine = findLogLineContaining("Parameterized message with params", retryMax);
         assertNotNull("log should contain 'Parameterized message with params param1 and 222', but it does not", logLine);
         assertEquals("Parameterized message with params param1 and 222", logLine.getLogMessage());
     }

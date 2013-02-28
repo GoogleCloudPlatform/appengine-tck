@@ -40,6 +40,7 @@ import com.google.appengine.api.log.LogQuery;
 import com.google.appengine.api.log.LogService;
 import com.google.appengine.api.log.LogServiceFactory;
 import com.google.appengine.api.log.RequestLogs;
+import com.google.appengine.tck.base.TestBase;
 import com.google.apphosting.api.ApiProxy;
 import junit.framework.Assert;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -74,6 +75,8 @@ public class RequestLogsTest extends LoggingTestBase {
     public static final String REQUEST_1_ENTITY_NAME = "1";
     public static final String REQUEST_2_ENTITY_NAME = "2";
     public static final String REQUEST_3_ENTITY_NAME = "3";
+    public static final String REGEX_IP4 = "[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+";
+    public static final String REGEX_TIMESTAMP = "[0-9]{1,2}/[A-Za-z]{3}/[0-9]{4}:[0-9]{2}:[0-9]{2}:[0-9]{2} [+\\-][0-9]{4}";
 
     private LogService service;
 
@@ -210,7 +213,13 @@ public class RequestLogsTest extends LoggingTestBase {
     @InSequence(20)
     public void testClientIp() throws Exception {
         RequestLogs requestLogs1 = getRequestLogs1();
+
+
+      if (isRuntimeDev()) {
         assertEquals("127.0.0.1", requestLogs1.getIp());
+      } else {
+        assertRegexpMatches(REGEX_IP4, requestLogs1.getIp());
+      }
     }
 
     @Test
@@ -223,7 +232,6 @@ public class RequestLogsTest extends LoggingTestBase {
     @Test
     @InSequence(20)
     public void testResource() throws Exception {
-        //String contextPath = isRunningInsideCapedwarf() ? "/capedwarf-tests" : "";
         String contextPath = "";
         assertEquals(contextPath + "/index.jsp", getRequestLogs1().getResource());
         assertEquals(contextPath + "/index2.jsp", getRequestLogs2().getResource());
@@ -245,12 +253,8 @@ public class RequestLogsTest extends LoggingTestBase {
     @Test
     @InSequence(20)
     public void testCombined() throws Exception {
-        String ip = "[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+";
-        String timestamp = "[0-9]{1,2}/[A-Za-z]{3}/[0-9]{4}:[0-9]{2}:[0-9]{2}:[0-9]{2} [+\\-][0-9]{4}";
-        //String resource = (isRunningInsideCapedwarf() ? "/capedwarf-tests" : "") + "/index.jsp";
         String resource = "/index.jsp";
-        String regexp = ip + " - - \\[" + timestamp + "\\] \"" + Pattern.quote("GET " + resource + " HTTP/1.1") + "\" [0-9]+ [0-9]+ - \"" + USER_AGENT + "\"";
-
+        String regexp = REGEX_IP4 + " - - \\[" + REGEX_TIMESTAMP + "\\] \"" + Pattern.quote("GET " + resource + " HTTP/1.1") + "\" [0-9]+ [0-9]+ - \"" + USER_AGENT + "\"";
         assertRegexpMatches(regexp, getRequestLogs1().getCombined());
     }
 

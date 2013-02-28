@@ -65,7 +65,7 @@ public abstract class LoggingTestBase extends TestBase {
     protected static WebArchive getDefaultDeployment(TestContext context) {
         context.setAppEngineWebXmlFile("appengine-web-with-logging-properties.xml");
         WebArchive war = getTckDeployment(context);
-        war.addClass(LoggingTestBase.class)
+        war.addClasses(LoggingTestBase.class, TestBase.class)
            .addAsWebInfResource("currentTimeUsec.jsp")
            .addAsWebInfResource("doNothing.jsp")
            .addAsWebInfResource("storeTestData.jsp")
@@ -100,29 +100,55 @@ public abstract class LoggingTestBase extends TestBase {
         }
     }
 
-    protected boolean logContains(String text) {
-        return findLogLineContaining(text) != null;
+    protected void pause(long sleepTime) {
+      try {
+        Thread.sleep(sleepTime);
+      } catch (InterruptedException e) {
+        throw new IllegalStateException(e.toString());
+      }
     }
 
-    protected AppLogLine findLogLineContaining(String text) {
-        LogQuery logQuery = new LogQuery().includeAppLogs(true).includeIncomplete(true);
-        return findLogLine(text, logQuery);
+    protected boolean logContains(String text, int retryMax) {
+        for (int i = 0; i < retryMax; i++) {
+          if (findLogLineContaining(text, retryMax) != null) {
+            return true;
+          }
+          pause(1000);
+        }
+        return false;
     }
+
+    protected AppLogLine findLogLineContaining(String text, int retryMax) {
+        LogQuery logQuery = new LogQuery().includeAppLogs(true).includeIncomplete(true);
+        return findLogLine(text, logQuery, retryMax);
+    }
+
+  protected AppLogLine findLogLine(String text, LogQuery logQuery, int retryMax) {
+    for (int i = 0; i < retryMax; i++) {
+      AppLogLine line = findLogLine(text, logQuery);
+      if (line != null) {
+        return line;
+      }
+      pause(1000);
+    }
+    return null;
+  }
 
     protected AppLogLine findLogLine(String text, LogQuery logQuery) {
-        Iterable<RequestLogs> iterable = LogServiceFactory.getLogService().fetch(logQuery);
-        for (RequestLogs logs : iterable) {
-            for (AppLogLine logLine : logs.getAppLogLines()) {
-                if (logLine.getLogMessage().contains(text)) {
-                    return logLine;
-                }
-            }
+      Iterable<RequestLogs> iterable = LogServiceFactory.getLogService().fetch(logQuery);
+      for (RequestLogs logs : iterable) {
+        for (AppLogLine logLine : logs.getAppLogLines()) {
+          if (logLine.getLogMessage().contains(text)) {
+            return logLine;
+          }
         }
-        return null;
+      }
+      return null;
     }
 
     protected void assertLogDoesntContain(String text) {
-        assertFalse("log should not contain '" + text + "', but it does", logContains(text));
+      int retryMax = 2;
+        assertFalse("log should not contain '" + text + "', but it does", logContains(text, retryMax));
     }
 
     protected void assertLogContains(String text) {
@@ -130,7 +156,8 @@ public abstract class LoggingTestBase extends TestBase {
     }
 
     protected void assertLogContains(String text, LogService.LogLevel logLevel) {
-        AppLogLine logLine = findLogLineContaining(text);
+        int retryMax = 5;
+        AppLogLine logLine = findLogLineContaining(text, retryMax);
         assertNotNull("log should contain '" + text + "', but it does not", logLine);
         if (logLevel != null) {
             assertEquals("incorrect logLevel for text '" + text + "'", logLevel, logLine.getLogLevel());
@@ -146,5 +173,17 @@ public abstract class LoggingTestBase extends TestBase {
         AppLogLine logLine = findLogLine(text, logQuery);
         assertNull("logQuery should not return '" + text + "', but it does", logLine);
     }
+
+  /**
+   * Create unique marker for a log line.
+   *
+   * @return timestamp plus random number
+   */
+  protected String getTimeStampRandom() {
+    int num = (int) (Math.random() * 1000000);
+    String rand = Integer.toString(num);
+
+    return System.currentTimeMillis() + "_" + rand;
+  }
 
 }
