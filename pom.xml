@@ -33,6 +33,9 @@
         <version.shrinkwrap>1.1.0</version.shrinkwrap>
         <version.shrinkwrap.maven-resolver>2.0.0-alpha-4</version.shrinkwrap.maven-resolver>
 
+	<!--- Sonar -->
+	<sonar.language>java</sonar.language>
+
         <!-- Build configuration -->
         <maven.compiler.argument.source>1.6</maven.compiler.argument.source>
         <maven.compiler.argument.target>1.6</maven.compiler.argument.target>
