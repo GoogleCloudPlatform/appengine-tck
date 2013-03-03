@@ -35,6 +35,22 @@
             <properties>
                 <skipTests>true</skipTests>
             </properties>
+
+            <build>
+                <plugins>
+                    <!-- plugin>
+                        <groupId>com.google.appengine.tck</groupId>
+                        <artifactId>appengine-tck-coverage</artifactId>
+                    </plugin -->
+                </plugins>
+            </build>
+
+            <dependencies>
+                <dependency>
+                    <groupId>com.google.appengine.tck</groupId>
+                    <artifactId>appengine-tck-coverage</artifactId>
+                </dependency>
+            </dependencies>
         </profile>
 
         <!-- GAE -->

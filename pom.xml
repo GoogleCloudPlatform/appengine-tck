@@ -12,6 +12,7 @@
         <module>common</module>
         <module>env</module>
         <module>tests</module>
+        <module>utils</module>
     </modules>
 
     <properties>
@@ -33,8 +34,11 @@
         <version.shrinkwrap>1.1.0</version.shrinkwrap>
         <version.shrinkwrap.maven-resolver>2.0.0-alpha-4</version.shrinkwrap.maven-resolver>
 
-	<!--- Sonar -->
-	<sonar.language>java</sonar.language>
+        <!-- Utils -->
+        <version.org.javassist>3.15.0-GA</version.org.javassist>
+
+	    <!--- Sonar -->
+	    <sonar.language>java</sonar.language>
 
         <!-- Build configuration -->
         <maven.compiler.argument.source>1.6</maven.compiler.argument.source>
@@ -140,6 +144,12 @@
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>
                 <artifactId>appengine-tck-multisuite</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-coverage</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -277,6 +287,15 @@
                 <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
                 <version>${version.shrinkwrap.maven-resolver}</version>
             </dependency>
+
+            <!-- Utils -->
+
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>${version.org.javassist}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
