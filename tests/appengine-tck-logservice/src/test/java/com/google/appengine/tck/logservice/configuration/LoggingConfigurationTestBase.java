@@ -43,10 +43,6 @@ public abstract class LoggingConfigurationTestBase extends LoggingTestBase {
     protected void assertLogOnlyLogsMessagesAboveOrAtLevel(Level minLevel) {
         long start = System.currentTimeMillis();
 
-        for (Level level : LEVELS) {
-            assertLogDoesntContain(createMessage(level, start));
-        }
-
         Logger log = Logger.getLogger(getClass().getName());
         for (Level level : LEVELS) {
             log.log(level, createMessage(level, start));
