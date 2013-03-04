@@ -2,6 +2,7 @@ package org.jboss.capedwarf.tck;
 
 import java.lang.reflect.Method;
 
+import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.log.LogService;
 import com.google.appengine.tck.base.ServicesLifecycle;
 import org.kohsuke.MetaInfServices;
@@ -15,14 +16,20 @@ public class CapeDwarfServicesLifecycle implements ServicesLifecycle {
     }
 
     public <T> void after(T service) {
-        if (service instanceof LogService) {
-            final Class<?> clazz = service.getClass();
-            try {
-                Method clearLog = clazz.getMethod("clearLog");
-                clearLog.invoke(service);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+        if (service instanceof DatastoreService) {
+            invoke(service, "clearCache");
+        } else if (service instanceof LogService) {
+            invoke(service, "clearLog");
+        }
+    }
+
+    protected void invoke(Object service, String method) {
+        final Class<?> clazz = service.getClass();
+        try {
+            Method clearLog = clazz.getMethod(method);
+            clearLog.invoke(service);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

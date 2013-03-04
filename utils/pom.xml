@@ -18,6 +18,7 @@
     <modules>
         <!-- Utils -->
         <module>appengine-tck-coverage</module>
+        <module>appengine-tck-transformers</module>
     </modules>
 
 </project>

@@ -31,10 +31,6 @@ public class TestBase {
         }
     }
 
-    protected static Iterable<ServicesLifecycle> getServicesLifecycles() {
-        return ServiceLoader.load(ServicesLifecycle.class, TestBase.class.getClassLoader());
-    }
-
     protected static WebArchive getTckDeployment() {
         return getTckDeployment(new TestContext());
     }

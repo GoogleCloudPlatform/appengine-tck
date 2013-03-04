@@ -30,7 +30,7 @@ import com.google.appengine.api.log.LogQuery;
 import com.google.appengine.api.log.LogService;
 import com.google.appengine.api.log.LogServiceFactory;
 import com.google.appengine.api.log.RequestLogs;
-import com.google.appengine.tck.base.ServicesLifecycle;
+import com.google.appengine.tck.base.ServicesLifecycles;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -91,9 +91,7 @@ public abstract class LoggingTestBase extends TestBase {
 
     protected static void clear() {
         LogService service = LogServiceFactory.getLogService();
-        for (ServicesLifecycle sl : getServicesLifecycles()) {
-            sl.after(service);
-        }
+        ServicesLifecycles.after(service);
     }
 
     protected void flush(Logger log) {
