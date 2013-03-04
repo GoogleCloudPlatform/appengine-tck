@@ -12,9 +12,9 @@
     <groupId>org.jboss.capedwarf.tck</groupId>
     <artifactId>gae-tck</artifactId>
     <packaging>jar</packaging>
-    <name>CapeDwarf' GAE TCK Extensions</name>
+    <name>GAE TCK CapeDwarf Extensions</name>
     <url>https://www.jboss.org/capedwarf</url>
-    <description>CapeDwarf' GAE TCK Extensions</description>
+    <description>GAE TCK CapeDwarf Extensions</description>
 
     <dependencies>
         <dependency>
