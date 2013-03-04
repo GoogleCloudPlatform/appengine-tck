@@ -34,7 +34,7 @@
 
         <!-- GAE -->
         <profile>
-            <id>sdk</id>
+            <id>sdk-ext</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
                 <property>
@@ -53,7 +53,7 @@
 
         <!-- GAE remote - AppSpot -->
         <profile>
-            <id>appspot</id>
+            <id>appspot-ext</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
                 <property>
@@ -72,7 +72,7 @@
 
         <!-- CapeDwarf -->
         <profile>
-            <id>capedwarf</id>
+            <id>capedwarf-ext</id>
             <activation>
                 <property>
                     <name>capedwarf</name>

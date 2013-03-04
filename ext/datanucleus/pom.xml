@@ -52,8 +52,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <filterPattern>(.+)Test.class$</filterPattern>
-                    <transformerClassName>com.google.appengine.tck.transformers.dn.AppEngineDataNucleusTransformer</transformerClassName>
+                    <filterPattern>(((.+)Test.class$)|((.+)DatastoreTestCase.class$))</filterPattern>
+                    <transformerClassName>com.google.appengine.tck.transformers.dn.MultipleDataNucleusTransformer</transformerClassName>
                     <output>test</output>
                 </configuration>
             </plugin>

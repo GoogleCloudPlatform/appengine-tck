@@ -1,6 +1,7 @@
 package com.google.appengine.tck.transformers.dn;
 
 import com.google.appengine.tck.transformers.ArquillianJUnitTransformer;
+import com.google.appengine.tck.transformers.MatchingClassFileTransformer;
 import javassist.CtClass;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -9,7 +10,11 @@ import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class AppEngineDataNucleusTransformer extends ArquillianJUnitTransformer {
+public class AppEngineDataNucleusTransformer extends ArquillianJUnitTransformer implements MatchingClassFileTransformer {
+    public boolean match(String className) {
+        return className.endsWith("Test");
+    }
+
     protected String getDeploymentMethodBody(CtClass clazz) throws Exception {
         return "{return com.google.appengine.tck.transformers.dn.AppEngineDataNucleusTransformer.buildArchive(\"" + clazz.getName() + "\");}";
     }
@@ -43,6 +48,7 @@ public class AppEngineDataNucleusTransformer extends ArquillianJUnitTransformer 
         war.addAsResource(new StringAsset("ignore.logging=true\n"), "capedwarf-compatibility.properties");
 
         final PomEquippedResolveStage resolver = getResolver("pom.xml");
+        // GAE DN libs
         war.addAsLibraries(resolve(resolver, "com.google.appengine.orm:datanucleus-appengine"));
         war.addAsLibraries(resolve(resolver, "com.google.appengine:appengine-api-1.0-sdk"));
         war.addAsLibraries(resolve(resolver, "com.google.appengine:appengine-testing"));
@@ -54,7 +60,9 @@ public class AppEngineDataNucleusTransformer extends ArquillianJUnitTransformer 
         war.addAsLibraries(resolve(resolver, "org.apache.geronimo.specs:geronimo-jpa_2.0_spec"));
         war.addAsLibraries(resolve(resolver, "org.easymock:easymock"));
         war.addAsLibraries(resolve(resolver, "org.easymock:easymockclassextension"));
+        // TCK Internals
         war.addAsLibraries(resolve(resolver, "com.google.appengine.tck:appengine-tck-transformers")); // cleanup dep
+        war.addAsLibraries(resolve(resolver, "com.google.appengine.tck:appengine-tck-base")); // lifecycle dep
 
         return war;
     }
