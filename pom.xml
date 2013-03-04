@@ -36,6 +36,8 @@
 
         <!-- Utils -->
         <version.org.javassist>3.15.0-GA</version.org.javassist>
+        <!-- Maven -->
+        <version.maven>3.0.4</version.maven>
 
 	    <!--- Sonar -->
 	    <sonar.language>java</sonar.language>
@@ -294,6 +296,20 @@
                 <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>
                 <version>${version.org.javassist}</version>
+            </dependency>
+
+            <!-- Maven -->
+
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-plugin-api</artifactId>
+                <version>${version.maven}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-core</artifactId>
+                <version>${version.maven}</version>
             </dependency>
 
         </dependencies>

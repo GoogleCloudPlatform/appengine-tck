@@ -38,10 +38,22 @@
 
             <build>
                 <plugins>
-                    <!-- plugin>
+                    <plugin>
                         <groupId>com.google.appengine.tck</groupId>
                         <artifactId>appengine-tck-coverage</artifactId>
-                    </plugin -->
+                        <version>${project.version}</version>
+                        <executions>
+                            <execution>
+                                <id>api-coverage</id>
+                                <goals>
+                                    <goal>coverage</goal>
+                                </goals>
+                                <phase>process-test-classes</phase>
+                                <configuration>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
 

@@ -2,15 +2,17 @@ package com.google.appengine.tck.coverage;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.logging.Logger;
 
 import javassist.ClassPool;
 import javassist.LoaderClassPath;
@@ -25,19 +27,32 @@ import javassist.bytecode.MethodInfo;
  */
 @SuppressWarnings("unchecked")
 public class CodeCoverage {
+    private static final Logger log = Logger.getLogger(CodeCoverage.class.getName());
+
     private final ClassPool pool;
     private final Map<String, List<Tuple>> descriptors = new TreeMap<String, List<Tuple>>();
     private final Map<String, Map<Tuple, Set<String>>> report = new TreeMap<String, Map<Tuple, Set<String>>>();
 
-    static void report(File classesToScan, String... interfaces) throws Exception {
-        CodeCoverage cc = new CodeCoverage(classesToScan, interfaces);
+    private static ClassLoader toClassLoader(File classesToScan) throws MalformedURLException {
+        return new URLClassLoader(new URL[]{classesToScan.toURI().toURL()}, CodeCoverage.class.getClassLoader());
+    }
+
+    public static void report(ClassLoader classLoader, File classesToScan, String... interfaces) throws Exception {
+        if (interfaces == null || interfaces.length == 0) {
+            log.warning("No interfaces defined!");
+            return;
+        }
+
+        if (classLoader == null) {
+            classLoader = toClassLoader(classesToScan);
+        }
+
+        CodeCoverage cc = new CodeCoverage(classLoader, interfaces);
         cc.scan(classesToScan, "");
         cc.print();
     }
 
-    public CodeCoverage(File classesToScan, String... interfaces) throws Exception {
-        ClassLoader classLoader = new URLClassLoader(new URL[]{classesToScan.toURI().toURL()}, CodeCoverage.class.getClassLoader());
-
+    private CodeCoverage(ClassLoader classLoader, String... interfaces) throws Exception {
         pool = new ClassPool();
         pool.appendClassPath(new LoaderClassPath(classLoader));
 
@@ -54,7 +69,7 @@ public class CodeCoverage {
             for (Method m : methods) {
                 String descriptor = DescriptorUtils.getDescriptor(m);
                 Tuple tuple = new Tuple(m.getName(), descriptor);
-                map.put(tuple, new HashSet<String>());
+                map.put(tuple, new TreeSet<String>());
                 mds.add(tuple);
             }
 
@@ -131,7 +146,7 @@ public class CodeCoverage {
     }
 
     protected void print() {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder("\n");
         for (String iface : report.keySet()) {
             builder.append("Interface: ").append(iface).append("\n");
             Map<Tuple, Set<String>> map = report.get(iface);

@@ -10,7 +10,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>appengine-tck-coverage</artifactId>
-    <packaging>jar</packaging>
+    <packaging>maven-plugin</packaging>
     <name>GAE TCK Utils Coverage</name>
     <url>https://developers.google.com/appengine/</url>
     <description>GAE TCK Utils Coverage</description>
@@ -20,6 +20,17 @@
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
