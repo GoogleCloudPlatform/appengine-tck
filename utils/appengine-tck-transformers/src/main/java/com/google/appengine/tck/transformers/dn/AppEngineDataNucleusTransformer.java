@@ -11,7 +11,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
  */
 public class AppEngineDataNucleusTransformer extends ArquillianJUnitTransformer {
     protected String getDeploymentMethodBody(CtClass clazz) throws Exception {
-        return "{return org.jboss.maven.arquillian.transformer.AppEngineDataNucleusTransformer.buildArchive(\"" + clazz.getName() + "\");}";
+        return "{return com.google.appengine.tck.transformers.dn.AppEngineDataNucleusTransformer.buildArchive(\"" + clazz.getName() + "\");}";
     }
 
     public static WebArchive buildArchive(String clazz) {
@@ -43,8 +43,7 @@ public class AppEngineDataNucleusTransformer extends ArquillianJUnitTransformer 
         war.addAsResource(new StringAsset("ignore.logging=true\n"), "capedwarf-compatibility.properties");
 
         final PomEquippedResolveStage resolver = getResolver("pom.xml");
-        final String version_dn_gae = System.getProperty("version.dn.gae", "2.1.2-SNAPSHOT"); // TODO -- better way?
-        war.addAsLibraries(resolve(resolver, "com.google.appengine.orm:datanucleus-appengine:" + version_dn_gae));
+        war.addAsLibraries(resolve(resolver, "com.google.appengine.orm:datanucleus-appengine"));
         war.addAsLibraries(resolve(resolver, "com.google.appengine:appengine-api-1.0-sdk"));
         war.addAsLibraries(resolve(resolver, "com.google.appengine:appengine-testing"));
         war.addAsLibraries(resolve(resolver, "com.google.appengine:appengine-api-stubs"));
@@ -55,7 +54,7 @@ public class AppEngineDataNucleusTransformer extends ArquillianJUnitTransformer 
         war.addAsLibraries(resolve(resolver, "org.apache.geronimo.specs:geronimo-jpa_2.0_spec"));
         war.addAsLibraries(resolve(resolver, "org.easymock:easymock"));
         war.addAsLibraries(resolve(resolver, "org.easymock:easymockclassextension"));
-        war.addAsLibraries(resolve(resolver, "org.jboss.maven.plugins:arquillian-transformer")); // cleanup dep
+        war.addAsLibraries(resolve(resolver, "com.google.appengine.tck:appengine-tck-transformers")); // cleanup dep
 
         return war;
     }
@@ -79,6 +78,6 @@ public class AppEngineDataNucleusTransformer extends ArquillianJUnitTransformer 
 
     @Override
     protected String tearDownSrc() {
-        return "org.jboss.maven.arquillian.transformer.TestUtils.clean();" + super.tearDownSrc();
+        return "com.google.appengine.tck.transformers.TestUtils.clean();" + super.tearDownSrc();
     }
 }

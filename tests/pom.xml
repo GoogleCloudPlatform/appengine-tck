@@ -165,28 +165,6 @@
                     <groupId>org.jboss.as</groupId>
                     <artifactId>jboss-as-arquillian-container-remote</artifactId>
                     <scope>test</scope>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.jboss.xnio</groupId>
-                            <artifactId>xnio-api</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>org.jboss.xnio</groupId>
-                            <artifactId>xnio-nio</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.jboss.xnio</groupId>
-                    <artifactId>xnio-api</artifactId>
-                    <scope>test</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.jboss.xnio</groupId>
-                    <artifactId>xnio-nio</artifactId>
-                    <scope>test</scope>
                 </dependency>
 
                 <dependency>

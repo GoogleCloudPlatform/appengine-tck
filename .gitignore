@@ -8,4 +8,5 @@ tests/appengine-tck-common/target/
 tests/appengine-tck-memcache/target/
 tests/appengine-tck-multisuite/target/
 tests/target/
+ext/datanucleus/datanucleus.log
 

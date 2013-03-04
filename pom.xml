@@ -11,6 +11,7 @@
     <modules>
         <module>common</module>
         <module>env</module>
+        <module>ext</module>
         <module>tests</module>
         <module>utils</module>
     </modules>
@@ -24,7 +25,7 @@
         <version.metainf>1.1</version.metainf>
 
         <!-- CapeDwarf -->
-        <version.jboss.as7>7.2.0.Alpha1-SNAPSHOT</version.jboss.as7>
+        <version.jboss.as7>7.2.0.Final</version.jboss.as7>
         <version.org.jboss.xnio>3.0.7.GA</version.org.jboss.xnio>
 
         <!-- Testing -->
@@ -36,8 +37,17 @@
 
         <!-- Utils -->
         <version.org.javassist>3.15.0-GA</version.org.javassist>
+        <version.org.jboss.maven.transformer.plugin>1.0.0.Beta4</version.org.jboss.maven.transformer.plugin>
         <!-- Maven -->
         <version.maven>3.0.4</version.maven>
+
+        <!-- Ext -->
+        <version.com.google.gae.dn>3.0.0-SNAPSHOT</version.com.google.gae.dn>
+        <version.javax.jdo>[3.0, 4.0)</version.javax.jdo>
+        <version.javax.jpa>1.0</version.javax.jpa>
+        <version.org.datanucleus>3.2.0-m4</version.org.datanucleus>
+        <version.org.log4j>1.2.16</version.org.log4j>
+        <version.org.easymock>2.4</version.org.easymock>
 
 	    <!--- Sonar -->
 	    <sonar.language>java</sonar.language>
@@ -155,6 +165,12 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-transformers</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- The TCK env -->
 
             <dependency>
@@ -224,18 +240,6 @@
                 <scope>test</scope>
             </dependency>
 
-            <dependency>
-                <groupId>org.jboss.xnio</groupId>
-                <artifactId>xnio-api</artifactId>
-                <version>${version.org.jboss.xnio}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jboss.xnio</groupId>
-                <artifactId>xnio-nio</artifactId>
-                <version>${version.org.jboss.xnio}</version>
-            </dependency>
-
             <!-- Testing -->
 
             <dependency>
@@ -298,6 +302,12 @@
                 <version>${version.org.javassist}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.jboss.maven.plugins</groupId>
+                <artifactId>maven-transformer-plugin</artifactId>
+                <version>${version.org.jboss.maven.transformer.plugin}</version>
+            </dependency>
+
             <!-- Maven -->
 
             <dependency>
@@ -310,6 +320,81 @@
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-core</artifactId>
                 <version>${version.maven}</version>
+            </dependency>
+
+            <!-- Ext -->
+
+            <dependency>
+                <groupId>com.google.appengine.orm</groupId>
+                <artifactId>datanucleus-appengine</artifactId>
+                <version>${version.com.google.gae.dn}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.orm</groupId>
+                <artifactId>datanucleus-appengine</artifactId>
+                <version>${version.com.google.gae.dn}</version>
+                <type>test-jar</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.datanucleus</groupId>
+                <artifactId>datanucleus-core</artifactId>
+                <version>${version.org.datanucleus}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.datanucleus</groupId>
+                <artifactId>datanucleus-api-jdo</artifactId>
+                <version>${version.org.datanucleus}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.datanucleus</groupId>
+                <artifactId>datanucleus-api-jpa</artifactId>
+                <version>${version.org.datanucleus}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.jdo</groupId>
+                <artifactId>jdo-api</artifactId>
+                <version>${version.javax.jdo}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jpa_2.0_spec</artifactId>
+                <version>${version.javax.jpa}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${version.org.log4j}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.easymock</groupId>
+                <artifactId>easymock</artifactId>
+                <version>${version.org.easymock}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.easymock</groupId>
+                <artifactId>easymockclassextension</artifactId>
+                <version>${version.org.easymock}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine</groupId>
+                <artifactId>appengine-api-stubs</artifactId>
+                <version>${version.com.google.gae.api}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine</groupId>
+                <artifactId>appengine-testing</artifactId>
+                <version>${version.com.google.gae.api}</version>
             </dependency>
 
         </dependencies>
