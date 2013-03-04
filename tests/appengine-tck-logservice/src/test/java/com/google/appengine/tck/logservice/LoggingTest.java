@@ -68,7 +68,7 @@ public class LoggingTest extends LoggingTestBase {
 
     @Test
     public void testLogLinesAlwaysStoredInEmptyNamespace() {
-        String text = "something logged while namespace not set to empty";
+        String text = "something logged while namespace not set to empty. " + getTimeStampRandom();
         assertLogDoesntContain(text);
 
         NamespaceManager.set("some-namespace");
@@ -86,13 +86,16 @@ public class LoggingTest extends LoggingTestBase {
     public void testLogMessageIsFormatted() {
         // GAE dev server doesn't handle this properly (see http://code.google.com/p/googleappengine/issues/detail?id=8666)
 
-        log.log(Level.INFO, "Parameterized message with params {0} and {1}", new Object[] {"param1", 222});
+        String logMark = getTimeStampRandom();
+        String logMsg = "Parameterized message " + logMark + " with params {0} and {1}";
+        String logExpect = "Parameterized message " + logMark + " with params param1 and 222";
+        log.log(Level.INFO, logMsg, new Object[] {"param1", 222});
         flush(log);
 
-        int retryMax = 5;
-        AppLogLine logLine = findLogLineContaining("Parameterized message with params", retryMax);
-        assertNotNull("log should contain 'Parameterized message with params param1 and 222', but it does not", logLine);
-        assertEquals("Parameterized message with params param1 and 222", logLine.getLogMessage());
+        int retryMax = 1;
+        AppLogLine logLine = findLogLineContaining(logMark, retryMax);
+        assertNotNull("log should contain " + logMark + " but it does not", logLine);
+        assertEquals(logExpect, logLine.getLogMessage());
     }
 
 }

@@ -22,6 +22,7 @@
 
 package com.google.appengine.tck.logservice;
 
+import java.util.Iterator;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 
@@ -109,27 +110,45 @@ public abstract class LoggingTestBase extends TestBase {
     }
 
     protected boolean logContains(String text, int retryMax) {
-        for (int i = 0; i < retryMax; i++) {
+        for (int i = 0; i <= retryMax; i++) {
           if (findLogLineContaining(text, retryMax) != null) {
             return true;
           }
-          pause(1000);
+          pause(1500);
         }
         return false;
     }
 
     protected AppLogLine findLogLineContaining(String text, int retryMax) {
-        LogQuery logQuery = new LogQuery().includeAppLogs(true).includeIncomplete(true);
-        return findLogLine(text, logQuery, retryMax);
+      LogQuery logQuery = new LogQuery()
+          .includeAppLogs(true)
+          .includeIncomplete(true)
+          // Not specifying start time causes test to time out since it searches
+          // all the logs.
+          .startTimeMillis(System.currentTimeMillis() - (20 * 1000));
+      return findLogLine(text, logQuery, retryMax);
     }
 
+  protected Iterator<RequestLogs> findLogLine(LogQuery query, int retryMax) {
+    LogService service = LogServiceFactory.getLogService();
+    Iterator<RequestLogs> iterator = null;
+    for (int i = 0; i <= retryMax; i++) {
+      iterator = service.fetch(query).iterator();
+      if (iterator.hasNext()) {
+        return iterator;
+      }
+      pause(1500);
+    }
+    return iterator;
+  }
+
   protected AppLogLine findLogLine(String text, LogQuery logQuery, int retryMax) {
-    for (int i = 0; i < retryMax; i++) {
+    for (int i = 0; i <= retryMax; i++) {
       AppLogLine line = findLogLine(text, logQuery);
       if (line != null) {
         return line;
       }
-      pause(1000);
+      pause(1500);
     }
     return null;
   }
@@ -147,7 +166,7 @@ public abstract class LoggingTestBase extends TestBase {
     }
 
     protected void assertLogDoesntContain(String text) {
-      int retryMax = 2;
+      int retryMax = 1;
         assertFalse("log should not contain '" + text + "', but it does", logContains(text, retryMax));
     }
 
@@ -156,7 +175,7 @@ public abstract class LoggingTestBase extends TestBase {
     }
 
     protected void assertLogContains(String text, LogService.LogLevel logLevel) {
-        int retryMax = 5;
+        int retryMax = 4;
         AppLogLine logLine = findLogLineContaining(text, retryMax);
         assertNotNull("log should contain '" + text + "', but it does not", logLine);
         if (logLevel != null) {

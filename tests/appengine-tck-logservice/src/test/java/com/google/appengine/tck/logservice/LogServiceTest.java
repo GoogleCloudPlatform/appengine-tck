@@ -22,7 +22,9 @@
 
 package com.google.appengine.tck.logservice;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.log.LogQuery;
@@ -34,9 +36,9 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -60,18 +62,34 @@ public class LogServiceTest extends LoggingTestBase {
 
     @Test
     public void testAllKindsOfLogQueries() {
-        assertLogQueryExecutes(new LogQuery());
-        assertLogQueryExecutes(new LogQuery().minLogLevel(LogService.LogLevel.WARN));
-        assertLogQueryExecutes(new LogQuery().includeIncomplete(true));
-        assertLogQueryExecutes(new LogQuery().includeAppLogs(true));
-        assertLogQueryExecutes(new LogQuery().batchSize(20));
+        List<String> exceptions = new ArrayList<String>();
+        assertLogQueryExecutes(new LogQuery(),
+            "testDefaultQuery", exceptions);
+        assertLogQueryExecutes(new LogQuery().minLogLevel(LogService.LogLevel.WARN),
+            "testMinLogLevel", exceptions);
+        assertLogQueryExecutes(new LogQuery().includeIncomplete(true),
+            "testIncludeIncompleteTrue", exceptions);
+        assertLogQueryExecutes(new LogQuery().includeIncomplete(false),
+            "testIncludeIncompleteFalse", exceptions);
+        assertLogQueryExecutes(new LogQuery().includeAppLogs(true),
+            "testIncludeAppLogsTrue", exceptions);
+        assertLogQueryExecutes(new LogQuery().includeAppLogs(false),
+            "testIncludeAppLogsFalse", exceptions);
+        assertLogQueryExecutes(new LogQuery().batchSize(20),
+            "testBatchSize", exceptions);
 //        assertLogQueryExecutes(new LogQuery().offset());  // TODO
-        assertLogQueryExecutes(new LogQuery().majorVersionIds(Arrays.asList("1", "2", "3")));
-        assertLogQueryExecutes(new LogQuery().requestIds(Arrays.asList("1", "2", "3")));
-        assertLogQueryExecutes(new LogQuery().startTimeMillis(System.currentTimeMillis()));
-        assertLogQueryExecutes(new LogQuery().startTimeUsec(1000L * System.currentTimeMillis()));
-        assertLogQueryExecutes(new LogQuery().endTimeMillis(System.currentTimeMillis()));
-        assertLogQueryExecutes(new LogQuery().endTimeUsec(1000L * System.currentTimeMillis()));
+        assertLogQueryExecutes(new LogQuery().majorVersionIds(Arrays.asList("1", "2", "3")),
+            "testMajorVersionIds", exceptions);
+        assertLogQueryExecutes(new LogQuery().requestIds(Arrays.asList("1", "2", "3")),
+            "testRequestIds", exceptions);
+        assertLogQueryExecutes(new LogQuery().startTimeMillis(System.currentTimeMillis()),
+            "testStartTimeMillis", exceptions);
+        assertLogQueryExecutes(new LogQuery().startTimeUsec(1000L * System.currentTimeMillis()),
+            "testStartTimeUsec", exceptions);
+        assertLogQueryExecutes(new LogQuery().endTimeMillis(System.currentTimeMillis()),
+            "testEndTimeMillis", exceptions);
+        assertLogQueryExecutes(new LogQuery().endTimeUsec(1000L * System.currentTimeMillis()),
+            "testEndTimeUsec", exceptions);
         assertLogQueryExecutes(
             new LogQuery()
                 .minLogLevel(LogService.LogLevel.WARN)
@@ -80,15 +98,19 @@ public class LogServiceTest extends LoggingTestBase {
                 .batchSize(20)
 //                .offset() // TODO
                 .majorVersionIds(Arrays.asList("1", "2", "3"))
-                .requestIds(Arrays.asList("1", "2", "3"))
-                .startTimeMillis(System.currentTimeMillis())
-                .endTimeMillis(System.currentTimeMillis())
-        );
+                .startTimeMillis(System.currentTimeMillis() - 3000L)
+                .endTimeMillis(System.currentTimeMillis() - 2000L),
+            "testCombo", exceptions);
+        assertEquals(exceptions.toString(), 0, exceptions.size());
     }
 
-    private void assertLogQueryExecutes(LogQuery logQuery) {
-        service.fetch(logQuery);
+  private void assertLogQueryExecutes(LogQuery logQuery, String testName, List<String> exceptionList) {
+    try {
+      service.fetch(logQuery);
+    } catch (Exception e) {
+      exceptionList.add(testName + ": " + e.toString());
     }
+  }
 
     @Test
     public void testLogLinesAreReturnedOnlyWhenRequested() {
