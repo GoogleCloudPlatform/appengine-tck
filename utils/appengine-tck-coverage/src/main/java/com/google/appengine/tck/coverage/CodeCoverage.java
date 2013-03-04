@@ -60,7 +60,7 @@ public class CodeCoverage {
             Class<?> clazz = classLoader.loadClass(iface);
             Method[] methods = clazz.getMethods();
 
-            Map<Tuple, Set<String>> map = new HashMap<Tuple, Set<String>>();
+            Map<Tuple, Set<String>> map = new TreeMap<Tuple, Set<String>>();
             report.put(iface, map);
 
             List<Tuple> mds = new ArrayList<Tuple>();
@@ -165,13 +165,17 @@ public class CodeCoverage {
         System.out.println(builder);
     }
 
-    private static class Tuple {
+    private static class Tuple implements Comparable<Tuple> {
         String methodName;
         String methodDesc;
 
         private Tuple(String name, String methodDesc) {
             this.methodName = name;
             this.methodDesc = methodDesc;
+        }
+
+        public int compareTo(Tuple o) {
+            return toString().compareTo(o.toString());
         }
 
         @SuppressWarnings("RedundantIfStatement")
