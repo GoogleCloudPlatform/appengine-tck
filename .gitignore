@@ -3,10 +3,20 @@
 *.iws
 .idea/
 target/
+common/appengine-tck-base/target/
+common/appengine-tck-multisuite/target/
+common/target/
+env/capedwarf/target/
+env/target/
 tests/appengine-tck-capability/target/
-tests/appengine-tck-common/target/
+tests/appengine-tck-logservice/target/
 tests/appengine-tck-memcache/target/
-tests/appengine-tck-multisuite/target/
+tests/appengine-tck-taskqueue/target/
+tests/appengine-tck-urlfetch/target/
+tests/appengine-tck-users/target/
 tests/target/
+utils/appengine-tck-coverage/target/
+utils/appengine-tck-transformers/target/
+utils/target
 ext/datanucleus/datanucleus.log
 
