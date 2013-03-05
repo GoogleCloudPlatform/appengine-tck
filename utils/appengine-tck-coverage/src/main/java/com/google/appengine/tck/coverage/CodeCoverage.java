@@ -31,7 +31,7 @@ public class CodeCoverage {
 
     private final ClassPool pool;
     private final Map<String, List<Tuple>> descriptors = new TreeMap<String, List<Tuple>>();
-    private final Map<String, Map<Tuple, Set<String>>> report = new TreeMap<String, Map<Tuple, Set<String>>>();
+    private final Map<String, Map<Tuple, Set<CodeLine>>> report = new TreeMap<String, Map<Tuple, Set<CodeLine>>>();
 
     private static ClassLoader toClassLoader(File classesToScan) throws MalformedURLException {
         return new URLClassLoader(new URL[]{classesToScan.toURI().toURL()}, CodeCoverage.class.getClassLoader());
@@ -60,7 +60,7 @@ public class CodeCoverage {
             Class<?> clazz = classLoader.loadClass(iface);
             Method[] methods = clazz.getMethods();
 
-            Map<Tuple, Set<String>> map = new TreeMap<Tuple, Set<String>>();
+            Map<Tuple, Set<CodeLine>> map = new TreeMap<Tuple, Set<CodeLine>>();
             report.put(iface, map);
 
             List<Tuple> mds = new ArrayList<Tuple>();
@@ -69,7 +69,7 @@ public class CodeCoverage {
             for (Method m : methods) {
                 String descriptor = DescriptorUtils.getDescriptor(m);
                 Tuple tuple = new Tuple(m.getName(), descriptor);
-                map.put(tuple, new TreeSet<String>());
+                map.put(tuple, new TreeSet<CodeLine>());
                 mds.add(tuple);
             }
 
@@ -132,9 +132,10 @@ public class CodeCoverage {
                         int val = it.s16bitAt(index + 1);
                         Triple triple = calls.get(val);
                         if (triple != null) {
-                            Map<Tuple, Set<String>> map = report.get(triple.className);
-                            Set<String> set = map.get(triple.tuple);
-                            set.add(file.getName() + " @ " + m + " # " + m.getLineNumber(index));
+                            Map<Tuple, Set<CodeLine>> map = report.get(triple.className);
+                            Set<CodeLine> set = map.get(triple.tuple);
+                            CodeLine cl = new CodeLine(file.getName(), m.getName(), m.getLineNumber(index));
+                            set.add(cl);
                         }
                     }
                 }
@@ -149,15 +150,15 @@ public class CodeCoverage {
         StringBuilder builder = new StringBuilder("\n");
         for (String iface : report.keySet()) {
             builder.append("Interface: ").append(iface).append("\n");
-            Map<Tuple, Set<String>> map = report.get(iface);
-            for (Map.Entry<Tuple, Set<String>> entry : map.entrySet()) {
+            Map<Tuple, Set<CodeLine>> map = report.get(iface);
+            for (Map.Entry<Tuple, Set<CodeLine>> entry : map.entrySet()) {
                 builder.append("\t").append(entry.getKey()).append("\n");
-                Set<String> value = entry.getValue();
+                Set<CodeLine> value = entry.getValue();
                 if (value.isEmpty()) {
                     builder.append("\t\t").append("MISSING -- TODO?").append("\n");
                 } else {
-                    for (String info : value) {
-                        builder.append("\t\t").append(info).append("\n");
+                    for (CodeLine cl : value) {
+                        builder.append("\t\t").append(cl).append("\n");
                     }
                 }
             }
