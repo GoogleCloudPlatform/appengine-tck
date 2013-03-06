@@ -14,9 +14,15 @@ public class DatastoreTestCaseTransformer extends JavassistTransformer {
     }
 
     /**
-     * Reset env.
+     * Change method.
      */
     protected void transform(CtClass clazz) throws Exception {
+        CtMethod isUseHelper = clazz.getDeclaredMethod("isUseHelper");
+        isUseHelper.setBody("{return false;}");
+    }
+
+    // Old code
+    protected void transformOld(CtClass clazz) throws Exception {
         CtMethod setUp = clazz.getDeclaredMethod("setUp");
         String newName = setUp.getName() + System.currentTimeMillis();
         CtMethod copy = CtNewMethod.copy(setUp, newName, clazz, null);
