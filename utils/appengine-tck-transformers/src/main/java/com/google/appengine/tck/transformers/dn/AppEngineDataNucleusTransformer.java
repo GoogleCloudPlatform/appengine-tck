@@ -1,8 +1,12 @@
 package com.google.appengine.tck.transformers.dn;
 
+import java.lang.reflect.Modifier;
+
 import com.google.appengine.tck.transformers.ArquillianJUnitTransformer;
 import com.google.appengine.tck.transformers.MatchingClassFileTransformer;
+import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtMethod;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
@@ -17,6 +21,30 @@ public class AppEngineDataNucleusTransformer extends ArquillianJUnitTransformer 
 
     protected String getDeploymentMethodBody(CtClass clazz) throws Exception {
         return "{return com.google.appengine.tck.transformers.dn.AppEngineDataNucleusTransformer.buildArchive(\"" + clazz.getName() + "\");}";
+    }
+
+    protected void addTestAnnotations(CtClass clazz) throws Exception {
+        if (clazz.hasAnnotation(loadClas(clazz, "com.google.appengine.datanucleus.Inner"))) {
+            log.info("Found @Inner on " + clazz.getName());
+            ClassPool pool = clazz.getClassPool();
+            // We need at least one test method (afaik), hence dummy
+            CtMethod dummy = new CtMethod(pool.get(Void.TYPE.getName()), "testDummy", new CtClass[]{}, clazz);
+            dummy.setModifiers(Modifier.PUBLIC);
+            dummy.setBody("{}");
+            addTestAnnotation(clazz, dummy);
+            clazz.addMethod(dummy);
+        } else {
+            super.addTestAnnotations(clazz);
+        }
+    }
+
+    protected boolean isTestMethod(CtMethod m) throws Exception {
+        return isInner(m) == false && super.isTestMethod(m);
+    }
+
+    protected boolean isInner(CtMethod m) throws Exception {
+        Class<?> implAnnotation = loadClas(m.getDeclaringClass(), "com.google.appengine.datanucleus.Inner");
+        return m.hasAnnotation(implAnnotation);
     }
 
     public static WebArchive buildArchive(String clazz) {

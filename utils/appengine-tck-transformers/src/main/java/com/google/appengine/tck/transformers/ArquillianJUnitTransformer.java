@@ -7,6 +7,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
@@ -39,7 +40,13 @@ public abstract class ArquillianJUnitTransformer extends ShrinkWrapTransformer {
     protected void addRunWithArquillian(CtClass clazz) throws Exception {
         ClassFile ccFile = clazz.getClassFile();
         ConstPool constPool = ccFile.getConstPool();
-        AnnotationsAttribute attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
+        AttributeInfo info = ccFile.getAttribute(AnnotationsAttribute.visibleTag);
+        AnnotationsAttribute attr;
+        if (info == null) {
+            attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
+        } else {
+            attr = AnnotationsAttribute.class.cast(info);
+        }
 
         String runWithClassName = RunWith.class.getName();
         String arquillianClassName = Arquillian.class.getName();
@@ -86,33 +93,11 @@ public abstract class ArquillianJUnitTransformer extends ShrinkWrapTransformer {
     }
 
     protected void addDeploymentAnnotation(CtClass clazz, CtMethod method) throws Exception {
-        ClassFile ccFile = clazz.getClassFile();
-        ConstPool constPool = ccFile.getConstPool();
-        AnnotationsAttribute attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
-
-        String deploymentClassName = Deployment.class.getName();
-
-        constPool.addUtf8Info(deploymentClassName);
-
-        Annotation annotation = new Annotation(deploymentClassName, constPool);
-        attr.addAnnotation(annotation);
-
-        method.getMethodInfo().addAttribute(attr);
+        addAnnotation(clazz, method, Deployment.class.getName());
     }
 
     protected void addTestAnnotation(CtClass clazz, CtMethod method) throws Exception {
-        ClassFile ccFile = clazz.getClassFile();
-        ConstPool constPool = ccFile.getConstPool();
-        AnnotationsAttribute attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
-
-        String testClassName = Test.class.getName();
-
-        constPool.addUtf8Info(testClassName);
-
-        Annotation annotation = new Annotation(testClassName, constPool);
-        attr.addAnnotation(annotation);
-
-        method.getMethodInfo().addAttribute(attr);
+        addAnnotation(clazz, method, Test.class.getName());
     }
 
     protected void addLifecycleMethods(CtClass clazz) throws Exception {
