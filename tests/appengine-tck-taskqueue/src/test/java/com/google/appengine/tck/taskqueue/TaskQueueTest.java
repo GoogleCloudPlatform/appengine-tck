@@ -6,7 +6,10 @@ import static com.google.appengine.tck.taskqueue.support.Constants.ENTITY_TASK_Q
 import static com.google.appengine.tck.taskqueue.support.Constants.TEST_METHOD_TAG;
 import static com.google.appengine.tck.taskqueue.support.Constants.TEST_RUN_ID;
 import com.google.appengine.api.NamespaceManager;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.RetryOptions;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -24,6 +27,7 @@ import java.util.Map;
  * Push Task Queues Tests
  *
  * @author terryok@google.com (Terry Okamoto)
+ * @author mluksa@redhat.com (Marko Luksa)
  */
 
 @RunWith(Arquillian.class)
@@ -57,7 +61,7 @@ public class TaskQueueTest extends TaskqueueTestBase {
         .param(TEST_METHOD_TAG, testMethodTag)
         .etaMillis(0);
 
-    QueueFactory.getDefaultQueue().add(taskoptions);
+    getDefaultQueue().add(taskoptions);
     Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax,
         testMethodTag);
     Map<String, String> expectedParams = dsUtil.createParamMap(testMethodTag);
@@ -162,4 +166,74 @@ public class TaskQueueTest extends TaskqueueTestBase {
     Map<String, String> expectedParams = dsUtil.createParamMap(testMethodTag);
     dsUtil.assertTaskParamsMatchEntityProperties(expectedParams, entity);
   }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testEmptyUrlNotAllowed() {
+    getDefaultQueue().add(TaskOptions.Builder.withUrl(""));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testExternalUrlNotAllowed() {
+    getDefaultQueue().add(TaskOptions.Builder.withUrl("http://www.google.com/foo"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testRelativeUrlNotAllowed() {
+    getDefaultQueue().add(TaskOptions.Builder.withUrl("someRelativeUrl"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testFragmentNotAllowedInUrl() {
+    getDefaultQueue().add(TaskOptions.Builder.withUrl("/foo#fragment"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testBothQueryStringAndParameterNotAllowed() {
+    getDefaultQueue().add(
+      TaskOptions.Builder.withUrl("/someUrl?withQueryString=foo")
+        .param("andParam", "bar"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testPostMethodTaskCannotContainQueryString() {
+    getDefaultQueue().add(TaskOptions.Builder.withMethod(TaskOptions.Method.POST).url("/someUrl?withQueryString=foo"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testDeleteMethodTaskCannotHavePayload() {
+    getDefaultQueue().add(TaskOptions.Builder.withMethod(TaskOptions.Method.DELETE).payload("payload"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testGetMethodTaskCannotHavePayload() {
+    getDefaultQueue().add(TaskOptions.Builder.withMethod(TaskOptions.Method.GET).payload("payload"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testHeadMethodTaskCannotHavePayload() {
+    getDefaultQueue().add(TaskOptions.Builder.withMethod(TaskOptions.Method.HEAD).payload("payload"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testPostMethodTaskCannotHaveBothPayloadAndParams() {
+    getDefaultQueue().add(
+      TaskOptions.Builder.withMethod(TaskOptions.Method.POST)
+        .payload("payload")
+        .param("someParam", "foo"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testTransactionalTasksMustBeNameless() {
+    Transaction tx = DatastoreServiceFactory.getDatastoreService().beginTransaction();
+    try {
+      getDefaultQueue().add(tx, TaskOptions.Builder.withTaskName("foo"));
+    } finally {
+      tx.rollback();
+    }
+  }
+
+  private Queue getDefaultQueue() {
+    return QueueFactory.getDefaultQueue();
+  }
+
 }

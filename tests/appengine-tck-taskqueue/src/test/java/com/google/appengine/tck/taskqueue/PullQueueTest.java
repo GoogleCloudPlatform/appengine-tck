@@ -1,14 +1,18 @@
 package com.google.appengine.tck.taskqueue;
 
+import static com.google.appengine.api.taskqueue.TaskOptions.Method.PULL;
 import static com.google.appengine.tck.taskqueue.support.Constants.E2E_TESTING_PULL;
 import static com.google.appengine.tck.taskqueue.support.Constants.E2E_TESTING_REMOTE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.taskqueue.InvalidQueueModeException;
 import com.google.appengine.api.taskqueue.LeaseOptions;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.RetryOptions;
 import com.google.appengine.api.taskqueue.TaskHandle;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TransientFailureException;
@@ -30,6 +34,7 @@ import java.util.logging.Logger;
  * Pull Queue Test.
  *
  * @author terryok@google.com (Terry Okamoto)
+ * @author mluksa@redhat.com (Marko Luksa)
  */
 @RunWith(Arquillian.class)
 public class PullQueueTest extends TaskqueueTestBase {
@@ -65,6 +70,36 @@ public class PullQueueTest extends TaskqueueTestBase {
     for (String taskGroupTag : deleteOnTearDownTags) {
       tasks = leaseTasksByTag60Secs(taskGroupTag, MAX_LEASE_COUNT, false);
       deleteMultipleTasks(tasks);
+    }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testPullTaskWithUrlIsNotAllowed() {
+    queue.add(TaskOptions.Builder.withMethod(PULL).payload("payload").url("someUrl"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testPullTaskWithHeaderIsNotAllowed() {
+    queue.add(TaskOptions.Builder.withMethod(PULL).payload("payload").header("someHeader", "foo"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testPullTaskWithRetryOptionsIsNotAllowed() {
+    queue.add(TaskOptions.Builder.withMethod(PULL).payload("payload").retryOptions(RetryOptions.Builder.withTaskRetryLimit(1)));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testPullTaskCannotHaveBothPayloadAndParams() {
+    queue.add(TaskOptions.Builder.withMethod(PULL).payload("payload").param("someParam", "foo"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testTransactionalTasksMustBeNameless() {
+    Transaction tx = DatastoreServiceFactory.getDatastoreService().beginTransaction();
+    try {
+      QueueFactory.getDefaultQueue().add(tx, TaskOptions.Builder.withTaskName("foo"));
+    } finally {
+      tx.rollback();
     }
   }
 
@@ -108,7 +143,7 @@ public class PullQueueTest extends TaskqueueTestBase {
   }
 
   @Test
-  public void testBadLeaseTimeParam() {
+  public void testNegativeLeasePeriod() {
     thrown.expect(IllegalArgumentException.class);
     queue.leaseTasks(-1, TimeUnit.MILLISECONDS, 1);
 
@@ -120,7 +155,7 @@ public class PullQueueTest extends TaskqueueTestBase {
   }
 
   @Test
-  public void testBadCountParam() {
+  public void testNegativeCountLimit() {
     thrown.expect(IllegalArgumentException.class);
     queue.leaseTasks(1, TimeUnit.MILLISECONDS, -1);
 
@@ -129,6 +164,16 @@ public class PullQueueTest extends TaskqueueTestBase {
 
     thrown.expect(IllegalArgumentException.class);
     queue.leaseTasks(1, TimeUnit.NANOSECONDS, -1);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testLeaseWithoutLeasePeriod() {
+    queue.leaseTasks(LeaseOptions.Builder.withCountLimit(1));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testLeaseWithoutCountLimit() {
+    queue.leaseTasks(LeaseOptions.Builder.withLeasePeriod(1, TimeUnit.SECONDS));
   }
 
   @Test
