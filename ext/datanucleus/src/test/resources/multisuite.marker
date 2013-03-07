@@ -1,0 +1,2 @@
+# Multisuite root marker -- DataNucleus AppEngine Plugin tests.
+strategy=com.google.appengine.tck.datanucleus.DataNucleusScanStrategy

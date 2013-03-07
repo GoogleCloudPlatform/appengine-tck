@@ -15,6 +15,13 @@
     <url>https://developers.google.com/appengine/</url>
     <description>GAE TCK External Datanucleus</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-multisuite</artifactId>
+        </dependency>
+    </dependencies>
+
     <profiles>
         <profile>
             <id>datanucleus</id>

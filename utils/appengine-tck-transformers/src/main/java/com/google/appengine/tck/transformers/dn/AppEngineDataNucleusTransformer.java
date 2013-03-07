@@ -22,25 +22,17 @@ public class AppEngineDataNucleusTransformer extends ArquillianJUnitTransformer 
     public static WebArchive buildArchive(String clazz) {
         WebArchive war = createWar();
         addClasses(war, clazz);
+
         war.addPackage("com.google.appengine.datanucleus");
-        if (clazz.contains(".jpa.") || clazz.contains(".query.")) {
-            war.addPackage("com.google.appengine.datanucleus.test.jpa");
-            war.addClass("com.google.appengine.datanucleus.jpa.JPATestCase$EntityManagerFactoryName");
-        }
-        if (clazz.contains(".jdo.") || clazz.contains(".query.")) {
-            war.addClass("com.google.appengine.datanucleus.jdo.JDOTestCase$PersistenceManagerFactoryName");
-        }
-        if (clazz.contains(".query.")) {
-            war.addClass("com.google.appengine.datanucleus.query.ApiConfigMatcher");
-            war.addClass("com.google.appengine.datanucleus.query.BookSummary");
-            war.addClass("com.google.appengine.datanucleus.query.ChunkMatcher");
-            war.addClass("com.google.appengine.datanucleus.query.FailoverMsMatcher");
-            war.addClass("com.google.appengine.datanucleus.query.KeysOnlyMatcher");
-            war.addClass("com.google.appengine.datanucleus.query.FlightStartEnd1");
-            war.addClass("com.google.appengine.datanucleus.query.FlightStartEnd2");
-            war.addClass("com.google.appengine.datanucleus.query.NoQueryDelegate");
-        }
+
+        war.addClass("com.google.appengine.datanucleus.jpa.JPATestCase$EntityManagerFactoryName");
+        war.addClass("com.google.appengine.datanucleus.jdo.JDOTestCase$PersistenceManagerFactoryName");
+
+        war.addPackage("com.google.appengine.datanucleus.query");
+
         war.addPackage("com.google.appengine.datanucleus.test.jdo");
+        war.addPackage("com.google.appengine.datanucleus.test.jpa");
+
         war.setWebXML(new org.jboss.shrinkwrap.api.asset.StringAsset("<web/>"));
         war.addAsWebInfResource("appengine-web.xml");
         war.addAsWebInfResource("META-INF/persistence.xml", "classes/META-INF/persistence.xml");

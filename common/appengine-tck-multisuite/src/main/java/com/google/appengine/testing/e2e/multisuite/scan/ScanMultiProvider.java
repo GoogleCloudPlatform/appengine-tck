@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -18,17 +19,43 @@ import org.junit.experimental.categories.Category;
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class ScanMultiProvider implements MultiProvider {
+public class ScanMultiProvider implements MultiProvider, ScanStrategy {
     private static final Logger log = Logger.getLogger(ScanMultiProvider.class.getName());
 
-    private final Pattern classPattern;
+    private static final Properties DEFAULTS;
 
-    public ScanMultiProvider() {
-        this(".+Test\\.class");
+    static {
+        DEFAULTS = new Properties();
+        DEFAULTS.put("pattern", ".+Test\\.class");
     }
 
-    public ScanMultiProvider(String classRegexp) {
-        this.classPattern = Pattern.compile(classRegexp);
+    private final Pattern classPattern;
+    private final ScanStrategy strategy;
+
+    public ScanMultiProvider() throws Exception {
+        this(null);
+    }
+
+    public ScanMultiProvider(Properties overrides) throws Exception {
+        Properties properties = new Properties(DEFAULTS);
+        if (overrides != null) {
+            properties.putAll(overrides);
+        }
+
+        String regexp = properties.getProperty("pattern");
+        classPattern = Pattern.compile(regexp);
+
+        String strategyClass = properties.getProperty("strategy");
+        if (strategyClass != null) {
+            strategy = (ScanStrategy) MultiContext.newInstance(ScanStrategy.class.getClassLoader(), strategyClass);
+            log.info("New scan strategy: " + strategy);
+        } else {
+            strategy = this;
+        }
+    }
+
+    public boolean doMerge(MultiContext context, Class<?> clazz) {
+        return true;
     }
 
     public void provide(MultiContext context) throws Exception {
@@ -43,8 +70,11 @@ public class ScanMultiProvider implements MultiProvider {
                 if (isIgnore(clazz) == false) {
                     log.info("Adding test class: " + clazz.getName());
                     context.addClass(clazz);
-                    WebArchive war = readWebArchive(clazz, clazz);
-                    merge(context, war);
+
+                    if (strategy.doMerge(context, clazz)) {
+                        WebArchive war = readWebArchive(clazz);
+                        merge(context, war);
+                    }
                 } else {
                     log.info("Ignoring test class: " + clazz.getName());
                 }
@@ -70,7 +100,11 @@ public class ScanMultiProvider implements MultiProvider {
         uber.merge(war);
     }
 
-    protected WebArchive readWebArchive(Class<?> clazz, Class<?> current) throws Exception {
+    protected WebArchive readWebArchive(Class<?> clazz) throws Exception {
+        return readWebArchive(clazz, clazz);
+    }
+
+    private WebArchive readWebArchive(Class<?> clazz, Class<?> current) throws Exception {
         if (current == null || current == Object.class) {
             throw new IllegalArgumentException("No @Deployment on test class: " + clazz.getName());
         }

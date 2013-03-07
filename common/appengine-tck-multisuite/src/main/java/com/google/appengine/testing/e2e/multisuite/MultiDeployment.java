@@ -1,7 +1,9 @@
 package com.google.appengine.testing.e2e.multisuite;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.Properties;
 
 import com.google.appengine.testing.e2e.multisuite.scan.ScanMultiProvider;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -24,7 +26,15 @@ public class MultiDeployment {
 
         MultiContext mc = new MultiContext(war, root, cl);
 
-        MultiProvider provider = new ScanMultiProvider();
+        Properties overrides = new Properties();
+        InputStream is = arqXml.openStream();
+        try {
+            overrides.load(is);
+        } finally {
+            is.close();
+        }
+
+        MultiProvider provider = new ScanMultiProvider(overrides);
         provider.provide(mc);
 
         return war;

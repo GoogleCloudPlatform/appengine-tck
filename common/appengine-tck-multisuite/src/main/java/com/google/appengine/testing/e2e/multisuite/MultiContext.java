@@ -20,8 +20,16 @@ public class MultiContext {
         this.classLoader = classLoader;
     }
 
+    public static Object newInstance(ClassLoader cl, String strategyClass) throws Exception {
+        return loadClass(cl, strategyClass).newInstance();
+    }
+
+    public static Class<?> loadClass(ClassLoader cl, String className) throws Exception {
+        return cl.loadClass(className);
+    }
+
     public Class<?> loadClass(String className) throws Exception {
-        return classLoader.loadClass(className);
+        return loadClass(classLoader, className);
     }
 
     public URL getResource(String resource) {
