@@ -18,6 +18,8 @@ public abstract class UserTestBase extends TestBase {
     public static WebArchive getDeployment() {
         WebArchive war = getTckDeployment();
         war.addClass(UserTestBase.class);
+        war.addClasses(UserServiceTest.class, UserTest.class);
+
         return war;
     }
 }

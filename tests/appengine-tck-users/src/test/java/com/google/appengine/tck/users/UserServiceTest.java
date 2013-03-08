@@ -49,6 +49,12 @@ public class UserServiceTest extends UserTestBase {
   }
 
   @Test
+  public void testSimple() throws Exception {
+      String destinationURL = UserServiceFactory.getUserService().createLoginURL("destinationURL");
+      assertNotNull(destinationURL);
+  }
+
+  @Test
   // TODO: Re-enable check of authenticated user.
   public void testGetCurrentUser() {
     User user = userService.getCurrentUser();
