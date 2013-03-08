@@ -26,8 +26,9 @@ public class CapeDwarfServicesLifecycle implements ServicesLifecycle {
     protected void invoke(Object service, String method) {
         final Class<?> clazz = service.getClass();
         try {
-            Method clearLog = clazz.getMethod(method);
-            clearLog.invoke(service);
+            Method m = clazz.getMethod(method);
+            m.setAccessible(true);
+            m.invoke(service);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
