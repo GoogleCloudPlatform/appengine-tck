@@ -30,7 +30,6 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
 import org.jboss.arquillian.junit.Arquillian;
-//import org.jboss.test.capedwarf.common.support.All;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -38,6 +37,8 @@ import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withMethod;
 import static com.google.appengine.api.taskqueue.TaskOptions.Method.PULL;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
+//import org.jboss.test.capedwarf.common.support.All;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -64,8 +65,7 @@ public class PullTest extends TaskqueueTestBase {
         final Queue queue = QueueFactory.getQueue("pull-queue");
         TaskHandle th = queue.add(withMethod(PULL).payload("foobar").etaMillis(15000));
         try {
-//            List<TaskHandle> handles = queue.leaseTasks(30, TimeUnit.MINUTES, 100);
-          List<TaskHandle> handles = queue.leaseTasks(10, TimeUnit.SECONDS, 100);
+            List<TaskHandle> handles = queue.leaseTasks(30, TimeUnit.MINUTES, 100);
             assertFalse(handles.isEmpty());
             TaskHandle lh = handles.get(0);
             assertEquals(th.getName(), lh.getName());
@@ -96,8 +96,9 @@ public class PullTest extends TaskqueueTestBase {
         try {
             List<TaskHandle> handles = queue.leaseTasksByTag(30, TimeUnit.MINUTES, 100, "barfoo2");
             assertEquals(2, handles.size());
-            assertEquals(th2.getName(), handles.get(1).getName());
-            assertEquals(th1.getName(), handles.get(0).getName());
+            // order is reversed, due to eta-millis
+            assertEquals(th2.getName(), handles.get(0).getName());
+            assertEquals(th1.getName(), handles.get(1).getName());
         } finally {
             queue.deleteTask(th1);
             queue.deleteTask(th2);

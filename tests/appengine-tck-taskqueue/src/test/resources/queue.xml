@@ -7,6 +7,12 @@
   </queue>
 
   <queue>
+    <name>exec</name>
+    <rate>5/s</rate>
+    <bucket-size>10</bucket-size>
+  </queue>
+
+  <queue>
     <name>E2E-Testing</name>
     <rate>5/s</rate>
     <bucket-size>10</bucket-size>

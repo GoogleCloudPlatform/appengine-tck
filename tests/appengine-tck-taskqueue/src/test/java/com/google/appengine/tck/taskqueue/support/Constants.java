@@ -7,6 +7,7 @@ public class Constants {
   private Constants() { }
 
   // Queue names
+  public static final String E2E_TESTING_EXEC = "exec";
   public static final String E2E_TESTING = "E2E-Testing";
   public static final String E2E_TESTING_DEFERRED = "E2E-Testing-Deferred";
   public static final String E2E_TESTING_RETRY = "E2E-Testing-Retry";

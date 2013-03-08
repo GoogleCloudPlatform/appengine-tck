@@ -1,57 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE web-app
-    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-    "http://java.sun.com/dtd/web-app_2_3.dtd">
+        PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
 
-  <servlet>
-    <servlet-name>taskqueue</servlet-name>
-    <servlet-class>com.google.appengine.tck.taskqueue.support.ExecTask</servlet-class>
-  </servlet>
+    <!-- Servlets -->
 
-  <servlet-mapping>
-    <servlet-name>taskqueue</servlet-name>
-    <url-pattern>/queuetask/addentity</url-pattern>
-  </servlet-mapping>
+    <servlet>
+        <servlet-name>taskqueue</servlet-name>
+        <servlet-class>com.google.appengine.tck.taskqueue.support.ExecTask</servlet-class>
+    </servlet>
 
-  <servlet-mapping>
-    <servlet-name>taskqueue</servlet-name>
-    <url-pattern>/_ah/queue/default</url-pattern>
-  </servlet-mapping>
+    <servlet>
+        <servlet-name>PrintServlet</servlet-name>
+        <servlet-class>com.google.appengine.tck.taskqueue.support.PrintServlet</servlet-class>
+    </servlet>
 
-  <servlet>
-      <servlet-name>PrintServlet</servlet-name>
-      <servlet-class>com.google.appengine.tck.taskqueue.support.PrintServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-      <servlet-name>PrintServlet</servlet-name>
-      <url-pattern>/_ah/test</url-pattern>
-  </servlet-mapping>
+    <servlet>
+        <servlet-name>DefaultQueueServlet</servlet-name>
+        <servlet-class>com.google.appengine.tck.taskqueue.support.DefaultQueueServlet</servlet-class>
+    </servlet>
 
-  <servlet>
-      <servlet-name>DefaultQueueServlet</servlet-name>
-      <servlet-class>com.google.appengine.tck.taskqueue.support.DefaultQueueServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-      <servlet-name>DefaultQueueServlet</servlet-name>
-      <url-pattern>/_ah/queue/default</url-pattern>
-  </servlet-mapping>
+    <servlet>
+        <servlet-name>TestQueueServlet</servlet-name>
+        <servlet-class>com.google.appengine.tck.taskqueue.support.TestQueueServlet</servlet-class>
+    </servlet>
 
-  <servlet>
-      <servlet-name>TestQueueServlet</servlet-name>
-      <servlet-class>com.google.appengine.tck.taskqueue.support.TestQueueServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-      <servlet-name>TestQueueServlet</servlet-name>
-      <url-pattern>/_ah/queue/test</url-pattern>
-  </servlet-mapping>
+    <servlet>
+        <servlet-name>RetryTestServlet</servlet-name>
+        <servlet-class>com.google.appengine.tck.taskqueue.support.RetryTestServlet</servlet-class>
+    </servlet>
 
-  <servlet>
-      <servlet-name>RetryTestServlet</servlet-name>
-      <servlet-class>com.google.appengine.tck.taskqueue.support.RetryTestServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-      <servlet-name>RetryTestServlet</servlet-name>
-      <url-pattern>/_ah/retryTest</url-pattern>
-  </servlet-mapping>
+    <!-- Mappings -->
+
+    <servlet-mapping>
+        <servlet-name>taskqueue</servlet-name>
+        <url-pattern>/queuetask/addentity</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>taskqueue</servlet-name>
+        <url-pattern>/_ah/queue/exec</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>PrintServlet</servlet-name>
+        <url-pattern>/_ah/test</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>DefaultQueueServlet</servlet-name>
+        <url-pattern>/_ah/queue/default</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>TestQueueServlet</servlet-name>
+        <url-pattern>/_ah/queue/test</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>RetryTestServlet</servlet-name>
+        <url-pattern>/_ah/retryTest</url-pattern>
+    </servlet-mapping>
 </web-app>

@@ -1,6 +1,7 @@
 package com.google.appengine.tck.taskqueue;
 
 import static com.google.appengine.tck.taskqueue.support.Constants.E2E_TESTING;
+import static com.google.appengine.tck.taskqueue.support.Constants.E2E_TESTING_EXEC;
 import static com.google.appengine.tck.taskqueue.support.Constants.E2E_TESTING_RETRY;
 import static com.google.appengine.tck.taskqueue.support.Constants.ENTITY_TASK_QUEUE_TEST;
 import static com.google.appengine.tck.taskqueue.support.Constants.TEST_METHOD_TAG;
@@ -29,7 +30,6 @@ import java.util.Map;
  * @author terryok@google.com (Terry Okamoto)
  * @author mluksa@redhat.com (Marko Luksa)
  */
-
 @RunWith(Arquillian.class)
 public class TaskQueueTest extends TaskqueueTestBase {
 
@@ -53,7 +53,7 @@ public class TaskQueueTest extends TaskqueueTestBase {
   }
 
   @Test
-  public void testDefaultQueue() {
+  public void testExecQueue() {
     String testMethodTag = "testDefaultTag";  // Each test tagged for DS entity.
     TaskOptions taskoptions = TaskOptions.Builder
         .withMethod(TaskOptions.Method.POST)
@@ -61,7 +61,7 @@ public class TaskQueueTest extends TaskqueueTestBase {
         .param(TEST_METHOD_TAG, testMethodTag)
         .etaMillis(0);
 
-    getDefaultQueue().add(taskoptions);
+    QueueFactory.getQueue(E2E_TESTING_EXEC).add(taskoptions);
     Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax,
         testMethodTag);
     Map<String, String> expectedParams = dsUtil.createParamMap(testMethodTag);
