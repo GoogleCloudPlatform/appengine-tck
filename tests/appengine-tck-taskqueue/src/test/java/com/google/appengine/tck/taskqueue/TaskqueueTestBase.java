@@ -50,7 +50,6 @@ public abstract class TaskqueueTestBase extends TestBase {
       WebArchive war = getTckDeployment(context);
       war.addClasses(TaskqueueTestBase.class, DatastoreUtil.class);
       war.addClasses(ExecTask.class, ExecDeferred.class);
-      war.addClasses(DeferredTest.class, PullQueueTest.class, PullTest.class, SmokeTest.class, StatsTest.class, TaskQueueTest.class, TasksTest.class);
       war.addClass(RequestData.class);
       war.addClass(DefaultQueueServlet.class);
       war.addClass(TestQueueServlet.class);
