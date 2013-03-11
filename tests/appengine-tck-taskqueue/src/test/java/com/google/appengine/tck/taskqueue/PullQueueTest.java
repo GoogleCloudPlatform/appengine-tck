@@ -172,28 +172,14 @@ public class PullQueueTest extends TaskqueueTestBase {
     nonExistQueue.leaseTasks(1, TimeUnit.MILLISECONDS, 1);
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void testNegativeLeasePeriod() {
-    thrown.expect(IllegalArgumentException.class);
     queue.leaseTasks(-1, TimeUnit.MILLISECONDS, 1);
-
-    thrown.expect(IllegalArgumentException.class);
-    queue.leaseTasks(-1, TimeUnit.MICROSECONDS, 1);
-
-    thrown.expect(IllegalArgumentException.class);
-    queue.leaseTasks(-1, TimeUnit.NANOSECONDS, 1);
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void testNegativeCountLimit() {
-    thrown.expect(IllegalArgumentException.class);
     queue.leaseTasks(1, TimeUnit.MILLISECONDS, -1);
-
-    thrown.expect(IllegalArgumentException.class);
-    queue.leaseTasks(1, TimeUnit.MICROSECONDS, -1);
-
-    thrown.expect(IllegalArgumentException.class);
-    queue.leaseTasks(1, TimeUnit.NANOSECONDS, -1);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -318,13 +304,14 @@ public class PullQueueTest extends TaskqueueTestBase {
     deleteMultipleTasks(tasksAfterExpire);
   }
 
-  @Test
-  public void testBadLeaseOptions() {
-    thrown.expect(IllegalArgumentException.class);
-    LeaseOptions option = LeaseOptions.Builder.withCountLimit(-1);
+  @Test(expected = IllegalArgumentException.class)
+  public void testLeaseOptionsWithNegativeCountLimit() {
+    LeaseOptions.Builder.withCountLimit(-1);
+  }
 
-    thrown.expect(IllegalArgumentException.class);
-    LeaseOptions option2 = LeaseOptions.Builder.withDeadlineInSeconds((double) -1);
+  @Test(expected = IllegalArgumentException.class)
+  public void testLeaseOptionsWithNegativeDeadlineInSeconds() {
+    LeaseOptions.Builder.withDeadlineInSeconds((double) -1);
   }
 
   @Test
