@@ -6,14 +6,10 @@ import static com.google.appengine.tck.taskqueue.support.Constants.E2E_TESTING_R
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.taskqueue.InvalidQueueModeException;
 import com.google.appengine.api.taskqueue.LeaseOptions;
 import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueConstants;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.RetryOptions;
 import com.google.appengine.api.taskqueue.TaskHandle;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TransientFailureException;
@@ -74,65 +70,6 @@ public class PullQueueTest extends TaskqueueTestBase {
     }
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testPullTaskWithUrlIsNotAllowed() {
-    queue.add(TaskOptions.Builder.withMethod(PULL).payload("payload").url("someUrl"));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPullTaskWithHeaderIsNotAllowed() {
-    queue.add(TaskOptions.Builder.withMethod(PULL).payload("payload").header("someHeader", "foo"));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPullTaskWithRetryOptionsIsNotAllowed() {
-    queue.add(TaskOptions.Builder.withMethod(PULL).payload("payload").retryOptions(RetryOptions.Builder.withTaskRetryLimit(1)));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPullTaskCannotHaveBothPayloadAndParams() {
-    queue.add(TaskOptions.Builder.withMethod(PULL).payload("payload").param("someParam", "foo"));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testTransactionalTasksMustBeNameless() {
-    Transaction tx = DatastoreServiceFactory.getDatastoreService().beginTransaction();
-    try {
-      QueueFactory.getDefaultQueue().add(tx, TaskOptions.Builder.withTaskName("foo"));
-    } finally {
-      tx.rollback();
-    }
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testNegativeEtaMillis() {
-    queue.add(TaskOptions.Builder.withMethod(PULL).etaMillis(-1));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testEtaMillisTooFarInFuture() {
-    queue.add(TaskOptions.Builder.withMethod(PULL)
-        .etaMillis(System.currentTimeMillis() + QueueConstants.getMaxEtaDeltaMillis() + 1000));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testNegativeCountdownMillis() {
-    queue.add(TaskOptions.Builder.withMethod(PULL).countdownMillis(-1));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCountdownMillisTooLarge() {
-    queue.add(TaskOptions.Builder.withMethod(PULL)
-        .countdownMillis(QueueConstants.getMaxEtaDeltaMillis() + 1));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testEtaMillisAndCountdownMillisAreExclusive() {
-    queue.add(TaskOptions.Builder.withMethod(PULL)
-        .etaMillis(System.currentTimeMillis() + 1000)
-        .countdownMillis(1000));
-  }
-
   @Test
   public void testBasicLease() {
     String taskGroupTag = "testBasicLease";
@@ -170,26 +107,6 @@ public class PullQueueTest extends TaskqueueTestBase {
     Queue nonExistQueue = QueueFactory.getQueue("nonExistQueue");
     thrown.expect(IllegalStateException.class);
     nonExistQueue.leaseTasks(1, TimeUnit.MILLISECONDS, 1);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testNegativeLeasePeriod() {
-    queue.leaseTasks(-1, TimeUnit.MILLISECONDS, 1);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testNegativeCountLimit() {
-    queue.leaseTasks(1, TimeUnit.MILLISECONDS, -1);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testLeaseWithoutLeasePeriod() {
-    queue.leaseTasks(LeaseOptions.Builder.withCountLimit(1));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testLeaseWithoutCountLimit() {
-    queue.leaseTasks(LeaseOptions.Builder.withLeasePeriod(1, TimeUnit.SECONDS));
   }
 
   @Test
@@ -302,16 +219,6 @@ public class PullQueueTest extends TaskqueueTestBase {
     assertEquals(count, tasksAfterExpire.size());
 
     deleteMultipleTasks(tasksAfterExpire);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testLeaseOptionsWithNegativeCountLimit() {
-    LeaseOptions.Builder.withCountLimit(-1);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testLeaseOptionsWithNegativeDeadlineInSeconds() {
-    LeaseOptions.Builder.withDeadlineInSeconds((double) -1);
   }
 
   @Test
