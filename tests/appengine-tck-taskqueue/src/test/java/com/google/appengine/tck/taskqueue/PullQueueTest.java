@@ -10,6 +10,7 @@ import com.google.appengine.api.taskqueue.InvalidQueueModeException;
 import com.google.appengine.api.taskqueue.LeaseOptions;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskAlreadyExistsException;
 import com.google.appengine.api.taskqueue.TaskHandle;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.TransientFailureException;
@@ -23,6 +24,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -278,6 +280,22 @@ public class PullQueueTest extends TaskqueueTestBase {
     queue.deleteTask(tasks);
   }
 
+  @Test(expected = TaskAlreadyExistsException.class)
+  public void testAddingTwoTasksWithSameNameThrowsException() {
+    String taskName = "sameName_" + getTimeStampRandom();
+    queue.add(TaskOptions.Builder.withMethod(PULL).taskName(taskName));
+    queue.add(TaskOptions.Builder.withMethod(PULL).taskName(taskName));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testAddingTwoTasksWithSameNameInSingleRequestThrowsException() {
+    String taskName = "sameName_" + getTimeStampRandom();
+    queue.add(
+        Arrays.asList(
+            TaskOptions.Builder.withMethod(PULL).taskName(taskName),
+            TaskOptions.Builder.withMethod(PULL).taskName(taskName)));
+  }
+
   private void sleep(long milliSecs) {
     try {
       Thread.sleep(milliSecs);
@@ -287,7 +305,7 @@ public class PullQueueTest extends TaskqueueTestBase {
   }
 
   /**
-   * Get random string LeaseExpto make taskname unique.  Using timestamp alone seems like it is not enough
+   * Get random string to make taskname unique.  Using timestamp alone seems like it is not enough
    * so add some randomness at the end.
    *
    * @return timestamp plus random number

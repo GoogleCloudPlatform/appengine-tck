@@ -14,6 +14,7 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.RetryOptions;
+import com.google.appengine.api.taskqueue.TaskAlreadyExistsException;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.tck.taskqueue.support.DatastoreUtil;
 
@@ -24,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -266,6 +268,24 @@ public class TaskQueueTest extends TaskqueueTestBase {
       tx.rollback();
     }
   }
+
+  @Test(expected = TaskAlreadyExistsException.class)
+  public void testAddingTwoTasksWithSameNameThrowsException() {
+    String taskName = "sameName";
+    Queue queue = getDefaultQueue();
+    queue.add(TaskOptions.Builder.withTaskName(taskName));
+    queue.add(TaskOptions.Builder.withTaskName(taskName));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testAddingTwoTasksWithSameNameInSingleRequestThrowsException() {
+    String taskName = "sameName2";
+    getDefaultQueue().add(
+        Arrays.asList(
+            TaskOptions.Builder.withTaskName(taskName),
+            TaskOptions.Builder.withTaskName(taskName)));
+  }
+
 
   private Queue getDefaultQueue() {
     return QueueFactory.getDefaultQueue();
