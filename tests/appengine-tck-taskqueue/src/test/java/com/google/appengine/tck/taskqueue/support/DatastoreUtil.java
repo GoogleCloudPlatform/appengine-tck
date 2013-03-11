@@ -1,5 +1,6 @@
 package com.google.appengine.tck.taskqueue.support;
 
+import static com.google.appengine.tck.taskqueue.support.Constants.EXECUTED_AT;
 import static com.google.appengine.tck.taskqueue.support.Constants.TEST_METHOD_TAG;
 import static com.google.appengine.tck.taskqueue.support.Constants.TEST_RUN_ID;
 import static org.junit.Assert.assertEquals;
@@ -47,20 +48,19 @@ public class DatastoreUtil implements Serializable {
       Map<String, String> testParameters) {
 
     Entity queueRec = new Entity(entityName);
+    queueRec.setProperty(EXECUTED_AT, System.currentTimeMillis());
 
     // Set Request headers
     Enumeration headerNames = req.getHeaderNames();
-    String headerName;
     while (headerNames.hasMoreElements()) {
-      headerName = (String) headerNames.nextElement();
+      String headerName = (String) headerNames.nextElement();
       queueRec.setProperty(headerName, req.getHeader(headerName));
     }
 
     // Set Request parameters
     Enumeration paramNames = req.getParameterNames();
-    String paramName;
     while (paramNames.hasMoreElements()) {
-      paramName = (String) paramNames.nextElement();
+      String paramName = (String) paramNames.nextElement();
       queueRec.setProperty(paramName, req.getParameter(paramName));
     }
 

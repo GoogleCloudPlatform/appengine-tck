@@ -4,6 +4,7 @@ import static com.google.appengine.tck.taskqueue.support.Constants.E2E_TESTING;
 import static com.google.appengine.tck.taskqueue.support.Constants.E2E_TESTING_EXEC;
 import static com.google.appengine.tck.taskqueue.support.Constants.E2E_TESTING_RETRY;
 import static com.google.appengine.tck.taskqueue.support.Constants.ENTITY_TASK_QUEUE_TEST;
+import static com.google.appengine.tck.taskqueue.support.Constants.EXECUTED_AT;
 import static com.google.appengine.tck.taskqueue.support.Constants.TEST_METHOD_TAG;
 import static com.google.appengine.tck.taskqueue.support.Constants.TEST_RUN_ID;
 import com.google.appengine.api.NamespaceManager;
@@ -16,6 +17,7 @@ import com.google.appengine.api.taskqueue.RetryOptions;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.tck.taskqueue.support.DatastoreUtil;
 
+import junit.framework.Assert;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
 import org.junit.Before;
@@ -165,6 +167,39 @@ public class TaskQueueTest extends TaskqueueTestBase {
         testMethodTag);
     Map<String, String> expectedParams = dsUtil.createParamMap(testMethodTag);
     dsUtil.assertTaskParamsMatchEntityProperties(expectedParams, entity);
+  }
+
+  @Test
+  public void testEtaMillis() {
+    String testMethodTag = "testEtaMillis";
+    long etaMillis = System.currentTimeMillis() + 10000;
+    TaskOptions taskoptions = TaskOptions.Builder
+        .withMethod(TaskOptions.Method.POST)
+        .param(TEST_RUN_ID, testRunId)
+        .param(TEST_METHOD_TAG, testMethodTag)
+        .etaMillis(etaMillis);
+
+    QueueFactory.getQueue(E2E_TESTING_EXEC).add(taskoptions);
+    Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
+    long executedAt = (Long) entity.getProperty(EXECUTED_AT);
+    Assert.assertTrue(executedAt >= etaMillis);
+  }
+
+  @Test
+  public void testCountdownMillis() {
+    String testMethodTag = "testCountdownMillis";
+    int countdownMillis = 10000;
+    TaskOptions taskoptions = TaskOptions.Builder
+        .withMethod(TaskOptions.Method.POST)
+        .param(TEST_RUN_ID, testRunId)
+        .param(TEST_METHOD_TAG, testMethodTag)
+        .countdownMillis(countdownMillis);
+
+    QueueFactory.getQueue(E2E_TESTING_EXEC).add(taskoptions);
+    long etaMillis = System.currentTimeMillis() + countdownMillis;
+    Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
+    long executedAt = (Long) entity.getProperty(EXECUTED_AT);
+    Assert.assertTrue(executedAt >= etaMillis);
   }
 
   @Test(expected = IllegalArgumentException.class)
