@@ -11,6 +11,7 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.taskqueue.InvalidQueueModeException;
 import com.google.appengine.api.taskqueue.LeaseOptions;
 import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueConstants;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.RetryOptions;
 import com.google.appengine.api.taskqueue.TaskHandle;
@@ -101,6 +102,35 @@ public class PullQueueTest extends TaskqueueTestBase {
     } finally {
       tx.rollback();
     }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNegativeEtaMillis() {
+    queue.add(TaskOptions.Builder.withMethod(PULL).etaMillis(-1));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testEtaMillisTooFarInFuture() {
+    queue.add(TaskOptions.Builder.withMethod(PULL)
+        .etaMillis(System.currentTimeMillis() + QueueConstants.getMaxEtaDeltaMillis() + 1000));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNegativeCountdownMillis() {
+    queue.add(TaskOptions.Builder.withMethod(PULL).countdownMillis(-1));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testCountdownMillisTooLarge() {
+    queue.add(TaskOptions.Builder.withMethod(PULL)
+        .countdownMillis(QueueConstants.getMaxEtaDeltaMillis() + 1));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testEtaMillisAndCountdownMillisAreExclusive() {
+    queue.add(TaskOptions.Builder.withMethod(PULL)
+        .etaMillis(System.currentTimeMillis() + 1000)
+        .countdownMillis(1000));
   }
 
   @Test
