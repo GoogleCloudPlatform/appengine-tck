@@ -320,6 +320,40 @@ public class PullQueueTest extends TaskqueueTestBase {
     } while (!tasks.isEmpty());
   }
 
+  @Test
+  public void testEtaMillis() {
+    String tag = "testEtaMillis_" + getTimeStampRandom();
+    queue.add(TaskOptions.Builder.withMethod(PULL).etaMillis(System.currentTimeMillis() + 15000).tag(tag));
+    sleep(5000);  // Give tasks a chance to become available.
+
+    List<TaskHandle> tasks = queue.leaseTasks(LeaseOptions.Builder.withTag(tag).leasePeriod(1, TimeUnit.SECONDS).countLimit(1));
+    assertEquals(0, tasks.size());
+
+    sleep(10000);
+
+    tasks = queue.leaseTasks(LeaseOptions.Builder.withTag(tag).leasePeriod(1, TimeUnit.SECONDS).countLimit(1));
+    assertEquals(1, tasks.size());
+
+    queue.deleteTask(tasks);
+  }
+
+  @Test
+  public void testCountdownMillis() {
+    String tag = "testCountdownMillis_" + getTimeStampRandom();
+    queue.add(TaskOptions.Builder.withMethod(PULL).countdownMillis(15000).tag(tag));
+    sleep(5000);  // Give tasks a chance to become available.
+
+    List<TaskHandle> tasks = queue.leaseTasks(LeaseOptions.Builder.withTag(tag).leasePeriod(1, TimeUnit.SECONDS).countLimit(1));
+    assertEquals(0, tasks.size());
+
+    sleep(15000);
+
+    tasks = queue.leaseTasks(LeaseOptions.Builder.withTag(tag).leasePeriod(1, TimeUnit.SECONDS).countLimit(1));
+    assertEquals(1, tasks.size());
+
+    queue.deleteTask(tasks);
+  }
+
   private void sleep(long milliSecs) {
     try {
       Thread.sleep(milliSecs);
