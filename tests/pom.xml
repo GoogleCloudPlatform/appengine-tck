@@ -18,6 +18,7 @@
     <modules>
         <!-- APIs -->
         <module>appengine-tck-capability</module>
+        <module>appengine-tck-datastore</module>
         <module>appengine-tck-logservice</module>
         <module>appengine-tck-memcache</module>
         <module>appengine-tck-taskqueue</module>
@@ -74,6 +75,10 @@
                     <name>sdk</name>
                 </property>
             </activation>
+
+            <properties>
+              <datastore.default_high_rep_job_policy_unapplied_job_pct>20</datastore.default_high_rep_job_policy_unapplied_job_pct>
+            </properties>
 
             <build>
                 <plugins>
