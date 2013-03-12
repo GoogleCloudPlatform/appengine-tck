@@ -1,1 +1,12 @@
 com.google.appengine.api.log.LogService
+com.google.appengine.api.log.ILogService
+com.google.appengine.api.log.AppLogLine
+com.google.appengine.api.log.ILogServiceFactoryProvider
+com.google.appengine.api.log.LogQuery
+com.google.appengine.api.log.LogQuery.Builder
+com.google.appengine.api.log.LogQueryResult
+com.google.appengine.api.log.LogServiceFactory
+com.google.appengine.api.log.RequestLogs
+com.google.appengine.api.log.LogService.LogLevel
+com.google.appengine.api.log.InvalidRequestException
+com.google.appengine.api.log.LogServiceException
