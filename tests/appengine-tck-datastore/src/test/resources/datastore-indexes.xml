@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <datastore-indexes
+    autoGenerate="true">
+    <datastore-index kind="distincttest" ancestor="true" source="manual">
+        <property name="stringData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="distincttest" ancestor="true" source="manual">
+        <property name="floatData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="distincttest" ancestor="true" source="manual">
+        <property name="intList" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="distincttest" ancestor="true" source="manual">
+        <property name="floatData" direction="asc"/>
+        <property name="stringData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="distincttest" ancestor="true" source="manual">
+        <property name="stringData" direction="desc"/>
+        <property name="floatData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="distincttest" ancestor="true" source="manual">
+        <property name="stringData" direction="desc"/>
+        <property name="floatData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="distincttest" ancestor="true" source="manual">
+        <property name="stringData" direction="desc"/>
+        <property name="floatData" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="batchType" ancestor="true" source="manual">
+        <property name="count" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="batchType" ancestor="true" source="manual">
+        <property name="count" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="batchType" ancestor="true" source="manual">
+        <property name="count" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="intProp" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="intProp" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="floatProp" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="shortProp" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="indextest2" ancestor="false" source="manual">
+        <property name="stringData" direction="desc"/>
+        <property name="age" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="stringType" ancestor="true" source="manual">
+        <property name="stringProp" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="stringType" ancestor="true" source="manual">
+        <property name="stringProp" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="indexquery" ancestor="true" source="manual">
+        <property name="stringData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="indexquery" ancestor="true" source="manual">
+        <property name="intData" direction="asc"/>
+        <property name="stringData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="indexquery" ancestor="true" source="manual">
+        <property name="stringData" direction="desc"/>
+        <property name="intData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="indexquery" ancestor="true" source="manual">
+        <property name="intData" direction="asc"/>
+        <property name="stringData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="indexquery" ancestor="true" source="manual">
+        <property name="floatData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="indexquery" ancestor="true" source="manual">
+        <property name="ratingData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="indexquery" ancestor="true" source="manual">
+        <property name="booleanData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="indexquery" ancestor="true" source="manual">
+        <property name="geoptData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="indexquery" ancestor="true" source="manual">
+        <property name="stringData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="datetimeType" ancestor="true" source="manual">
+        <property name="propName" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="datetimeType" ancestor="true" source="manual">
+        <property name="propName" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="cursorType" ancestor="true" source="manual">
+        <property name="name" direction="asc"/>
+    </datastore-index>
+    <datastore-index kind="cursorType" ancestor="true" source="manual">
+        <property name="name" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="listData" ancestor="true" source="manual">
+        <property name="stringData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="keyData" ancestor="true" source="manual">
+        <property name="__key__" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="keyData" ancestor="true" source="manual">
+        <property name="loc" direction="asc"/>
+        <property name="__key__" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="longProp" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="intProp" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="geoPtType" ancestor="true" source="manual">
+        <property name="propName" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="geoPtType" ancestor="true" source="manual">
+        <property name="propName" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="doubleProp" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="longProp" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="shortProp" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="doubleProp" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="indexquery" ancestor="true" source="manual">
+        <property name="intList" direction="asc"/>
+        <property name="stringList" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="querytest" ancestor="true" source="manual">
+        <property name="stringData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="querytest" ancestor="true" source="manual">
+        <property name="shortBlobData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="querytest" ancestor="true" source="manual">
+        <property name="intData" direction="asc"/>
+        <property name="intData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="querytest" ancestor="true" source="manual">
+        <property name="ratingData" direction="asc"/>
+        <property name="ratingData" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="querytest" ancestor="true" source="manual">
+        <property name="intList" direction="asc"/>
+        <property name="intList" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="querytest" ancestor="true" source="manual">
+        <property name="intList" direction="asc"/>
+        <property name="intList" direction="asc"/>
+        <property name="geoptData" direction="asc"/>
+    </datastore-index>
+
+</datastore-indexes>
