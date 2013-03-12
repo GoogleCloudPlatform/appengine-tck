@@ -22,7 +22,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class AncestorTest extends AbstractDatastoreTest {
+public class AncestorTest extends DatastoreTestBase {
   private static final String PARENTKIND = "school";
   private static final String CHILDKIND = "room";
 

@@ -26,7 +26,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class NamespaceTest extends AbstractDatastoreTest {
+public class NamespaceTest extends DatastoreTestBase {
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 

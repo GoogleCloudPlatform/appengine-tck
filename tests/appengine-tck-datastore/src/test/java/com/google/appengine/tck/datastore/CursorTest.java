@@ -24,7 +24,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class CursorTest extends AbstractDatastoreTest {
+public class CursorTest extends DatastoreTestBase {
   private String kindName = "cursorType";
   private String[] testDat = {"aa", "bb", "cc", "dd", "ee", "ff", "gg", "hh", "ii", "jj"};
   private int total = 100;

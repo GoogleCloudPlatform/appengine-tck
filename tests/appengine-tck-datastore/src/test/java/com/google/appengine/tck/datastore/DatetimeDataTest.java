@@ -22,7 +22,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class DatetimeDataTest extends AbstractDatastoreTest {
+public class DatetimeDataTest extends DatastoreTestBase {
   private String kindName = "datetimeType";
   private DateFormat dfDateTime = new SimpleDateFormat("yyyy,M,d,k,m,s");
 

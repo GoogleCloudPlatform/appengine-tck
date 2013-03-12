@@ -32,7 +32,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class IndexQueryTest extends AbstractDatastoreTest {
+public class IndexQueryTest extends DatastoreTestBase {
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 

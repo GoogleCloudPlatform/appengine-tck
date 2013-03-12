@@ -32,7 +32,7 @@ import java.util.concurrent.Future;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class AsyncServiceTest extends AbstractDatastoreTest {
+public class AsyncServiceTest extends DatastoreTestBase {
   private static final String kindName = "asyncData";
   private long allocateNum = 5;
   private FetchOptions fo = FetchOptions.Builder.withDefaults();

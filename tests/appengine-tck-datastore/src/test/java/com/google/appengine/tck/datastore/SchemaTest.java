@@ -41,7 +41,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class SchemaTest extends AbstractDatastoreTest {
+public class SchemaTest extends DatastoreTestBase {
   private String[] namespaceDat = {"", "developerSchemaNS", "testingSchemaNS"};
   private String[] kindDat = {"google", "developer", "testing"};
   private int count = 3;

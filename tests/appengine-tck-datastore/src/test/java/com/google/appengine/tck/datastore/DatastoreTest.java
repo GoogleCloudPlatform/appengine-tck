@@ -2,20 +2,17 @@
 
 package com.google.appengine.tck.datastore;
 
-import static org.junit.Assert.assertEquals;
-
 import com.google.appengine.api.datastore.DatastoreAttributes;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.utils.SystemProperty;
-
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author lyan@google.com (Li Yan)
@@ -80,6 +77,4 @@ public class DatastoreTest extends DatastoreTestBase {
     }
 
   }
-  
-  private DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 }

@@ -24,7 +24,7 @@ import java.util.Iterator;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class AllocateIdTest extends AbstractDatastoreTest {
+public class AllocateIdTest extends DatastoreTestBase {
   private String pKind = "parent";
   private String cKind = "child";
   private long allocateNum = 5;

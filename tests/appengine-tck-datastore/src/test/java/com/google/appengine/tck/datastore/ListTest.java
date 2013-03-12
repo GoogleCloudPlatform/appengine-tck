@@ -23,7 +23,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class ListTest extends AbstractDatastoreTest {
+public class ListTest extends DatastoreTestBase {
   private String kindName = "listData";
   private FetchOptions fo = FetchOptions.Builder.withDefaults();
 

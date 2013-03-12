@@ -23,7 +23,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class GeoPtDataTest extends AbstractDatastoreTest {
+public class GeoPtDataTest extends DatastoreTestBase {
   private String kindName = "geoPtType";
   private GeoPt[] testDatas = 
      {new GeoPt(Float.valueOf(-12).floatValue(), Float.valueOf(120).floatValue()), 

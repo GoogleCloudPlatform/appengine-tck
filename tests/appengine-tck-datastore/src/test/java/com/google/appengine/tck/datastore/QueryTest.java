@@ -34,7 +34,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class QueryTest extends AbstractDatastoreTest {
+public class QueryTest extends DatastoreTestBase {
   private String kindName = "querytest";
   private int count = 3;
   private FetchOptions fo = FetchOptions.Builder.withDefaults();

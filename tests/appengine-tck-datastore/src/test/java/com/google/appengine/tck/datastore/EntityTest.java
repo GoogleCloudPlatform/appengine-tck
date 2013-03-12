@@ -22,7 +22,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class EntityTest extends AbstractDatastoreTest {
+public class EntityTest extends DatastoreTestBase {
   private String kindName = "EntityData";
 
   @Test 

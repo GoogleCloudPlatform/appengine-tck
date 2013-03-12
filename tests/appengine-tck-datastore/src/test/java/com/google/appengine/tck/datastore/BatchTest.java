@@ -25,7 +25,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class BatchTest extends AbstractDatastoreTest {
+public class BatchTest extends DatastoreTestBase {
   private FetchOptions fo = FetchOptions.Builder.withDefaults();
   private String kindName = "batchType";
   private String bigStr = getBigString(250000);

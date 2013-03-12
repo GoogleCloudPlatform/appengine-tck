@@ -27,7 +27,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class TransactionTest extends AbstractDatastoreTest {
+public class TransactionTest extends DatastoreTestBase {
   private String kindName = "TrData";
   private String otherkind = "OtData";
   private int sleepTime = 3000;

@@ -23,7 +23,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class EncodedEntityTest extends AbstractDatastoreTest {
+public class EncodedEntityTest extends DatastoreTestBase {
   @Rule
   public ExpectedException thrown = ExpectedException.none();
   

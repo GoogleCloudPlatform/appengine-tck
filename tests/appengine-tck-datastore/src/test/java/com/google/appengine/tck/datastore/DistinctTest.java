@@ -27,7 +27,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class DistinctTest extends AbstractDatastoreTest {
+public class DistinctTest extends DatastoreTestBase {
   private FetchOptions fo = FetchOptions.Builder.withDefaults();
   private String kindName = "distincttest";
   private int count = 30;

@@ -30,7 +30,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class KeyTest extends AbstractDatastoreTest {
+public class KeyTest extends DatastoreTestBase {
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 

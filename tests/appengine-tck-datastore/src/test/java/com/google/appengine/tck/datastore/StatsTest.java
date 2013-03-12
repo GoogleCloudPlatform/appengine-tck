@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class StatsTest extends AbstractDatastoreTest {
+public class StatsTest extends DatastoreTestBase {
   private static final String[] stats = {"Total__", "Kind__", "Kind_IsRootEntity__", 
     "Kind_NotRootEntity__", "PropertyType__", "PropertyType_Kind__", "PropertyName_Kind__",
     "PropertyType_PropertyName_Kind__"};

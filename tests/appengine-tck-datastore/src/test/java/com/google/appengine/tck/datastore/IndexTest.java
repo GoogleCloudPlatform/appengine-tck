@@ -24,7 +24,7 @@ import java.util.Map;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class IndexTest extends AbstractDatastoreTest {
+public class IndexTest extends DatastoreTestBase {
 
   // the index exist already.  This is just for showing detail.
   @Before

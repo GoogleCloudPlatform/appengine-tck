@@ -30,7 +30,7 @@ import java.util.List;
  * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
-public class StringDataTest extends AbstractDatastoreTest {
+public class StringDataTest extends DatastoreTestBase {
   private static final String kindName = "stringType";
   
   @Before
