@@ -2,6 +2,7 @@ package com.google.appengine.tck.coverage;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -57,22 +58,23 @@ public class CodeCoverage {
         pool.appendClassPath(new LoaderClassPath(classLoader));
 
         for (String iface : interfaces) {
-            Class<?> clazz = classLoader.loadClass(iface);
-            Method[] methods = clazz.getMethods();
-
             Map<Tuple, Set<CodeLine>> map = new TreeMap<Tuple, Set<CodeLine>>();
             report.put(iface, map);
 
             List<Tuple> mds = new ArrayList<Tuple>();
             descriptors.put(iface, mds);
 
-            for (Method m : methods) {
-                String descriptor = DescriptorUtils.getDescriptor(m);
-                Tuple tuple = new Tuple(m.getName(), descriptor);
-                map.put(tuple, new TreeSet<CodeLine>());
-                mds.add(tuple);
-            }
+            Class<?> clazz = classLoader.loadClass(iface);
+            Method[] methods = clazz.getDeclaredMethods();
 
+            for (Method m : methods) {
+                if (Modifier.isPublic(m.getModifiers())) {
+                    String descriptor = DescriptorUtils.getDescriptor(m);
+                    Tuple tuple = new Tuple(m.getName(), descriptor);
+                    map.put(tuple, new TreeSet<CodeLine>());
+                    mds.add(tuple);
+                }
+            }
         }
     }
 
@@ -97,12 +99,13 @@ public class CodeCoverage {
         ConstPool pool = file.getConstPool();
         for (int i = 1; i < pool.getSize(); ++i) {
             // we have a method call
-            if (pool.getTag(i) == ConstPool.CONST_InterfaceMethodref) {
-                String className = pool.getInterfaceMethodrefClassName(i);
+            BytecodeUtils.Ref ref = BytecodeUtils.getRef(pool, i);
+            String className = ref.getClassName(pool, i);
+            if (className != null) {
                 List<Tuple> mds = descriptors.get(className);
                 if (mds != null) {
-                    String methodName = pool.getInterfaceMethodrefName(i);
-                    String methodDesc = pool.getInterfaceMethodrefType(i);
+                    String methodName = ref.getName(pool, i);
+                    String methodDesc = ref.getDesc(pool, i);
                     for (Tuple tuple : mds) {
                         if (tuple.methodName.equals(methodName) && tuple.methodDesc.equals(methodDesc)) {
                             calls.put(i, new Triple(className, tuple));
@@ -149,7 +152,7 @@ public class CodeCoverage {
     protected void print() {
         StringBuilder builder = new StringBuilder("\n");
         for (String iface : report.keySet()) {
-            builder.append("Interface: ").append(iface).append("\n");
+            builder.append("\nInterface / Class: ").append(iface).append("\n");
             Map<Tuple, Set<CodeLine>> map = report.get(iface);
             for (Map.Entry<Tuple, Set<CodeLine>> entry : map.entrySet()) {
                 builder.append("\t").append(entry.getKey()).append("\n");
