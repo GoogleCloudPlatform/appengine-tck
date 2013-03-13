@@ -1,1 +1,4 @@
 com.google.appengine.api.users.UserService
+com.google.appengine.api.users.User
+com.google.appengine.api.users.UserServiceFactory
+com.google.appengine.api.users.UserServiceFailureException

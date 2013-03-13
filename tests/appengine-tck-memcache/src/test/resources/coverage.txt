@@ -1,1 +1,13 @@
 com.google.appengine.api.memcache.MemcacheService
+com.google.appengine.api.memcache.AsyncMemcacheService
+com.google.appengine.api.memcache.BaseMemcacheService
+com.google.appengine.api.memcache.ConsistentErrorHandler
+com.google.appengine.api.memcache.Stats
+com.google.appengine.api.memcache.ConsistentLogAndContinueErrorHandler
+com.google.appengine.api.memcache.ErrorHandlers
+com.google.appengine.api.memcache.Expiration
+com.google.appengine.api.memcache.MemcacheSerialization
+com.google.appengine.api.memcache.MemcacheServiceFactory
+com.google.appengine.api.memcache.StrictErrorHandler
+com.google.appengine.api.memcache.InvalidValueException
+com.google.appengine.api.memcache.MemcacheServiceException
