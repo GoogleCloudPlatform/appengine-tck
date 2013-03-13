@@ -74,9 +74,9 @@ public class StringDataTest extends DatastoreTestBase {
   @Test
   public void testFilter() {
     doAllFilters(kindName, "stringProp", "mno");
-    doEqOnlyFilter(kindName, "phoneProp", new PhoneNumber("650-253-5017"));
-    doEqOnlyFilter(kindName, "addressProp", new PostalAddress("19451 Via Monte Rr. CA95070"));
-    doEqOnlyFilter(kindName, "emailProp", new Email("hchen@google.com"));
+    doEqOnlyFilter(kindName, "phoneProp", new PhoneNumber("650-321-7654"));
+    doEqOnlyFilter(kindName, "addressProp", new PostalAddress("19451 Via Monte Rd. CA95070"));
+    doEqOnlyFilter(kindName, "emailProp", new Email("somebody2@gmail.com"));
     doEqOnlyFilter(kindName, "linkProp", new Link("http://www.google.com.com"));
     doEqOnlyFilter(kindName, "categoryProp", new Category("test"));
     doEqOnlyFilter(kindName, "byteStrProp", new ShortBlob("shortText".getBytes()));
