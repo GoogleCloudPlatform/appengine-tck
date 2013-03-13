@@ -11,6 +11,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,14 +69,16 @@ public class BatchTest extends DatastoreTestBase {
       Thread.sleep(waitTime);
     }
   }
-  
+
   @Test
+  @InSequence(1)
   public void testStep1GetCount() {
     Query q = new Query(kindName, rootKey);
     assertEquals(bigCount, datastoreService.prepare(q).countEntities(fo));
   }
 
   @Test
+  @InSequence(2)
   public void testStep2BigAsList() {
     Query q = new Query(kindName, rootKey);
     q.addSort("count", Query.SortDirection.DESCENDING);
@@ -85,6 +88,7 @@ public class BatchTest extends DatastoreTestBase {
   }
 
   @Test
+  @InSequence(3)
   public void testStep3ListWithOption() {
     FetchOptions foList = FetchOptions.Builder.withLimit(limit);
     Query q = new Query(kindName, rootKey);
@@ -96,6 +100,7 @@ public class BatchTest extends DatastoreTestBase {
   }
 
   @Test
+  @InSequence(4)
   public void testStep4BigAsIterator() {
     Query q = new Query(kindName, rootKey);
     q.setFilter(new FilterPredicate("count", FilterOperator.LESS_THAN, bigCount));
@@ -104,6 +109,7 @@ public class BatchTest extends DatastoreTestBase {
   }
 
   @Test
+  @InSequence(5)
   public void testStep5IteratorWithOption() {
     FetchOptions foIterator = FetchOptions.Builder.withLimit(limit);
     Query q = new Query(kindName, rootKey);
@@ -115,6 +121,7 @@ public class BatchTest extends DatastoreTestBase {
   }
 
   @Test
+  @InSequence(6)
   public void testStep6BigAsIterable() {
     Query q = new Query(kindName, rootKey).addSort("count", Query.SortDirection.ASCENDING);
     Iterator<Entity> eData = datastoreService.prepare(q).asIterable(fo).iterator();
@@ -122,6 +129,7 @@ public class BatchTest extends DatastoreTestBase {
   }
 
   @Test
+  @InSequence(7)
   public void testStep7IterableWithOption() {
     FetchOptions foIterable = FetchOptions.Builder.withLimit(limit);
     Query q = new Query(kindName, rootKey);
@@ -142,6 +150,7 @@ public class BatchTest extends DatastoreTestBase {
   }
 
   @Test
+  @InSequence(8)
   public void testStep8FetchOption() {
     Query q = new Query(kindName, rootKey).addSort("count", Query.SortDirection.DESCENDING);
     Entity e = datastoreService.prepare(q).asIterator().next();
@@ -166,6 +175,7 @@ public class BatchTest extends DatastoreTestBase {
   }
 
   @Test
+  @InSequence(9)
   public void testStep9BigFilterIn() {
     int filterNum = 500;
     Query q = new Query(kindName, rootKey);
@@ -176,6 +186,7 @@ public class BatchTest extends DatastoreTestBase {
   }
 
   @Test
+  @InSequence(10)
   public void testStep10FilterInWithOption() {
     int filterNum = 100;
     Query q = new Query(kindName, rootKey);
@@ -191,6 +202,7 @@ public class BatchTest extends DatastoreTestBase {
   }
 
   @Test
+  @InSequence(11)
   public void testStep11Limit() {
     String str1mb = getBigString(1000000);
     Text text = new Text(str1mb);
@@ -206,6 +218,7 @@ public class BatchTest extends DatastoreTestBase {
   }
 
   @Test
+  @InSequence(12)
   public void testStep12BigDelete() throws InterruptedException {
     clearData(kindName);
     Query q = new Query(kindName, rootKey);
