@@ -1,7 +1,10 @@
 package com.google.appengine.tck.coverage;
 
+import java.io.DataInputStream;
 import java.io.File;
-import java.lang.reflect.Method;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,8 +18,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import javassist.ClassPool;
-import javassist.LoaderClassPath;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
@@ -30,7 +31,6 @@ import javassist.bytecode.MethodInfo;
 public class CodeCoverage {
     private static final Logger log = Logger.getLogger(CodeCoverage.class.getName());
 
-    private final ClassPool pool;
     private final Map<String, List<Tuple>> descriptors = new TreeMap<String, List<Tuple>>();
     private final Map<String, Map<Tuple, Set<CodeLine>>> report = new TreeMap<String, Map<Tuple, Set<CodeLine>>>();
 
@@ -54,9 +54,6 @@ public class CodeCoverage {
     }
 
     private CodeCoverage(ClassLoader classLoader, String... interfaces) throws Exception {
-        pool = new ClassPool();
-        pool.appendClassPath(new LoaderClassPath(classLoader));
-
         for (String iface : interfaces) {
             Map<Tuple, Set<CodeLine>> map = new TreeMap<Tuple, Set<CodeLine>>();
             report.put(iface, map);
@@ -64,12 +61,13 @@ public class CodeCoverage {
             List<Tuple> mds = new ArrayList<Tuple>();
             descriptors.put(iface, mds);
 
-            Class<?> clazz = classLoader.loadClass(iface);
-            Method[] methods = clazz.getDeclaredMethods();
+            InputStream is = classLoader.getResourceAsStream(iface.replace(".", "/") + ".class");
+            ClassFile clazz = getClassFile(iface, is);
+            List<MethodInfo> methods = clazz.getMethods();
 
-            for (Method m : methods) {
-                if (Modifier.isPublic(m.getModifiers())) {
-                    String descriptor = DescriptorUtils.getDescriptor(m);
+            for (MethodInfo m : methods) {
+                if (Modifier.isPublic(m.getAccessFlags())) {
+                    String descriptor = m.getDescriptor();
                     Tuple tuple = new Tuple(m.getName(), descriptor);
                     map.put(tuple, new TreeSet<CodeLine>());
                     mds.add(tuple);
@@ -81,8 +79,8 @@ public class CodeCoverage {
     protected void scan(File current, String fqn) throws Exception {
         if (current.isFile()) {
             if (fqn.endsWith(".class")) {
-                String classname = fqn.substring(0, fqn.length() - ".class".length());
-                ClassFile cf = pool.get(classname).getClassFile();
+                FileInputStream fis = new FileInputStream(current);
+                ClassFile cf = getClassFile(fqn, fis);
                 checkClass(cf);
             }
         } else {
@@ -91,6 +89,21 @@ public class CodeCoverage {
                 scan(file, fqn.length() > 0 ? fqn + "." + file.getName() : file.getName());
             }
         }
+    }
+
+
+    private ClassFile getClassFile(Object info, InputStream is) throws IOException {
+        if (is == null) {
+            throw new IOException("Missing class: " + info);
+        }
+
+        ClassFile cf;
+        try {
+            cf = new ClassFile(new DataInputStream(is));
+        } finally {
+            is.close();
+        }
+        return cf;
     }
 
     protected void checkClass(ClassFile file) throws Exception {

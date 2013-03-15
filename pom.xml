@@ -29,7 +29,8 @@
         <version.org.jboss.xnio>3.0.7.GA</version.org.jboss.xnio>
 
         <!-- Testing -->
-        <version.junit>[4.10]</version.junit>
+        <version.javax.servlet>3.0.1</version.javax.servlet>
+        <version.junit>4.10</version.junit>
         <version.arquillian>1.0.3.Final</version.arquillian>
         <version.arquillian.gae>1.0.0.Alpha6</version.arquillian.gae>
         <version.shrinkwrap>1.1.0</version.shrinkwrap>
@@ -241,6 +242,12 @@
             </dependency>
 
             <!-- Testing -->
+
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${version.javax.servlet}</version>
+            </dependency>
 
             <dependency>
                 <groupId>junit</groupId>
