@@ -1,7 +1,8 @@
-#com.google.appengine.api.taskqueue.QueueFactory
+com.google.appengine.api.taskqueue.IQueueFactory
+com.google.appengine.api.taskqueue.IQueueFactoryProvider
 com.google.appengine.api.taskqueue.Queue
 com.google.appengine.api.taskqueue.DeferredTask
-#com.google.appengine.api.taskqueue.DeferredTaskContext
+#com.google.appengine.api.taskqueue.DeferredTaskContext  # fails with required class was missing while executing com.google.appengine.tck:appengine-tck-coverage:1.0.0-SNAPSHOT:coverage: javax/servlet/http/HttpServletRequest
 com.google.appengine.api.taskqueue.LeaseOptions
 com.google.appengine.api.taskqueue.QueueConstants
 com.google.appengine.api.taskqueue.QueueFactory

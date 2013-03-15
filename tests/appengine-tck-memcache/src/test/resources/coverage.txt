@@ -1,3 +1,5 @@
+com.google.appengine.api.memcache.IMemcacheServiceFactoryProvider
+com.google.appengine.api.memcache.IMemcacheServiceFactory
 com.google.appengine.api.memcache.MemcacheService
 com.google.appengine.api.memcache.AsyncMemcacheService
 com.google.appengine.api.memcache.BaseMemcacheService
@@ -11,3 +13,10 @@ com.google.appengine.api.memcache.MemcacheServiceFactory
 com.google.appengine.api.memcache.StrictErrorHandler
 com.google.appengine.api.memcache.InvalidValueException
 com.google.appengine.api.memcache.MemcacheServiceException
+#
+# Inner classes/inferface: No specific error message:  # Failed to execute goal com.google.appengine.tck:appengine-tck-coverage:1.0.0-SNAPSHOT:coverage
+#com.google.appengine.api.memcache.MemcacheService.IdentifiableValue
+#com.google.appengine.api.memcache.MemcacheService.CasValues
+#com.google.appengine.api.memcache.MemcacheService.SetPolicy
+#com.google.appengine.api.memcache.MemcacheSerialization.ValueAndFlags
+#com.google.appengine.api.memcache.MemcacheSerialization.Flag

@@ -8,3 +8,5 @@ com.google.appengine.api.urlfetch.URLFetchServiceFactory
 com.google.appengine.api.urlfetch.HTTPMethod
 com.google.appengine.api.urlfetch.InternalTransientException
 com.google.appengine.api.urlfetch.ResponseTooLargeException
+# Inner Class issue
+#com.google.appengine.api.urlfetch.FetchOptions.Builder
