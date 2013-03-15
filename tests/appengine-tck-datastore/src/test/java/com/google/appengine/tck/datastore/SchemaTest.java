@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import com.google.appengine.api.NamespaceManager;
 import com.google.appengine.api.datastore.Category;
@@ -17,7 +15,6 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Link;
 import com.google.appengine.api.datastore.PhoneNumber;
 import com.google.appengine.api.datastore.PostalAddress;
@@ -95,16 +92,8 @@ public class SchemaTest extends DatastoreTestBase {
         List<Entity> ns = datastoreService.prepare(q).asList(fo);
         assertEquals(2, ns.size());
 
-        // Sort actual keys
-        String sk1 = KeyFactory.keyToString(key1);
-        String sk2 = KeyFactory.keyToString(key2);
-        Map<String, String> map = new TreeMap<String, String>();
-        map.put(sk1, namespaceDat[1]);
-        map.put(sk2, namespaceDat[2]);
-        List<String> keys = new ArrayList<String>(map.keySet());
-
         for (int i = 0; i < ns.size(); i++) {
-            assertEquals(ns.get(i).getKey().getName(), map.get(keys.get(i)));
+            assertEquals(namespaceDat[i + 1], ns.get(i).getKey().getName());
         }
     }
 
