@@ -51,7 +51,7 @@ public abstract class DatastoreTestBase extends TestBase {
         }
         if (eList.size() > 0) {
             datastoreService.delete(eList);
-            Thread.sleep(waitTime);
+            sync(waitTime);
         }
     }
 
@@ -136,7 +136,7 @@ public abstract class DatastoreTestBase extends TestBase {
             rootEntity = new Entity(rootKind);
             rootEntity.setProperty("name", "junittests group");
             rootKey = datastoreService.put(rootEntity);
-            Thread.sleep(waitTime);
+            sync(waitTime);
         } else {
             rootKey = rootEntity.getKey();
         }
