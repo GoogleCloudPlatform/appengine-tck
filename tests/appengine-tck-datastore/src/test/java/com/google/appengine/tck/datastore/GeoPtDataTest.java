@@ -34,7 +34,7 @@ public class GeoPtDataTest extends DatastoreTestBase {
   @Before
   public void createData() throws InterruptedException {
     Query q = new Query(kindName, rootKey);
-    if (datastoreService.prepare(q).countEntities(fo) == 0) {
+    if (service.prepare(q).countEntities(fo) == 0) {
       Entity newRec;
       List<Entity> elist = new ArrayList<Entity>();
       for (Object data : testDatas) {
@@ -42,7 +42,7 @@ public class GeoPtDataTest extends DatastoreTestBase {
         newRec.setProperty(propertyName, data);
         elist.add(newRec);
       }
-      datastoreService.put(elist);
+      service.put(elist);
       Thread.sleep(waitTime);
     }
   }
@@ -58,7 +58,7 @@ public class GeoPtDataTest extends DatastoreTestBase {
     Query query = new Query(kindName, rootKey);
     GeoPt filter = new GeoPt(Float.valueOf(60).floatValue(), Float.valueOf(145).floatValue());
     query.setFilter(new FilterPredicate(propertyName, Query.FilterOperator.EQUAL, filter));
-    Entity entity = datastoreService.prepare(query).asSingleEntity();
+    Entity entity = service.prepare(query).asSingleEntity();
     GeoPt geopt = (GeoPt) entity.getProperty(propertyName);
     assertTrue(geopt.equals(filter));
     assertEquals(Float.valueOf(geopt.getLatitude()).toString(), Float.valueOf(60).toString());

@@ -30,30 +30,30 @@ public class IndexTest extends DatastoreTestBase {
   @Before
   public void addIndex() {
     Query query = new Query("indextest2");
-    for (Entity readRec : datastoreService.prepare(query).asIterable()) {
-      datastoreService.delete(readRec.getKey());
+    for (Entity readRec : service.prepare(query).asIterable()) {
+      service.delete(readRec.getKey());
     }
     Entity newRec = new Entity("indextest2");
     newRec.setProperty("stringData", "测试文档资料data");
     newRec.setProperty("age", 9);
     newRec.setProperty("timestamp", new Date());
-    datastoreService.put(newRec);
+    service.put(newRec);
 
     query = new Query("indextest2");
     query.setFilter(new FilterPredicate("stringData", Query.FilterOperator.LESS_THAN, "bdefgh"));
     query.addSort("stringData", Query.SortDirection.DESCENDING);
     query.addSort("age");
-    for (Entity readRec : datastoreService.prepare(query).asIterable()) {
+    for (Entity readRec : service.prepare(query).asIterable()) {
       // fetch entities for index creation.
     }
-    datastoreService.prepare(query).asIterable();
+    service.prepare(query).asIterable();
   }
 
   @Test
   public void testGetIndex() {
     boolean exist = false;
 
-    Map<Index, IndexState> indexes = datastoreService.getIndexes();
+    Map<Index, IndexState> indexes = service.getIndexes();
     assertTrue(indexes.size() > 0);
     for (Map.Entry<Index, IndexState> entry: indexes.entrySet()) {
       Index index = entry.getKey();

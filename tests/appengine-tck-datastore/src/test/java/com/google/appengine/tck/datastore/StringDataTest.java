@@ -52,7 +52,7 @@ public class StringDataTest extends DatastoreTestBase {
         new ShortBlob("shortText".getBytes()), new ShortBlob("shortImage".getBytes())};
 
     Query q = new Query(kindName, rootKey);
-    if (datastoreService.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
+    if (service.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
       List<Entity> elist = new ArrayList<Entity>();
       for (int i = 0; i < 3; i++) {
         newRec = new Entity(kindName, rootKey);
@@ -66,7 +66,7 @@ public class StringDataTest extends DatastoreTestBase {
         newRec.setProperty("byteStrProp", byteString[i]);
         elist.add(newRec);
       }
-      datastoreService.put(elist);
+      service.put(elist);
       Thread.sleep(waitTime);
     } 
   }

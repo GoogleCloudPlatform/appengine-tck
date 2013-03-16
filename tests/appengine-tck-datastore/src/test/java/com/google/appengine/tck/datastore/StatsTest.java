@@ -45,8 +45,8 @@ public class StatsTest extends DatastoreTestBase {
     private void checkCount(String statsKind) {
         FetchOptions fo = FetchOptions.Builder.withDefaults();
         Query query = new Query(statsKind);
-        assertTrue(datastoreService.prepare(query).countEntities(fo) > 0);
-        for (Entity readRec : datastoreService.prepare(query).asIterable()) {
+        assertTrue(service.prepare(query).countEntities(fo) > 0);
+        for (Entity readRec : service.prepare(query).asIterable()) {
             assertTrue((Long) readRec.getProperty("count") > 0);
         }
     }

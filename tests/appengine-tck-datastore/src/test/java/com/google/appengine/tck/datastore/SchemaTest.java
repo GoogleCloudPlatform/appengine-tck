@@ -54,7 +54,7 @@ public class SchemaTest extends DatastoreTestBase {
             NamespaceManager.set(namespaceDat[i]);
             for (int k = 0; k < kindDat.length; k++) {
                 Query q = new Query(kindDat[k]);
-                if (datastoreService.prepare(q).countEntities(fo) == 0) {
+                if (service.prepare(q).countEntities(fo) == 0) {
                     for (int c = 0; c < count; c++) {
                         Entity newRec = new Entity(kindDat[k]);
                         newRec.setProperty("name", kindDat[k] + c);
@@ -77,7 +77,7 @@ public class SchemaTest extends DatastoreTestBase {
             }
         }
         if (eList.size() > 0) {
-            datastoreService.put(eList);
+            service.put(eList);
             Thread.sleep(waitTime);
         }
     }
@@ -89,7 +89,7 @@ public class SchemaTest extends DatastoreTestBase {
         Key key1 = Entities.createNamespaceKey(namespaceDat[1]);
         Key key2 = Entities.createNamespaceKey(namespaceDat[2]);
         q.setFilter(new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.IN, Arrays.asList(key1, key2)));
-        List<Entity> ns = datastoreService.prepare(q).asList(fo);
+        List<Entity> ns = service.prepare(q).asList(fo);
         assertEquals(2, ns.size());
 
         for (int i = 0; i < ns.size(); i++) {
@@ -104,7 +104,7 @@ public class SchemaTest extends DatastoreTestBase {
             NamespaceManager.set(namespaceDat[i]);
             Query q = new Query("__kind__").addSort(Entity.KEY_RESERVED_PROPERTY);
             int count = 0;
-            for (Entity e : datastoreService.prepare(q).asIterable()) {
+            for (Entity e : service.prepare(q).asIterable()) {
                 // do not count those stats entities for namespace.
                 if (!e.getKey().getName().startsWith("__Stat_Ns_")) {
                     count++;
@@ -115,8 +115,8 @@ public class SchemaTest extends DatastoreTestBase {
             // check a specified namespace
             Key key1 = Entities.createKindKey("testing");
             q.setFilter(new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, key1));
-            assertEquals(1, datastoreService.prepare(q).countEntities(fo));
-            Entity ke = datastoreService.prepare(q).asSingleEntity();
+            assertEquals(1, service.prepare(q).countEntities(fo));
+            Entity ke = service.prepare(q).asSingleEntity();
             assertEquals("testing", ke.getKey().getName());
             assertEquals(namespaceDat[i], ke.getKey().getNamespace());
             assertEquals(namespaceDat[i], ke.getNamespace());
@@ -134,7 +134,7 @@ public class SchemaTest extends DatastoreTestBase {
         q.setFilter(CompositeFilterOperator.and(
                 new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.GREATER_THAN, key1),
                 new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.LESS_THAN_OR_EQUAL, key2)));
-        List<Entity> el = datastoreService.prepare(q).asList(fo);
+        List<Entity> el = service.prepare(q).asList(fo);
         // un-indexed property, textData, will not be returned in __property__ queries.
         assertEquals(13, el.size());
         for (int i = 0; i < el.size(); i++) {
@@ -151,32 +151,32 @@ public class SchemaTest extends DatastoreTestBase {
     // work for HRD datastore only
     @Test
     public void testEntityGroupMetadata() throws EntityNotFoundException {
-        if (datastoreService.getDatastoreAttributes().getDatastoreType() == DatastoreAttributes.DatastoreType.HIGH_REPLICATION) {
+        if (service.getDatastoreAttributes().getDatastoreType() == DatastoreAttributes.DatastoreType.HIGH_REPLICATION) {
             NamespaceManager.set(namespaceDat[2]);
             Entity entity1 = new Entity(kindDat[2]);
             entity1.setProperty("name", "entity1");
             entity1.setProperty("timestamp", new Date());
-            Key k1 = datastoreService.put(entity1);
+            Key k1 = service.put(entity1);
             Key entityGroupKey = Entities.createEntityGroupKey(k1);
-            long version1 = Entities.getVersionProperty(datastoreService.get(entityGroupKey));
+            long version1 = Entities.getVersionProperty(service.get(entityGroupKey));
 
             Entity entity2 = new Entity(kindDat[2]);
             entity2.setProperty("name", "entity2");
             entity2.setProperty("timestamp", new Date());
-            datastoreService.put(entity2);
+            service.put(entity2);
             // Get entity1's version again.  There should be no change.
-            long version2 = Entities.getVersionProperty(datastoreService.get(entityGroupKey));
+            long version2 = Entities.getVersionProperty(service.get(entityGroupKey));
             assertEquals(version1, version2);
 
             Entity entity3 = new Entity(kindDat[2], k1);
             entity3.setProperty("name", "entity3");
             entity3.setProperty("timestamp", new Date());
-            datastoreService.put(entity3);
+            service.put(entity3);
             // Get entity1's version again.  There should be change since it is used as parent.
-            long version3 = Entities.getVersionProperty(datastoreService.get(entityGroupKey));
+            long version3 = Entities.getVersionProperty(service.get(entityGroupKey));
             assertTrue(version3 > version1);
             // clean test data
-            datastoreService.delete(entity3.getKey(), entity2.getKey(), k1);
+            service.delete(entity3.getKey(), entity2.getKey(), k1);
         }
     }
 }

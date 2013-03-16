@@ -64,7 +64,7 @@ public class QueryTest extends DatastoreTestBase {
       elist.add(newRec);
     }
 
-    datastoreService.put(elist);
+    service.put(elist);
     Thread.sleep(1000);
   }
 
@@ -75,7 +75,7 @@ public class QueryTest extends DatastoreTestBase {
         Query.FilterOperator.GREATER_THAN.of("stringData", "string data2"),
         Query.FilterOperator.LESS_THAN.of("stringData", "string data1"));
     query.setFilter(filter);
-    assertEquals(1, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(1, service.prepare(query).countEntities(fo));
   }
 
   @Test
@@ -86,7 +86,7 @@ public class QueryTest extends DatastoreTestBase {
     Filter filter2 = Query.FilterOperator.LESS_THAN_OR_EQUAL.of("shortBlobData",
                                                    new ShortBlob("shortBlobData1".getBytes()));
     query.setFilter(Query.CompositeFilterOperator.or(filter1, filter2));
-    assertEquals(2, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(2, service.prepare(query).countEntities(fo));
   }
 
   @Test
@@ -96,7 +96,7 @@ public class QueryTest extends DatastoreTestBase {
         Query.FilterOperator.EQUAL.of("intData", 20),
         Query.FilterOperator.GREATER_THAN.of("intData", 0));
     query.setFilter(filter);
-    assertEquals(1, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(1, service.prepare(query).countEntities(fo));
   }
 
   @Test
@@ -107,7 +107,7 @@ public class QueryTest extends DatastoreTestBase {
         Query.FilterOperator.GREATER_THAN.of("ratingData", new Rating(0)));
     Filter filter2 = Query.FilterOperator.EQUAL.of("ratingData", new Rating(20));
     query.setFilter(Query.CompositeFilterOperator.and(filter1, filter2));
-    assertEquals(1, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(1, service.prepare(query).countEntities(fo));
   }
 
   @Test
@@ -119,7 +119,7 @@ public class QueryTest extends DatastoreTestBase {
         Query.FilterOperator.GREATER_THAN.of("intList", 90));
     Filter filter2 = Query.FilterOperator.EQUAL.of("intList", 52);
     query.setFilter(Query.CompositeFilterOperator.and(filter1, filter2));
-    assertEquals(1, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(1, service.prepare(query).countEntities(fo));
   }
 
   @Test
@@ -137,7 +137,7 @@ public class QueryTest extends DatastoreTestBase {
     sql += " AND __ancestor__ is " + rootKey;
     assertEquals(sql.toLowerCase(), query.toString().toLowerCase());
     // check query result
-    List<Entity> results = datastoreService.prepare(query).asList(fo);
+    List<Entity> results = service.prepare(query).asList(fo);
     for (Entity e : results) {
       assertEquals(1, e.getProperties().size());
       assertTrue(e.getProperties().containsKey("geoptData"));

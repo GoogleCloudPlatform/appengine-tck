@@ -41,7 +41,7 @@ public class NamespaceTest extends DatastoreTestBase {
     for (int i = 0; i < namespaceDat.length; i++) {
       NamespaceManager.set(namespaceDat[i]);
       Query q = new Query(kindName);
-      if (datastoreService.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
+      if (service.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
         for (int c = 0; c < count; c++) {
           Entity newRec = new Entity(kindName);
           newRec.setProperty("jobType", stringDat[i] + c);
@@ -50,7 +50,7 @@ public class NamespaceTest extends DatastoreTestBase {
       }
     }
     if (eList.size() > 0) {
-      datastoreService.put(eList);
+      service.put(eList);
       Thread.sleep(waitTime);
     }
   }
@@ -77,7 +77,7 @@ public class NamespaceTest extends DatastoreTestBase {
     for (String ns : namespaceDat) {
       NamespaceManager.set(ns);
       Query query = new Query(kindName);
-      Entity readRec =  datastoreService.prepare(query).asIterator().next();
+      Entity readRec =  service.prepare(query).asIterator().next();
       assertEquals(ns, readRec.getNamespace());
       String appId = readRec.getAppId();
       appId = appId.substring(appId.indexOf("~") + 1);
@@ -90,11 +90,11 @@ public class NamespaceTest extends DatastoreTestBase {
   public void testQuery() {
     NamespaceManager.set("");
     Query query = new Query("__namespace__");
-    int nsCount = datastoreService.prepare(query)
+    int nsCount = service.prepare(query)
                   .countEntities(FetchOptions.Builder.withDefaults());
     assertTrue(nsCount > 0);
     String ns = "";
-    for (Entity readRec : datastoreService.prepare(query).asIterable()) {
+    for (Entity readRec : service.prepare(query).asIterable()) {
       ns = readRec.getKey().getName() + "," + ns; 
     }
     for (int i = 0; i < namespaceDat.length; i++) {
@@ -117,7 +117,7 @@ public class NamespaceTest extends DatastoreTestBase {
     NamespaceManager.set(namespaceDat[1]);
     Query q = new Query(kindName);
     q.setFilter(new FilterPredicate("jobType", Query.FilterOperator.EQUAL, stringDat[2] + 1));
-    int ttl = datastoreService.prepare(q).countEntities(FetchOptions.Builder.withDefaults());
+    int ttl = service.prepare(q).countEntities(FetchOptions.Builder.withDefaults());
     assertEquals(0, ttl);
   }
 

@@ -33,7 +33,7 @@ public class NumberDataTest extends DatastoreTestBase {
     Rating[] ratingDat = {new Rating(11), new Rating(55), new Rating(99)};
 
     Query q = new Query(kindName, rootKey);
-    if (datastoreService.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
+    if (service.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
       List<Entity> eList = new ArrayList<Entity>();
       for (int i = 0; i < 3; i++) {
         newRec = new Entity(kindName, rootKey);
@@ -45,7 +45,7 @@ public class NumberDataTest extends DatastoreTestBase {
         newRec.setProperty("ratingProp", ratingDat[i]);
         eList.add(newRec);
       }
-      datastoreService.put(eList);
+      service.put(eList);
       Thread.sleep(waitTime);
     }
   }

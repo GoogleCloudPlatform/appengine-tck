@@ -30,13 +30,13 @@ public class EntityTest extends DatastoreTestBase {
     clearData(kindName);
     Entity newRec =  new Entity(kindName, "test4116132", null);
     newRec.setProperty("stamp", new Date());
-    Key key = datastoreService.put(newRec);
+    Key key = service.put(newRec);
     assertEquals("test4116132", key.getName());
     assertEquals(null, key.getParent());
     
     newRec =  new Entity(kindName, "test4116132-child", key);
     newRec.setProperty("stamp", new Date());
-    Key ckey = datastoreService.put(newRec);
+    Key ckey = service.put(newRec);
     assertEquals("test4116132-child", ckey.getName());
     assertEquals(key, ckey.getParent());
   }
@@ -46,13 +46,13 @@ public class EntityTest extends DatastoreTestBase {
     clearData(kindName);
     Entity newRec =  new Entity(kindName, 4116132, null);
     newRec.setProperty("stamp", new Date());
-    Key key = datastoreService.put(newRec);
+    Key key = service.put(newRec);
     assertEquals(4116132, key.getId());
     assertEquals(null, key.getParent());
     
     newRec =  new Entity(kindName, 41161320, key);
     newRec.setProperty("stamp", new Date());
-    Key ckey = datastoreService.put(newRec);
+    Key ckey = service.put(newRec);
     assertEquals(41161320, ckey.getId());
     assertEquals(key, ckey.getParent());
   }
@@ -62,12 +62,12 @@ public class EntityTest extends DatastoreTestBase {
     clearData(kindName);
     Entity newRec =  new Entity(kindName);
     newRec.setProperty("stamp", new Date());
-    Key key = datastoreService.put(newRec);
+    Key key = service.put(newRec);
     
     Entity newRec2 =  new Entity(key);
     Date newDate = new Date();
     newRec2.setProperty("stamp", newDate);
-    datastoreService.put(newRec2);
+    service.put(newRec2);
     assertEquals(newRec, newRec2);
     assertEquals(newDate, newRec2.getProperty("stamp"));
   }
@@ -76,11 +76,11 @@ public class EntityTest extends DatastoreTestBase {
   public void clearData(String kind) throws InterruptedException {
     List<Key> eList = new ArrayList<Key>();
     Query query = new Query(kind);
-    for (Entity readRec : datastoreService.prepare(query).asIterable()) {
+    for (Entity readRec : service.prepare(query).asIterable()) {
       eList.add(readRec.getKey());
     }
     if (eList.size() > 0) {
-      datastoreService.delete(eList);
+      service.delete(eList);
       Thread.sleep(waitTime);
     }
   }

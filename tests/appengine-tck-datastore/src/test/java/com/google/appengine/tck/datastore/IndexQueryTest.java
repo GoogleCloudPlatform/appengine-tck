@@ -38,7 +38,7 @@ public class IndexQueryTest extends DatastoreTestBase {
     @Before
     public void addData() throws InterruptedException {
         Query query = new Query(kindName, rootKey);
-        if (datastoreService.prepare(query).countEntities(fetchOption) == 0) {
+        if (service.prepare(query).countEntities(fetchOption) == 0) {
             List<Entity> elist = new ArrayList<Entity>();
             for (int i = 0; i < count; i++) {
                 Entity newRec = new Entity(kindName, rootKey);
@@ -54,7 +54,7 @@ public class IndexQueryTest extends DatastoreTestBase {
                 newRec.setProperty("byteStrProp", new ShortBlob(("shortblob" + (i * 30)).getBytes()));
                 elist.add(newRec);
             }
-            datastoreService.put(elist);
+            service.put(elist);
             sync(waitTime);
         }
     }
@@ -81,7 +81,7 @@ public class IndexQueryTest extends DatastoreTestBase {
         query.addProjection(new PropertyProjection("intData", Integer.class));
         String sql = "SELECT intData, stringData FROM " + kindName + " WHERE __ancestor__ is " + rootKey;
         assertEquals(sql.toLowerCase(), query.toString().toLowerCase());
-        List<Entity> results = datastoreService.prepare(query).asList(fetchOption);
+        List<Entity> results = service.prepare(query).asList(fetchOption);
         assertEquals(count, results.size());
         for (Entity e : results) {
             assertEquals(2, e.getProperties().size());
@@ -95,7 +95,7 @@ public class IndexQueryTest extends DatastoreTestBase {
         Query query = new Query(kindName, rootKey);
         query.addProjection(new PropertyProjection("stringList", String.class));
         query.addProjection(new PropertyProjection("intList", Integer.class));
-        List<Entity> results = datastoreService.prepare(query).asList(fetchOption);
+        List<Entity> results = service.prepare(query).asList(fetchOption);
         // Distinct stringList data 2 * Distinct intList data 3 * entity's count 10
         assertEquals(60, results.size());
         Entity e = results.get(0);
@@ -109,7 +109,7 @@ public class IndexQueryTest extends DatastoreTestBase {
         Query query = new Query(kindName, rootKey);
         query.addProjection(new PropertyProjection("intData", Integer.class));
         query.addSort("stringData", Query.SortDirection.DESCENDING);
-        List<Entity> results = datastoreService.prepare(query).asList(fetchOption);
+        List<Entity> results = service.prepare(query).asList(fetchOption);
         assertEquals(count, results.size());
         int first = new Integer(results.get(0).getProperty("intData").toString());
         int last = new Integer(results.get(count - 1).getProperty("intData").toString());
@@ -122,7 +122,7 @@ public class IndexQueryTest extends DatastoreTestBase {
         query.addProjection(new PropertyProjection("stringData", String.class));
         query.setFilter(new FilterPredicate("intData", FilterOperator.NOT_EQUAL, 50));
         query.addSort("intData");
-        List<Entity> results = datastoreService.prepare(query).asList(fetchOption);
+        List<Entity> results = service.prepare(query).asList(fetchOption);
         assertEquals(count - 1, results.size());
         for (Entity e : results) {
             assertTrue(e.getProperty("stringData").toString().contains("5") == false);
@@ -153,7 +153,7 @@ public class IndexQueryTest extends DatastoreTestBase {
     public void testWrongType() {
         Query query = new Query(kindName, rootKey);
         query.addProjection(new PropertyProjection("stringData", Integer.class));
-        datastoreService.prepare(query).asIterator(fetchOption).next();
+        service.prepare(query).asIterator(fetchOption).next();
     }
 
     @Test
@@ -170,7 +170,7 @@ public class IndexQueryTest extends DatastoreTestBase {
     public void testCount() {
         Query query = new Query(kindName, rootKey);
         query.addProjection(new PropertyProjection("stringData", String.class));
-        assertEquals(count, datastoreService.prepare(query).countEntities(fetchOption));
+        assertEquals(count, service.prepare(query).countEntities(fetchOption));
     }
 
     private void checkQueryType(String property, Class<?> type) {
@@ -178,7 +178,7 @@ public class IndexQueryTest extends DatastoreTestBase {
         query.addProjection(new PropertyProjection(property, type));
         String sql = "SELECT " + property + " FROM " + kindName + " WHERE __ancestor__ is " + rootKey;
         assertEquals(sql.toLowerCase(), query.toString().toLowerCase());
-        List<Entity> results = datastoreService.prepare(query).asList(fetchOption);
+        List<Entity> results = service.prepare(query).asList(fetchOption);
         for (Entity e : results) {
             assertEquals(1, e.getProperties().size());
             assertTrue(e.getProperties().containsKey(property));
@@ -189,7 +189,7 @@ public class IndexQueryTest extends DatastoreTestBase {
         FetchOptions fo = FetchOptions.Builder.withLimit(limit);
         Query query = new Query(kindName, rootKey);
         query.addProjection(new PropertyProjection("stringData", String.class));
-        List<Entity> results = datastoreService.prepare(query).asList(fo);
+        List<Entity> results = service.prepare(query).asList(fo);
         assertEquals(limit, results.size());
     }
 }

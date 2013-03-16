@@ -29,16 +29,16 @@ public class AncestorTest extends DatastoreTestBase {
   @Before
   public void createData() throws InterruptedException {
     Query q = new Query(PARENTKIND);
-    if (datastoreService.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
+    if (service.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
       List<Entity> elist = new ArrayList<Entity>();
       Entity pRec, cRec;
       // add parents
       pRec = new Entity(PARENTKIND);
       pRec.setProperty("name", "redwood");
-      Key key1 = datastoreService.put(pRec);
+      Key key1 = service.put(pRec);
       pRec = new Entity(PARENTKIND);
       pRec.setProperty("name", "argonaut");
-      Key key2 = datastoreService.put(pRec);
+      Key key2 = service.put(pRec);
       // add children
       cRec = new Entity(CHILDKIND, key1);
       cRec.setProperty("teacher", "Mrs. Key1-redwood");
@@ -52,7 +52,7 @@ public class AncestorTest extends DatastoreTestBase {
       cRec = new Entity(CHILDKIND, key2);
       cRec.setProperty("teacher", "Mrs. Key2-argonaut");
       elist.add(cRec);
-      datastoreService.put(elist);
+      service.put(elist);
       Thread.sleep(waitTime);
     }
   }
@@ -61,9 +61,9 @@ public class AncestorTest extends DatastoreTestBase {
   public void testAncestor() {
     Key pKey = getParent().getKey();
     Query query = new Query(CHILDKIND, pKey);
-    assertEquals(2, datastoreService.prepare(query)
+    assertEquals(2, service.prepare(query)
                                     .countEntities(FetchOptions.Builder.withDefaults()));
-    for (Entity cRec : datastoreService.prepare(query).asIterable()) {
+    for (Entity cRec : service.prepare(query).asIterable()) {
       assertEquals(pKey, cRec.getParent());
     }
   }
@@ -73,9 +73,9 @@ public class AncestorTest extends DatastoreTestBase {
     Key pKey = getParent().getKey();
     Query query = new Query(CHILDKIND, pKey);
     query.addSort("__key__");
-    assertEquals(2, datastoreService.prepare(query)
+    assertEquals(2, service.prepare(query)
                                     .countEntities(FetchOptions.Builder.withDefaults()));
-    for (Entity cRec : datastoreService.prepare(query).asIterable()) {
+    for (Entity cRec : service.prepare(query).asIterable()) {
       assertEquals(pKey, cRec.getParent());
     }
   }
@@ -84,12 +84,12 @@ public class AncestorTest extends DatastoreTestBase {
   public void testKindless() {
     Query query = new Query(PARENTKIND);
     query.setFilter(new FilterPredicate("name", Query.FilterOperator.EQUAL, "argonaut"));
-    Entity parent = datastoreService.prepare(query).asSingleEntity();
+    Entity parent = service.prepare(query).asSingleEntity();
     query = new Query(parent.getKey());
-    assertEquals(3, datastoreService.prepare(query)
+    assertEquals(3, service.prepare(query)
                                     .countEntities(FetchOptions.Builder.withDefaults()));
     query = new Query().setAncestor(parent.getKey());
-    assertEquals(3, datastoreService.prepare(query)
+    assertEquals(3, service.prepare(query)
                                     .countEntities(FetchOptions.Builder.withDefaults()));
   }
 
@@ -97,20 +97,20 @@ public class AncestorTest extends DatastoreTestBase {
   public void testKeyName() {
     Entity pRec = new Entity(PARENTKIND, "测试文档keyname");
     pRec.setProperty("name", "regression");
-    datastoreService.put(pRec);
+    service.put(pRec);
     assertEquals(pRec.getKey().getName(), "测试文档keyname");
 
     Entity cRec = new Entity(CHILDKIND, "测试文档keyname", pRec.getKey());
     cRec.setProperty("teacher", "regression");
-    datastoreService.put(cRec);
+    service.put(cRec);
     assertEquals(cRec.getKey().getName(), "测试文档keyname");
-    datastoreService.delete(cRec.getKey(), pRec.getKey());
+    service.delete(cRec.getKey(), pRec.getKey());
   }
 
   private Entity getParent() {
     Query query = new Query(PARENTKIND);
     query.setFilter(new FilterPredicate("name", Query.FilterOperator.EQUAL, "argonaut"));
-    Entity parent = datastoreService.prepare(query).asSingleEntity();
+    Entity parent = service.prepare(query).asSingleEntity();
     return parent;
   }
 }

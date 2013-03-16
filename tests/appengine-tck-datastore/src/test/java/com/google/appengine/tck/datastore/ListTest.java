@@ -46,7 +46,7 @@ public class ListTest extends DatastoreTestBase {
     newRec.setProperty("stringData", Arrays.asList("hannah", "luoluo", "jia"));
     newRec.setProperty("intData1", Arrays.asList(28, 15, 23));
     elist.add(newRec);
-    datastoreService.put(elist);
+    service.put(elist);
     Thread.sleep(waitTime);
   }
 
@@ -56,8 +56,8 @@ public class ListTest extends DatastoreTestBase {
     q.setFilter(new FilterPredicate("stringData", Query.FilterOperator.LESS_THAN, "qqq"));
     q.setFilter(new FilterPredicate("stringData", Query.FilterOperator.GREATER_THAN, "mmm"));
     q.addSort("stringData", Query.SortDirection.ASCENDING);
-    assertEquals(2,  datastoreService.prepare(q).countEntities(fo));
-    List<Entity> elist = datastoreService.prepare(q).asList(fo);
+    assertEquals(2,  service.prepare(q).countEntities(fo));
+    List<Entity> elist = service.prepare(q).asList(fo);
     assertEquals(Arrays.asList("abc", "xyz", "mno"), elist.get(0).getProperty("stringData"));
     assertEquals(Arrays.asList("ppp", "kkk", "ddd"), elist.get(1).getProperty("stringData"));
   }
@@ -69,8 +69,8 @@ public class ListTest extends DatastoreTestBase {
     q.setFilter(new FilterPredicate("intData1", Query.FilterOperator.GREATER_THAN, 1));
     q.setFilter(new FilterPredicate("intData1", Query.FilterOperator.EQUAL, null));
     q.addSort("intData1", Query.SortDirection.ASCENDING);
-    assertEquals(1,  datastoreService.prepare(q).countEntities(fo));
-    List<Entity> elist = datastoreService.prepare(q).asList(fo);
+    assertEquals(1,  service.prepare(q).countEntities(fo));
+    List<Entity> elist = service.prepare(q).asList(fo);
     assertEquals(Arrays.asList(1L, 10L, null), elist.get(0).getProperty("intData1"));
   }
 }

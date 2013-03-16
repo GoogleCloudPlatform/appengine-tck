@@ -39,7 +39,7 @@ public class KeyTest extends DatastoreTestBase {
   @Before
   public void createData() throws InterruptedException {
     Query q = new Query(kindName, rootKey);
-    if (datastoreService.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
+    if (service.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
       Entity newRec;
       String[] locDat = {"ac", "ab", "ae", "aa", "ac"};
       List<Entity> elist = new ArrayList<Entity>();
@@ -50,7 +50,7 @@ public class KeyTest extends DatastoreTestBase {
         newRec.setProperty("pop", popDat[i]);
         elist.add(newRec);
       }
-      datastoreService.put(elist);
+      service.put(elist);
       Thread.sleep(waitTime);
     }
   }
@@ -59,11 +59,11 @@ public class KeyTest extends DatastoreTestBase {
   public void testKeyOrder() {
     Query query = new Query(kindName, rootKey);
     query.addSort("__key__");
-    List<Entity> ascRecs = datastoreService.prepare(query).asList(withLimit(5));
+    List<Entity> ascRecs = service.prepare(query).asList(withLimit(5));
 
     query = new Query(kindName, rootKey);
     query.addSort("__key__", Query.SortDirection.DESCENDING);
-    List<Entity> descRecs = datastoreService.prepare(query).asList(withLimit(5));
+    List<Entity> descRecs = service.prepare(query).asList(withLimit(5));
 
     int size = ascRecs.size();
     assertEquals(5, size);
@@ -77,17 +77,17 @@ public class KeyTest extends DatastoreTestBase {
   public void testWithIneqi() {
     Query query = new Query(kindName, rootKey);
     query.setFilter(new FilterPredicate("loc", Query.FilterOperator.EQUAL, "ae"));
-    Key key = datastoreService.prepare(query).asSingleEntity().getKey();
+    Key key = service.prepare(query).asSingleEntity().getKey();
 
     query = new Query(kindName, rootKey);
     query.setFilter(new FilterPredicate("__key__", Query.FilterOperator.GREATER_THAN, key));
     query.addSort("__key__");
-    List<Entity> ascRecs = datastoreService.prepare(query).asList(withLimit(5));
+    List<Entity> ascRecs = service.prepare(query).asList(withLimit(5));
 
     query = new Query(kindName, rootKey);
     query.setFilter(new FilterPredicate("__key__", Query.FilterOperator.GREATER_THAN, key));
     query.addSort("__key__", Query.SortDirection.DESCENDING);
-    List<Entity> descRecs = datastoreService.prepare(query).asList(withLimit(5));
+    List<Entity> descRecs = service.prepare(query).asList(withLimit(5));
     
     int size = ascRecs.size();
     for (int i = 0; i < size; i++) {
@@ -100,19 +100,19 @@ public class KeyTest extends DatastoreTestBase {
   public void testWithIneqiAndFilter() {
     Query query = new Query(kindName, rootKey);
     query.setFilter(new FilterPredicate("loc", Query.FilterOperator.EQUAL, "ae"));
-    Key key = datastoreService.prepare(query).asSingleEntity().getKey();
+    Key key = service.prepare(query).asSingleEntity().getKey();
   
     query = new Query(kindName, rootKey);
     query.setFilter(new FilterPredicate("__key__", Query.FilterOperator.LESS_THAN, key));
     query.setFilter(new FilterPredicate("loc", Query.FilterOperator.EQUAL, "ac"));
     query.addSort("__key__");
-    List<Entity> ascRecs = datastoreService.prepare(query).asList(withLimit(5));
+    List<Entity> ascRecs = service.prepare(query).asList(withLimit(5));
   
     query = new Query(kindName, rootKey);
     query.setFilter(new FilterPredicate("__key__", Query.FilterOperator.LESS_THAN, key));
     query.setFilter(new FilterPredicate("loc", Query.FilterOperator.EQUAL, "ac"));
     query.addSort("__key__", Query.SortDirection.DESCENDING);
-    List<Entity> descRecs = datastoreService.prepare(query).asList(withLimit(5));
+    List<Entity> descRecs = service.prepare(query).asList(withLimit(5));
 
     int size = ascRecs.size();
     for (int i = 0; i < size; i++) {
@@ -131,16 +131,16 @@ public class KeyTest extends DatastoreTestBase {
     for (int i = 0; i < namespaceDat.length; i++) {
       NamespaceManager.set(namespaceDat[i]);
       Query q = new Query(kindTest);
-      if (datastoreService.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
+      if (service.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
         entity = new Entity(kindTest);
         if (namespaceDat[i].equals("")) {
           entity.setProperty("jobType", "google");
         } else {
           entity.setProperty("jobType", namespaceDat[i]);
         }
-        datastoreService.put(entity);
+        service.put(entity);
       } else {
-        entity = datastoreService.prepare(q).asSingleEntity();
+        entity = service.prepare(q).asSingleEntity();
       }
       kList.add(entity.getKey());
     }
@@ -150,10 +150,10 @@ public class KeyTest extends DatastoreTestBase {
       Query q = new Query(kindTest);
       q.setFilter(new FilterPredicate("__key__", Query.FilterOperator.EQUAL, kList.get(i)));
       if (namespaceDat[i].equals("")) {
-        assertEquals(datastoreService.prepare(q).asSingleEntity().getProperty("jobType"), 
+        assertEquals(service.prepare(q).asSingleEntity().getProperty("jobType"),
                      "google");
       } else {
-        assertEquals(datastoreService.prepare(q).asSingleEntity().getProperty("jobType"), 
+        assertEquals(service.prepare(q).asSingleEntity().getProperty("jobType"),
                      namespaceDat[i]);
       }
     }
@@ -163,7 +163,7 @@ public class KeyTest extends DatastoreTestBase {
     q.setFilter(new FilterPredicate("__key__", Query.FilterOperator.EQUAL, kList.get(2)));
 
     thrown.expect(IllegalArgumentException.class);
-    datastoreService.prepare(q).asSingleEntity();
+    service.prepare(q).asSingleEntity();
   }
   
   // http://b/issue?id=2106725
@@ -172,14 +172,14 @@ public class KeyTest extends DatastoreTestBase {
     Key parentKeyB = KeyFactory.createKey("family", "same");
     Key childKeyB = KeyFactory.createKey(parentKeyB, "children", "same");
     Entity entB1 = new Entity(childKeyB);
-    datastoreService.put(entB1);
+    service.put(entB1);
 
-    Entity entB2 = datastoreService.get(childKeyB);
+    Entity entB2 = service.get(childKeyB);
     assertEquals(new String(MemcacheSerialization.makePbKey(entB1.getKey())), 
                  new String(MemcacheSerialization.makePbKey(childKeyB)));
     assertEquals(new String(MemcacheSerialization.makePbKey(entB2.getKey())), 
                  new String(MemcacheSerialization.makePbKey(childKeyB)));
-    datastoreService.delete(childKeyB);
-    datastoreService.delete(parentKeyB);
+    service.delete(childKeyB);
+    service.delete(parentKeyB);
   }
 }

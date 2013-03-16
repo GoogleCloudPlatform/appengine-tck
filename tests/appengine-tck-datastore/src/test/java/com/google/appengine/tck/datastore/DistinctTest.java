@@ -35,7 +35,7 @@ public class DistinctTest extends DatastoreTestBase {
   @Before
   public void createData() throws InterruptedException {
     Query query = new Query(kindName, rootKey);
-    if (datastoreService.prepare(query).countEntities(fo) == 0) {
+    if (service.prepare(query).countEntities(fo) == 0) {
       int props = 15;
       List<Entity> elist = new ArrayList<Entity>();
       elist.clear();
@@ -66,7 +66,7 @@ public class DistinctTest extends DatastoreTestBase {
             Arrays.asList(i / (props - 11), 50 + i / (props - 11), 90 + i / (props - 11)));
         elist.add(newRec);
       }
-      datastoreService.put(elist);
+      service.put(elist);
       Thread.sleep(waitTime);
     }
   }
@@ -81,7 +81,7 @@ public class DistinctTest extends DatastoreTestBase {
     query = new Query(kindName, rootKey);
     query.addProjection(new PropertyProjection("stringData", String.class));
     query.setDistinct(false);
-    assertEquals(count, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(count, service.prepare(query).countEntities(fo));
     assertFalse(query.getDistinct());
   }
 
@@ -90,12 +90,12 @@ public class DistinctTest extends DatastoreTestBase {
     Query query = new Query(kindName, rootKey);
     query.addProjection(new PropertyProjection("floatData", Float.class));
     query.setDistinct(true);
-    assertEquals(4, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(4, service.prepare(query).countEntities(fo));
     assertTrue(query.getDistinct());
     query = new Query(kindName, rootKey);
     query.addProjection(new PropertyProjection("floatData", Float.class));
     query.setDistinct(false);
-    assertEquals(count, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(count, service.prepare(query).countEntities(fo));
     assertFalse(query.getDistinct());
   }
 
@@ -104,14 +104,14 @@ public class DistinctTest extends DatastoreTestBase {
     Query query = new Query(kindName, rootKey);
     query.addProjection(new PropertyProjection("intList", Integer.class));
     query.setDistinct(true);
-    assertEquals(24, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(24, service.prepare(query).countEntities(fo));
     assertTrue(query.getDistinct());
     // distinct false
     query = new Query(kindName, rootKey);
     query.addProjection(new PropertyProjection("intList", Integer.class));
     query.setDistinct(false);
     // 3 cols * 30 rows
-    assertEquals(count * 3, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(count * 3, service.prepare(query).countEntities(fo));
     assertFalse(query.getDistinct());
   }
 
@@ -121,14 +121,14 @@ public class DistinctTest extends DatastoreTestBase {
     query.addProjection(new PropertyProjection("stringData", String.class));
     query.addProjection(new PropertyProjection("floatData", Float.class));
     query.setDistinct(true);
-    assertEquals(7, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(7, service.prepare(query).countEntities(fo));
     assertTrue(query.getDistinct());
     // distinct false
     query = new Query(kindName, rootKey);
     query.addProjection(new PropertyProjection("stringData", String.class));
     query.addProjection(new PropertyProjection("floatData", Float.class));
     query.setDistinct(false);
-    assertEquals(count, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(count, service.prepare(query).countEntities(fo));
     assertFalse(query.getDistinct());
   }
 
@@ -139,10 +139,10 @@ public class DistinctTest extends DatastoreTestBase {
     query.addProjection(new PropertyProjection("floatData", Float.class));
     query.addSort("stringData", Query.SortDirection.DESCENDING);
     query.setDistinct(true);
-    assertEquals(7, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(7, service.prepare(query).countEntities(fo));
     assertTrue(query.getDistinct());
     query.addSort("floatData", Query.SortDirection.DESCENDING);
-    assertEquals(7, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(7, service.prepare(query).countEntities(fo));
   }
 
   @Test
@@ -153,7 +153,7 @@ public class DistinctTest extends DatastoreTestBase {
     query.setFilter(new FilterPredicate("stringData", Query.FilterOperator.NOT_EQUAL, "string1"));
     query.addSort("stringData", Query.SortDirection.DESCENDING);
     query.setDistinct(true);
-    assertEquals(5, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(5, service.prepare(query).countEntities(fo));
     assertTrue(query.getDistinct());
   }
 
@@ -167,7 +167,7 @@ public class DistinctTest extends DatastoreTestBase {
     query.addSort("stringData", Query.SortDirection.DESCENDING);
     query.addSort("floatData", Query.SortDirection.DESCENDING);
     query.setDistinct(true);
-    assertEquals(2, datastoreService.prepare(query).countEntities(fo));
+    assertEquals(2, service.prepare(query).countEntities(fo));
     assertTrue(query.getDistinct());
   }
 }

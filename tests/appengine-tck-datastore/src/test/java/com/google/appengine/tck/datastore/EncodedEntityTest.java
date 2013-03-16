@@ -51,13 +51,13 @@ public class EncodedEntityTest extends DatastoreTestBase {
     newRec.setProperty("stringData", "have entity property");
     newRec.setProperty("timestamp", new Date());
     elist.add(newRec);
-    datastoreService.put(elist);
+    service.put(elist);
     Thread.sleep(waitTime);
 
     Query q = new Query(kindName, rootKey);
-    int count = datastoreService.prepare(q).countEntities(FetchOptions.Builder.withDefaults());
+    int count = service.prepare(q).countEntities(FetchOptions.Builder.withDefaults());
     assertEquals(2, count);
-    for (Entity readRec : datastoreService.prepare(q).asIterable()) {
+    for (Entity readRec : service.prepare(q).asIterable()) {
       EmbeddedEntity ee2 = (EmbeddedEntity) readRec.getProperty("entityDat");
       if (ee2 != null) {
         assertEquals("have entity property", readRec.getProperty("stringData"));

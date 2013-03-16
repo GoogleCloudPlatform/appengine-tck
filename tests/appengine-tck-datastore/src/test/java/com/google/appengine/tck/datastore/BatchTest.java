@@ -48,7 +48,7 @@ public class BatchTest extends DatastoreTestBase {
   @Before
   public void createData() throws InterruptedException {
     Query query = new Query(kindName, rootKey);
-    if (datastoreService.prepare(query).countEntities(fo) == 0) {
+    if (service.prepare(query).countEntities(fo) == 0) {
       List<Entity> elist = new ArrayList<Entity>();
       for (int i = 0; i < (bigCount - bigNum); i++) {
         Entity newRec = new Entity(kindName, rootKey);
@@ -65,7 +65,7 @@ public class BatchTest extends DatastoreTestBase {
           elist.add(newRec);
         }
       }
-      datastoreService.put(elist);
+      service.put(elist);
       Thread.sleep(waitTime);
     }
   }
@@ -74,7 +74,7 @@ public class BatchTest extends DatastoreTestBase {
   @InSequence(1)
   public void testStep1GetCount() {
     Query q = new Query(kindName, rootKey);
-    assertEquals(bigCount, datastoreService.prepare(q).countEntities(fo));
+    assertEquals(bigCount, service.prepare(q).countEntities(fo));
   }
 
   @Test
@@ -82,7 +82,7 @@ public class BatchTest extends DatastoreTestBase {
   public void testStep2BigAsList() {
     Query q = new Query(kindName, rootKey);
     q.addSort("count", Query.SortDirection.DESCENDING);
-    List<Entity> eData = datastoreService.prepare(q).asList(fo);
+    List<Entity> eData = service.prepare(q).asList(fo);
     assertEquals(bigCount, eData.size());
     assertEquals(new Integer(bigCount - 1).longValue(), eData.get(0).getProperty("count"));
   }
@@ -92,10 +92,10 @@ public class BatchTest extends DatastoreTestBase {
   public void testStep3ListWithOption() {
     FetchOptions foList = FetchOptions.Builder.withLimit(limit);
     Query q = new Query(kindName, rootKey);
-    List<Entity> eData = datastoreService.prepare(q).asList(foList);
+    List<Entity> eData = service.prepare(q).asList(foList);
     assertEquals(limit, eData.size());
     foList = FetchOptions.Builder.withOffset(offset);
-    eData = datastoreService.prepare(q).asList(foList);
+    eData = service.prepare(q).asList(foList);
     assertEquals(bigCount - offset, eData.size());
   }
 
@@ -104,7 +104,7 @@ public class BatchTest extends DatastoreTestBase {
   public void testStep4BigAsIterator() {
     Query q = new Query(kindName, rootKey);
     q.setFilter(new FilterPredicate("count", FilterOperator.LESS_THAN, bigCount));
-    Iterator<Entity> eData = datastoreService.prepare(q).asIterator(fo);
+    Iterator<Entity> eData = service.prepare(q).asIterator(fo);
     assertEquals(bigCount, getSize(eData));
   }
 
@@ -113,10 +113,10 @@ public class BatchTest extends DatastoreTestBase {
   public void testStep5IteratorWithOption() {
     FetchOptions foIterator = FetchOptions.Builder.withLimit(limit);
     Query q = new Query(kindName, rootKey);
-    Iterator<Entity> eData = datastoreService.prepare(q).asIterator(foIterator);
+    Iterator<Entity> eData = service.prepare(q).asIterator(foIterator);
     assertEquals(limit, getSize(eData));
     foIterator = FetchOptions.Builder.withOffset(offset);
-    eData = datastoreService.prepare(q).asIterator(foIterator);
+    eData = service.prepare(q).asIterator(foIterator);
     assertEquals(bigCount - offset, getSize(eData));
   }
 
@@ -124,7 +124,7 @@ public class BatchTest extends DatastoreTestBase {
   @InSequence(6)
   public void testStep6BigAsIterable() {
     Query q = new Query(kindName, rootKey).addSort("count", Query.SortDirection.ASCENDING);
-    Iterator<Entity> eData = datastoreService.prepare(q).asIterable(fo).iterator();
+    Iterator<Entity> eData = service.prepare(q).asIterable(fo).iterator();
     assertEquals(bigCount, getSize(eData));
   }
 
@@ -133,10 +133,10 @@ public class BatchTest extends DatastoreTestBase {
   public void testStep7IterableWithOption() {
     FetchOptions foIterable = FetchOptions.Builder.withLimit(limit);
     Query q = new Query(kindName, rootKey);
-    Iterator<Entity> eData = datastoreService.prepare(q).asIterator(fo.limit(limit));
+    Iterator<Entity> eData = service.prepare(q).asIterator(fo.limit(limit));
     assertEquals(limit, getSize(eData));
     foIterable = FetchOptions.Builder.withOffset(offset);
-    eData = datastoreService.prepare(q).asIterator(foIterable);
+    eData = service.prepare(q).asIterator(foIterable);
     assertEquals(bigCount - offset, getSize(eData));
   }
 
@@ -153,23 +153,23 @@ public class BatchTest extends DatastoreTestBase {
   @InSequence(8)
   public void testStep8FetchOption() {
     Query q = new Query(kindName, rootKey).addSort("count", Query.SortDirection.DESCENDING);
-    Entity e = datastoreService.prepare(q).asIterator().next();
+    Entity e = service.prepare(q).asIterator().next();
     assertEquals(new Integer(bigCount - 1).longValue(), e.getProperty("count"));
 
     FetchOptions foTest = FetchOptions.Builder.withDefaults();
-    int ttl = datastoreService.prepare(q).countEntities(foTest.limit(500));
+    int ttl = service.prepare(q).countEntities(foTest.limit(500));
     assertEquals(500, ttl);
 
     foTest = FetchOptions.Builder.withDefaults();
-    ttl = datastoreService.prepare(q).countEntities(foTest.offset(150));
+    ttl = service.prepare(q).countEntities(foTest.offset(150));
     assertEquals((bigCount - 150), ttl);
 
     fo = FetchOptions.Builder.withDefaults();
-    ttl = datastoreService.prepare(q).countEntities(foTest.offset(50).limit(150));
+    ttl = service.prepare(q).countEntities(foTest.offset(50).limit(150));
     assertEquals(150, ttl);
 
     fo = FetchOptions.Builder.withDefaults();
-    ttl = datastoreService.prepare(q).countEntities(foTest.limit(150).offset(offset));
+    ttl = service.prepare(q).countEntities(foTest.limit(150).offset(offset));
     int expect = (150 < (bigCount - offset)) ? 150 : (bigCount - offset);
     assertEquals(expect , ttl);
   }
@@ -181,7 +181,7 @@ public class BatchTest extends DatastoreTestBase {
     Query q = new Query(kindName, rootKey);
     q.setFilter(new FilterPredicate("count", FilterOperator.IN, getFilterIn(filterNum)));
     FetchOptions fo = FetchOptions.Builder.withDefaults();
-    int ttl = datastoreService.prepare(q).countEntities(fo);
+    int ttl = service.prepare(q).countEntities(fo);
     assertEquals(filterNum, ttl);
   }
 
@@ -191,7 +191,7 @@ public class BatchTest extends DatastoreTestBase {
     int filterNum = 100;
     Query q = new Query(kindName, rootKey);
     q.setFilter(new FilterPredicate("count", FilterOperator.IN, getFilterIn(filterNum)));
-    int ttl = datastoreService.prepare(q).countEntities(fo.offset(filterNum / 2));
+    int ttl = service.prepare(q).countEntities(fo.offset(filterNum / 2));
     assertEquals((filterNum / 2), ttl);
   }
 
@@ -213,7 +213,7 @@ public class BatchTest extends DatastoreTestBase {
       newRec.setProperty("desc", text);
       elist.add(newRec);
     }
-    List<Key> eKeys = datastoreService.put(elist);
+    List<Key> eKeys = service.put(elist);
     assertEquals(32, eKeys.size());
   }
 
@@ -222,7 +222,7 @@ public class BatchTest extends DatastoreTestBase {
   public void testStep12BigDelete() throws InterruptedException {
     clearData(kindName);
     Query q = new Query(kindName, rootKey);
-    int ttl = datastoreService.prepare(q).countEntities(fo);
+    int ttl = service.prepare(q).countEntities(fo);
     assertEquals(0, ttl);
   }
 }

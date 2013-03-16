@@ -32,7 +32,7 @@ public class CursorTest extends DatastoreTestBase {
   @Before
   public void createData() throws InterruptedException {
     Query query = new Query(kindName, rootKey);
-    if (datastoreService.prepare(query).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
+    if (service.prepare(query).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
       List<Entity> eList = new ArrayList<Entity>();
       Entity newRec;
       for (int i = 0; i < total; i++) {
@@ -42,7 +42,7 @@ public class CursorTest extends DatastoreTestBase {
         newRec.setProperty("created", new Date());
         eList.add(newRec);
       }
-      datastoreService.put(eList);
+      service.put(eList);
       Thread.sleep(waitTime);
     }
   }
@@ -114,11 +114,11 @@ public class CursorTest extends DatastoreTestBase {
     query.addSort("name", Query.SortDirection.ASCENDING);
     FetchOptions fetchOption = FetchOptions.Builder.withLimit(limit);
     // fetch 1st page and get cursor1
-    QueryResultList<Entity> nextBatch = datastoreService.prepare(query)
+    QueryResultList<Entity> nextBatch = service.prepare(query)
                                                        .asQueryResultList(fetchOption);
     Cursor cursor1 = Cursor.fromWebSafeString(nextBatch.getCursor().toWebSafeString());
     // fetch 2nd page and get cursor2
-    nextBatch = datastoreService.prepare(query).asQueryResultList(fetchOption.startCursor(cursor1));
+    nextBatch = service.prepare(query).asQueryResultList(fetchOption.startCursor(cursor1));
     Cursor cursor2 = Cursor.fromWebSafeString(nextBatch.getCursor().toWebSafeString()); 
     // cursor1 as start and cursor2 as end and 15 in limit -- -- should return 2nd page.
     checkPage(query, cursor1, cursor2, limit, limit, testDat[1], testDat[1]);
@@ -137,7 +137,7 @@ public class CursorTest extends DatastoreTestBase {
     if (endCursor != null) {
       fetchOption = fetchOption.endCursor(endCursor);
     }
-    QueryResultList<Entity> nextBatch = datastoreService.prepare(query)
+    QueryResultList<Entity> nextBatch = service.prepare(query)
                                                         .asQueryResultList(fetchOption);
     assertEquals(exptRet, nextBatch.size());
     if (chkSt != null) {

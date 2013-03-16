@@ -36,21 +36,21 @@ public class TransactionTest extends DatastoreTestBase {
     @Test
     public void testSingleDefaut() throws EntityNotFoundException, InterruptedException {
         clearData(kindName);
-        Transaction tx = datastoreService.beginTransaction();
+        Transaction tx = service.beginTransaction();
         Entity newRec = new Entity(kindName);
         newRec.setProperty("check", "4100331");
         newRec.setProperty("step", "added");
-        Key key = datastoreService.put(tx, newRec);
+        Key key = service.put(tx, newRec);
         tx.commit();
-        Entity qRec = datastoreService.get(key);
+        Entity qRec = service.get(key);
         assertEquals("4100331", qRec.getProperty("check"));
 
-        tx = datastoreService.beginTransaction();
-        qRec = datastoreService.get(key);
+        tx = service.beginTransaction();
+        qRec = service.get(key);
         qRec.setUnindexedProperty("step", "update");
-        datastoreService.put(tx, newRec);
+        service.put(tx, newRec);
         tx.rollback();
-        qRec = datastoreService.get(key);
+        qRec = service.get(key);
         assertEquals("added", qRec.getProperty("step"));
     }
 
@@ -59,23 +59,23 @@ public class TransactionTest extends DatastoreTestBase {
     public void testMultipleSameGroupDefault() throws InterruptedException {
         clearData(kindName);
         List<Entity> es = new ArrayList<Entity>();
-        Transaction tx = datastoreService.beginTransaction();
+        Transaction tx = service.beginTransaction();
         Entity parent = new Entity(kindName);
         parent.setProperty("check", "parent");
         parent.setProperty("stamp", new Date());
-        Key pKey = datastoreService.put(tx, parent);
+        Key pKey = service.put(tx, parent);
 
         Entity child = new Entity(kindName, pKey);
         child.setProperty("check", "other");
         child.setProperty("stamp", new Date());
-        Key cKey = datastoreService.put(tx, child);
+        Key cKey = service.put(tx, child);
         tx.commit();
         Thread.sleep(sleepTime);
 
         Query q = new Query(kindName);
-        int count = datastoreService.prepare(q).countEntities(FetchOptions.Builder.withDefaults());
+        int count = service.prepare(q).countEntities(FetchOptions.Builder.withDefaults());
         assertEquals(2, count);
-        for (Entity readRec : datastoreService.prepare(q).asIterable()) {
+        for (Entity readRec : service.prepare(q).asIterable()) {
             if (readRec.getProperty("check").equals("parent")) {
                 pKey = readRec.getKey();
             } else {
@@ -96,13 +96,13 @@ public class TransactionTest extends DatastoreTestBase {
     @Test(expected = IllegalStateException.class)
     public void testClosedTx() throws InterruptedException {
         clearData(kindName);
-        Transaction tx = datastoreService.beginTransaction();
+        Transaction tx = service.beginTransaction();
         Entity newRec = new Entity(kindName);
         newRec.setProperty("check", "4100331");
         newRec.setProperty("stamp", new Date());
-        Key key = datastoreService.put(newRec);
+        Key key = service.put(newRec);
         tx.commit();
-        datastoreService.put(tx, new Entity(kindName));
+        service.put(tx, new Entity(kindName));
     }
 
     // transactionOptions setting
@@ -122,10 +122,10 @@ public class TransactionTest extends DatastoreTestBase {
         writeMultipleGroup(true);
 
         Query q = new Query(kindName);
-        Entity e = datastoreService.prepare(q).asSingleEntity();
+        Entity e = service.prepare(q).asSingleEntity();
         assertEquals("parent", e.getProperty("check"));
         q = new Query(otherkind);
-        e = datastoreService.prepare(q).asSingleEntity();
+        e = service.prepare(q).asSingleEntity();
         assertEquals("other", e.getProperty("check"));
     }
 
@@ -150,10 +150,10 @@ public class TransactionTest extends DatastoreTestBase {
         List<Entity> es = readMultipleGroup();
 
         TransactionOptions tos = TransactionOptions.Builder.withXG(true);
-        Transaction tx = datastoreService.beginTransaction(tos);
+        Transaction tx = service.beginTransaction(tos);
         es.get(0).setProperty("check", "parent-update");
         es.get(1).setProperty("check", "other-update");
-        datastoreService.put(tx, es);
+        service.put(tx, es);
         tx.rollback();
         es = readMultipleGroup();
         assertEquals("parent", es.get(0).getProperty("check"));
@@ -177,7 +177,7 @@ public class TransactionTest extends DatastoreTestBase {
         try {
             clearData(kindName);
             TransactionOptions tos = TransactionOptions.Builder.withXG(false);
-            Transaction tx = datastoreService.beginTransaction(tos);
+            Transaction tx = service.beginTransaction(tos);
             try {
                 List<Entity> es = new ArrayList<Entity>();
                 NamespaceManager.set("");
@@ -191,7 +191,7 @@ public class TransactionTest extends DatastoreTestBase {
                 ens2.setProperty("check", "entity-trns");
                 ens2.setProperty("stamp", new Date());
                 es.add(ens2);
-                datastoreService.put(tx, es);
+                service.put(tx, es);
                 tx.commit();
             } catch (Exception e) {
                 tx.rollback();
@@ -211,7 +211,7 @@ public class TransactionTest extends DatastoreTestBase {
         clearData(kindName);
         List<Entity> es = new ArrayList<Entity>();
         TransactionOptions tos = TransactionOptions.Builder.withXG(true);
-        Transaction tx = datastoreService.beginTransaction(tos);
+        Transaction tx = service.beginTransaction(tos);
 
         NamespaceManager.set("");
         Entity ens1 = new Entity(kindName);
@@ -224,35 +224,35 @@ public class TransactionTest extends DatastoreTestBase {
         ens2.setProperty("check", "entity-trns");
         ens2.setProperty("stamp", new Date());
         es.add(ens2);
-        datastoreService.put(tx, es);
+        service.put(tx, es);
         tx.commit();
 
         sync(sleepTime);
 
         NamespaceManager.set("");
         Query q = new Query(kindName);
-        Entity e = datastoreService.prepare(q).asSingleEntity();
+        Entity e = service.prepare(q).asSingleEntity();
         assertEquals("entity-nons", e.getProperty("check"));
         NamespaceManager.set("trns");
         q = new Query(kindName);
-        e = datastoreService.prepare(q).asSingleEntity();
+        e = service.prepare(q).asSingleEntity();
         assertEquals("entity-trns", e.getProperty("check"));
         NamespaceManager.set("");
     }
 
     private void writeMultipleGroup(boolean allow) throws Exception {
         TransactionOptions tos = TransactionOptions.Builder.withXG(allow);
-        Transaction tx = datastoreService.beginTransaction(tos);
+        Transaction tx = service.beginTransaction(tos);
         try {
             Entity parent = new Entity(kindName);
             parent.setProperty("check", "parent");
             parent.setProperty("stamp", new Date());
-            Key pKey = datastoreService.put(tx, parent);
+            Key pKey = service.put(tx, parent);
 
             Entity other = new Entity(otherkind);
             other.setProperty("check", "other");
             other.setProperty("stamp", new Date());
-            Key cKey = datastoreService.put(tx, other);
+            Key cKey = service.put(tx, other);
             tx.commit();
 
             sync(sleepTime);
@@ -265,7 +265,7 @@ public class TransactionTest extends DatastoreTestBase {
     private void writeMultipleInList(boolean allow) throws Exception {
         List<Entity> es = new ArrayList<Entity>();
         TransactionOptions tos = TransactionOptions.Builder.withXG(allow);
-        Transaction tx = datastoreService.beginTransaction(tos);
+        Transaction tx = service.beginTransaction(tos);
         try {
             Entity parent = new Entity(kindName);
             parent.setProperty("check", "parent");
@@ -276,7 +276,7 @@ public class TransactionTest extends DatastoreTestBase {
             other.setProperty("check", "other");
             other.setProperty("stamp", new Date());
             es.add(other);
-            datastoreService.put(tx, es);
+            service.put(tx, es);
             tx.commit();
 
             sync(sleepTime);
@@ -290,9 +290,9 @@ public class TransactionTest extends DatastoreTestBase {
         List<Entity> es = new ArrayList<Entity>();
         es.clear();
         Query q = new Query(kindName);
-        es.add(datastoreService.prepare(q).asSingleEntity());
+        es.add(service.prepare(q).asSingleEntity());
         q = new Query(otherkind);
-        es.add(datastoreService.prepare(q).asSingleEntity());
+        es.add(service.prepare(q).asSingleEntity());
         return es;
     }
 
@@ -300,10 +300,10 @@ public class TransactionTest extends DatastoreTestBase {
     public void clearData(String kind) throws InterruptedException {
         List<Key> elist = new ArrayList<Key>();
         Query query = new Query(kind);
-        for (Entity readRec : datastoreService.prepare(query).asIterable()) {
+        for (Entity readRec : service.prepare(query).asIterable()) {
             elist.add(readRec.getKey());
         }
-        datastoreService.delete(elist);
+        service.delete(elist);
 
         sync(sleepTime);
     }

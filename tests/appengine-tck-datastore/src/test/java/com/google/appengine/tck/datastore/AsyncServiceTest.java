@@ -42,10 +42,10 @@ public class AsyncServiceTest extends DatastoreTestBase {
   public void clearData() {
     List<Key> elist = new ArrayList<Key>();
     Query query = new Query(kindName);
-    for (Entity readRec : datastoreService.prepare(query).asIterable()) {
+    for (Entity readRec : service.prepare(query).asIterable()) {
       elist.add(readRec.getKey());
     }
-    datastoreService.delete(elist);
+    service.delete(elist);
   }
   
   @Test
@@ -56,9 +56,9 @@ public class AsyncServiceTest extends DatastoreTestBase {
     Future<Key> firstE = asyncService.put(newRec);
     firstE.get();
     if (firstE.isCancelled()) {
-      assertEquals(0, datastoreService.prepare(new Query(kindName)).countEntities(fo));
+      assertEquals(0, service.prepare(new Query(kindName)).countEntities(fo));
     } else {
-      assertEquals(1, datastoreService.prepare(new Query(kindName)).countEntities(fo));
+      assertEquals(1, service.prepare(new Query(kindName)).countEntities(fo));
     }
   }
   
@@ -75,9 +75,9 @@ public class AsyncServiceTest extends DatastoreTestBase {
     Future<List<Key>> eKeys = asyncService.put(lisRec);
     eKeys.get();
     if (eKeys.isCancelled()) {
-      assertEquals(0, datastoreService.prepare(new Query(kindName)).countEntities(fo));
+      assertEquals(0, service.prepare(new Query(kindName)).countEntities(fo));
     } else {
-      assertEquals(10, datastoreService.prepare(new Query(kindName)).countEntities(fo));
+      assertEquals(10, service.prepare(new Query(kindName)).countEntities(fo));
     }
   }
   
@@ -86,13 +86,13 @@ public class AsyncServiceTest extends DatastoreTestBase {
     Entity newRec = new Entity(kindName);
     newRec.setProperty("count", 0);
     newRec.setProperty("timestamp", new Date());
-    Key ekey = datastoreService.put(newRec);
+    Key ekey = service.put(newRec);
     Future<Void> future = asyncService.delete(ekey);
     future.get();
     if (future.isCancelled()) {
-      assertEquals(1, datastoreService.prepare(new Query(kindName)).countEntities(fo));
+      assertEquals(1, service.prepare(new Query(kindName)).countEntities(fo));
     } else {
-      assertEquals(0, datastoreService.prepare(new Query(kindName)).countEntities(fo));
+      assertEquals(0, service.prepare(new Query(kindName)).countEntities(fo));
     }
   }
   
@@ -106,13 +106,13 @@ public class AsyncServiceTest extends DatastoreTestBase {
       newRec.setProperty("timestamp", new Date());
       lisRec.add(newRec);
     }
-    List<Key> eKeys = datastoreService.put(lisRec);
+    List<Key> eKeys = service.put(lisRec);
     Future<Void> future = asyncService.delete(eKeys);
     future.get();
     if (future.isCancelled()) {
-      assertEquals(10, datastoreService.prepare(new Query(kindName)).countEntities(fo));
+      assertEquals(10, service.prepare(new Query(kindName)).countEntities(fo));
     } else {
-      assertEquals(0, datastoreService.prepare(new Query(kindName)).countEntities(fo));
+      assertEquals(0, service.prepare(new Query(kindName)).countEntities(fo));
     }
   }
   
@@ -122,7 +122,7 @@ public class AsyncServiceTest extends DatastoreTestBase {
     Entity newRec = new Entity(kindName);
     newRec.setProperty("count", randomLong);
     newRec.setProperty("timestamp", new Date());
-    Key ekey = datastoreService.put(newRec);
+    Key ekey = service.put(newRec);
     Future<Entity> futureE = asyncService.get(ekey);
     Entity e = futureE.get();
     if (e != null) {
@@ -143,7 +143,7 @@ public class AsyncServiceTest extends DatastoreTestBase {
       newRec.setProperty("timestamp", new Date());
       lisRec.add(newRec);
     }
-    List<Key> eKeys = datastoreService.put(lisRec);
+    List<Key> eKeys = service.put(lisRec);
     Future<Map<Key, Entity>> futureEs = asyncService.get(eKeys);
     Map<Key, Entity> es = futureEs.get();
     if (es != null) {
@@ -161,7 +161,7 @@ public class AsyncServiceTest extends DatastoreTestBase {
     
     Entity parent = new Entity(kindName);
     parent.setProperty("name", "parent" + new Date());
-    Key pKey = datastoreService.put(parent);
+    Key pKey = service.put(parent);
     futureRange = asyncService.allocateIds(pKey, kindName, allocateNum);
     range = futureRange.get();
     if (!futureRange.isCancelled()) {
@@ -169,7 +169,7 @@ public class AsyncServiceTest extends DatastoreTestBase {
     }
     Entity child = new Entity(range.getStart());
     child.setProperty("name", "second" + new Date());
-    Key ckey = datastoreService.put(child);
+    Key ckey = service.put(child);
     // child with allocated key should have correct parent.
     assertEquals(pKey, ckey.getParent());
   }
@@ -177,7 +177,7 @@ public class AsyncServiceTest extends DatastoreTestBase {
   private void check(String kind, KeyRange range) {
     Entity entity = new Entity(kind);
     entity.setProperty("name", "first" + new Date());
-    Key key = datastoreService.put(entity);
+    Key key = service.put(entity);
     // allocated key should not be re-used.
     assertTrue(key.getId() > range.getEnd().getId() || key.getId() < range.getStart().getId());
   }
@@ -196,7 +196,7 @@ public class AsyncServiceTest extends DatastoreTestBase {
  *  call didn't succeed. In short, a successful cancel() doesn't really tell you anything 
  *  about what happened on the server side.
     if (firstE.cancel(true)) {
-      assertEquals(0, datastoreService.prepare(new Query(kindName)).countEntities(fo));
+      assertEquals(0, service.prepare(new Query(kindName)).countEntities(fo));
     }
 */
     
@@ -220,13 +220,13 @@ public class AsyncServiceTest extends DatastoreTestBase {
     Transaction trans = asyncService.beginTransaction().get();
     Future<Key> firstE = asyncService.put(trans, newRec);
     trans.rollback();
-    assertEquals(0, datastoreService.prepare(new Query(kindName)).countEntities(fo));
+    assertEquals(0, service.prepare(new Query(kindName)).countEntities(fo));
 
     // Add a parent
     newRec = new Entity(kindName);
     newRec.setProperty("count", 0);
     newRec.setProperty("timestamp", new Date());
-    Key parent = datastoreService.put(newRec);
+    Key parent = service.put(newRec);
     // Add children
     List<Entity> lisRec = new ArrayList<Entity>();
     for (int i = 0; i < 10; i++) {
@@ -242,10 +242,10 @@ public class AsyncServiceTest extends DatastoreTestBase {
     Query q = new Query(kindName).setAncestor(parent);
     if (eKeys.isCancelled()) {
       assertEquals(0, realKey.size());
-      assertEquals(1, datastoreService.prepare(q).countEntities(fo));
+      assertEquals(1, service.prepare(q).countEntities(fo));
     } else {
       assertEquals(10, realKey.size());
-      assertEquals(11, datastoreService.prepare(q).countEntities(fo));
+      assertEquals(11, service.prepare(q).countEntities(fo));
     }
   }
 }

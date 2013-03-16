@@ -30,32 +30,32 @@ public class DatastoreTest extends DatastoreTestBase {
     Entity childA = new Entity("child", parentA.getKey());
     Entity childB = new Entity("child", parentB.getKey());
 
-    datastoreService.beginTransaction();
-    datastoreService.put(parentA);
-    datastoreService.getCurrentTransaction().commit();
+    service.beginTransaction();
+    service.put(parentA);
+    service.getCurrentTransaction().commit();
 
-    datastoreService.beginTransaction();
-    datastoreService.put(parentB);
-    datastoreService.getCurrentTransaction().commit();
+    service.beginTransaction();
+    service.put(parentB);
+    service.getCurrentTransaction().commit();
 
-    datastoreService.beginTransaction();
-    datastoreService.put(childA);
-    datastoreService.getCurrentTransaction().commit();
+    service.beginTransaction();
+    service.put(childA);
+    service.getCurrentTransaction().commit();
 
-    datastoreService.beginTransaction();
-    datastoreService.put(childB);
-    datastoreService.getCurrentTransaction().commit();
+    service.beginTransaction();
+    service.put(childB);
+    service.getCurrentTransaction().commit();
     // query on ancestor, only childA should be returned
-    datastoreService.beginTransaction();
+    service.beginTransaction();
     Query query = new Query("child", parentA.getKey());
-    Transaction tx = datastoreService.getCurrentTransaction();
-    int numRows = datastoreService.prepare(tx, query)
+    Transaction tx = service.getCurrentTransaction();
+    int numRows = service.prepare(tx, query)
                                   .countEntities(FetchOptions.Builder.withDefaults());
     tx.commit();
     assertEquals(1, numRows);
-    datastoreService.beginTransaction();
-    tx = datastoreService.getCurrentTransaction();
-    Entity result = datastoreService.prepare(tx, query).asSingleEntity();
+    service.beginTransaction();
+    tx = service.getCurrentTransaction();
+    Entity result = service.prepare(tx, query).asSingleEntity();
     assertEquals(childA.getKey(), result.getKey());
     tx.commit();
   }
@@ -68,7 +68,7 @@ public class DatastoreTest extends DatastoreTestBase {
   @Test
   public void testDatastoreType() {
     String appId = SystemProperty.applicationId.get();
-    DatastoreAttributes.DatastoreType dsTypte = datastoreService.getDatastoreAttributes()
+    DatastoreAttributes.DatastoreType dsTypte = service.getDatastoreAttributes()
                                                                 .getDatastoreType();
     if (appId.startsWith("s~")) {
       assertEquals(DatastoreAttributes.DatastoreType.HIGH_REPLICATION, dsTypte);

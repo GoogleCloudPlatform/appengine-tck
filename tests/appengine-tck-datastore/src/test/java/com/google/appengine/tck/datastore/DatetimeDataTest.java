@@ -32,14 +32,14 @@ public class DatetimeDataTest extends DatastoreTestBase {
         dfDateTime.parse("2005,5,5,13,19,19"), dfDateTime.parse("2008,8,8,3,9,9")};
 
     Query q = new Query(kindName, rootKey);
-    if (datastoreService.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
+    if (service.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
       List<Entity> elist = new ArrayList<Entity>();
       for (Date data : testDatas) {
         Entity newRec = new Entity(kindName, rootKey);
         newRec.setProperty(propertyName, data);
         elist.add(newRec);
       }
-      datastoreService.put(elist);
+      service.put(elist);
       Thread.sleep(waitTime);
     }
   }
