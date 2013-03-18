@@ -2,7 +2,8 @@ package com.google.appengine.tck.transformers;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.tck.base.ServicesLifecycles;
+import com.google.appengine.tck.event.TestLifecycleEvent;
+import com.google.appengine.tck.event.TestLifecycles;
 
 /**
  * This should only depend on GAE API.
@@ -14,7 +15,8 @@ public class TestUtils {
     public static void clean() {
         try {
             DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-            ServicesLifecycles.after(ds);
+            TestLifecycleEvent event = TestLifecycles.createServiceLifecycleEvent(null, ds);
+            TestLifecycles.after(event);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

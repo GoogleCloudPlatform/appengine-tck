@@ -4,22 +4,27 @@ import java.lang.reflect.Method;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.log.LogService;
-import com.google.appengine.tck.base.ServicesLifecycle;
+import com.google.appengine.tck.event.ServiceLifecycleEvent;
+import com.google.appengine.tck.event.TestLifecycle;
+import com.google.appengine.tck.event.TestLifecycleEvent;
 import org.kohsuke.MetaInfServices;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @MetaInfServices
-public class CapeDwarfServicesLifecycle implements ServicesLifecycle {
-    public <T> void before(T service) {
+public class CapeDwarfServicesLifecycle implements TestLifecycle {
+    public void before(TestLifecycleEvent event) {
     }
 
-    public <T> void after(T service) {
-        if (service instanceof DatastoreService) {
-            invoke(service, "clearCache");
-        } else if (service instanceof LogService) {
-            invoke(service, "clearLog");
+    public void after(TestLifecycleEvent event) {
+        if (event instanceof ServiceLifecycleEvent) {
+            Object service = ServiceLifecycleEvent.class.cast(event).getService();
+            if (service instanceof DatastoreService) {
+                invoke(service, "clearCache");
+            } else if (service instanceof LogService) {
+                invoke(service, "clearLog");
+            }
         }
     }
 

@@ -124,12 +124,18 @@ Each enviroment can add (via ServiceLoader pattern) multiple TestLifecycle imple
 
 e.g.
 
-<ADD CAPEDWARF EXAMPLE HERE>
+    public class CapeDwarfTestContextEnhancer implements TestLifecycle {
+        public void before(TestLifecycleEvent event) {
+            if (event instanceof TestContextLifecycleEvent) {
+                TestContextLifecycleEvent tcle = (TestContextLifecycleEvent) event;
+                enhance(tcle.getTestContext());
+            }
+        }
 
 External tests
 --------------
 
-Here we try to gather any useful tests that will help make GAE API implementations better.
+Here we try to gather any useful tests that will help make GAE API implementation environments better.
 As we don't want to overload the testing, each custom external set of tests should be under unique profile.
 
 e.g. in the case of DataNucleus GAE plugin we use -Pdatanucleus
@@ -143,4 +149,3 @@ e.g. running MapReduce tests against SDK
     mvn clean install -Psdk,mapreduce -Dappengine.sdk.root=<PATH_TO_SDK>
 
 Note: adapting the tests to run against real environment can sometime be a huge (bytecode) hack. :-)
-

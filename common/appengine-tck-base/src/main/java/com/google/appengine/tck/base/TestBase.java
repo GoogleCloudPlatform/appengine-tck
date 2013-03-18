@@ -2,7 +2,6 @@ package com.google.appengine.tck.base;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ServiceLoader;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -10,6 +9,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tck.category.IgnoreMultisuite;
+import com.google.appengine.tck.event.TestLifecycleEvent;
+import com.google.appengine.tck.event.TestLifecycles;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -26,9 +27,8 @@ public class TestBase {
     protected final Logger log = Logger.getLogger(getClass().getName());
 
     protected static void enhanceTestContext(TestContext context) {
-        for (TestContextEnhancer enhancer : ServiceLoader.load(TestContextEnhancer.class, TestBase.class.getClassLoader())) {
-            enhancer.enhance(context);
-        }
+        TestLifecycleEvent event = TestLifecycles.createTestContextLifecycleEvent(null, context);
+        TestLifecycles.before(event);
     }
 
     protected static WebArchive getTckDeployment() {
@@ -52,6 +52,8 @@ public class TestBase {
         war.addPackage(TestBase.class.getPackage());
         // categories
         war.addPackage(IgnoreMultisuite.class.getPackage());
+        // events
+        war.addPackage(TestLifecycles.class.getPackage());
 
         // web.xml
         if (context.getWebXmlFile() != null) {
