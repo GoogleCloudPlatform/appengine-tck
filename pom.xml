@@ -43,13 +43,20 @@
         <version.maven>3.0.4</version.maven>
 
         <!-- Ext -->
+        <!-- DataNucleus -->
         <version.com.google.gae.dn>2.1.3-SNAPSHOT</version.com.google.gae.dn>
         <version.javax.jdo>3.0.1</version.javax.jdo>
         <version.javax.jpa>1.0</version.javax.jpa>
         <version.org.datanucleus>3.1.3</version.org.datanucleus>
         <version.org.log4j>1.2.16</version.org.log4j>
         <version.org.easymock>2.4</version.org.easymock>
+        <!-- MapReduce -->
         <version.com.google.gae.mapper>r365</version.com.google.gae.mapper>
+        <version.com.google.guava>13.0.1</version.com.google.guava>
+        <version.charts4j>1.3</version.charts4j>
+        <version.commons-logging>1.1.1</version.commons-logging>
+        <version.org.apache.hadoop.core>0.20.2</version.org.apache.hadoop.core>
+        <version.org.json>20090211</version.org.json>
 
 	    <!--- Sonar -->
 	    <sonar.language>java</sonar.language>
@@ -409,6 +416,36 @@
                 <groupId>com.google.appengine</groupId>
                 <artifactId>appengine-mapper</artifactId>
                 <version>${version.com.google.gae.mapper}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.googlecode.charts4j</groupId>
+                <artifactId>charts4j</artifactId>
+                <version>${version.charts4j}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${version.commons-logging}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-core</artifactId>
+                <version>${version.org.apache.hadoop.core}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>${version.org.json}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${version.com.google.guava}</version>
             </dependency>
 
         </dependencies>

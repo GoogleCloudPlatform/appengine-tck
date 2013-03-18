@@ -17,6 +17,18 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-api-1.0-sdk</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-mapper</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.google.appengine.tck</groupId>
             <artifactId>appengine-tck-base</artifactId>
             <scope>test</scope>
@@ -56,13 +68,33 @@
 
             <dependencies>
                 <dependency>
-                    <groupId>com.google.appengine</groupId>
-                    <artifactId>appengine-api-1.0-sdk</artifactId>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                    <scope>test</scope>
                 </dependency>
 
                 <dependency>
-                    <groupId>com.google.appengine</groupId>
-                    <artifactId>appengine-mapper</artifactId>
+                    <groupId>com.googlecode.charts4j</groupId>
+                    <artifactId>charts4j</artifactId>
+                    <scope>test</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                    <scope>test</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.hadoop</groupId>
+                    <artifactId>hadoop-core</artifactId>
+                    <scope>test</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.json</groupId>
+                    <artifactId>json</artifactId>
+                    <scope>test</scope>
                 </dependency>
             </dependencies>
         </profile>
