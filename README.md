@@ -20,7 +20,7 @@ Directory structure
 -------------------
 
 * `common`      - common test code; base tests and multisuite support
-* `env`         - custom environment handles; GAE SDK, Appspot, CapeDwarf, AppScale, ...
+* `env`         - custom environment hooks; GAE SDK, Appspot, CapeDwarf, AppScale, ...
 * `ext`         - external (useful) tests; e.g. DataNucleus, MapReduce, Objectify, ...
 * `tests`       - the main TCK API tests
 * `utils`       - helper utils; code coverage plugin, bytecode transforemers
@@ -53,8 +53,8 @@ CapeDwarf uses plain JBossAS Arquillian remote container implementation.
 GAE API code coverage
 ---------------------
 
-For each set of tests we want to get code coverage needs a coverage.txt file,
-where we list all the classes / interfaces we want to track their usage.
+For each set of tests we want to get code coverage, needs a coverage.txt file,
+where we list all the classes / interfaces whose usage we track.
 
 e.g.
 
@@ -106,7 +106,7 @@ This will deploy all tests (per API) in a single .war file, and then test them a
 Note: as we create an uber .war from all tests, not all tests can be included.
 Tests that are not capable of running inside uber .war, *must* be marked with @IgnoreMultisuite.
 
-Each set of tests that we want to run -Pmultisuite on them requires a multisuite.marker file in tests' root directory.
+Each set of tests that we want to run -Pmultisuite on them, requires a multisuite.marker file in tests' root directory.
 In this marker we can override test class regexp patter or scanning strategy; see code for more details.
 
 Running a single test
@@ -136,6 +136,12 @@ External tests
 --------------
 
 Here we try to gather any useful tests that will help make GAE API implementation environments better.
+
+Current external tests:
+
+* GAE DataNucleus Plugin
+* GAE MapReduce Library
+
 As we don't want to overload the testing, each custom external set of tests should be under unique profile.
 
 e.g. in the case of DataNucleus GAE plugin we use -Pdatanucleus
