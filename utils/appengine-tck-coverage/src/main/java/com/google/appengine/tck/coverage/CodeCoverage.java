@@ -50,7 +50,7 @@ public class CodeCoverage {
 
         CodeCoverage cc = new CodeCoverage(classLoader, interfaces);
         cc.scan(classesToScan, "");
-        cc.print();
+        cc.print(SoutPrinter.INSTANCE, new HtmlPrinter(new File(classesToScan, "../../index.html")));
     }
 
     private CodeCoverage(ClassLoader classLoader, String... interfaces) throws Exception {
@@ -162,67 +162,13 @@ public class CodeCoverage {
         }
     }
 
-    protected void print() {
-        StringBuilder builder = new StringBuilder("\n");
-        for (String iface : report.keySet()) {
-            builder.append("\nInterface / Class: ").append(iface).append("\n");
-            Map<Tuple, Set<CodeLine>> map = report.get(iface);
-            for (Map.Entry<Tuple, Set<CodeLine>> entry : map.entrySet()) {
-                builder.append("\t").append(entry.getKey()).append("\n");
-                Set<CodeLine> value = entry.getValue();
-                if (value.isEmpty()) {
-                    builder.append("\t\t").append("MISSING -- TODO?").append("\n");
-                } else {
-                    for (CodeLine cl : value) {
-                        builder.append("\t\t").append(cl).append("\n");
-                    }
-                }
-            }
-        }
-        System.out.println(builder);
-    }
-
-    private static class Tuple implements Comparable<Tuple> {
-        String methodName;
-        String methodDesc;
-
-        private Tuple(String name, String methodDesc) {
-            this.methodName = name;
-            this.methodDesc = methodDesc;
-        }
-
-        public int compareTo(Tuple o) {
-            return toString().compareTo(o.toString());
-        }
-
-        @SuppressWarnings("RedundantIfStatement")
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Tuple tuple = (Tuple) o;
-
-            if (methodDesc.equals(tuple.methodDesc) == false) return false;
-            if (methodName.equals(tuple.methodName) == false) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = methodName.hashCode();
-            result = 31 * result + methodDesc.hashCode();
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return methodName + "@" + methodDesc;
+    protected void print(Printer... printers) throws Exception {
+        for (Printer printer : printers) {
+            printer.print(report);
         }
     }
 
-    private static class Triple {
+    static class Triple {
         private String className;
         private Tuple tuple;
 
