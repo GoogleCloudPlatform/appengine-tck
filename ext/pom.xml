@@ -100,6 +100,37 @@
             </dependencies>
         </profile>
 
+        <!-- AppScale -->
+        <profile>
+            <id>appscale</id>
+            <activation>
+                <property>
+                    <name>appscale</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                            <includes>
+                                <include>com/google/appengine/tck/**/*Test.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.arquillian.container</groupId>
+                    <artifactId>arquillian-appscale-remote</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
         <!-- Multisuite -->
         <profile>
             <id>multisuite</id>
