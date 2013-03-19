@@ -2,6 +2,7 @@
 *.ipr
 *.iws
 .idea/
+*index.html
 target/
 common/appengine-tck-base/target/
 common/appengine-tck-multisuite/target/

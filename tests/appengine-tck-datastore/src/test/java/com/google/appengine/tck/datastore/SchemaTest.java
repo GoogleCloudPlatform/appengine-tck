@@ -78,7 +78,7 @@ public class SchemaTest extends DatastoreTestBase {
         }
         if (eList.size() > 0) {
             service.put(eList);
-            Thread.sleep(waitTime);
+            sync(waitTime);
         }
     }
 

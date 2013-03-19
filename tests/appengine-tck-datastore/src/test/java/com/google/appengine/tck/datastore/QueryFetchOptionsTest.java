@@ -33,10 +33,8 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultIterable;
 import com.google.appengine.api.datastore.QueryResultList;
 import org.jboss.arquillian.junit.Arquillian;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withEndCursor;

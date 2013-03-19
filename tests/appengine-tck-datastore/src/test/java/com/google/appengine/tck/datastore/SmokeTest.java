@@ -34,7 +34,6 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import org.jboss.arquillian.junit.Arquillian;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -48,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Arquillian.class)
 
 //public class SmokeTest extends SimpleTestBase {
-  public class SmokeTest extends DatastoreTestBase {
+public class SmokeTest extends DatastoreTestBase {
 
     @Test
     public void putStoresEntity() throws Exception {
@@ -78,7 +77,7 @@ import static org.junit.Assert.assertTrue;
         Key nonExistingKey = KeyFactory.createKey("batch", "nonExisting");
         service.put(new Entity(existingKey));
 
-        Map<Key,Entity> map = service.get(Arrays.asList(existingKey, nonExistingKey));
+        Map<Key, Entity> map = service.get(Arrays.asList(existingKey, nonExistingKey));
 
         assertEquals(1, map.size());
         assertTrue(map.containsKey(existingKey));

@@ -32,9 +32,7 @@ import com.google.appengine.api.datastore.Query;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.IsEqual;
 import org.jboss.arquillian.junit.Arquillian;
-
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
 
 import static com.google.appengine.api.datastore.Query.SortDirection.ASCENDING;

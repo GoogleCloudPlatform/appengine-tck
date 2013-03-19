@@ -53,7 +53,7 @@ import static org.junit.Assert.assertThat;
 /**
  * @author <a href="mailto:marko.luksa@gmail.com">Marko Luksa</a>
  */
-public abstract class QueryTestBase extends DatastoreTestBase {
+public abstract class QueryTestBase extends DatastoreHelperTestBase {
 
     protected static final String TEST_ENTITY_KIND = "test";
     protected static final String SINGLE_PROPERTY_NAME = "prop";
@@ -62,7 +62,7 @@ public abstract class QueryTestBase extends DatastoreTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        return getTckDeployment().addClass(QueryTestBase.class);
+        return getHelperDeployment().addClass(QueryTestBase.class);
     }
 
     protected static Date createDate(int year, int month, int day) {

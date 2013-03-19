@@ -30,9 +30,9 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public abstract class AsyncTestBase extends DatastoreTestBase {
+public abstract class AsyncTestBase extends DatastoreHelperTestBase {
     protected static WebArchive getAsynchDeployment() {
-        return getTckDeployment().addClass(AsyncTestBase.class);
+        return getHelperDeployment().addClass(AsyncTestBase.class);
     }
 
     protected <T> T inTx(Action<T> action) throws Exception {

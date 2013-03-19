@@ -23,7 +23,6 @@ import com.google.appengine.api.datastore.Rating;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.users.User;
 import org.jboss.arquillian.junit.Arquillian;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,48 +53,48 @@ public class OrderingTest extends QueryTestBase {
         super.setUp();
 
         values = asList(
-            asSet((Object)null),
-            asSet((short)-10, -10, -10L),
-            asSet((short)10, 10, 10L, new Rating(10)),
-            asSet((short)20, 20, 20L, new Rating(20)),
-            asSet(createDate(2013, 1, 1)),
-            asSet(createDate(2013, 5, 5)),
-            asSet(1381363199999999L),   // 1 microsecond before 2013-10-10
-            asSet(new Date(1381363200000L), 1381363200000000L), // 2013-10-10
-            asSet(1381363200000001L),   // 1 microsecond after 2013-10-10
-            asSet(false),
-            asSet(true),
-            asSet(
-                "sip sip",
-                new ShortBlob("sip sip".getBytes()),
-                new PostalAddress("sip sip"),
-                new PhoneNumber("sip sip"),
-                new Email("sip sip"),
-                new IMHandle(IMHandle.Scheme.sip, "sip"),   // this is stored as "sip sip"
-                new Link("sip sip"),
-                new Category("sip sip"),
-                new BlobKey("sip sip")
-            ),
-            asSet(
-                "xmpp xmpp",
-                new ShortBlob("xmpp xmpp".getBytes()),
-                new PostalAddress("xmpp xmpp"),
-                new PhoneNumber("xmpp xmpp"),
-                new Email("xmpp xmpp"),
-                new IMHandle(IMHandle.Scheme.xmpp, "xmpp"), // this is stored as "xmpp xmpp"
-                new Link("xmpp xmpp"),
-                new Category("xmpp xmpp"),
-                new BlobKey("xmpp xmpp")
-            ),
-            asSet(-10f, -10d),
-            asSet(10f, 10d),
-            asSet(20f, 20d),
-            asSet(new GeoPt(10f, 10f)),
-            asSet(new GeoPt(20f, 20f)),
-            asSet(new User("aaa", "aaa"), new User("aaa", "otherAuthDomain")),  // ordering must depend only on the email
-            asSet(new User("bbb", "bbb")),
-            asSet(KeyFactory.createKey("kind", "aaa")),
-            asSet(KeyFactory.createKey("kind", "bbb"))
+                asSet((Object) null),
+                asSet((short) -10, -10, -10L),
+                asSet((short) 10, 10, 10L, new Rating(10)),
+                asSet((short) 20, 20, 20L, new Rating(20)),
+                asSet(createDate(2013, 1, 1)),
+                asSet(createDate(2013, 5, 5)),
+                asSet(1381363199999999L),   // 1 microsecond before 2013-10-10
+                asSet(new Date(1381363200000L), 1381363200000000L), // 2013-10-10
+                asSet(1381363200000001L),   // 1 microsecond after 2013-10-10
+                asSet(false),
+                asSet(true),
+                asSet(
+                        "sip sip",
+                        new ShortBlob("sip sip".getBytes()),
+                        new PostalAddress("sip sip"),
+                        new PhoneNumber("sip sip"),
+                        new Email("sip sip"),
+                        new IMHandle(IMHandle.Scheme.sip, "sip"),   // this is stored as "sip sip"
+                        new Link("sip sip"),
+                        new Category("sip sip"),
+                        new BlobKey("sip sip")
+                ),
+                asSet(
+                        "xmpp xmpp",
+                        new ShortBlob("xmpp xmpp".getBytes()),
+                        new PostalAddress("xmpp xmpp"),
+                        new PhoneNumber("xmpp xmpp"),
+                        new Email("xmpp xmpp"),
+                        new IMHandle(IMHandle.Scheme.xmpp, "xmpp"), // this is stored as "xmpp xmpp"
+                        new Link("xmpp xmpp"),
+                        new Category("xmpp xmpp"),
+                        new BlobKey("xmpp xmpp")
+                ),
+                asSet(-10f, -10d),
+                asSet(10f, 10d),
+                asSet(20f, 20d),
+                asSet(new GeoPt(10f, 10f)),
+                asSet(new GeoPt(20f, 20f)),
+                asSet(new User("aaa", "aaa"), new User("aaa", "otherAuthDomain")),  // ordering must depend only on the email
+                asSet(new User("bbb", "bbb")),
+                asSet(KeyFactory.createKey("kind", "aaa")),
+                asSet(KeyFactory.createKey("kind", "bbb"))
         );
 
         entities = new ArrayList<Set<Entity>>();
@@ -145,7 +144,7 @@ public class OrderingTest extends QueryTestBase {
         Iterator<Entity> resultIterator = results.iterator();
         Set<Entity> currentResults = new HashSet<Entity>();
         for (Set<Entity> entities2 : entities) {
-            for (int i=0; i<entities2.size(); i++) {
+            for (int i = 0; i < entities2.size(); i++) {
                 assertTrue(resultIterator.hasNext());
                 currentResults.add(resultIterator.next());
             }

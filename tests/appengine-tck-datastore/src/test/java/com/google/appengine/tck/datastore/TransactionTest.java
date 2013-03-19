@@ -70,7 +70,7 @@ public class TransactionTest extends DatastoreTestBase {
         child.setProperty("stamp", new Date());
         Key cKey = service.put(tx, child);
         tx.commit();
-        Thread.sleep(sleepTime);
+        sync(sleepTime);
 
         Query q = new Query(kindName);
         int count = service.prepare(q).countEntities(FetchOptions.Builder.withDefaults());

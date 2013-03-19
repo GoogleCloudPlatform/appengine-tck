@@ -43,7 +43,6 @@ import com.google.appengine.api.datastore.Rating;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.users.User;
 import org.jboss.arquillian.junit.Arquillian;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

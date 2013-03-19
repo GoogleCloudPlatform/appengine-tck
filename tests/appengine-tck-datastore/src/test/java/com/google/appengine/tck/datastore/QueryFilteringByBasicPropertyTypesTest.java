@@ -26,9 +26,7 @@ package com.google.appengine.tck.datastore;
 
 import com.google.appengine.api.datastore.Entity;
 import org.jboss.arquillian.junit.Arquillian;
-
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
 
 import static com.google.appengine.api.datastore.Query.FilterOperator.GREATER_THAN;

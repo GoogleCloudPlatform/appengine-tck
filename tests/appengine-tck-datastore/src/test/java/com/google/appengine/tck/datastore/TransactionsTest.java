@@ -39,9 +39,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 import org.jboss.arquillian.junit.Arquillian;
-
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
@@ -55,7 +53,7 @@ import static org.junit.Assert.fail;
 @RunWith(Arquillian.class)
 
 //public class TransactionsTest extends SimpleTestBase {
-  public class TransactionsTest extends DatastoreTestBase {
+public class TransactionsTest extends DatastoreTestBase {
 
     @Test
     public void testBasicTxPut() throws Exception {

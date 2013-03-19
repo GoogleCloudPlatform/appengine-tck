@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import com.google.appengine.api.datastore.Entity;
 import org.jboss.arquillian.junit.Arquillian;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -29,10 +28,10 @@ public class QueryFilteringOnCollectionPropertyTest extends QueryTestBase {
     public void queryWithMultipleInequalityFiltersOnMultivaluedPropertyReturnsNothing() throws Exception {
         storeTestEntityWithSingleProperty(Arrays.asList(1, 2));
         assertThat(
-            whenFilteringWith(and(
-                new FilterPredicate(SINGLE_PROPERTY_NAME, GREATER_THAN, 1),
-                new FilterPredicate(SINGLE_PROPERTY_NAME, LESS_THAN, 2))),
-            queryReturnsNothing());
+                whenFilteringWith(and(
+                        new FilterPredicate(SINGLE_PROPERTY_NAME, GREATER_THAN, 1),
+                        new FilterPredicate(SINGLE_PROPERTY_NAME, LESS_THAN, 2))),
+                queryReturnsNothing());
     }
 
 
@@ -40,10 +39,10 @@ public class QueryFilteringOnCollectionPropertyTest extends QueryTestBase {
     public void queryWithMultipleEqualityFiltersOnMultivaluedPropertyReturnsEntityIfAllFiltersMatch() throws Exception {
         Entity entity = storeTestEntityWithSingleProperty(Arrays.asList(1, 2));
         assertThat(
-            whenFilteringWith(and(
-                new FilterPredicate(SINGLE_PROPERTY_NAME, EQUAL, 1),
-                new FilterPredicate(SINGLE_PROPERTY_NAME, EQUAL, 2))),
-            queryReturns(entity));
+                whenFilteringWith(and(
+                        new FilterPredicate(SINGLE_PROPERTY_NAME, EQUAL, 1),
+                        new FilterPredicate(SINGLE_PROPERTY_NAME, EQUAL, 2))),
+                queryReturns(entity));
     }
 
     @Test
@@ -54,10 +53,10 @@ public class QueryFilteringOnCollectionPropertyTest extends QueryTestBase {
         assertThat(whenFilteringWith(new FilterPredicate(SINGLE_PROPERTY_NAME, NOT_EQUAL, 1)), queryReturns(entity12));
 
         assertThat(
-            whenFilteringWith(and(
-                new FilterPredicate(SINGLE_PROPERTY_NAME, NOT_EQUAL, 1),
-                new FilterPredicate(SINGLE_PROPERTY_NAME, NOT_EQUAL, 2))),
-            queryReturns(entity123));    // NOTE: should only match entity123, but not entity12
+                whenFilteringWith(and(
+                        new FilterPredicate(SINGLE_PROPERTY_NAME, NOT_EQUAL, 1),
+                        new FilterPredicate(SINGLE_PROPERTY_NAME, NOT_EQUAL, 2))),
+                queryReturns(entity123));    // NOTE: should only match entity123, but not entity12
     }
 
 }

@@ -29,11 +29,11 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  * @author <a href="mailto:marko.luksa@gmail.com">Marko Luksa</a>
  */
-public abstract class SimpleTestBase extends DatastoreTestBase {
+public abstract class SimpleTestBase extends DatastoreHelperTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        return getTckDeployment().addClass(SimpleTestBase.class);
+        return getHelperDeployment().addClass(SimpleTestBase.class);
     }
 
 }

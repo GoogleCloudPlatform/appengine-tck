@@ -33,10 +33,8 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Text;
 import org.jboss.arquillian.junit.Arquillian;
-
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
 
 import static com.google.appengine.api.datastore.Query.FilterOperator.EQUAL;
@@ -53,10 +51,10 @@ import static org.junit.Assert.assertTrue;
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 @RunWith(Arquillian.class)
-
 public class UnindexedPropertiesTest extends SimpleTestBase {
 
     private static final Field PROPERTY_MAP_FIELD;
+
     static {
         try {
             PROPERTY_MAP_FIELD = Entity.class.getDeclaredField("propertyMap");
@@ -65,7 +63,6 @@ public class UnindexedPropertiesTest extends SimpleTestBase {
         }
         PROPERTY_MAP_FIELD.setAccessible(true);
     }
-
 
     @Test
     public void testUnindexedProperties() throws Exception {
@@ -126,6 +123,6 @@ public class UnindexedPropertiesTest extends SimpleTestBase {
     }
 
     private Map getRawPropertyMap(Entity entity) throws IllegalAccessException {
-        return ((Map)PROPERTY_MAP_FIELD.get(entity));
+        return ((Map) PROPERTY_MAP_FIELD.get(entity));
     }
 }

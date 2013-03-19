@@ -35,9 +35,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import org.jboss.arquillian.junit.Arquillian;
-
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
 
 import static com.google.appengine.api.datastore.Query.FilterOperator.EQUAL;
@@ -117,9 +115,9 @@ public class QueryBasicsTest extends QueryTestBase {
                 .store();
 
         Query query = new Query("Person")
-            .setFilter(Query.CompositeFilterOperator.and(
-                new Query.FilterPredicate("name", EQUAL, "John"),
-                new Query.FilterPredicate("lastName", EQUAL, "Doe")));
+                .setFilter(Query.CompositeFilterOperator.and(
+                        new Query.FilterPredicate("name", EQUAL, "John"),
+                        new Query.FilterPredicate("lastName", EQUAL, "Doe")));
 
         assertSingleResult(johnDoe, query);
     }
@@ -127,8 +125,8 @@ public class QueryBasicsTest extends QueryTestBase {
     @Test
     public void testNullPropertyValue() throws Exception {
         createEntity("Entry", 1)
-            .withProperty("user", null)
-            .store();
+                .withProperty("user", null)
+                .store();
 
         Entity entity = service.prepare(new Query("Entry")).asSingleEntity();
         assertNull(entity.getProperty("user"));
@@ -137,23 +135,23 @@ public class QueryBasicsTest extends QueryTestBase {
     @Test
     public void testFilteringWithNotEqualReturnsOnlyEntitiesContainingTheProperty() throws Exception {
         Entity e1 = createEntity("Entry", 1)
-            .withProperty("foo", "aaa")
-            .store();
+                .withProperty("foo", "aaa")
+                .store();
 
         createEntity("Entry", 2)
-            .withProperty("bar", "aaa")
-            .store();
+                .withProperty("bar", "aaa")
+                .store();
 
         Query query = new Query("Entry")
-            .setFilter(new Query.FilterPredicate("foo", NOT_EQUAL, "bbb"));
+                .setFilter(new Query.FilterPredicate("foo", NOT_EQUAL, "bbb"));
         assertEquals(Collections.singletonList(e1), service.prepare(query).asList(withDefaults()));
     }
 
     @Test
     public void testFilterEqualNull() throws Exception {
         createEntity("Entry", 1)
-            .withProperty("user", null)
-            .store();
+                .withProperty("user", null)
+                .store();
 
         Query query = new Query("Entry").setFilter(new Query.FilterPredicate("user", EQUAL, null));
         assertNotNull(service.prepare(query).asSingleEntity());
@@ -162,8 +160,8 @@ public class QueryBasicsTest extends QueryTestBase {
     @Test
     public void testFilterNotEqualNull() throws Exception {
         createEntity("Entry", 1)
-            .withProperty("user", "joe")
-            .store();
+                .withProperty("user", "joe")
+                .store();
 
         Query query = new Query("Entry").setFilter(new Query.FilterPredicate("user", NOT_EQUAL, null));
         assertNotNull(service.prepare(query).asSingleEntity());
@@ -172,8 +170,8 @@ public class QueryBasicsTest extends QueryTestBase {
     @Test
     public void testFilterInNull() throws Exception {
         createEntity("Entry", 1)
-            .withProperty("user", null)
-            .store();
+                .withProperty("user", null)
+                .store();
 
         Query query = new Query("Entry").setFilter(new Query.FilterPredicate("user", IN, Arrays.asList(null, "foo")));
         assertNotNull(service.prepare(query).asSingleEntity());
@@ -182,8 +180,8 @@ public class QueryBasicsTest extends QueryTestBase {
     @Test
     public void testFilterOnMultiValuedProperty() throws Exception {
         createEntity("Entry", 1)
-            .withProperty("letters", Arrays.asList("a", "b", "c"))
-            .store();
+                .withProperty("letters", Arrays.asList("a", "b", "c"))
+                .store();
 
         Query query = new Query("Entry").setFilter(new Query.FilterPredicate("letters", EQUAL, "a"));
         assertNotNull(service.prepare(query).asSingleEntity());
@@ -224,9 +222,9 @@ public class QueryBasicsTest extends QueryTestBase {
     @Test
     public void testQueryWithInequalityFiltersOnMultiplePropertiesThrowsIllegalArgumentException() throws Exception {
         Query query = createQuery()
-            .setFilter(Query.CompositeFilterOperator.and(
-                new Query.FilterPredicate("weight", GREATER_THAN, 3),
-                new Query.FilterPredicate("size", GREATER_THAN, 5)));
+                .setFilter(Query.CompositeFilterOperator.and(
+                        new Query.FilterPredicate("weight", GREATER_THAN, 3),
+                        new Query.FilterPredicate("size", GREATER_THAN, 5)));
 
         assertIAEWhenAccessingResult(service.prepare(query));
     }
@@ -234,8 +232,8 @@ public class QueryBasicsTest extends QueryTestBase {
     @Test
     public void testQueryWithInequalityFilterAndFirstSortOnDifferentPropertyThrowsIllegalArgumentException() throws Exception {
         Query query = createQuery()
-            .setFilter(new Query.FilterPredicate("foo", GREATER_THAN, 3))
-            .addSort("bar");
+                .setFilter(new Query.FilterPredicate("foo", GREATER_THAN, 3))
+                .addSort("bar");
 
         assertIAEWhenAccessingResult(service.prepare(query));
     }
@@ -243,9 +241,9 @@ public class QueryBasicsTest extends QueryTestBase {
     @Test
     public void testQueryWithInequalityFilterAndFirstSortOnSamePropertyIsAllowed() throws Exception {
         Query query = createQuery()
-            .setFilter(new Query.FilterPredicate("foo", GREATER_THAN, 3))
-            .addSort("foo")
-            .addSort("bar");
+                .setFilter(new Query.FilterPredicate("foo", GREATER_THAN, 3))
+                .addSort("foo")
+                .addSort("bar");
 
         service.prepare(query).asList(withDefaults());
     }
@@ -254,23 +252,23 @@ public class QueryBasicsTest extends QueryTestBase {
     @Test
     public void testDeprecatedFiltersAreSupported() throws Exception {
         Entity johnDoe = createEntity("Person", 1)
-            .withProperty("name", "John")
-            .withProperty("lastName", "Doe")
-            .store();
+                .withProperty("name", "John")
+                .withProperty("lastName", "Doe")
+                .store();
 
         Entity johnBooks = createEntity("Person", 2)
-            .withProperty("name", "John")
-            .withProperty("lastName", "Books")
-            .store();
+                .withProperty("name", "John")
+                .withProperty("lastName", "Books")
+                .store();
 
         Entity janeDoe = createEntity("Person", 3)
-            .withProperty("name", "Jane")
-            .withProperty("lastName", "Doe")
-            .store();
+                .withProperty("name", "Jane")
+                .withProperty("lastName", "Doe")
+                .store();
 
         Query query = new Query("Person")
-            .addFilter("name", EQUAL, "John")
-            .addFilter("lastName", EQUAL, "Doe");
+                .addFilter("name", EQUAL, "John")
+                .addFilter("lastName", EQUAL, "Doe");
 
         assertSingleResult(johnDoe, query);
     }

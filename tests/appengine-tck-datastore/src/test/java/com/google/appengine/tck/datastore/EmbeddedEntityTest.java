@@ -26,9 +26,7 @@ import com.google.appengine.api.datastore.EmbeddedEntity;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import org.jboss.arquillian.junit.Arquillian;
-
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
@@ -37,12 +35,10 @@ import static org.junit.Assert.assertEquals;
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 @RunWith(Arquillian.class)
-
 public class EmbeddedEntityTest extends SimpleTestBase {
 
     @Test
     public void test() throws Exception {
-
         EmbeddedEntity embedded = new EmbeddedEntity();
         embedded.setProperty("string", "foo");
 
