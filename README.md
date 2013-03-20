@@ -80,9 +80,7 @@ This are the current enviroments:
 
 2) GAE Appspot
 
-    mvn clean install -Pappspot -Dappengine.sdk.root=<PATH_TO_SDK> -Dappengine.userId=<USER_ID> -appengine.password=<USER_PASSWORD>
-
-And you need to make sure that the app-id in appengine-web.xml file is the one pointing to your appspot instance.
+    mvn clean install -Pappspot -Dappengine.sdk.root=<PATH_TO_SDK> -Dappengine.userId=<USER_ID> -Dappengine.password=<USER_PASSWORD> -Dappengine.appId=<APPSPOT_APP_ID>
 
 3) JBoss CapeDwarf
 
