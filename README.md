@@ -155,3 +155,38 @@ e.g. running MapReduce tests against SDK
     mvn clean install -Psdk,mapreduce -Dappengine.sdk.root=<PATH_TO_SDK>
 
 Note: adapting the tests to run against real environment can sometime be a huge (bytecode) hack. :-)
+
+Writing the test
+----------------
+
+As we already mentioned, all tests are Arquillian and ShrinkWrap based,
+with JUnit being the actual test framework used, and Maven Surefire plugin to run it all.
+
+But there are a few guidelines we need to follow, specially with regard to "multisuite".
+
+Few basic Arquillian rules:
+* each test class needs to have @RunWith(Arquillian.class) in its class hierarchy
+* there must be exactly one (in whole class hierarchy) static method marked with @Deployment, returning WebArchive instance
+
+Few basic ShrinkWrap rules:
+ * do not forget to add base test classes to deployment, only actual test class is added by default
+ * make sure .war's META-INF is in WEB-INF/classes/META-INF, as per web spec
+
+Few basic "multisuite" rules:
+* we merge all WebArchive instances from all tests into one single uber WebArchive instance
+* luckily there is a notification filter, which spits out warning by default if resources overlap
+* notifications can be changed to failure if needed, for more strict resource usage in tests
+* test classes can be excluded from "multisuite" with @IgnoreMultisuite
+
+Why all this fuss about "multisuite"?
+Imagine two different web.xml files, where one test needs servlet A, and the other one needs servlet B.
+In multisuite, there is only one web.xml - first come, first serve - so one test could miss its servlet.
+Which means we need to carefully craft test recources.
+This mostly results in more middle / abstract classes, holding common resources.
+
+To make things a bit easier, we already introduced a few abstract / helper classes and methods.
+* each test class should extend TestBase class
+* to get WebArchive instance use TestBase::getTckDeployment with proper TestContext instance
+* if any custom behavior needs to be added per test environment, add this via TestLifecycles::before or TestLifecycles::after
+* LibUtils class can be used to grab whole libraries / jars from Maven and attach them to .war as library (WEB-INF/lib)
+* one can add its own multisuite ScanStrategy and NotificationFilter; see ScanMultiProvider class for more details
