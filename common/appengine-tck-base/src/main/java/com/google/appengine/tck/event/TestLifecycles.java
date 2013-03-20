@@ -32,6 +32,10 @@ public class TestLifecycles {
         }
     }
 
+    public static TestLifecycleEvent createMergeLifecycleEvent(Class<?> caller, WebArchive deployment) {
+        return new MergeLifecycleEventImpl(caller, deployment);
+    }
+
     public static TestLifecycleEvent createTestContextLifecycleEvent(Class<?> caller, TestContext context) {
         return new TestContextLifecycleEventImpl(caller, context);
     }

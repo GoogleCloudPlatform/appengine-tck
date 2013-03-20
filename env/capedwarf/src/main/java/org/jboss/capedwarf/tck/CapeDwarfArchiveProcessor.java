@@ -19,14 +19,11 @@ public class CapeDwarfArchiveProcessor implements ApplicationArchiveProcessor {
     public void process(Archive<?> archive, TestClass testClass) {
         if (archive instanceof WebArchive) {
             WebArchive war = (WebArchive) archive;
-            addService(war, TestLifecycle.class, CapeDwarfTestContextEnhancer.class, CapeDwarfServicesLifecycle.class);
-
-            Class<?> clazz = testClass.getJavaClass();
-            if (clazz != null && clazz.getName().contains("tck.datastore") == false) {
-                Properties properties = new Properties();
-                properties.put("disable.metadata", Boolean.TRUE.toString());
-                addCompatibility(war, properties);
-            }
+            addService(war, TestLifecycle.class,
+                    CapeDwarfTestContextEnhancer.class,
+                    CapeDwarfServicesLifecycle.class,
+                    CapeDwarfMergeLifecycle.class
+            );
         }
     }
 
@@ -39,7 +36,7 @@ public class CapeDwarfArchiveProcessor implements ApplicationArchiveProcessor {
         archive.addAsWebInfResource(new StringAsset(builder.toString()), "classes/META-INF/services/" + serviceClass.getName());
     }
 
-    protected void addCompatibility(WebArchive war, Properties properties) {
+    static void addCompatibility(WebArchive war, Properties properties) {
         final StringWriter writer = new StringWriter();
         try {
             properties.store(writer, "CapeDwarf testing!");

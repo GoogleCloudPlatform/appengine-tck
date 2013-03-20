@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import com.google.appengine.tck.category.IgnoreMultisuite;
+import com.google.appengine.tck.event.TestLifecycleEvent;
+import com.google.appengine.tck.event.TestLifecycles;
 import com.google.appengine.testing.e2e.multisuite.MultiContext;
 import com.google.appengine.testing.e2e.multisuite.MultiProvider;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -72,8 +74,15 @@ public class ScanMultiProvider implements MultiProvider, ScanStrategy {
                     context.addClass(clazz);
 
                     if (strategy.doMerge(context, clazz)) {
-                        WebArchive war = readWebArchive(clazz);
-                        merge(context, war);
+                        TestLifecycleEvent event = TestLifecycles.createMergeLifecycleEvent(clazz, context.getWar());
+
+                        TestLifecycles.before(event);
+                        try {
+                            WebArchive war = readWebArchive(clazz);
+                            merge(context, war);
+                        } finally {
+                            TestLifecycles.after(event);
+                        }
                     }
                 } else {
                     log.info("Ignoring test class: " + clazz.getName());
