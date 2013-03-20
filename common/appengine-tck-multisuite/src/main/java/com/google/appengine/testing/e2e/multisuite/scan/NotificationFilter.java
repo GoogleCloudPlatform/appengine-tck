@@ -3,10 +3,10 @@ package com.google.appengine.testing.e2e.multisuite.scan;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
+import com.google.appengine.tck.util.Utils;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.Filter;
 import org.jboss.shrinkwrap.api.Node;
@@ -53,21 +53,13 @@ public abstract class NotificationFilter implements Filter<ArchivePath> {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             InputStream is = asset.openStream();
             try {
-                copyStream(is, baos);
+                Utils.copyStream(is, baos);
             } finally {
-                is.close();
+                Utils.safeClose(is);
             }
             return baos.toByteArray();
         } catch (IOException e) {
             throw new IllegalStateException(e);
-        }
-    }
-
-    static void copyStream(final InputStream in, final OutputStream out) throws IOException {
-        final byte[] bytes = new byte[8192];
-        int cnt;
-        while ((cnt = in.read(bytes)) != -1) {
-            out.write(bytes, 0, cnt);
         }
     }
 }

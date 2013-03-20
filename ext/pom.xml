@@ -19,6 +19,7 @@
         <!-- External -->
         <module>datanucleus</module>
         <module>mapreduce</module>
+        <module>misc</module>
     </modules>
 
     <profiles>
