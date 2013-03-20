@@ -32,7 +32,7 @@
         <version.javax.servlet>3.0.1</version.javax.servlet>
         <version.junit>4.10</version.junit>
         <version.arquillian>1.0.3.Final</version.arquillian>
-        <version.arquillian.gae>1.0.0.Alpha7</version.arquillian.gae>
+        <version.arquillian.gae>1.0.0.Alpha8</version.arquillian.gae>
         <version.shrinkwrap>1.1.0</version.shrinkwrap>
         <version.shrinkwrap.maven-resolver>2.0.0-alpha-4</version.shrinkwrap.maven-resolver>
 
