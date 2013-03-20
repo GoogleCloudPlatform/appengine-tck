@@ -2,6 +2,7 @@ package com.google.appengine.testing.e2e.multisuite;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -20,8 +21,14 @@ public class MultiContext {
         this.classLoader = classLoader;
     }
 
-    public static Object newInstance(ClassLoader cl, String strategyClass) throws Exception {
-        return loadClass(cl, strategyClass).newInstance();
+    public static Object newInstance(ClassLoader cl, String className) throws Exception {
+        return loadClass(cl, className).newInstance();
+    }
+
+    public static Object newInstance(ClassLoader cl, String className, Object[] args, Class[] types) throws Exception {
+        Class<?> clazz = loadClass(cl, className);
+        Constructor<?> ctor = clazz.getConstructor(types);
+        return ctor.newInstance(args);
     }
 
     public static Class<?> loadClass(ClassLoader cl, String className) throws Exception {

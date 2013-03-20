@@ -12,6 +12,7 @@ import com.google.appengine.tck.base.TestBase;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +32,9 @@ public class CapabilityTest extends TestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        return getTckDeployment();
+        WebArchive war = getTckDeployment();
+        war.addAsWebInfResource(new StringAsset("capability"), "dummy.txt");
+        return war;
     }
 
     @Test

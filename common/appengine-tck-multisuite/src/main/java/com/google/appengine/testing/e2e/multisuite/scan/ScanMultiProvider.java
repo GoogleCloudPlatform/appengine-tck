@@ -15,6 +15,8 @@ import com.google.appengine.tck.event.TestLifecycles;
 import com.google.appengine.testing.e2e.multisuite.MultiContext;
 import com.google.appengine.testing.e2e.multisuite.MultiProvider;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.ArchivePath;
+import org.jboss.shrinkwrap.api.Filter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.experimental.categories.Category;
 
@@ -33,6 +35,7 @@ public class ScanMultiProvider implements MultiProvider, ScanStrategy {
 
     private final Pattern classPattern;
     private final ScanStrategy strategy;
+    private final String filterClass;
 
     public ScanMultiProvider() throws Exception {
         this(null);
@@ -53,6 +56,17 @@ public class ScanMultiProvider implements MultiProvider, ScanStrategy {
             log.info("New scan strategy: " + strategy);
         } else {
             strategy = this;
+        }
+
+        filterClass = properties.getProperty("filter");
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Filter<ArchivePath> createFilter(WebArchive uber, WebArchive archive) throws Exception {
+        if (filterClass != null) {
+            return (Filter<ArchivePath>) MultiContext.newInstance(ScanStrategy.class.getClassLoader(), filterClass, new Object[]{uber, archive}, new Class[]{WebArchive.class, WebArchive.class});
+        } else {
+            return new WarningFilter(uber, archive);
         }
     }
 
@@ -104,9 +118,10 @@ public class ScanMultiProvider implements MultiProvider, ScanStrategy {
         return false;
     }
 
-    protected void merge(MultiContext context, WebArchive war) {
+    protected void merge(MultiContext context, WebArchive war) throws Exception {
         WebArchive uber = context.getWar();
-        uber.merge(war);
+        Filter<ArchivePath> filter = createFilter(uber, war);
+        uber.merge(war, filter);
     }
 
     protected WebArchive readWebArchive(Class<?> clazz) throws Exception {
