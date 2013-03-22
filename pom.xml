@@ -62,8 +62,8 @@
 	    <sonar.language>java</sonar.language>
 
         <!-- Build configuration -->
-        <maven.compiler.argument.source>1.6</maven.compiler.argument.source>
-        <maven.compiler.argument.target>1.6</maven.compiler.argument.target>
+        <maven.compiler.argument.source>1.7</maven.compiler.argument.source>
+        <maven.compiler.argument.target>1.7</maven.compiler.argument.target>
         <!-- Shared -->
         <version.compiler.plugin>3.0</version.compiler.plugin>
         <version.surefire.plugin>2.12.3</version.surefire.plugin>
