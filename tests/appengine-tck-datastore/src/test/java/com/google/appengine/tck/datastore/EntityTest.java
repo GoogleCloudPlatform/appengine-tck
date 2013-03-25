@@ -3,6 +3,7 @@
 package com.google.appengine.tck.datastore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import static org.junit.Assert.assertEquals;
  * datastore key data type test.
  *
  * @author hchen@google.com (Hannah Chen)
+ * @author mluksa@redhat.com (Marko Luksa)
  */
 @RunWith(Arquillian.class)
 public class EntityTest extends DatastoreTestBase {
@@ -69,6 +71,15 @@ public class EntityTest extends DatastoreTestBase {
         service.put(newRec2);
         assertEquals(newRec, newRec2);
         assertEquals(newDate, newRec2.getProperty("stamp"));
+    }
+
+    @Test
+    public void testEntityGainsNoAdditionalPropertiesWhenStored() throws Exception {
+      clearData(kindName);
+      Entity entity = new Entity(kindName);
+      Key key = service.put(entity);
+      entity = service.get(key);
+      assertEquals(Collections.<String, Object>emptyMap(), entity.getProperties());
     }
 
     @Override
