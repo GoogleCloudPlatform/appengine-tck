@@ -85,7 +85,7 @@ public class UserServiceTest extends UserTestBase {
 //    }
 //  }
 
-    @Test
+    @Test(expected = IllegalStateException.class) // per javadoc
     // TODO: Remove after test runs with authenticated admin user.
     public void testIsUserAdmin() {
         boolean userAdmin = userService.isUserAdmin();
