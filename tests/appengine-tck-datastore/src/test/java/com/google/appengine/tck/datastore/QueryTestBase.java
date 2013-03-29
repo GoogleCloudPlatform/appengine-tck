@@ -108,12 +108,23 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
                 .store();
     }
 
+    protected Entity storeTestEntityWithSingleProperty(Key parent, Object value) {
+        TestEntityBuilder testEntityBuilder =  createEntity(TEST_ENTITY_KIND, parent);
+        return testEntityBuilder
+            .withProperty(SINGLE_PROPERTY_NAME, value)
+            .store();
+    }
+
     protected Query createQuery(Query.FilterOperator operator, Object value) {
         return createQuery(createFilter(operator, value));
     }
 
     private Query createQuery(Query.Filter filter) {
         return createQuery().setFilter(filter);
+    }
+
+    private Query createQuery(Query.Filter filter, Key parent) {
+        return createQuery().setAncestor(parent).setFilter(filter);
     }
 
     private Query.FilterPredicate createFilter(Query.FilterOperator operator, Object value) {
@@ -142,6 +153,12 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
 
     protected Set<Entity> whenFilteringWith(Query.Filter filter) {
         Query query = createQuery(filter);
+        List<Entity> results = service.prepare(query).asList(withDefaults());
+        return new HashSet<Entity>(results);
+    }
+
+    protected Set<Entity> whenFilteringWith(Query.Filter filter, Key parent) {
+        Query query = createQuery(filter, parent);
         List<Entity> results = service.prepare(query).asList(withDefaults());
         return new HashSet<Entity>(results);
     }

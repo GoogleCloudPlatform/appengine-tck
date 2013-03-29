@@ -207,4 +207,12 @@
         <property name="geoptData" direction="asc"/>
     </datastore-index>
 
+    <datastore-index kind="test" ancestor="true" source="manual">
+        <property name="prop" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="test" ancestor="true" source="manual">
+        <property name="prop" direction="desc"/>
+    </datastore-index>
+
 </datastore-indexes>

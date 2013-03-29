@@ -55,10 +55,6 @@ public abstract class DatastoreHelperTestBase extends TestBase {
 
     @After
     public void tearDown() {
-        List<Entity> entities = service.prepare(new Query().setKeysOnly()).asList(withDefaults());
-        for (Entity entity : entities) {
-            service.delete(entity.getKey());
-        }
         service = null;
     }
 
@@ -208,11 +204,22 @@ public abstract class DatastoreHelperTestBase extends TestBase {
         return createTestEntity(kind, 1);
     }
 
-    protected Entity createTestEntity(String kind, int id) {
+    protected Entity createTestEntity(String kind, long id) {
         Key key = KeyFactory.createKey(kind, id);
         Entity entity = new Entity(key);
         entity.setProperty("text", "Some text.");
         return entity;
+    }
+
+    protected Entity createTestEntity(String kind, Key key) {
+        Entity entity = new Entity(kind, key);
+        entity.setProperty("text", "Some text.");
+        return entity;
+    }
+
+    protected Entity createTestEntityUniqueMethodKey(String kind, String testMethodName) {
+        String key = testMethodName + "-" + System.currentTimeMillis();
+        return new Entity(kind, key);
     }
 
     protected void assertIAEWhenAccessingResult(PreparedQuery preparedQuery) {
