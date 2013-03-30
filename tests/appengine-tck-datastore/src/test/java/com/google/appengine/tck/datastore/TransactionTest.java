@@ -297,7 +297,7 @@ public class TransactionTest extends DatastoreTestBase {
     }
 
     @Override
-    public void clearData(String kind) throws InterruptedException {
+    public void clearData(String kind) {
         List<Key> elist = new ArrayList<Key>();
         Query query = new Query(kind);
         for (Entity readRec : service.prepare(query).asIterable()) {

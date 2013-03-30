@@ -40,7 +40,7 @@ public class QueryFilteringOnCollectionPropertyTest extends QueryTestBase {
     @Test
     public void queryWithMultipleInequalityFiltersOnMultivaluedPropertyReturnsNothing() throws Exception {
         String testMethodName = "queryWithMultipleEqualityFiltersOnMultivaluedPropertyReturnsEntityIfAllFiltersMatch";
-        Entity parentEntity = createTestEntityUniqueMethodKey(TEST_ENTITY_KIND, testMethodName);
+        Entity parentEntity = createTestEntityWithUniqueMethodNameKey(TEST_ENTITY_KIND, testMethodName);
         Key parentKey = parentEntity.getKey();
 
         storeTestEntityWithSingleProperty(parentKey, Arrays.asList(1, 2));
@@ -56,7 +56,7 @@ public class QueryFilteringOnCollectionPropertyTest extends QueryTestBase {
     @Test
     public void queryWithMultipleEqualityFiltersOnMultivaluedPropertyReturnsEntityIfAllFiltersMatch() throws Exception {
         String testMethodName = "queryWithMultipleInequalityFiltersOnMultivaluedPropertyReturnsNothing";
-        Entity parentEntity = createTestEntityUniqueMethodKey(TEST_ENTITY_KIND, testMethodName);
+        Entity parentEntity = createTestEntityWithUniqueMethodNameKey(TEST_ENTITY_KIND, testMethodName);
         Key parentKey = parentEntity.getKey();
 
         Entity entity = storeTestEntityWithSingleProperty(parentKey, Arrays.asList(1, 2));
@@ -73,7 +73,7 @@ public class QueryFilteringOnCollectionPropertyTest extends QueryTestBase {
     @Test
     public void queryWithNotEqualFilter() throws Exception {
         String testMethodName = "queryWithNotEqualFilter";
-        Entity parentEntity = createTestEntityUniqueMethodKey(TEST_ENTITY_KIND, testMethodName);
+        Entity parentEntity = createTestEntityWithUniqueMethodNameKey(TEST_ENTITY_KIND, testMethodName);
         Key parentKey = parentEntity.getKey();
 
         Entity entity12 = storeTestEntityWithSingleProperty(parentKey, Arrays.asList(1, 2));

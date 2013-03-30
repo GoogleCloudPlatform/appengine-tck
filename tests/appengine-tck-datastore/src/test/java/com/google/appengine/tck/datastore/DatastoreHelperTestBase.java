@@ -62,15 +62,19 @@ public abstract class DatastoreHelperTestBase extends TestBase {
         return FetchOptions.Builder.withDefaults();
     }
 
-    protected void clearData(String kind) throws InterruptedException {
+    protected void clearData(String kind) {
+        clearData(kind, rootKey, waitTime);
+    }
+
+    protected void clearData(String kind, Key parentKey, int waitMilliSec) {
         List<Key> eList = new ArrayList<Key>();
-        Query query = new Query(kind, rootKey);
+        Query query = new Query(kind, parentKey);
         for (Entity readRec : service.prepare(query).asIterable()) {
             eList.add(readRec.getKey());
         }
         if (eList.size() > 0) {
             service.delete(eList);
-            sync(waitTime);
+            sync(waitMilliSec);
         }
     }
 
@@ -150,6 +154,13 @@ public abstract class DatastoreHelperTestBase extends TestBase {
 
     protected void ensureRootEntityExists() throws InterruptedException {
         Query query = new Query(rootKind);
+
+        // Clean up previous run
+        List<Entity> entities = service.prepare(query).asList(withDefaults());
+        for (Entity entity : entities) {
+           service.delete(entity.getKey());
+        }
+
         Entity rootEntity = service.prepare(query).asSingleEntity();
         if (rootEntity == null) {
             rootEntity = new Entity(rootKind);
@@ -217,7 +228,7 @@ public abstract class DatastoreHelperTestBase extends TestBase {
         return entity;
     }
 
-    protected Entity createTestEntityUniqueMethodKey(String kind, String testMethodName) {
+    protected Entity createTestEntityWithUniqueMethodNameKey(String kind, String testMethodName) {
         String key = testMethodName + "-" + System.currentTimeMillis();
         return new Entity(kind, key);
     }

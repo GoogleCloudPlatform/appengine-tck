@@ -27,7 +27,7 @@ public class EntityTest extends DatastoreTestBase {
     private String kindName = "EntityData";
 
     @Test
-    public void testKeyName() throws InterruptedException {
+    public void testKeyName() {
         clearData(kindName);
         Entity newRec = new Entity(kindName, "test4116132", null);
         newRec.setProperty("stamp", new Date());
@@ -43,7 +43,7 @@ public class EntityTest extends DatastoreTestBase {
     }
 
     @Test
-    public void testKeyId() throws InterruptedException {
+    public void testKeyId() {
         clearData(kindName);
         Entity newRec = new Entity(kindName, 4116132, null);
         newRec.setProperty("stamp", new Date());
@@ -59,7 +59,7 @@ public class EntityTest extends DatastoreTestBase {
     }
 
     @Test
-    public void testKey() throws InterruptedException {
+    public void testKey() {
         clearData(kindName);
         Entity newRec = new Entity(kindName);
         newRec.setProperty("stamp", new Date());
@@ -80,18 +80,5 @@ public class EntityTest extends DatastoreTestBase {
       Key key = service.put(entity);
       entity = service.get(key);
       assertEquals(Collections.<String, Object>emptyMap(), entity.getProperties());
-    }
-
-    @Override
-    public void clearData(String kind) throws InterruptedException {
-        List<Key> eList = new ArrayList<Key>();
-        Query query = new Query(kind);
-        for (Entity readRec : service.prepare(query).asIterable()) {
-            eList.add(readRec.getKey());
-        }
-        if (eList.size() > 0) {
-            service.delete(eList);
-            sync(waitTime);
-        }
     }
 }

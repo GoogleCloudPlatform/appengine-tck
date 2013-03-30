@@ -25,6 +25,8 @@
 package com.google.appengine.tck.datastore;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,14 +51,20 @@ public class QueryFilteringByBasicPropertyTypesTest extends QueryTestBase {
 
     @Test
     public void testInequalityFilterWithNegativeInteger() {
-        Entity minus2 = buildTestEntity().withProperty("prop", -2).store();
-        Entity minus1 = buildTestEntity().withProperty("prop", -1).store();
-        Entity zero = buildTestEntity().withProperty("prop", 0).store();
-        Entity plus1 = buildTestEntity().withProperty("prop", 1).store();
-        Entity plus2 = buildTestEntity().withProperty("prop", 2).store();
+        String methodName = "testInequalityFilterWithNegativeInteger";
+        Entity parentEntity = createTestEntityWithUniqueMethodNameKey(TEST_ENTITY_KIND, methodName);
+        Key key = parentEntity.getKey();
 
-        assertThat(whenFilteringBy(GREATER_THAN, -1), queryReturns(zero, plus1, plus2));
-        assertThat(whenFilteringBy(LESS_THAN_OR_EQUAL, -1), queryReturns(minus2, minus1));
+        Entity minus2 = buildTestEntity(key).withProperty("prop", -2).store();
+        Entity minus1 = buildTestEntity(key).withProperty("prop", -1).store();
+        Entity zero = buildTestEntity(key).withProperty("prop", 0).store();
+        Entity plus1 = buildTestEntity(key).withProperty("prop", 1).store();
+        Entity plus2 = buildTestEntity(key).withProperty("prop", 2).store();
+
+        assertThat(whenFilteringBy(GREATER_THAN, -1, key), queryReturns(zero, plus1, plus2));
+        assertThat(whenFilteringBy(LESS_THAN_OR_EQUAL, -1, key), queryReturns(minus2, minus1));
+
+        clearData(TEST_ENTITY_KIND, key, 0);
     }
 
     @Test

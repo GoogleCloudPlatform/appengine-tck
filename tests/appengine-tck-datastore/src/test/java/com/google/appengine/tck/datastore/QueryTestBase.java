@@ -90,6 +90,10 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
         return createEntity(TEST_ENTITY_KIND, ++idSequence);
     }
 
+    protected TestEntityBuilder buildTestEntity(Key parentKey) {
+        return createEntity(TEST_ENTITY_KIND, parentKey);
+    }
+
     protected TestEntityBuilder createEntity(String kind, int id) {
         return new TestEntityBuilder(kind, id);
     }
@@ -151,6 +155,10 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
         return whenFilteringWith(createFilter(operator, value));
     }
 
+    protected Set<Entity> whenFilteringBy(Query.FilterOperator operator, Object value, Key parent) {
+        return whenFilteringWith(createFilter(operator, value), parent);
+    }
+
     protected Set<Entity> whenFilteringWith(Query.Filter filter) {
         Query query = createQuery(filter);
         List<Entity> results = service.prepare(query).asList(withDefaults());
@@ -179,20 +187,20 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
     protected void testInequalityQueries(Object lowValue, Object midValue, Object highValue) {
         // we don't store the entities in a nice order (low, then mid, then high), because that could make the test
         // pass if the order in which the entities were stored was used for comparing.
-        Entity highEntity = storeTestEntityWithSingleProperty(highValue);
-        Entity lowEntity = storeTestEntityWithSingleProperty(lowValue);
-        Entity midEntity = storeTestEntityWithSingleProperty(midValue);
-        Entity nullEntity = storeTestEntityWithSingleProperty(null);
+        Entity parentEntity = createTestEntityWithUniqueMethodNameKey(TEST_ENTITY_KIND, "testInequalityQueries");
+        Key key = parentEntity.getKey();
 
-        assertThat(whenFilteringBy(GREATER_THAN, lowValue), queryReturns(midEntity, highEntity));
-        assertThat(whenFilteringBy(GREATER_THAN_OR_EQUAL, midValue), queryReturns(midEntity, highEntity));
-        assertThat(whenFilteringBy(LESS_THAN, highValue), queryReturns(nullEntity, midEntity, lowEntity));
-        assertThat(whenFilteringBy(LESS_THAN_OR_EQUAL, midValue), queryReturns(nullEntity, midEntity, lowEntity));
+        Entity highEntity = storeTestEntityWithSingleProperty(key, highValue);
+        Entity lowEntity = storeTestEntityWithSingleProperty(key, lowValue);
+        Entity midEntity = storeTestEntityWithSingleProperty(key, midValue);
+        Entity nullEntity = storeTestEntityWithSingleProperty(key, null);
 
-        service.delete(lowEntity.getKey());
-        service.delete(midEntity.getKey());
-        service.delete(highEntity.getKey());
-        service.delete(nullEntity.getKey());
+        assertThat(whenFilteringBy(GREATER_THAN, lowValue, key), queryReturns(midEntity, highEntity));
+        assertThat(whenFilteringBy(GREATER_THAN_OR_EQUAL, midValue, key), queryReturns(midEntity, highEntity));
+        assertThat(whenFilteringBy(LESS_THAN, highValue, key), queryReturns(nullEntity, midEntity, lowEntity));
+        assertThat(whenFilteringBy(LESS_THAN_OR_EQUAL, midValue, key), queryReturns(nullEntity, midEntity, lowEntity));
+
+        clearData(TEST_ENTITY_KIND, key, 0);
     }
 
     /**
@@ -203,20 +211,22 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
      * @param bar property value for second entity
      */
     protected void testEqualityQueries(Object foo, Object bar) {
-        Entity fooEntity = storeTestEntityWithSingleProperty(foo);
-        Entity barEntity = storeTestEntityWithSingleProperty(bar);
-        Entity noPropertyEntity = storeTestEntityWithoutProperties();
+        Entity parentEntity = createTestEntityWithUniqueMethodNameKey(TEST_ENTITY_KIND, "testEqualityQueries");
+        Key key = parentEntity.getKey();
 
-        assertThat(whenFilteringBy(EQUAL, foo), queryReturns(fooEntity));
-        assertThat(whenFilteringBy(NOT_EQUAL, foo), queryReturns(barEntity));
 
-        service.delete(fooEntity.getKey());
-        service.delete(barEntity.getKey());
-        service.delete(noPropertyEntity.getKey());
+        Entity fooEntity = storeTestEntityWithSingleProperty(key, foo);
+        Entity barEntity = storeTestEntityWithSingleProperty(key, bar);
+        Entity noPropertyEntity = storeTestEntityWithoutProperties(key);
+
+        assertThat(whenFilteringBy(EQUAL, foo, key), queryReturns(fooEntity));
+        assertThat(whenFilteringBy(NOT_EQUAL, foo, key), queryReturns(barEntity));
+
+        clearData(TEST_ENTITY_KIND, key, 0);
     }
 
-    private Entity storeTestEntityWithoutProperties() {
-        return buildTestEntity().store();
+    private Entity storeTestEntityWithoutProperties(Key parentKey) {
+        return buildTestEntity(parentKey).store();
     }
 
     protected class TestEntityBuilder {
