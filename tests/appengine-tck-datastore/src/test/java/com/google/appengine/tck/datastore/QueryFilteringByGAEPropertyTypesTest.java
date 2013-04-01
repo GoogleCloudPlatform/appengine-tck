@@ -61,11 +61,15 @@ public class QueryFilteringByGAEPropertyTypesTest extends QueryTestBase {
 
     @Test
     public void testFilterByEntityKey() {
-        Key fooKey = KeyFactory.createKey("foo", 1);
+        Entity parentEntity = createTestEntityWithUniqueMethodNameKey(TEST_ENTITY_KIND, "testFilterByEntityKey");
+        Key parentKey = parentEntity.getKey();
+
+        Key fooKey = KeyFactory.createKey(parentKey, "foo", 1);
         Entity fooEntity = new Entity(fooKey);
         service.put(fooEntity);
 
         Query query = new Query("foo")
+                .setAncestor(parentKey)
                 .setFilter(new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY, EQUAL, fooKey));
 
         PreparedQuery preparedQuery = service.prepare(query);
@@ -77,13 +81,18 @@ public class QueryFilteringByGAEPropertyTypesTest extends QueryTestBase {
 
     @Test
     public void testEntityKeyInequalityFilter() {
-        Entity entity1 = new Entity("foo");
+        Entity parentEntity = createTestEntityWithUniqueMethodNameKey(TEST_ENTITY_KIND, "testFilterByInequalityFilter");
+        Key parentKey = parentEntity.getKey();
+
+        Entity entity1 = new Entity("foo", parentKey);
         service.put(entity1);
 
-        Entity entity2 = new Entity("foo");
+        Entity entity2 = new Entity("foo", parentKey);
         service.put(entity2);
 
-        Query query = new Query("foo").setFilter(new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY, GREATER_THAN, entity1.getKey()));
+        Query query = new Query("foo")
+            .setAncestor(parentKey)
+            .setFilter(new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY, GREATER_THAN, entity1.getKey()));
         List<Entity> list = service.prepare(query).asList(FetchOptions.Builder.withDefaults());
         assertEquals(1, list.size());
         assertEquals(entity2.getKey(), list.get(0).getKey());
