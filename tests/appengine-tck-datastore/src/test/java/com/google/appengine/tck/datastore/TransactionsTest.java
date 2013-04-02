@@ -52,12 +52,13 @@ import static org.junit.Assert.fail;
  */
 @RunWith(Arquillian.class)
 
-//public class TransactionsTest extends SimpleTestBase {
 public class TransactionsTest extends DatastoreTestBase {
+
+    private static final String TRANSACTION_TEST_ENTITY = "TransactionsTestEntity";
 
     @Test
     public void testBasicTxPut() throws Exception {
-        Entity entity = createTestEntity();
+        Entity entity = createTestEntity(TRANSACTION_TEST_ENTITY, System.currentTimeMillis());
         Transaction tx = service.beginTransaction();
         try {
             service.put(tx, entity);
@@ -168,12 +169,14 @@ public class TransactionsTest extends DatastoreTestBase {
     }
 
     private void assertRollbackSucceedsWhenResultFetchedWith(ResultFetcher resultFetcher) throws EntityNotFoundException {
-        Entity entity = new Entity("test");
+        String methodName = "assertRollbackSucceedsWhenResultFetchedWith";
+        Entity entity = createTestEntityWithUniqueMethodNameKey(TRANSACTION_TEST_ENTITY, methodName);
+        Key parentKey = entity.getKey();
         entity.setProperty("name", "original");
         Key key = service.put(entity);
         try {
             Transaction tx = service.beginTransaction();
-            PreparedQuery preparedQuery = service.prepare(new Query("test"));
+            PreparedQuery preparedQuery = service.prepare(new Query(TRANSACTION_TEST_ENTITY).setAncestor(parentKey));
             Entity entity2 = resultFetcher.fetchResult(preparedQuery);
             entity2.setProperty("name", "modified");
             service.put(tx, entity2);
@@ -202,7 +205,7 @@ public class TransactionsTest extends DatastoreTestBase {
 
         Transaction t1 = service.beginTransaction();
         try {
-            e1 = createTestEntity("DUMMY_a", 1);
+            e1 = createTestEntity("DUMMY_a", System.currentTimeMillis());
             service.put(t1, e1);
             assertStoreDoesNotContain(e1);
 
