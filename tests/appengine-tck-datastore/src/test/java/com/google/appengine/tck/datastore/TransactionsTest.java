@@ -401,6 +401,46 @@ public class TransactionsTest extends DatastoreTestBase {
         }
     }
 
+    /**
+     * Test ancestor query in transaction.
+     */
+    @Test
+    public void testAncestorQueryInTxn() throws Exception {
+        Entity parentA = new Entity("parentA");
+        Entity parentB = new Entity("parentB");
+        Entity childA = new Entity("child", parentA.getKey());
+        Entity childB = new Entity("child", parentB.getKey());
+
+        service.beginTransaction();
+        service.put(parentA);
+        service.getCurrentTransaction().commit();
+
+        service.beginTransaction();
+        service.put(parentB);
+        service.getCurrentTransaction().commit();
+
+        service.beginTransaction();
+        service.put(childA);
+        service.getCurrentTransaction().commit();
+
+        service.beginTransaction();
+        service.put(childB);
+        service.getCurrentTransaction().commit();
+        // query on ancestor, only childA should be returned
+        service.beginTransaction();
+        Query query = new Query("child", parentA.getKey());
+        Transaction tx = service.getCurrentTransaction();
+        int numRows = service.prepare(tx, query)
+            .countEntities(FetchOptions.Builder.withDefaults());
+        tx.commit();
+        assertEquals(1, numRows);
+        service.beginTransaction();
+        tx = service.getCurrentTransaction();
+        Entity result = service.prepare(tx, query).asSingleEntity();
+        assertEquals(childA.getKey(), result.getKey());
+        tx.commit();
+    }
+
     private PreparedQuery prepareQueryWithAncestor(Transaction tx, Key someAncestor) {
         return service.prepare(tx, new Query("foo").setAncestor(someAncestor));
     }
