@@ -23,8 +23,10 @@
 package com.google.appengine.tck.datastore;
 
 import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyRange;
+
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
@@ -36,20 +38,19 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class AllocateIdsTest extends SimpleTestBase {
 
+    private static final String ALLOCATE_IDS_ENTITY = "AllocateIdsEntity";
+
     @Test
     public void testAllocateId() throws Exception {
-        long initialValue = getInitialValue("SomeKind");
+        KeyRange firstBlock = service.allocateIds(ALLOCATE_IDS_ENTITY, 10L);
 
-        KeyRange keys = service.allocateIds("SomeKind", 10L);
-        Assert.assertNotNull(keys);
+        Assert.assertNotNull(firstBlock);
+        Assert.assertEquals(10, firstBlock.getEnd().getId() - firstBlock.getStart().getId() + 1);
+        Assert.assertEquals(10, firstBlock.getSize());
 
-        Key start = keys.getStart();
-        Assert.assertNotNull(start);
-        Assert.assertEquals(1 + initialValue, start.getId());
-
-        Key end = keys.getEnd();
-        Assert.assertNotNull(end);
-        Assert.assertEquals(10 + initialValue, end.getId());
+        KeyRange secondBlock = service.allocateIds(ALLOCATE_IDS_ENTITY, 10L);
+        Assert.assertNotNull(secondBlock);
+        Assert.assertFalse("Allocated key ranges should not overlap.", rangeOverlap(firstBlock, secondBlock));
     }
 
     @Test
@@ -74,5 +75,42 @@ public class AllocateIdsTest extends SimpleTestBase {
 
     private long getInitialValue(String kind) {
         return service.allocateIds(kind, 1L).getStart().getId();
+    }
+
+    @Test
+    public void testAllocateChild() {
+        Entity parent = new Entity(ALLOCATE_IDS_ENTITY);
+        parent.setProperty("name", "parent-" + System.currentTimeMillis());
+        Key parentKey = service.put(parent);
+
+        int allocateSize = 10;
+        KeyRange range = service.allocateIds(parentKey, ALLOCATE_IDS_ENTITY, allocateSize);
+
+        Entity child = new Entity(range.getStart());
+        Key key = service.put(child);
+
+        // child with allocated key should have correct parent.
+        Assert.assertEquals(parentKey, key.getParent());
+    }
+
+    private boolean rangeOverlap(KeyRange kr1, KeyRange kr2) {
+        long firstStart = kr1.getStart().getId();
+        long firstEnd = kr1.getEnd().getId();
+        long secondStart = kr2.getStart().getId();
+        long secondEnd = kr2.getStart().getId();
+
+        if ((firstStart == secondStart) || (firstEnd == secondEnd)) {
+            return true;
+        }
+        if ((firstStart == secondEnd) || (firstEnd == secondStart)) {
+            return true;
+        }
+        if ((firstStart < secondStart) && (firstEnd > secondStart)) {
+            return true;
+        }
+        if ((firstStart > secondStart) && (secondEnd > firstStart)) {
+            return true;
+        }
+        return false;
     }
 }
