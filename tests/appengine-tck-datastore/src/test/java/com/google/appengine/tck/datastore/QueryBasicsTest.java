@@ -57,15 +57,24 @@ import static org.junit.Assert.fail;
 
 public class QueryBasicsTest extends QueryTestBase {
 
+    private static final String QUERY_BASICS_ENTITY = "QueryBasicsTestEntity";
+
+    private Key createQueryBasicsTestParent(String methodName) {
+        Entity parent = createTestEntityWithUniqueMethodNameKey(QUERY_BASICS_ENTITY, methodName);
+        return parent.getKey();
+    }
+
     @Test
-    public void textQueryWithoutAnyConstraints() throws Exception {
-        Entity person = new Entity(KeyFactory.createKey("Person", 1));
+    public void testQueryWithoutAnyConstraints() throws Exception {
+        Key parentKey = createQueryBasicsTestParent("testQueryWithoutAnyConstraints");
+
+        Entity person = new Entity("Person", parentKey);
         service.put(person);
 
-        Entity address = new Entity(KeyFactory.createKey("Address", 1));
+        Entity address = new Entity("Address", parentKey);
         service.put(address);
 
-        PreparedQuery preparedQuery = service.prepare(new Query());
+        PreparedQuery preparedQuery = service.prepare(new Query().setAncestor(parentKey));
         assertTrue(preparedQuery.countEntities(withDefaults()) >= 2);
 
         List<Entity> results = preparedQuery.asList(withDefaults());
@@ -74,19 +83,23 @@ public class QueryBasicsTest extends QueryTestBase {
 
     @Test
     public void queryingByKindOnlyReturnsEntitiesOfRequestedKind() throws Exception {
-        Entity person = new Entity(KeyFactory.createKey("Person", 1));
+        Key parentKey = createQueryBasicsTestParent("queryingByKindOnlyReturnsEntitiesOfRequestedKind");
+        Entity person = new Entity(KeyFactory.createKey(parentKey, "Person", 1));
         service.put(person);
 
-        Entity address = new Entity(KeyFactory.createKey("Address", 1));
+        Entity address = new Entity(KeyFactory.createKey(parentKey, "Address", 1));
         service.put(address);
 
-        assertSingleResult(person, new Query("Person"));
+        assertSingleResult(person, new Query("Person").setAncestor(parentKey));
     }
 
     @Test
     public void singleEntityThrowsTooManyResultsExceptionWhenMoreThanOneResult() throws Exception {
-        createEntity("Person", 1).store();
-        createEntity("Person", 2).store();
+        String methodName = "singleEntityThrowsTooManyResultsExceptionWhenMoreThanOneResult";
+        Key parentKey = createQueryBasicsTestParent(methodName);
+
+        createEntity("Person", parentKey).store();
+        createEntity("Person", parentKey).store();
 
         PreparedQuery preparedQuery = service.prepare(new Query("Person"));
         try {
@@ -99,22 +112,24 @@ public class QueryBasicsTest extends QueryTestBase {
 
     @Test
     public void testMultipleFilters() throws Exception {
-        Entity johnDoe = createEntity("Person", 1)
+        Key parentKey = createQueryBasicsTestParent("testMultipleFilters");
+        Entity johnDoe = createEntity("Person", parentKey)
                 .withProperty("name", "John")
                 .withProperty("lastName", "Doe")
                 .store();
 
-        Entity johnBooks = createEntity("Person", 2)
+        Entity johnBooks = createEntity("Person", parentKey)
                 .withProperty("name", "John")
                 .withProperty("lastName", "Books")
                 .store();
 
-        Entity janeDoe = createEntity("Person", 3)
+        Entity janeDoe = createEntity("Person", parentKey)
                 .withProperty("name", "Jane")
                 .withProperty("lastName", "Doe")
                 .store();
 
         Query query = new Query("Person")
+                .setAncestor(parentKey)
                 .setFilter(Query.CompositeFilterOperator.and(
                         new Query.FilterPredicate("name", EQUAL, "John"),
                         new Query.FilterPredicate("lastName", EQUAL, "Doe")));
@@ -124,75 +139,94 @@ public class QueryBasicsTest extends QueryTestBase {
 
     @Test
     public void testNullPropertyValue() throws Exception {
-        createEntity("Entry", 1)
+        Key parentKey = createQueryBasicsTestParent("testNullPropertyValue");
+
+        createEntity("Entry", parentKey)
                 .withProperty("user", null)
                 .store();
 
-        Entity entity = service.prepare(new Query("Entry")).asSingleEntity();
+        Entity entity = service.prepare(new Query("Entry")
+            .setAncestor(parentKey)).asSingleEntity();
         assertNull(entity.getProperty("user"));
     }
 
     @Test
     public void testFilteringWithNotEqualReturnsOnlyEntitiesContainingTheProperty() throws Exception {
-        Entity e1 = createEntity("Entry", 1)
-                .withProperty("foo", "aaa")
-                .store();
+        String methodName = "testFilteringWithNotEqualReturnsOnlyEntitiesContainingTheProperty";
+        Key parentKey = createQueryBasicsTestParent(methodName);
+        Entity e1 = createEntity("Entry", parentKey)
+            .withProperty("foo", "aaa")
+            .store();
 
-        createEntity("Entry", 2)
-                .withProperty("bar", "aaa")
-                .store();
+        createEntity("Entry", parentKey)
+            .withProperty("bar", "aaa")
+            .store();
 
         Query query = new Query("Entry")
-                .setFilter(new Query.FilterPredicate("foo", NOT_EQUAL, "bbb"));
+            .setAncestor(parentKey)
+            .setFilter(new Query.FilterPredicate("foo", NOT_EQUAL, "bbb"));
         assertEquals(Collections.singletonList(e1), service.prepare(query).asList(withDefaults()));
     }
 
     @Test
     public void testFilterEqualNull() throws Exception {
-        createEntity("Entry", 1)
+        Key parentKey = createQueryBasicsTestParent("testFilterEqualNull");
+        createEntity("Entry", parentKey)
                 .withProperty("user", null)
                 .store();
 
-        Query query = new Query("Entry").setFilter(new Query.FilterPredicate("user", EQUAL, null));
+        Query query = new Query("Entry")
+            .setAncestor(parentKey)
+            .setFilter(new Query.FilterPredicate("user", EQUAL, null));
         assertNotNull(service.prepare(query).asSingleEntity());
     }
 
     @Test
     public void testFilterNotEqualNull() throws Exception {
-        createEntity("Entry", 1)
+        Key parentKey = createQueryBasicsTestParent("testFilterNotEqualNull");
+        createEntity("Entry", parentKey)
                 .withProperty("user", "joe")
                 .store();
 
-        Query query = new Query("Entry").setFilter(new Query.FilterPredicate("user", NOT_EQUAL, null));
+        Query query = new Query("Entry")
+            .setAncestor(parentKey)
+            .setFilter(new Query.FilterPredicate("user", NOT_EQUAL, null));
         assertNotNull(service.prepare(query).asSingleEntity());
     }
 
     @Test
     public void testFilterInNull() throws Exception {
-        createEntity("Entry", 1)
-                .withProperty("user", null)
-                .store();
+        Key parentKey = createQueryBasicsTestParent("testFilterInNull");
+        createEntity("Entry", parentKey)
+            .withProperty("user", null)
+            .store();
 
-        Query query = new Query("Entry").setFilter(new Query.FilterPredicate("user", IN, Arrays.asList(null, "foo")));
+        Query query = new Query("Entry")
+            .setAncestor(parentKey)
+            .setFilter(new Query.FilterPredicate("user", IN, Arrays.asList(null, "foo")));
         assertNotNull(service.prepare(query).asSingleEntity());
     }
 
     @Test
     public void testFilterOnMultiValuedProperty() throws Exception {
-        createEntity("Entry", 1)
+        Key parentKey = createQueryBasicsTestParent("testFilterOnMultiValuedProperty");
+        createEntity("Entry", parentKey)
                 .withProperty("letters", Arrays.asList("a", "b", "c"))
                 .store();
 
-        Query query = new Query("Entry").setFilter(new Query.FilterPredicate("letters", EQUAL, "a"));
+        Query query = new Query("Entry")
+            .setAncestor(parentKey)
+            .setFilter(new Query.FilterPredicate("letters", EQUAL, "a"));
         assertNotNull(service.prepare(query).asSingleEntity());
     }
 
     @Test
     public void testFilteringByKind() throws Exception {
-        Entity foo = createEntity("foo", 1).store();
-        Entity bar = createEntity("bar", 2).store();
+        Key parentKey = createQueryBasicsTestParent("testFilteringByKind");
+        Entity foo = createEntity("foo", parentKey).store();
+        Entity bar = createEntity("bar", parentKey).store();
 
-        PreparedQuery preparedQuery = service.prepare(new Query("foo"));
+        PreparedQuery preparedQuery = service.prepare(new Query("foo").setAncestor(parentKey));
         List<Entity> results = preparedQuery.asList(withDefaults());
         assertEquals(1, results.size());
         assertEquals(foo, results.get(0));
@@ -251,22 +285,24 @@ public class QueryBasicsTest extends QueryTestBase {
     @SuppressWarnings("deprecation")
     @Test
     public void testDeprecatedFiltersAreSupported() throws Exception {
-        Entity johnDoe = createEntity("Person", 1)
+        Key parentKey = createQueryBasicsTestParent("testDeprecatedFiltersAreSupported");
+        Entity johnDoe = createEntity("Person", parentKey)
                 .withProperty("name", "John")
                 .withProperty("lastName", "Doe")
                 .store();
 
-        Entity johnBooks = createEntity("Person", 2)
+        Entity johnBooks = createEntity("Person", parentKey)
                 .withProperty("name", "John")
                 .withProperty("lastName", "Books")
                 .store();
 
-        Entity janeDoe = createEntity("Person", 3)
+        Entity janeDoe = createEntity("Person", parentKey)
                 .withProperty("name", "Jane")
                 .withProperty("lastName", "Doe")
                 .store();
 
         Query query = new Query("Person")
+                .setAncestor(parentKey)
                 .addFilter("name", EQUAL, "John")
                 .addFilter("lastName", EQUAL, "Doe");
 

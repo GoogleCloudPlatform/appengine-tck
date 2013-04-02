@@ -215,4 +215,20 @@
         <property name="prop" direction="desc"/>
     </datastore-index>
 
+    <datastore-index kind="Entry" ancestor="true" source="manual">
+        <property name="user" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="Entry" ancestor="true" source="manual">
+        <property name="user" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="Entry" ancestor="true" source="manual">
+        <property name="foo" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="Entry" ancestor="true" source="manual">
+        <property name="foo" direction="desc"/>
+    </datastore-index>
+
 </datastore-indexes>
