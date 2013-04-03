@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultIterable;
@@ -60,16 +61,21 @@ public class PreparedQueryTest extends QueryTestBase {
     public ExpectedException thrown = ExpectedException.none();
 
     private Entity john;
+    private Entity johnsParent;
     private PreparedQuery preparedQuery;
 
     @Before
     public void setUp() {
         super.setUp();
-        john = createEntity("Person", 1)
-                .withProperty("name", "John")
-                .store();
+
+        johnsParent = createTestEntityWithUniqueMethodNameKey("Person", "PreparedQueryTest");
+        Key key = johnsParent.getKey();
+        john = createEntity("Person", key)
+            .withProperty("name", "John")
+            .store();
 
         Query query = new Query("Person")
+                .setAncestor(key)
                 .setFilter(new Query.FilterPredicate("name", EQUAL, "John"));
 
         preparedQuery = service.prepare(query);
