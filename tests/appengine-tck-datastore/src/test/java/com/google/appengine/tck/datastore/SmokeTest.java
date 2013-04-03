@@ -49,6 +49,8 @@ import static org.junit.Assert.assertTrue;
 //public class SmokeTest extends SimpleTestBase {
 public class SmokeTest extends DatastoreTestBase {
 
+    private static final String SMOKE_TEST_ENTITY = "SmokeTestEntity";
+
     @Test
     public void putStoresEntity() throws Exception {
         Entity entity = createTestEntity();
@@ -109,13 +111,15 @@ public class SmokeTest extends DatastoreTestBase {
 
     @Test
     public void queriesDontReturnDeletedEntities() throws Exception {
-        Entity entity = createTestEntity("KIND");
+        String methodName = "queriesDontReturnDeletedEntities";
+        Entity entity = createTestEntityWithUniqueMethodNameKey(SMOKE_TEST_ENTITY, methodName);
         Key key = entity.getKey();
         service.put(entity);
 
         service.delete(key);
 
-        List<Entity> entities = service.prepare(new Query("KIND")).asList(FetchOptions.Builder.withDefaults());
+        List<Entity> entities = service.prepare(new Query(SMOKE_TEST_ENTITY).setAncestor(key))
+            .asList(FetchOptions.Builder.withDefaults());
         assertEquals(0, entities.size());
     }
 
