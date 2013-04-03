@@ -12,7 +12,6 @@ import java.util.concurrent.Future;
 import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.Query;
@@ -23,7 +22,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 
 /**
  * datastore Async test.
@@ -32,15 +33,22 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(Arquillian.class)
 public class AsyncServiceTest extends DatastoreTestBase {
-    private static final String kindName = "asyncData";
-    private long allocateNum = 5;
-    private FetchOptions fo = FetchOptions.Builder.withDefaults();
+    private static final String ASYNC_ENTITY = "asyncData";
     private AsyncDatastoreService asyncService = DatastoreServiceFactory.getAsyncDatastoreService();
+    
+    private Query simpleQuery(Key parentKey) {
+        return new Query(ASYNC_ENTITY).setAncestor(parentKey);
+    }
+
+    private void assertTaskIsDoneAndNotCancelled(Future<?> future) {
+        assertTrue("Task not Done, unable to complete test.", future.isDone());
+        assertFalse("Task cancelled, unable to complete test.", future.isCancelled());
+    }
 
     @Before
     public void clearData() {
         List<Key> elist = new ArrayList<Key>();
-        Query query = new Query(kindName);
+        Query query = new Query(ASYNC_ENTITY);
         for (Entity readRec : service.prepare(query).asIterable()) {
             elist.add(readRec.getKey());
         }
@@ -49,76 +57,76 @@ public class AsyncServiceTest extends DatastoreTestBase {
 
     @Test
     public void testDataPut() throws Exception {
-        Entity newRec = new Entity(kindName);
+        Entity parent = createTestEntityWithUniqueMethodNameKey(ASYNC_ENTITY, "testDataPut");
+        Key key = parent.getKey();
+        Entity newRec = new Entity(ASYNC_ENTITY, key);
         newRec.setProperty("count", 0);
         newRec.setProperty("timestamp", new Date());
-        Future<Key> firstE = asyncService.put(newRec);
-        firstE.get();
-        if (firstE.isCancelled()) {
-            assertEquals(0, service.prepare(new Query(kindName)).countEntities(fo));
-        } else {
-            assertEquals(1, service.prepare(new Query(kindName)).countEntities(fo));
-        }
+        Future<Key> future = asyncService.put(newRec);
+        future.get();
+        assertTaskIsDoneAndNotCancelled(future);
+        assertEquals(1, service.prepare(simpleQuery(key)).countEntities(withDefaults()));
     }
 
     @Test
     public void testDataMultiplePut() throws Exception {
-        List<Entity> lisRec = new ArrayList<Entity>();
-        for (int i = 0; i < 10; i++) {
-            Entity newRec = new Entity(kindName);
-            newRec = new Entity(kindName);
+        Entity parent = createTestEntityWithUniqueMethodNameKey(ASYNC_ENTITY, "testDataMultiplePut");
+        Key key = parent.getKey();
+
+        final int recordCount = 10;
+        List<Entity> entityList = new ArrayList<Entity>();
+        for (int i = 0; i < recordCount; i++) {
+            Entity newRec = new Entity(ASYNC_ENTITY, key);
             newRec.setProperty("count", i);
             newRec.setProperty("timestamp", new Date());
-            lisRec.add(newRec);
+            entityList.add(newRec);
         }
-        Future<List<Key>> eKeys = asyncService.put(lisRec);
+        Future<List<Key>> eKeys = asyncService.put(entityList);
         eKeys.get();
-        if (eKeys.isCancelled()) {
-            assertEquals(0, service.prepare(new Query(kindName)).countEntities(fo));
-        } else {
-            assertEquals(10, service.prepare(new Query(kindName)).countEntities(fo));
-        }
+        assertTaskIsDoneAndNotCancelled(eKeys);
+        assertEquals(recordCount, service.prepare(simpleQuery(key)).countEntities(withDefaults()));
     }
 
     @Test
     public void testDataDelete() throws Exception {
-        Entity newRec = new Entity(kindName);
+        Entity parent = createTestEntityWithUniqueMethodNameKey(ASYNC_ENTITY, "testDataDelete");
+        Key key = parent.getKey();
+        Entity newRec = new Entity(ASYNC_ENTITY);
         newRec.setProperty("count", 0);
         newRec.setProperty("timestamp", new Date());
         Key ekey = service.put(newRec);
         Future<Void> future = asyncService.delete(ekey);
         future.get();
-        if (future.isCancelled()) {
-            assertEquals(1, service.prepare(new Query(kindName)).countEntities(fo));
-        } else {
-            assertEquals(0, service.prepare(new Query(kindName)).countEntities(fo));
-        }
+        assertTaskIsDoneAndNotCancelled(future);
+        assertEquals(0, service.prepare(simpleQuery(key)).countEntities(withDefaults()));
     }
 
     @Test
     public void testMultipleDataDelete() throws Exception {
+        Entity parent = createTestEntityWithUniqueMethodNameKey(ASYNC_ENTITY, "testMultipleDelete");
+        Key key = parent.getKey();
         List<Entity> lisRec = new ArrayList<Entity>();
-        for (int i = 0; i < 10; i++) {
-            Entity newRec = new Entity(kindName);
-            newRec = new Entity(kindName);
+        final int recordCount = 10;
+        for (int i = 0; i < recordCount; i++) {
+            Entity newRec = new Entity(ASYNC_ENTITY, key);
             newRec.setProperty("count", i);
             newRec.setProperty("timestamp", new Date());
             lisRec.add(newRec);
         }
         List<Key> eKeys = service.put(lisRec);
+        assertEquals("Entities not available to test delete.",
+            recordCount, service.prepare(simpleQuery(key)).countEntities(withDefaults()));
+
         Future<Void> future = asyncService.delete(eKeys);
         future.get();
-        if (future.isCancelled()) {
-            assertEquals(10, service.prepare(new Query(kindName)).countEntities(fo));
-        } else {
-            assertEquals(0, service.prepare(new Query(kindName)).countEntities(fo));
-        }
+        assertTaskIsDoneAndNotCancelled(future);
+        assertEquals(0, service.prepare(simpleQuery(key)).countEntities(withDefaults()));
     }
 
     @Test
     public void testDataGet() throws Exception {
         long randomLong = new Random().nextLong();
-        Entity newRec = new Entity(kindName);
+        Entity newRec = new Entity(ASYNC_ENTITY);
         newRec.setProperty("count", randomLong);
         newRec.setProperty("timestamp", new Date());
         Key ekey = service.put(newRec);
@@ -134,102 +142,92 @@ public class AsyncServiceTest extends DatastoreTestBase {
      */
     @Test
     public void testMultipleDataGet() throws Exception {
+        Entity parent = createTestEntityWithUniqueMethodNameKey(ASYNC_ENTITY, "testMultipleDataGet");
+        Key key = parent.getKey();
+
+        final int recordCount = 10;
         List<Entity> lisRec = new ArrayList<Entity>();
-        for (int i = 0; i < 10; i++) {
-            Entity newRec = new Entity(kindName);
-            newRec = new Entity(kindName);
+        for (int i = 0; i < recordCount; i++) {
+            Entity newRec = new Entity(ASYNC_ENTITY, key);
             newRec.setProperty("count", i);
             newRec.setProperty("timestamp", new Date());
             lisRec.add(newRec);
         }
         List<Key> eKeys = service.put(lisRec);
-        Future<Map<Key, Entity>> futureEs = asyncService.get(eKeys);
-        Map<Key, Entity> es = futureEs.get();
-        if (es != null) {
-            assertEquals(10, es.size());
-        }
+
+        Future<Map<Key, Entity>> futureKeyEntity = asyncService.get(eKeys);
+        Map<Key, Entity> es = futureKeyEntity.get();
+        assertTaskIsDoneAndNotCancelled(futureKeyEntity);
+
+        assertEquals(recordCount, es.size());
+
+        asyncService.delete(eKeys);
     }
 
     @Test
     public void testDataAllocate() throws Exception {
-        Future<KeyRange> futureRange = asyncService.allocateIds(kindName, allocateNum);
+        final long allocateNum = 5;
+
+        // Range default namespace
+        Future<KeyRange> futureRange = asyncService.allocateIds(ASYNC_ENTITY, allocateNum);
         KeyRange range = futureRange.get();
-        if (!futureRange.isCancelled()) {
-            check(kindName, range);
-        }
+        assertTaskIsDoneAndNotCancelled(futureRange);
 
-        Entity parent = new Entity(kindName);
+        Entity noParent = createTestEntity(ASYNC_ENTITY);
+        assertEntityNotInRange(noParent, range);
+
+        // Range with specified parent
+        Entity parent = new Entity(ASYNC_ENTITY);
         parent.setProperty("name", "parent" + new Date());
-        Key pKey = service.put(parent);
-        futureRange = asyncService.allocateIds(pKey, kindName, allocateNum);
-        range = futureRange.get();
-        if (!futureRange.isCancelled()) {
-            check(kindName, range);
-        }
-        Entity child = new Entity(range.getStart());
-        child.setProperty("name", "second" + new Date());
-        Key ckey = service.put(child);
-        // child with allocated key should have correct parent.
-        assertEquals(pKey, ckey.getParent());
-    }
+        Key parentKey = service.put(parent);
+        Future<KeyRange> futureRange2 = asyncService.allocateIds(parentKey, ASYNC_ENTITY, allocateNum);
+        KeyRange range2 = futureRange2.get();
+        assertTaskIsDoneAndNotCancelled(futureRange2);
 
-    private void check(String kind, KeyRange range) {
-        Entity entity = new Entity(kind);
-        entity.setProperty("name", "first" + new Date());
-        Key key = service.put(entity);
-        // allocated key should not be re-used.
-        assertTrue(key.getId() > range.getEnd().getId() || key.getId() < range.getStart().getId());
+        Entity noParent2 = createTestEntity(ASYNC_ENTITY, parentKey);
+        assertEntityNotInRange(noParent2, range2);
+
+        // In Range entity should have same parent
+        Entity child = new Entity(range2.getStart());
+        child.setProperty("name", "second" + new Date());
+        Key childKey = service.put(child);
+        // child with allocated key should have correct parent.
+        assertEquals(parentKey, childKey.getParent());
     }
 
     @Test
     public void testFutureCancel() {
         clearData();
         AsyncDatastoreService asyncService = DatastoreServiceFactory.getAsyncDatastoreService();
-        Entity newRec = new Entity(kindName);
+        Entity newRec = new Entity(ASYNC_ENTITY);
         newRec.setProperty("count", -1);
         newRec.setProperty("timestamp", new Date());
-        Future<Key> firstE = asyncService.put(newRec);
-        firstE.cancel(true);
-/* Do not run this test since there is no good way to check if the cancel is success now.
- *  Max's notes: Successfully canceling an RPC does not necessarily mean that the datastore
- *  call didn't succeed. In short, a successful cancel() doesn't really tell you anything 
- *  about what happened on the server side.
-    if (firstE.cancel(true)) {
-      assertEquals(0, service.prepare(new Query(kindName)).countEntities(fo));
-    }
-*/
+        Future<Key> future = asyncService.put(newRec);
+        future.cancel(true);
 
-        clearData();
-        List<Entity> lisRec = new ArrayList<Entity>();
-        for (int i = 0; i < 10; i++) {
-            newRec = new Entity(kindName);
-            newRec.setProperty("count", i);
-            newRec.setProperty("timestamp", new Date());
-            lisRec.add(newRec);
-        }
-        Future<List<Key>> eKeys = asyncService.put(lisRec);
-        eKeys.cancel(true);
+        // The actual call may already succeeded, so just verify that cancel has been called.
+        assertTrue(future.isCancelled());
     }
 
     @Test
     public void testInTrans() throws Exception {
         clearData();
-        Entity newRec = new Entity(kindName);
+        Entity newRec = new Entity(ASYNC_ENTITY);
         newRec.setProperty("timestamp", new Date());
         Transaction trans = asyncService.beginTransaction().get();
         Future<Key> firstE = asyncService.put(trans, newRec);
         trans.rollback();
-        assertEquals(0, service.prepare(new Query(kindName)).countEntities(fo));
+        assertEquals(0, service.prepare(new Query(ASYNC_ENTITY)).countEntities(withDefaults()));
 
         // Add a parent
-        newRec = new Entity(kindName);
+        newRec = new Entity(ASYNC_ENTITY);
         newRec.setProperty("count", 0);
         newRec.setProperty("timestamp", new Date());
         Key parent = service.put(newRec);
         // Add children
         List<Entity> lisRec = new ArrayList<Entity>();
         for (int i = 0; i < 10; i++) {
-            newRec = new Entity(kindName, parent);
+            newRec = new Entity(ASYNC_ENTITY, parent);
             newRec.setProperty("count", i + 1);
             newRec.setProperty("timestamp", new Date());
             lisRec.add(newRec);
@@ -238,13 +236,13 @@ public class AsyncServiceTest extends DatastoreTestBase {
         Future<List<Key>> eKeys = asyncService.put(trans, lisRec);
         trans.commit();
         List<Key> realKey = eKeys.get();
-        Query q = new Query(kindName).setAncestor(parent);
+        Query q = new Query(ASYNC_ENTITY).setAncestor(parent);
         if (eKeys.isCancelled()) {
             assertEquals(0, realKey.size());
-            assertEquals(1, service.prepare(q).countEntities(fo));
+            assertEquals(1, service.prepare(q).countEntities(withDefaults()));
         } else {
             assertEquals(10, realKey.size());
-            assertEquals(11, service.prepare(q).countEntities(fo));
+            assertEquals(11, service.prepare(q).countEntities(withDefaults()));
         }
     }
 }

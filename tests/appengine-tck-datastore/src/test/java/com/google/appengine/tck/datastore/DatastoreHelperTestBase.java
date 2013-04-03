@@ -13,6 +13,7 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
@@ -207,12 +208,20 @@ public abstract class DatastoreHelperTestBase extends TestBase {
         }
     }
 
+    protected void assertEntityNotInRange(Entity entity, KeyRange range) {
+        // allocated key should not be re-used.
+        Assert.assertTrue(entity.getKey().getId() > range.getEnd().getId() ||
+            entity.getKey().getId() < range.getStart().getId());
+    }
+
     protected Entity createTestEntity() {
         return createTestEntity("KIND");
     }
 
     protected Entity createTestEntity(String kind) {
-        return createTestEntity(kind, 1);
+        Entity entity = new Entity(kind);
+        entity.setProperty("text", "Some text.");
+        return entity;
     }
 
     protected Entity createTestEntity(String kind, long id) {

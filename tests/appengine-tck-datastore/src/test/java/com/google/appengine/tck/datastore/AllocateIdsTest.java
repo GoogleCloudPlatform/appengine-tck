@@ -83,7 +83,7 @@ public class AllocateIdsTest extends SimpleTestBase {
         parent.setProperty("name", "parent-" + System.currentTimeMillis());
         Key parentKey = service.put(parent);
 
-        int allocateSize = 10;
+        final int allocateSize = 10;
         KeyRange range = service.allocateIds(parentKey, ALLOCATE_IDS_ENTITY, allocateSize);
 
         Entity child = new Entity(range.getStart());
@@ -91,6 +91,31 @@ public class AllocateIdsTest extends SimpleTestBase {
 
         // child with allocated key should have correct parent.
         Assert.assertEquals(parentKey, key.getParent());
+    }
+
+    @Test
+    public void testOutOfRangeEntity() throws Exception {
+        final long allocateNum = 5;
+
+        // Range default namespace
+        KeyRange range = service.allocateIds(ALLOCATE_IDS_ENTITY, allocateNum);
+
+        Entity noParent = createTestEntity(ALLOCATE_IDS_ENTITY);
+        assertEntityNotInRange(noParent, range);
+
+        // Range with specified parent
+        Entity parent = new Entity(ALLOCATE_IDS_ENTITY);
+        Key parentKey = service.put(parent);
+        KeyRange range2 = service.allocateIds(parentKey, ALLOCATE_IDS_ENTITY, allocateNum);
+
+        Entity entity = createTestEntity(ALLOCATE_IDS_ENTITY, parentKey);
+        assertEntityNotInRange(entity, range2);
+
+        // In Range entity should have same parent
+        Entity child = new Entity(range2.getStart());
+        Key childKey = service.put(child);
+        // child with allocated key should have correct parent.
+        Assert.assertEquals(parentKey, childKey.getParent());
     }
 
     private boolean rangeOverlap(KeyRange kr1, KeyRange kr2) {

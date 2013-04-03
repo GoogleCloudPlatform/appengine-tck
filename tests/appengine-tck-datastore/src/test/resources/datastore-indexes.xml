@@ -50,7 +50,7 @@
     </datastore-index>
 
     <datastore-index kind="numberType" ancestor="true" source="manual">
-        <property name="intProp" direction="asc"/>
+        <property name="intProp" direction="desc"/>
     </datastore-index>
 
     <datastore-index kind="numberType" ancestor="true" source="manual">
@@ -248,7 +248,7 @@
     </datastore-index>
 
     <datastore-index kind="numberType" ancestor="true" source="manual">
-        <property name="ratingProp" direction="asc"/>
+        <property name="ratingProp" direction="desc"/>
     </datastore-index>
 
     <datastore-index kind="Kind" ancestor="false" source="manual">
