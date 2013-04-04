@@ -54,6 +54,7 @@ import static org.junit.Assert.assertTrue;
 public class UnindexedPropertiesTest extends SimpleTestBase {
 
     private static final Field PROPERTY_MAP_FIELD;
+    private static final String UNINDEXED_ENTITY = "unindexedTest";
 
     static {
         try {
@@ -66,7 +67,7 @@ public class UnindexedPropertiesTest extends SimpleTestBase {
 
     @Test
     public void testUnindexedProperties() throws Exception {
-        Entity entity = new Entity("test");
+        Entity entity = new Entity(UNINDEXED_ENTITY);
         entity.setUnindexedProperty("unindexedString", "unindexedString");
         entity.setUnindexedProperty("unindexedList", new ArrayList<String>(Arrays.asList("listElement1", "listElement2", "listElement3")));
         entity.setUnindexedProperty("unindexedText", new Text("unindexedText"));
@@ -75,6 +76,7 @@ public class UnindexedPropertiesTest extends SimpleTestBase {
         entity.setProperty("blob", new Blob("blob".getBytes()));
 
         Key key = service.put(entity);
+        sync(3000);  // Not using ancestor queries, so pause before doing queries below.
         Entity entity2 = service.get(key);
 
         assertTrue(isUnindexed(getRawProperty(entity2, "unindexedString")));
@@ -84,30 +86,31 @@ public class UnindexedPropertiesTest extends SimpleTestBase {
         assertTrue(isUnindexed(getRawProperty(entity2, "text")));
         assertTrue(isUnindexed(getRawProperty(entity2, "blob")));
 
-        assertNull(getResult(new Query("test").setFilter(new FilterPredicate("unindexedString", EQUAL, "unindexedString"))));
-        assertNull(getResult(new Query("test").setFilter(new FilterPredicate("unindexedList", EQUAL, "listElement1"))));
-        assertNull(getResult(new Query("test").setFilter(new FilterPredicate("unindexedText", EQUAL, "unindexedText"))));
-        assertNull(getResult(new Query("test").setFilter(new FilterPredicate("unindexedText", EQUAL, new Text("unindexedText")))));
-        assertNull(getResult(new Query("test").setFilter(new FilterPredicate("unindexedBlob", EQUAL, new Blob("unindexedBlob".getBytes())))));
-        assertNull(getResult(new Query("test").setFilter(new FilterPredicate("text", EQUAL, "text"))));
-        assertNull(getResult(new Query("test").setFilter(new FilterPredicate("text", EQUAL, new Text("text")))));
-        assertNull(getResult(new Query("test").setFilter(new FilterPredicate("blob", EQUAL, new Blob("blob".getBytes())))));
+        assertNull(getResult(new Query(UNINDEXED_ENTITY).setFilter(new FilterPredicate("unindexedString", EQUAL, "unindexedString"))));
+        assertNull(getResult(new Query(UNINDEXED_ENTITY).setFilter(new FilterPredicate("unindexedList", EQUAL, "listElement1"))));
+        assertNull(getResult(new Query(UNINDEXED_ENTITY).setFilter(new FilterPredicate("unindexedText", EQUAL, "unindexedText"))));
+        assertNull(getResult(new Query(UNINDEXED_ENTITY).setFilter(new FilterPredicate("text", EQUAL, "text"))));
+
+        service.delete(key);
     }
 
     @Ignore("CAPEDWARF-66")
     @Test
     public void testFilterWithUnindexedPropertyType() throws Exception {
-        Entity entity = new Entity("test");
+        Entity entity = new Entity(UNINDEXED_ENTITY);
         entity.setProperty("prop", "bbb");
         service.put(entity);
+        sync(3000);
 
-        assertNull(getResult(new Query("test").setFilter(new FilterPredicate("prop", EQUAL, new Text("bbb")))));
-        assertNull(getResult(new Query("test").setFilter(new FilterPredicate("prop", LESS_THAN, new Text("ccc")))));
-        assertNull(getResult(new Query("test").setFilter(new FilterPredicate("prop", LESS_THAN_OR_EQUAL, new Text("ccc")))));
+        assertNull(getResult(new Query(UNINDEXED_ENTITY).setFilter(new FilterPredicate("prop", EQUAL, new Text("bbb")))));
+        assertNull(getResult(new Query(UNINDEXED_ENTITY).setFilter(new FilterPredicate("prop", LESS_THAN, new Text("ccc")))));
+        assertNull(getResult(new Query(UNINDEXED_ENTITY).setFilter(new FilterPredicate("prop", LESS_THAN_OR_EQUAL, new Text("ccc")))));
 
         // it's strange that GREATER_THAN actually DOES return a result, whereas LESS_THAN doesn't
-        assertEquals(entity, getResult(new Query("test").setFilter(new FilterPredicate("prop", GREATER_THAN, new Text("aaa")))));
-        assertEquals(entity, getResult(new Query("test").setFilter(new FilterPredicate("prop", GREATER_THAN_OR_EQUAL, new Text("aaa")))));
+        assertEquals(entity, getResult(new Query(UNINDEXED_ENTITY).setFilter(new FilterPredicate("prop", GREATER_THAN, new Text("aaa")))));
+        assertEquals(entity, getResult(new Query(UNINDEXED_ENTITY).setFilter(new FilterPredicate("prop", GREATER_THAN_OR_EQUAL, new Text("aaa")))));
+
+        service.delete(entity.getKey());
     }
 
     private Entity getResult(Query query) {
