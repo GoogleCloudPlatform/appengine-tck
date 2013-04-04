@@ -24,6 +24,7 @@
 
 package com.google.appengine.tck.datastore;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -64,6 +65,23 @@ public class DatastoreMultitenancyTest extends SimpleTestBase {
     public void tearDown() {
         super.tearDown();
         NamespaceManager.set(originalNamespace);
+    }
+
+    private void deleteEntityList(List<Entity> entities) {
+        List<Key> keys = new ArrayList<Key>();
+        for (Entity entity : entities) {
+            keys.add(entity.getKey());
+        }
+        service.delete(keys);
+    }
+
+    private void deleteNsKinds(String namespace, String kind) {
+        String originalNs = NamespaceManager.get();
+        NamespaceManager.set(namespace);
+
+        List<Entity> entities = service.prepare(new Query(kind)).asList(withDefaults());
+        deleteEntityList(entities);
+        NamespaceManager.set(originalNs);
     }
 
     @Test
@@ -107,6 +125,10 @@ public class DatastoreMultitenancyTest extends SimpleTestBase {
 
     @Test
     public void testQueriesOnlyReturnResultsInCurrentNamespace() {
+        deleteNsKinds("one", "foo");
+        deleteNsKinds("two", "foo");
+        sync();
+
         NamespaceManager.set("one");
         Entity fooOne = new Entity("foo");
         service.put(fooOne);
@@ -114,6 +136,7 @@ public class DatastoreMultitenancyTest extends SimpleTestBase {
         NamespaceManager.set("two");
         Entity fooTwo = new Entity("foo");
         service.put(fooTwo);
+        sync();
 
         List<Entity> listTwo = service.prepare(new Query("foo")).asList(withDefaults());
         assertEquals(Collections.singletonList(fooTwo), listTwo);
@@ -128,6 +151,10 @@ public class DatastoreMultitenancyTest extends SimpleTestBase {
 
     @Test
     public void testQueryConsidersCurrentNamespaceWhenCreatedNotWhenPreparedOrExecuted() {
+        deleteNsKinds("one", "foo");
+        deleteNsKinds("two", "foo");
+        sync();
+
         NamespaceManager.set("one");
         Entity fooOne = new Entity("foo");
         service.put(fooOne);
@@ -135,6 +162,7 @@ public class DatastoreMultitenancyTest extends SimpleTestBase {
         NamespaceManager.set("two");
         Entity fooTwo = new Entity("foo");
         service.put(fooTwo);
+        sync();
 
         Query query = new Query("foo"); // query created in namespace "two"
 
