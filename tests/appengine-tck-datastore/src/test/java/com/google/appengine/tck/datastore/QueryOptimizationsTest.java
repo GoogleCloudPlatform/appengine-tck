@@ -28,6 +28,7 @@ import java.util.List;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
@@ -53,12 +54,17 @@ public class QueryOptimizationsTest extends QueryTestBase {
 
     @Test
     public void testKeysOnly() throws Exception {
-        Entity john = createEntity("Person", 1)
-                .withProperty("name", "John")
-                .withProperty("surname", "Doe")
-                .store();
+        Entity parent = createTestEntityWithUniqueMethodNameKey("Person", "testKeysOnly");
+        Key key = parent.getKey();
 
-        Query query = new Query("Person").setKeysOnly();
+        Entity john = createEntity("Person", key)
+            .withProperty("name", "John")
+            .withProperty("surname", "Doe")
+            .store();
+
+        Query query = new Query("Person")
+            .setAncestor(key)
+            .setKeysOnly();
 
         PreparedQuery preparedQuery = service.prepare(query);
 
@@ -70,7 +76,10 @@ public class QueryOptimizationsTest extends QueryTestBase {
 
     @Test
     public void testProjections() throws Exception {
-        Entity e = createEntity("Product", 1)
+        Entity parent = createTestEntityWithUniqueMethodNameKey("Product", "testProjections");
+        Key key = parent.getKey();
+
+        Entity e = createEntity("Product", key)
                 .withProperty("price", 123L)
                 .withProperty("percent", 0.123)
                 .withProperty("x", -0.321)
@@ -79,6 +88,7 @@ public class QueryOptimizationsTest extends QueryTestBase {
                 .store();
 
         Query query = new Query("Product")
+                .setAncestor(key)
                 .addProjection(new PropertyProjection("price", Long.class))
                 .addProjection(new PropertyProjection("percent", Double.class))
                 .addProjection(new PropertyProjection("x", Double.class))
@@ -96,16 +106,21 @@ public class QueryOptimizationsTest extends QueryTestBase {
 
     @Test
     public void testProjectionQueryOnlyReturnsEntitiesContainingProjectedProperty() throws Exception {
-        Entity e1 = createEntity("Kind", 1)
-                .withProperty("foo", "foo")
-                .store();
+        String methodName = "testProjectionQueryOnlyReturnsEntitiesContainingProjectedProperty";
+        Entity parent = createTestEntityWithUniqueMethodNameKey("Kind", methodName);
+        Key key = parent.getKey();
 
-        Entity e2 = createEntity("Kind", 2)
-                .withProperty("bar", "bar")
-                .store();
+        Entity e1 = createEntity("Kind", key)
+            .withProperty("foo", "foo")
+            .store();
+
+        Entity e2 = createEntity("Kind", key)
+            .withProperty("bar", "bar")
+            .store();
 
         Query query = new Query("Kind")
-                .addProjection(new PropertyProjection("foo", String.class));
+            .setAncestor(key)
+            .addProjection(new PropertyProjection("foo", String.class));
 
         List<Entity> results = service.prepare(query).asList(withDefaults());
         assertEquals(Collections.singletonList(e1), results);
@@ -113,24 +128,29 @@ public class QueryOptimizationsTest extends QueryTestBase {
 
     @Test
     public void testProjectionQueryOnlyReturnsEntitiesContainingAllProjectedProperties() throws Exception {
-        Entity e1 = createEntity("Kind", 1)
+        String methodName = "testProjectionQueryOnlyReturnsEntitiesContainingAllProjectedProperties";
+        Entity parent = createTestEntityWithUniqueMethodNameKey("Kind", methodName);
+        Key key = parent.getKey();
+
+        Entity e1 = createEntity("Kind", key)
                 .withProperty("foo", "foo")
                 .withProperty("bar", "bar")
                 .store();
 
-        Entity e2 = createEntity("Kind", 2)
+        Entity e2 = createEntity("Kind", key)
                 .withProperty("foo", "foo")
                 .store();
 
-        Entity e3 = createEntity("Kind", 3)
+        Entity e3 = createEntity("Kind", key)
                 .withProperty("bar", "bar")
                 .store();
 
-        Entity e4 = createEntity("Kind", 4)
+        Entity e4 = createEntity("Kind", key)
                 .withProperty("baz", "baz")
                 .store();
 
         Query query = new Query("Kind")
+                .setAncestor(key)
                 .addProjection(new PropertyProjection("foo", String.class))
                 .addProjection(new PropertyProjection("bar", String.class));
 
@@ -140,11 +160,16 @@ public class QueryOptimizationsTest extends QueryTestBase {
 
     @Test
     public void testProjectionsWithoutType() throws Exception {
-        Entity e = createEntity("Product", 1)
+        String methodName = "testProjectionsWithoutType";
+        Entity parent = createTestEntityWithUniqueMethodNameKey("Product", methodName);
+        Key key = parent.getKey();
+
+        Entity e = createEntity("Product", key)
                 .withProperty("long", 123L)
                 .store();
 
         Query query = new Query("Product")
+                .setAncestor(key)
                 .addProjection(new PropertyProjection("long", null));
 
         PreparedQuery preparedQuery = service.prepare(query);
@@ -159,11 +184,16 @@ public class QueryOptimizationsTest extends QueryTestBase {
     @Ignore("CAPEDWARF-67")
     @Test
     public void testProjectionOfCollectionProperties() throws Exception {
-        Entity e = createEntity("Kind", 1)
+        String methodName = "testProjectionOfCollectionProperties";
+        Entity parent = createTestEntityWithUniqueMethodNameKey("Kind", methodName);
+        Key key = parent.getKey();
+
+        Entity e = createEntity("Kind", key)
                 .withProperty("prop", Arrays.asList("bbb", "ccc", "aaa"))
                 .store();
 
         Query query = new Query("Kind")
+                .setAncestor(key)
                 .addProjection(new PropertyProjection("prop", String.class));
 
         PreparedQuery preparedQuery = service.prepare(query);
@@ -185,17 +215,22 @@ public class QueryOptimizationsTest extends QueryTestBase {
 
     @Test
     public void testOrderOfReturnedResultsIsSameAsOrderOfElementsInInStatementWhenUsingProjections() throws Exception {
-        Entity a = createEntity("Product", 1)
+        String methodName = "testOrderOfReturnedResultsIsSameAsOrderOfElementsInInStatementWhenUsingProjections";
+        Entity parent = createTestEntityWithUniqueMethodNameKey("Product", methodName);
+        Key key = parent.getKey();
+
+        Entity a = createEntity("Product", key)
                 .withProperty("name", "b")
                 .withProperty("price", 1L)
                 .store();
 
-        Entity b = createEntity("Product", 2)
+        Entity b = createEntity("Product", key)
                 .withProperty("name", "a")
                 .withProperty("price", 2L)
                 .store();
 
         Query query = new Query("Product")
+                .setAncestor(key)
                 .addProjection(new PropertyProjection("price", Long.class))
                 .setFilter(new Query.FilterPredicate("name", IN, Arrays.asList("a", "b")));
         assertResultsInOrder(query, a, b);
@@ -206,15 +241,20 @@ public class QueryOptimizationsTest extends QueryTestBase {
 
     @Test
     public void testOrderOfReturnedResultsIsSameAsOrderOfElementsInInStatementWhenUsingKeysOnly() throws Exception {
-        Entity a = createEntity("Product", 1)
+        String methodName = "testOrderOfReturnedResultsIsSameAsOrderOfElementsInInStatementWhenUsingKeysOnly";
+        Entity parent = createTestEntityWithUniqueMethodNameKey("Product", methodName);
+        Key key = parent.getKey();
+
+        Entity a = createEntity("Product", key)
                 .withProperty("name", "b")
                 .store();
 
-        Entity b = createEntity("Product", 2)
+        Entity b = createEntity("Product", key)
                 .withProperty("name", "a")
                 .store();
 
         Query query = new Query("Product")
+                .setAncestor(key)
                 .setKeysOnly()
                 .setFilter(new Query.FilterPredicate("name", IN, Arrays.asList("a", "b")));
         assertResultsInOrder(query, a, b);
@@ -225,27 +265,32 @@ public class QueryOptimizationsTest extends QueryTestBase {
 
     @Test
     public void testEntityOnlyContainsProjectedProperties() throws Exception {
-        Entity a = createEntity("Product", 1)
-                .withProperty("name", "b")
-                .withProperty("price", 1L)
-                .store();
+        String methodName = "testEntityOnlyContainsProjectedProperties";
+        Entity parent = createTestEntityWithUniqueMethodNameKey("Product", methodName);
+        Key key = parent.getKey();
 
-        Entity b = createEntity("Product", 2)
-                .withProperty("name", "a")
-                .withProperty("price", 2L)
-                .store();
+        Entity a = createEntity("Product", key)
+            .withProperty("name", "b")
+            .withProperty("price", 1L)
+            .store();
+
+        Entity b = createEntity("Product", key)
+            .withProperty("name", "a")
+            .withProperty("price", 2L)
+            .store();
 
         Query query = new Query("Product")
-                .addProjection(new PropertyProjection("price", Long.class))
-                .setFilter(new Query.FilterPredicate("name", IN, Arrays.asList("a", "b")));
+            .setAncestor(key)
+            .addProjection(new PropertyProjection("price", Long.class))
+            .setFilter(new Query.FilterPredicate("name", IN, Arrays.asList("a", "b")));
         Entity firstResult = service.prepare(query).asList(FetchOptions.Builder.withDefaults()).get(0);
 
         assertEquals(1, firstResult.getProperties().size());
         assertEquals("price", firstResult.getProperties().keySet().iterator().next());
 
         query = new Query("Product")
-                .setKeysOnly()
-                .setFilter(new Query.FilterPredicate("name", IN, Arrays.asList("a", "b")));
+            .setKeysOnly()
+            .setFilter(new Query.FilterPredicate("name", IN, Arrays.asList("a", "b")));
         firstResult = service.prepare(query).asList(FetchOptions.Builder.withDefaults()).get(0);
 
         assertEquals(0, firstResult.getProperties().size());

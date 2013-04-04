@@ -232,11 +232,6 @@
     </datastore-index>
 
     <datastore-index kind="Product" ancestor="false" source="manual">
-        <property name="name" direction="asc"/>
-        <property name="price" direction="asc"/>
-    </datastore-index>
-
-    <datastore-index kind="Product" ancestor="false" source="manual">
         <property name="diff" direction="asc"/>
         <property name="percent" direction="asc"/>
         <property name="price" direction="asc"/>
@@ -251,9 +246,34 @@
         <property name="ratingProp" direction="desc"/>
     </datastore-index>
 
-    <datastore-index kind="Kind" ancestor="false" source="manual">
+    <datastore-index kind="Kind" ancestor="true" source="manual">
         <property name="bar" direction="asc"/>
         <property name="foo" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="Product" ancestor="true" source="manual">
+        <property name="name" direction="asc"/>
+        <property name="price" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="Product" ancestor="true" source="manual">
+        <property name="diff" direction="asc"/>
+        <property name="percent" direction="asc"/>
+        <property name="price" direction="asc"/>
+        <property name="x" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="Kind" ancestor="true" source="manual">
+        <property name="foo" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="Kind" ancestor="true" source="manual">
+        <property name="bar" direction="asc"/>
+        <property name="foo" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="Product" ancestor="true" source="manual">
+        <property name="long" direction="asc"/>
     </datastore-index>
 
 </datastore-indexes>
