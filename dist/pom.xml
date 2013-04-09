@@ -52,11 +52,11 @@
 
         <!-- The TCK tests -->
 
-        <!-- dependency>
-            <groupId>com.google.appgengine.tck</groupId>
+        <dependency>
+            <groupId>com.google.appengine.tck</groupId>
             <artifactId>appengine-tck-capability</artifactId>
             <type>test-jar</type>
-        </dependency -->
+        </dependency>
 
         <dependency>
             <groupId>com.google.appengine.tck</groupId>

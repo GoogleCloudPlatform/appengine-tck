@@ -191,7 +191,7 @@
             <!-- The TCK tests -->
 
             <dependency>
-                <groupId>com.google.appgengine.tck</groupId>
+                <groupId>com.google.appengine.tck</groupId>
                 <artifactId>appengine-tck-capability</artifactId>
                 <version>${project.version}</version>
                 <type>test-jar</type>
