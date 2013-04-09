@@ -6,26 +6,26 @@
         <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
-    <moduleSets>
-        <moduleSet>
-            <!-- Enable access to all projects in the current multimodule build! -->
-            <useAllReactorProjects>true</useAllReactorProjects>
-            <!-- Now, select which projects to include in this module-set. -->
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>/common</outputDirectory>
             <includes>
-                <include>*:jar</include>
-                <!-- include>com.google.appengine.tck:appengine-tck-*:jar</include -->
-                <!-- include>com.google.appengine.tck:appengine-tck-capability:test-jar</include -->
-                <!-- include>com.google.appengine.tck:appengine-tck-datastore:test-jar</include>
-                <include>com.google.appengine.tck:appengine-tck-logservice:test-jar</include>
-                <include>com.google.appengine.tck:appengine-tck-memcache:test-jar</include>
-                <include>com.google.appengine.tck:appengine-tck-taskqueue:test-jar</include>
-                <include>com.google.appengine.tck:appengine-tck-urlfetch:test-jar</include>
-                <include>com.google.appengine.tck:appengine-tck-users:test-jar</include -->
+                <include>com.google.appengine.tck:appengine-tck-base</include>
+                <include>com.google.appengine.tck:appengine-tck-multisuite</include>
             </includes>
-            <binaries>
-                <outputDirectory>tests/${artifactId}</outputDirectory>
-                <unpack>false</unpack>
-            </binaries>
-        </moduleSet>
-    </moduleSets>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/tests</outputDirectory>
+            <includes>
+                <include>com.google.appengine.tck:appengine-tck-*:test-jar</include>
+                <!-- include>com.google.appengine.tck:appengine-tck-capability:test-jar</include -->
+                <!-- include>com.google.appengine.tck:appengine-tck-datastore</include>
+                <include>com.google.appengine.tck:appengine-tck-logservice</include>
+                <include>com.google.appengine.tck:appengine-tck-memcache</include>
+                <include>com.google.appengine.tck:appengine-tck-taskqueue</include>
+                <include>com.google.appengine.tck:appengine-tck-urlfetch</include>
+                <include>com.google.appengine.tck:appengine-tck-users</include -->
+            </includes>
+        </dependencySet>
+    </dependencySets>
 </assembly>

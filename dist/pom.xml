@@ -43,6 +43,13 @@
             <artifactId>appengine-tck-transformers</artifactId>
         </dependency>
 
+        <!-- The TCK env -->
+
+        <dependency>
+            <groupId>org.jboss.capedwarf.tck</groupId>
+            <artifactId>gae-tck</artifactId>
+        </dependency>
+
         <!-- The TCK tests -->
 
         <!-- dependency>
