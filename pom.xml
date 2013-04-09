@@ -10,6 +10,7 @@
 
     <modules>
         <module>common</module>
+        <module>dist</module>
         <module>env</module>
         <module>ext</module>
         <module>tests</module>
@@ -70,11 +71,26 @@
         <!-- maven-surefire-plugin -->
         <version.release.plugin>2.3.2</version.release.plugin>
         <version.jar.plugin>2.4</version.jar.plugin>
-        <version.maven.dependency>2.5.1</version.maven.dependency>
+        <version.assembly.plugin>2.4</version.assembly.plugin>
+        <version.dependency.plugin>2.5.1</version.dependency.plugin>
 
     </properties>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${version.assembly.plugin}</version>
+                    <configuration>
+                        <descriptors>
+                            <descriptor>src/assemble/bin.xml</descriptor>
+                        </descriptors>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <plugins>
 
             <plugin>
@@ -98,22 +114,6 @@
                 <version>${version.release.plugin}</version>
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${version.surefire.plugin}</version>
-                <configuration>
-                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <includes>
-                        <!-- <include>org/jboss/test/**/*TestCase.java</include>-->
-                        <include>com/google/appengine/testing/e2e/**/*Test.java</include>
-                    </includes>
-                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <trimStackTrace>false</trimStackTrace>
-                    <printSummary>true</printSummary>
                 </configuration>
             </plugin>
 
@@ -190,29 +190,56 @@
 
             <!-- The TCK tests -->
 
-            <dependency>
+            <!-- dependency>
                 <groupId>com.google.appgengine.tck</groupId>
                 <artifactId>appengine-tck-capability</artifactId>
                 <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency -->
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-datastore</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
             </dependency>
 
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>
                 <artifactId>appengine-tck-logservice</artifactId>
                 <version>${project.version}</version>
+                <type>test-jar</type>
             </dependency>
 
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>
                 <artifactId>appengine-tck-memcache</artifactId>
                 <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-taskqueue</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
             </dependency>
 
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>
                 <artifactId>appengine-tck-urlfetch</artifactId>
                 <version>${project.version}</version>
+                <type>test-jar</type>
             </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-users</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
+
+            <!-- GAE API -->
 
             <dependency>
                 <groupId>com.google.appengine</groupId>

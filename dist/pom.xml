@@ -1,0 +1,114 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.google.appengine.tck</groupId>
+        <artifactId>appengine-tck</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>appengine-tck-distribution</artifactId>
+    <packaging>pom</packaging>
+    <name>GAE TCK Distribution</name>
+    <url>https://developers.google.com/appengine/</url>
+    <description>Google AppEngine Test Compatability Kit</description>
+
+    <!-- NOTE: These dependency declarations are only required to sort this project to the
+         end of the line in the multimodule build.
+
+         Since we only include the child1 module in our assembly, we only need to ensure this
+         distribution project builds AFTER that one...
+    -->
+    <dependencies>
+        <!-- The TCK common -->
+
+        <dependency>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-base</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-multisuite</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-coverage</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-transformers</artifactId>
+        </dependency>
+
+        <!-- The TCK tests -->
+
+        <!-- dependency>
+            <groupId>com.google.appgengine.tck</groupId>
+            <artifactId>appengine-tck-capability</artifactId>
+            <type>test-jar</type>
+        </dependency -->
+
+        <dependency>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-datastore</artifactId>
+            <type>test-jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-logservice</artifactId>
+            <type>test-jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-memcache</artifactId>
+            <type>test-jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-taskqueue</artifactId>
+            <type>test-jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-urlfetch</artifactId>
+            <type>test-jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-users</artifactId>
+            <type>test-jar</type>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>distro-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/assemble/bin.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
