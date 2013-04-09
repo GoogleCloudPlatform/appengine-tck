@@ -239,6 +239,40 @@
                 <type>test-jar</type>
             </dependency>
 
+            <!-- The TCK Ext -->
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>datanucleus</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>mapreduce</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>misc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- The TCK Utils -->
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-coverage</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-transformers</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- GAE API -->
 
             <dependency>

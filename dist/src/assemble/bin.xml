@@ -18,13 +18,34 @@
             <outputDirectory>/tests</outputDirectory>
             <includes>
                 <include>com.google.appengine.tck:appengine-tck-*:test-jar</include>
-                <!-- include>com.google.appengine.tck:appengine-tck-capability:test-jar</include -->
-                <!-- include>com.google.appengine.tck:appengine-tck-datastore</include>
-                <include>com.google.appengine.tck:appengine-tck-logservice</include>
-                <include>com.google.appengine.tck:appengine-tck-memcache</include>
-                <include>com.google.appengine.tck:appengine-tck-taskqueue</include>
-                <include>com.google.appengine.tck:appengine-tck-urlfetch</include>
-                <include>com.google.appengine.tck:appengine-tck-users</include -->
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/utils</outputDirectory>
+            <includes>
+                <include>com.google.appengine.tck:appengine-tck-coverage</include>
+                <include>com.google.appengine.tck:appengine-tck-transformers</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/env</outputDirectory>
+            <includes>
+                <include>org.jboss.capedwarf.tck:gae-tck</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/ext</outputDirectory>
+            <includes>
+                <include>com.google.appengine.tck:datanucleus</include>
+                <include>com.google.appengine.tck:mapreduce</include>
+                <include>com.google.appengine.tck:misc</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/lib</outputDirectory>
+            <includes>
+                <include>org.jboss.arquillian.junit:arquillian-junit-core</include>
+                <include>org.jboss.shrinkwrap:shrinkwrap-api</include>
             </includes>
         </dependencySet>
     </dependencySets>
