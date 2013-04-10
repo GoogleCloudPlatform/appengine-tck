@@ -27,4 +27,17 @@ public final class Utils {
             log.warning("Exception closing " + closeable);
         }
     }
+
+    public static String readFullyAndClose(InputStream in) throws IOException {
+        try {
+            StringBuilder sbuf = new StringBuilder();
+            int ch;
+            while ((ch = in.read()) != -1) {
+                sbuf.append((char) ch);
+            }
+            return sbuf.toString().trim();
+        } finally {
+            in.close();
+        }
+    }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+        PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+
+    <!-- Servlets -->
+
+    <servlet>
+        <servlet-name>user-service-helper</servlet-name>
+        <servlet-class>com.google.appengine.tck.users.support.UserServiceServlet</servlet-class>
+    </servlet>
+
+
+    <!-- Mappings -->
+
+    <servlet-mapping>
+        <servlet-name>user-service-helper</servlet-name>
+        <url-pattern>/user-service-helper</url-pattern>
+    </servlet-mapping>
+
+</web-app>

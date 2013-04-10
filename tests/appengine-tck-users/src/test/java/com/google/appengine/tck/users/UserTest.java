@@ -7,10 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.appengine.api.users.User;
 
-import com.google.appengine.tck.base.TestBase;
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 import org.junit.Rule;
 import org.junit.Test;
