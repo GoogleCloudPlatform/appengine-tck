@@ -47,6 +47,13 @@ public class CoverageMojo extends AbstractMojo {
      */
     protected List<String> interfaces;
 
+    /**
+     * Coverage file.
+     *
+     * @parameter
+     */
+    protected String coverageFile = "coverage.txt";
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         List<URL> classPathUrls = getClassPathUrls(tests);
         ClassLoader cl = new URLClassLoader(classPathUrls.toArray(new URL[classPathUrls.size()]), getClass().getClassLoader());
@@ -106,7 +113,8 @@ public class CoverageMojo extends AbstractMojo {
     }
 
     private void readInterfaces(File root, List<String> classes) throws IOException {
-        File coverage = new File(root, "coverage.txt");
+        String cf = System.getProperty("coverage.file", coverageFile);
+        File coverage = new File(root, cf);
         if (coverage.exists()) {
             getLog().info("Reading interfaces from " + coverage);
             BufferedReader reader = new BufferedReader(new FileReader(coverage));
@@ -145,5 +153,13 @@ public class CoverageMojo extends AbstractMojo {
 
     public void setInterfaces(List<String> interfaces) {
         this.interfaces = interfaces;
+    }
+
+    public String getCoverageFile() {
+        return coverageFile;
+    }
+
+    public void setCoverageFile(String coverageFile) {
+        this.coverageFile = coverageFile;
     }
 }

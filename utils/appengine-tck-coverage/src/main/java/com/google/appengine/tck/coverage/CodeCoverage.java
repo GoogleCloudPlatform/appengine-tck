@@ -50,8 +50,11 @@ public class CodeCoverage {
 
         CodeCoverage cc = new CodeCoverage(classLoader, interfaces);
         cc.scan(classesToScan, "");
-        cc.print(SoutPrinter.INSTANCE, new HtmlPrinter(new File(classesToScan, "../../index.html")),
-            new CsvPrinter(new File(classesToScan, "../../coverage-results.csv")));
+        cc.print(
+                SoutPrinter.INSTANCE,
+                new HtmlPrinter(new File(classesToScan, "../../index.html")),
+                new CsvPrinter(new File(classesToScan, "../../coverage-results.csv"))
+        );
     }
 
     private CodeCoverage(ClassLoader classLoader, String... interfaces) throws Exception {
@@ -91,7 +94,6 @@ public class CodeCoverage {
             }
         }
     }
-
 
     private ClassFile getClassFile(Object info, InputStream is) throws IOException {
         if (is == null) {
