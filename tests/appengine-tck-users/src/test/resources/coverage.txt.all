@@ -1,4 +1,5 @@
 com.google.appengine.api.users.UserService
+com.google.appengine.api.users.User
 com.google.appengine.api.users.IUserServiceFactoryProvider
 com.google.appengine.api.users.IUserServiceFactory
 com.google.appengine.api.users.UserServiceFactory
