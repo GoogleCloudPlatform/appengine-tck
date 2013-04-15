@@ -20,7 +20,6 @@
     <properties>
         <!-- GAE -->
         <version.com.google.gae.api>1.7.7</version.com.google.gae.api>
-        <version.net.sf.jsr107cache>1.1</version.net.sf.jsr107cache>
 
         <!-- Ext -->
         <version.metainf>1.1</version.metainf>
@@ -289,18 +288,6 @@
                 <groupId>com.google.appengine</groupId>
                 <artifactId>appengine-api-1.0-sdk</artifactId>
                 <version>${version.com.google.gae.api}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.google.appengine</groupId>
-                <artifactId>appengine-jsr107cache</artifactId>
-                <version>${version.com.google.gae.api}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>net.sf.jsr107cache</groupId>
-                <artifactId>jsr107cache</artifactId>
-                <version>${version.net.sf.jsr107cache}</version>
             </dependency>
 
             <!-- Ext -->

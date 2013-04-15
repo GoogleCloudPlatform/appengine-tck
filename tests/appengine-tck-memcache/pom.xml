@@ -37,18 +37,6 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!-- Memcache specific -->
-        <dependency>
-            <groupId>com.google.appengine</groupId>
-            <artifactId>appengine-jsr107cache</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>net.sf.jsr107cache</groupId>
-            <artifactId>jsr107cache</artifactId>
-        </dependency>
-
     </dependencies>
 
 </project>
