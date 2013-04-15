@@ -35,8 +35,6 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import org.hamcrest.Matcher;
-import org.hamcrest.core.IsEqual;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -48,7 +46,6 @@ import static com.google.appengine.api.datastore.Query.FilterOperator.LESS_THAN;
 import static com.google.appengine.api.datastore.Query.FilterOperator.LESS_THAN_OR_EQUAL;
 import static com.google.appengine.api.datastore.Query.FilterOperator.NOT_EQUAL;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author <a href="mailto:marko.luksa@gmail.com">Marko Luksa</a>
@@ -71,6 +68,26 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
         cal.set(year, month - 1, day, 0, 0, 0);
         cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
+    }
+
+    protected void assertList(List<Entity> expected, List<Entity> actual) {
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(expected.size(), actual.size());
+        for (int i = 0; i < expected.size(); i++) {
+            Assert.assertEquals(expected.get(i), actual.get(i));
+        }
+    }
+
+    protected void assertSet(Set<Entity> expected, Set<Entity> actual) {
+        assertSet(null, expected, actual);
+    }
+
+    protected void assertSet(String message, Set<Entity> expected, Set<Entity> actual) {
+        Assert.assertNotNull(message, actual);
+        Assert.assertEquals(message, expected.size(), actual.size());
+        Set<Entity> copy = new HashSet<Entity>(expected);
+        copy.removeAll(actual);
+        Assert.assertTrue(message, copy.size() == 0);
     }
 
     protected void assertSingleResult(Entity expectedEntity, Query query) {
@@ -139,16 +156,16 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
         return new Query(TEST_ENTITY_KIND);
     }
 
-    protected Matcher<Set<Entity>> queryReturnsNothing() {
+    protected Set<Entity> queryReturnsNothing() {
         return queryReturns();
     }
 
-    protected Matcher<Set<Entity>> queryReturns(Entity... entities) {
-        return new IsEqual<Set<Entity>>(new HashSet<Entity>(Arrays.asList(entities)));
+    protected Set<Entity> queryReturns(Entity... entities) {
+        return new HashSet<Entity>(Arrays.asList(entities));
     }
 
-    protected Matcher<List<Entity>> containsResultsInOrder(Entity... entities) {
-        return new IsEqual<List<Entity>>(Arrays.asList(entities));
+    protected List<Entity> containsResultsInOrder(Entity... entities) {
+        return Arrays.asList(entities);
     }
 
     protected Set<Entity> whenFilteringBy(Query.FilterOperator operator, Object value) {
@@ -195,10 +212,10 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
         Entity midEntity = storeTestEntityWithSingleProperty(key, midValue);
         Entity nullEntity = storeTestEntityWithSingleProperty(key, null);
 
-        assertThat(whenFilteringBy(GREATER_THAN, lowValue, key), queryReturns(midEntity, highEntity));
-        assertThat(whenFilteringBy(GREATER_THAN_OR_EQUAL, midValue, key), queryReturns(midEntity, highEntity));
-        assertThat(whenFilteringBy(LESS_THAN, highValue, key), queryReturns(nullEntity, midEntity, lowEntity));
-        assertThat(whenFilteringBy(LESS_THAN_OR_EQUAL, midValue, key), queryReturns(nullEntity, midEntity, lowEntity));
+        assertSet(whenFilteringBy(GREATER_THAN, lowValue, key), queryReturns(midEntity, highEntity));
+        assertSet(whenFilteringBy(GREATER_THAN_OR_EQUAL, midValue, key), queryReturns(midEntity, highEntity));
+        assertSet(whenFilteringBy(LESS_THAN, highValue, key), queryReturns(nullEntity, midEntity, lowEntity));
+        assertSet(whenFilteringBy(LESS_THAN_OR_EQUAL, midValue, key), queryReturns(nullEntity, midEntity, lowEntity));
 
         clearData(TEST_ENTITY_KIND, key, 0);
     }
@@ -219,8 +236,8 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
         Entity barEntity = storeTestEntityWithSingleProperty(key, bar);
         Entity noPropertyEntity = storeTestEntityWithoutProperties(key);
 
-        assertThat(whenFilteringBy(EQUAL, foo, key), queryReturns(fooEntity));
-        assertThat(whenFilteringBy(NOT_EQUAL, foo, key), queryReturns(barEntity));
+        assertSet(whenFilteringBy(EQUAL, foo, key), queryReturns(fooEntity));
+        assertSet(whenFilteringBy(NOT_EQUAL, foo, key), queryReturns(barEntity));
 
         clearData(TEST_ENTITY_KIND, key, 0);
     }

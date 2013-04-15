@@ -60,6 +60,6 @@ public class QueryFilteringByDatePropertyTypeTest extends QueryTestBase {
         Entity october20Entity = storeTestEntityWithSingleProperty(october20);
         Entity november1Entity = storeTestEntityWithSingleProperty(november1);
 
-        assertThat(whenFilteringBy(IN, Arrays.asList(october15, november1)), queryReturns(october15Entity, november1Entity));
+        assertSet(whenFilteringBy(IN, Arrays.asList(october15, november1)), queryReturns(october15Entity, november1Entity));
     }
 }

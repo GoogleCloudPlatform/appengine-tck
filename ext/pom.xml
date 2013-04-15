@@ -31,6 +31,34 @@
             <properties>
                 <skipTests>true</skipTests>
             </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.appengine.tck</groupId>
+                        <artifactId>appengine-tck-coverage</artifactId>
+                        <version>${project.version}</version>
+                        <executions>
+                            <execution>
+                                <id>api-coverage</id>
+                                <goals>
+                                    <goal>coverage</goal>
+                                </goals>
+                                <phase>process-test-classes</phase>
+                                <configuration>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+
+            <dependencies>
+                <dependency>
+                    <groupId>com.google.appengine.tck</groupId>
+                    <artifactId>appengine-tck-coverage</artifactId>
+                </dependency>
+            </dependencies>
         </profile>
 
         <!-- GAE -->
@@ -42,6 +70,24 @@
                     <name>sdk</name>
                 </property>
             </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                            <includes>
+                                <include>com/google/appengine/tck/**/*Test.java</include>
+                            </includes>
+                            <systemProperties>
+                                <appengine.test.datastore.default_high_rep_job_policy_unapplied_job_pct>20</appengine.test.datastore.default_high_rep_job_policy_unapplied_job_pct>
+                            </systemProperties>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
 
             <dependencies>
                 <dependency>
@@ -61,7 +107,20 @@
                     <name>appspot</name>
                 </property>
             </activation>
-
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                            <includes>
+                                <include>com/google/appengine/tck/**/*Test.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
             <dependencies>
                 <dependency>
                     <groupId>org.jboss.arquillian.container</groupId>
@@ -79,7 +138,20 @@
                     <name>capedwarf</name>
                 </property>
             </activation>
-
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                            <includes>
+                                <include>com/google/appengine/tck/**/*Test.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
             <dependencies>
                 <dependency>
                     <groupId>org.jboss.capedwarf.tck</groupId>
@@ -145,7 +217,21 @@
                     <name>multisuite</name>
                 </property>
             </activation>
-
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                            <excludedGroups>com.google.appengine.tck.category.IgnoreMultisuite</excludedGroups>
+                            <includes>
+                                <include>com/google/appengine/tck/**/*Test.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
             <dependencies>
                 <dependency>
                     <groupId>com.google.appengine.tck</groupId>

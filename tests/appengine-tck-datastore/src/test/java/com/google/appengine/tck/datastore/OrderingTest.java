@@ -36,7 +36,6 @@ import static com.google.appengine.api.datastore.Query.FilterOperator.LESS_THAN_
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -127,11 +126,11 @@ public class OrderingTest extends QueryTestBase {
         for (int i = 0; i < values.size(); i++) {
             Set<?> values2 = values.get(i);
             for (Object value : values2) {
-                assertThat("when filtering with = " + value, whenFilteringBy(EQUAL, value), queryReturns(entities.get(i).toArray(new Entity[0])));
-                assertThat("when filtering with <= " + value, whenFilteringBy(LESS_THAN_OR_EQUAL, value), queryReturns(flatten(entities.subList(0, i + 1))));
-                assertThat("when filtering with < " + value, whenFilteringBy(LESS_THAN, value), queryReturns(flatten(entities.subList(0, i))));
-                assertThat("when filtering with >= " + value, whenFilteringBy(GREATER_THAN_OR_EQUAL, value), queryReturns(flatten(entities.subList(i, entities.size()))));
-                assertThat("when filtering with > " + value, whenFilteringBy(GREATER_THAN, value), queryReturns(flatten(entities.subList(i + 1, entities.size()))));
+                assertSet("when filtering with = " + value, whenFilteringBy(EQUAL, value), queryReturns(entities.get(i).toArray(new Entity[0])));
+                assertSet("when filtering with <= " + value, whenFilteringBy(LESS_THAN_OR_EQUAL, value), queryReturns(flatten(entities.subList(0, i + 1))));
+                assertSet("when filtering with < " + value, whenFilteringBy(LESS_THAN, value), queryReturns(flatten(entities.subList(0, i))));
+                assertSet("when filtering with >= " + value, whenFilteringBy(GREATER_THAN_OR_EQUAL, value), queryReturns(flatten(entities.subList(i, entities.size()))));
+                assertSet("when filtering with > " + value, whenFilteringBy(GREATER_THAN, value), queryReturns(flatten(entities.subList(i + 1, entities.size()))));
             }
         }
     }

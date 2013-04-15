@@ -40,7 +40,7 @@ public class QueryFilteringByStringPropertyTypeTest extends QueryTestBase {
         Entity kate = storeTestEntityWithSingleProperty("Kate");
         Entity ashley = storeTestEntityWithSingleProperty("Ashley");
 
-        assertThat(whenFilteringBy(IN, Arrays.asList("Kate", "Ashley")), queryReturns(kate, ashley));
+        assertSet(whenFilteringBy(IN, Arrays.asList("Kate", "Ashley")), queryReturns(kate, ashley));
     }
 
     @Test
@@ -50,12 +50,12 @@ public class QueryFilteringByStringPropertyTypeTest extends QueryTestBase {
         Entity c = storeTestEntityWithSingleProperty("c");
         Entity n = storeTestEntityWithSingleProperty(null);
 
-        assertThat(listReturnedWhenFilteringBy(IN, Arrays.asList("a", "b")), containsResultsInOrder(a, b));
-        assertThat(listReturnedWhenFilteringBy(IN, Arrays.asList("b", "a")), containsResultsInOrder(b, a));
-        assertThat(listReturnedWhenFilteringBy(IN, Arrays.asList("c", "a", "b")), containsResultsInOrder(c, a, b));
-        assertThat(listReturnedWhenFilteringBy(IN, Arrays.asList("b", "c", "c", "b")), containsResultsInOrder(b, c));
-        assertThat(listReturnedWhenFilteringBy(IN, Arrays.asList(null, "b")), containsResultsInOrder(n, b));
-        assertThat(listReturnedWhenFilteringBy(IN, Arrays.asList("b", null)), containsResultsInOrder(b, n));
+        assertList(listReturnedWhenFilteringBy(IN, Arrays.asList("a", "b")), containsResultsInOrder(a, b));
+        assertList(listReturnedWhenFilteringBy(IN, Arrays.asList("b", "a")), containsResultsInOrder(b, a));
+        assertList(listReturnedWhenFilteringBy(IN, Arrays.asList("c", "a", "b")), containsResultsInOrder(c, a, b));
+        assertList(listReturnedWhenFilteringBy(IN, Arrays.asList("b", "c", "c", "b")), containsResultsInOrder(b, c));
+        assertList(listReturnedWhenFilteringBy(IN, Arrays.asList(null, "b")), containsResultsInOrder(n, b));
+        assertList(listReturnedWhenFilteringBy(IN, Arrays.asList("b", null)), containsResultsInOrder(b, n));
     }
 
 }

@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
 
 import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withMethod;
 import static com.google.appengine.api.taskqueue.TaskOptions.Method.PULL;
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 //import org.jboss.test.capedwarf.common.support.All;

@@ -61,8 +61,8 @@ public class QueryFilteringByBasicPropertyTypesTest extends QueryTestBase {
         Entity plus1 = buildTestEntity(key).withProperty("prop", 1).store();
         Entity plus2 = buildTestEntity(key).withProperty("prop", 2).store();
 
-        assertThat(whenFilteringBy(GREATER_THAN, -1, key), queryReturns(zero, plus1, plus2));
-        assertThat(whenFilteringBy(LESS_THAN_OR_EQUAL, -1, key), queryReturns(minus2, minus1));
+        assertSet(whenFilteringBy(GREATER_THAN, -1, key), queryReturns(zero, plus1, plus2));
+        assertSet(whenFilteringBy(LESS_THAN_OR_EQUAL, -1, key), queryReturns(minus2, minus1));
 
         clearData(TEST_ENTITY_KIND, key, 0);
     }

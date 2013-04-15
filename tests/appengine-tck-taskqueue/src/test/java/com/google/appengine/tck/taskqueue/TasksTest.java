@@ -59,10 +59,10 @@ import static com.google.appengine.api.taskqueue.TaskOptions.Method.HEAD;
 import static com.google.appengine.api.taskqueue.TaskOptions.Method.POST;
 import static com.google.appengine.api.taskqueue.TaskOptions.Method.PULL;
 import static com.google.appengine.api.taskqueue.TaskOptions.Method.PUT;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>

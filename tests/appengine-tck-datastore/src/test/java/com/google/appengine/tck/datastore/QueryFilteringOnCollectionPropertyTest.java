@@ -44,7 +44,7 @@ public class QueryFilteringOnCollectionPropertyTest extends QueryTestBase {
         Key parentKey = parentEntity.getKey();
 
         storeTestEntityWithSingleProperty(parentKey, Arrays.asList(1, 2));
-        assertThat(
+        assertSet(
                 whenFilteringWith(and(
                         new FilterPredicate(SINGLE_PROPERTY_NAME, GREATER_THAN, 1),
                         new FilterPredicate(SINGLE_PROPERTY_NAME, LESS_THAN, 2)),
@@ -62,7 +62,7 @@ public class QueryFilteringOnCollectionPropertyTest extends QueryTestBase {
         Entity entity = storeTestEntityWithSingleProperty(parentKey, Arrays.asList(1, 2));
 
 
-        assertThat(
+        assertSet(
                 whenFilteringWith(and(
                         new FilterPredicate(SINGLE_PROPERTY_NAME, EQUAL, 1),
                         new FilterPredicate(SINGLE_PROPERTY_NAME, EQUAL, 2)),
@@ -80,10 +80,10 @@ public class QueryFilteringOnCollectionPropertyTest extends QueryTestBase {
         Entity entity123 = storeTestEntityWithSingleProperty(parentKey, Arrays.asList(1, 2, 3));
 
         // The NOT_EQUAL operator works as a "value is other than" test.
-        assertThat(whenFilteringWith(new FilterPredicate(SINGLE_PROPERTY_NAME, NOT_EQUAL, 1), parentKey),
+        assertSet(whenFilteringWith(new FilterPredicate(SINGLE_PROPERTY_NAME, NOT_EQUAL, 1), parentKey),
             queryReturns(entity12, entity123));
 
-        assertThat(
+        assertSet(
             whenFilteringWith(and(
                 new FilterPredicate(SINGLE_PROPERTY_NAME, NOT_EQUAL, 1),
                 new FilterPredicate(SINGLE_PROPERTY_NAME, NOT_EQUAL, 2)),
