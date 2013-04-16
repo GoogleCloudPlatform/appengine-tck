@@ -1,1 +1,2 @@
 # Multisuite root marker.
+deployment.name=gae-memcache-tck.war

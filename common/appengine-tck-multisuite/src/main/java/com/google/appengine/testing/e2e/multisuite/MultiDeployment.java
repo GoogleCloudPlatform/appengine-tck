@@ -16,15 +16,11 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 public class MultiDeployment {
     @Deployment
     public static WebArchive getDeployment() throws Exception {
-        WebArchive war = ShrinkWrap.create(WebArchive.class, "gae-multisuite-tck.war");
-        ClassLoader cl = MultiDeployment.class.getClassLoader();
-        URL arqXml = cl.getResource("multisuite.marker");
+        final ClassLoader cl = MultiDeployment.class.getClassLoader();
+        final URL arqXml = cl.getResource("multisuite.marker");
         if (arqXml == null) {
             throw new IllegalArgumentException("Missing multisuite.marker?!");
         }
-        File root = new File(arqXml.toURI()).getParentFile();
-
-        MultiContext mc = new MultiContext(war, root, cl);
 
         Properties overrides = new Properties();
         InputStream is = arqXml.openStream();
@@ -33,6 +29,12 @@ public class MultiDeployment {
         } finally {
             is.close();
         }
+
+        String name = overrides.getProperty("deployment.name", "gae-multisuite-tck.war");
+        WebArchive war = ShrinkWrap.create(WebArchive.class, name);
+        File root = new File(arqXml.toURI()).getParentFile();
+
+        MultiContext mc = new MultiContext(war, root, cl);
 
         MultiProvider provider = new ScanMultiProvider(overrides);
         provider.provide(mc);
