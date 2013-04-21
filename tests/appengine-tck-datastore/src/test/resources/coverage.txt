@@ -1,13 +1,7 @@
 com.google.appengine.api.datastore.AsyncDatastoreService
 com.google.appengine.api.datastore.BaseDatastoreService
 com.google.appengine.api.datastore.DatastoreService
-com.google.appengine.api.datastore.IDatastoreServiceFactory
-com.google.appengine.api.datastore.AdminDatastoreService
-com.google.appengine.api.datastore.AdminDatastoreService$EntityBuilder
-com.google.appengine.api.datastore.AdminDatastoreService$KeyBuilder
-com.google.appengine.api.datastore.AdminDatastoreService$QueryBuilder
 com.google.appengine.api.datastore.DatastoreServiceConfig
 com.google.appengine.api.datastore.DatastoreServiceConfig$Builder
 com.google.appengine.api.datastore.DatastoreServiceFactory
-com.google.appengine.api.datastore.IDatastoreServiceFactoryProvider
 com.google.appengine.api.datastore.DatastoreService$KeyRangeState

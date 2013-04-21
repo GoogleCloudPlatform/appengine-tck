@@ -2,6 +2,7 @@
 *.ipr
 *.iws
 .idea/
+tests/**/coverage-results.csv
 tests/**/index.html
 target/
 common/appengine-tck-base/target/
@@ -20,4 +21,3 @@ utils/appengine-tck-coverage/target/
 utils/appengine-tck-transformers/target/
 utils/target
 ext/datanucleus/datanucleus.log
-
