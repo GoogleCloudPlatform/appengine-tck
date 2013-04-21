@@ -28,7 +28,7 @@ Directory structure
 Requirements
 ------------
 
-Java JDK6+ and Maven 3.x+.
+Java JDK7+ and Maven 3.x+.
 And of course the environment you want to test.
 
 Running the build
@@ -48,6 +48,7 @@ All tests are build using [Arquillian](http://www.arquillian.org) and [ShrinkWra
 Each different environment has a custom Arquillian container implementation.
 
 GAE container implementations can be found here: https://github.com/alesj/arquillian-container-gae
+
 CapeDwarf uses plain JBossAS Arquillian remote container implementation.
 
 GAE API code coverage
@@ -56,15 +57,19 @@ GAE API code coverage
 For each set of tests we want to get code coverage, needs a coverage.txt file,
 where we list all the classes / interfaces whose usage we track.
 
-e.g.
+e.g. TaskQueue code covereage
 
-# TaskQueue code covereage
-com.google.appengine.api.taskqueue.Queue
+    com.google.appengine.api.taskqueue.Queue
 
 This will print out all Queue interface usage in our TaskQueue tests.
 
 You can either see the results in console while the build is running,
 or at the end open index.html file in TCK root.
+
+You can override which file name is used to lookup to list classes / interfaces.
+This is done either by changing the coverage plugin's configuration in pom.xml or using -Dcoverage.file system property.
+
+    mvn clean install -Dcoverage.file=coverage.txt.all
 
 Running the tests
 -----------------
@@ -93,7 +98,7 @@ Deploying all tests at once
 
 We learned how to run the tests.
 But that will deploy one test class per deployment,
-which can be time consuming for enviroments like Appspot.
+which can be time consuming for environments like Appspot.
 
 In order to handle all tests within one deployment, we added `multisuite` profile.
 
@@ -139,6 +144,7 @@ Current external tests:
 
 * GAE DataNucleus Plugin
 * GAE MapReduce Library
+* Miscellaneous; e.g. black list usage, etc
 
 As we don't want to overload the testing, each custom external set of tests should be under unique profile.
 
