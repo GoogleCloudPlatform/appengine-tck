@@ -48,7 +48,7 @@ public abstract class URLFetchTestBase extends TestBase {
       TestContext context = new TestContext();
       context.setWebXmlFile("uf-web.xml");
       WebArchive war = getTckDeployment(context);
-      war.addClass(URLFetchTestBase.class);
+      war.addClasses(URLFetchTestBase.class, FetchOptionsTestBase.class);
       war.addPackage(FetchServlet.class.getPackage());
       return war;
     }

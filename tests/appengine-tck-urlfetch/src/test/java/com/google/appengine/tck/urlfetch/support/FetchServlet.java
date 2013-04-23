@@ -41,6 +41,14 @@ public class FetchServlet extends HttpServlet {
             resp.getWriter().write("Hopsasa");
         } else if ("Juhuhu".equals(content)) {
             resp.getWriter().write("Bruhuhu");
+        } else if ("Headers!".equals(content)) {
+            log("Setting header - <ABC : 123>!");
+            // uncombined
+            resp.addHeader("ABC", "123");
+            // combined
+            resp.addHeader("XYZ", "1");
+            resp.addHeader("XYZ", "2");
+            resp.addHeader("XYZ", "3");
         }
     }
 

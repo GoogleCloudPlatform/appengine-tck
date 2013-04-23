@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -54,6 +55,9 @@ public class URLFetchTest extends URLFetchTestBase {
 
         URL adminConsole = findAvailableUrl(URLS);
         Future<HTTPResponse> response = service.fetchAsync(adminConsole);
+        printResponse(response.get(5, TimeUnit.SECONDS));
+
+        response = service.fetchAsync(new HTTPRequest(adminConsole));
         printResponse(response.get(5, TimeUnit.SECONDS));
 
         URL jbossOrg = new URL("http://www.jboss.org");
@@ -93,6 +97,41 @@ public class URLFetchTest extends URLFetchTestBase {
         HTTPResponse response = service.fetch(req);
         String content = new String(response.getContent());
         Assert.assertEquals("Hopsasa", content);
+    }
+
+    @Test
+    public void testHeaders() throws Exception {
+        URLFetchService service = URLFetchServiceFactory.getURLFetchService();
+
+        URL url = getFetchUrl();
+
+        HTTPRequest req = new HTTPRequest(url, HTTPMethod.POST);
+        req.setHeader(new HTTPHeader("Content-Type", "application/x-www-form-urlencoded"));
+        req.setPayload("Headers!".getBytes(Charsets.UTF_8));
+
+        HTTPResponse response = service.fetch(req);
+
+        boolean found = false;
+        List<HTTPHeader> headers = response.getHeadersUncombined();
+        for (HTTPHeader h : headers) {
+            if (h.getName().equals("ABC")) {
+                Assert.assertEquals("123", h.getValue());
+                found = true;
+                break;
+            }
+        }
+        Assert.assertTrue("Cannot find matching header <ABC : 123>: " + headers, found);
+
+        found = false;
+        headers = response.getHeaders();
+        for (HTTPHeader h : headers) {
+            if (h.getName().equals("XYZ")) {
+                Assert.assertEquals("1, 2, 3", h.getValue());
+                found = true;
+                break;
+            }
+        }
+        Assert.assertTrue("Cannot find matching header <XYZ : 1,2,3>: " + headers, found);
     }
 
     @Test
