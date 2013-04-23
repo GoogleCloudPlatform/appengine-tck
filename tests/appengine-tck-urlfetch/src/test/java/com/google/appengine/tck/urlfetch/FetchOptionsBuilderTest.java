@@ -22,8 +22,12 @@
 
 package com.google.appengine.tck.urlfetch;
 
+import java.net.URL;
+
 import com.google.appengine.api.urlfetch.FetchOptions;
+import com.google.appengine.api.urlfetch.HTTPResponse;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -41,14 +45,25 @@ public class FetchOptionsBuilderTest extends FetchOptionsTestBase {
 
     @Test
     public void testFollowRedirects() throws Exception {
+        final URL redirect = getUrl("redirect");
         FetchOptions options = FetchOptions.Builder.followRedirects();
-        testOptions(options);
+        testOptions(redirect, options, new ResponseHandler() {
+            public void handle(HTTPResponse response) throws Exception {
+                URL finalURL = response.getFinalUrl();
+                Assert.assertEquals(getUrl(""), finalURL);
+            }
+        });
     }
 
     @Test
     public void testDoNotFollowRedirects() throws Exception {
+        final URL redirect = getUrl("redirect");
         FetchOptions options = FetchOptions.Builder.doNotFollowRedirects();
-        testOptions(options);
+        testOptions(redirect, options, new ResponseHandler() {
+            public void handle(HTTPResponse response) throws Exception {
+                Assert.assertEquals(302, response.getResponseCode());
+            }
+        });
     }
 
     @Test

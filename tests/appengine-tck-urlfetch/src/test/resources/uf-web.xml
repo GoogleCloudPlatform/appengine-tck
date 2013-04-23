@@ -23,6 +23,11 @@
         <servlet-class>com.google.appengine.tck.urlfetch.support.FetchServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>redirect</servlet-name>
+        <servlet-class>com.google.appengine.tck.urlfetch.support.RedirectServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>responderServlet</servlet-name>
         <url-pattern>/respond/*</url-pattern>
@@ -31,6 +36,11 @@
     <servlet-mapping>
         <servlet-name>fetch</servlet-name>
         <url-pattern>/fetch</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>redirect</servlet-name>
+        <url-pattern>/redirect</url-pattern>
     </servlet-mapping>
 
     <!--

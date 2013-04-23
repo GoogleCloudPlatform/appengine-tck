@@ -30,29 +30,41 @@ import com.google.appengine.api.urlfetch.HTTPRequest;
 import com.google.appengine.api.urlfetch.HTTPResponse;
 import com.google.appengine.api.urlfetch.URLFetchService;
 import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.Assert;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public abstract class FetchOptionsTestBase extends URLFetchTestBase {
+    protected static final ResponseHandler NOOP = new NoopResponseHandler();
 
     protected void testOptions(FetchOptions options) throws Exception {
-        URL url = findAvailableUrl(URLS);
-        testOptions(url, options);
+        testOptions(options, NOOP);
     }
 
-    protected void testOptions(URL url, FetchOptions options) throws Exception {
-        testOptions(url, HTTPMethod.GET, options);
+    protected void testOptions(FetchOptions options, ResponseHandler handler) throws Exception {
+        URL url = getFetchUrl();
+        testOptions(url, options, handler);
     }
 
-    protected void testOptions(URL url, HTTPMethod method, FetchOptions options) throws Exception {
+    protected void testOptions(URL url, FetchOptions options, ResponseHandler handler) throws Exception {
+        testOptions(url, HTTPMethod.GET, options, handler);
+    }
+
+    protected void testOptions(URL url, HTTPMethod method, FetchOptions options, ResponseHandler handler) throws Exception {
         HTTPRequest request = new HTTPRequest(url, method, options);
         URLFetchService service = URLFetchServiceFactory.getURLFetchService();
-        HTTPResponse response = null; // service.fetch(request);
-        // TODO
+        HTTPResponse response = service.fetch(request);
+        handler.handle(response);
     }
 
+    protected static interface ResponseHandler {
+        void handle(HTTPResponse response) throws Exception;
+    }
+
+    private static class NoopResponseHandler implements ResponseHandler {
+        public void handle(HTTPResponse response) {
+            Assert.assertNotNull(response);
+        }
+    }
 }

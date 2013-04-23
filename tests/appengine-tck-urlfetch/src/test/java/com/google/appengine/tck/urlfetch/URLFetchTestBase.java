@@ -35,6 +35,7 @@ import com.google.appengine.tck.urlfetch.support.FetchServlet;
 import com.google.apphosting.api.ApiProxy;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /**
@@ -45,12 +46,13 @@ public abstract class URLFetchTestBase extends TestBase {
 
     @Deployment
     public static Archive getDeployment() {
-      TestContext context = new TestContext();
-      context.setWebXmlFile("uf-web.xml");
-      WebArchive war = getTckDeployment(context);
-      war.addClasses(URLFetchTestBase.class, FetchOptionsTestBase.class);
-      war.addPackage(FetchServlet.class.getPackage());
-      return war;
+        TestContext context = new TestContext();
+        context.setWebXmlFile("uf-web.xml");
+        WebArchive war = getTckDeployment(context);
+        war.addClasses(URLFetchTestBase.class, FetchOptionsTestBase.class);
+        war.addPackage(FetchServlet.class.getPackage());
+        war.add(new StringAsset("<html><body>Google AppEngine TCK</body></html>"), "index.html");
+        return war;
     }
 
     /**
@@ -86,10 +88,14 @@ public abstract class URLFetchTestBase extends TestBase {
         throw new IllegalArgumentException("No available url: " + Arrays.toString(urls));
     }
 
-    protected static URL getFetchUrl() throws MalformedURLException {
+    protected static URL getUrl(String path) throws MalformedURLException {
         ApiProxy.Environment env = ApiProxy.getCurrentEnvironment();
         Object localhost = env.getAttributes().get("com.google.appengine.runtime.default_version_hostname");
-        return new URL("http://" + localhost + "/fetch");
+        return new URL("http://" + localhost + "/" + path);
+    }
+
+    protected static URL getFetchUrl() throws MalformedURLException {
+        return getUrl("fetch");
     }
 
     protected void printResponse(HTTPResponse response) throws Exception {
