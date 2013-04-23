@@ -112,6 +112,10 @@ Tests that are not capable of running inside uber .war, *must* be marked with @I
 Each set of tests that we want to run -Pmultisuite on them, requires a multisuite.marker file in tests' root directory.
 In this marker we can override test class regexp patter or scanning strategy; see code for more details.
 
+In case we have some failures in some API tests, but we still want to run the whole TCK, you can ignore failures with this Maven flag
+
+    -Dmaven.test.failure.ignore=true
+
 Running a single test
 ---------------------
 
