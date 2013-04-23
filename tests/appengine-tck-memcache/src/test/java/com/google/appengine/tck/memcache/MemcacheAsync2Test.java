@@ -3,20 +3,22 @@
 package com.google.appengine.tck.memcache;
 
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.google.appengine.api.memcache.AsyncMemcacheService;
+import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheService.CasValues;
 import com.google.appengine.api.memcache.MemcacheService.IdentifiableValue;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.memcache.Stats;
-import com.google.appengine.api.utils.SystemProperty;
+
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,12 +26,12 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.Future;
 
 
 /**
@@ -61,14 +63,14 @@ public class MemcacheAsync2Test extends CacheTestBase {
      */
     @Test
     public void testPutAndGet_basic() {
-        verifyAsyncGet(KEY1, VALUE1);
+        verifyAsyncGet(KEY1, STR_VALUE);
     }
 
     /**
      * Tests different data type put/get.
      */
     @Test
-    public void testPutAndGet_types() {
+    public void testPutAndGetTypes() {
         for (Object key : TEST_DATA) {
             assertNull(memcache.get(key));
             for (Object value : TEST_DATA) {
@@ -78,14 +80,14 @@ public class MemcacheAsync2Test extends CacheTestBase {
     }
 
     @Test
-    public void testGet_array1() {
+    public void testGetArray1() {
         Future<Void> future = asyncMemcache.put(KEY1, ARRAY1);
         waitOnFuture(future);
         assertArrayEquals(ARRAY1, (int[]) memcache.get(KEY1));
     }
 
     @Test
-    public void testGet_array2() {
+    public void testGetArray2() {
         Future<Void> future = asyncMemcache.put(KEY1, ARRAY2);
         waitOnFuture(future);
         assertArrayEquals(ARRAY2, (Object[]) memcache.get(KEY1));
@@ -93,147 +95,292 @@ public class MemcacheAsync2Test extends CacheTestBase {
 
     @Test
     public void testDelete() {
-        memcache.put(KEY1, VALUE1);
+        memcache.put(KEY1, STR_VALUE);
         Future<Boolean> future = asyncMemcache.delete(KEY1);
         waitOnFuture(future);
         assertNull("key1 should hold null", memcache.get(KEY1));
     }
 
     @Test
+    public void testDeleteNoReAddTime() {
+        String key = createTimeStampKey("testDeleteNoReAddTime");
+        memcache.put(key, STR_VALUE);
+        assertNotNull(memcache.get(key));
+
+        // delete and do not allow re-add for another 10 seconds.
+        Future<Boolean> future = asyncMemcache.delete(key, 10 * 1000);
+        waitOnFuture(future);
+        assertNull("key should be null", memcache.get(KEY1));
+
+        // re-add should fail since within 10 seconds.
+        assertFalse(memcache.put(key, STR_VALUE, null, MemcacheService.SetPolicy.ADD_ONLY_IF_NOT_PRESENT));
+        assertNull("key should be null because of policy.", memcache.get(KEY1));
+    }
+
+    @Test
     public void testPutAll() {
-        Future<Void> future = asyncMemcache.putAll(getSmallBatchData()); // getBatchDat());
+        Map<Object, Object> data = createSmallBatchData();
+        Future<Void> future = asyncMemcache.putAll(data);
         waitOnFuture(future);
 
-        String value1 = (String) memcache.get("bkey1");
-        assertNotNull("value1 should be non-null", value1);
-        assertTrue("bkey1 should retain its value", str1K.equals(value1));
-
-        String value30 = (String) memcache.get("bkey30");
-        assertNotNull("value30 should be non-null", value30);
-        assertTrue("bkey30 should retain its value", str1K.equals(value30));
+        Map<Object, Object> fetched = memcache.getAll(data.keySet());
+        assertEquals("All the keys inserted should exist.", data, fetched);
     }
 
     @Test
     public void testDeleteAll() {
-        Map<Object, Object> cacheDat = getSmallBatchData(); // getBatchDat();
-        memcache.putAll(cacheDat);
-        Future<Set<Object>> future = asyncMemcache.deleteAll(cacheDat.keySet());
-        waitOnFuture(future);
-        assertNull("bkey1 should have null data", memcache.get("bkey1"));
-        assertNull("bkey30 should have null data", memcache.get("bkey30"));
+        Map<Object, Object> data = createSmallBatchData();
+        memcache.putAll(data);
+
+        Future<Set<Object>> future = asyncMemcache.deleteAll(data.keySet());
+        Set<Object> deletedKeys = waitOnFuture(future);
+
+        assertEquals(data.keySet(), deletedKeys);
+
+//    assertNull("bkey1 should have null data", memcache.get("bkey1"));
+//    assertNull("bkey30 should have null data", memcache.get("bkey30"));
     }
 
-    /**
-     * Tests cancel for dev_appserver.
-     */
     @Test
-    public void testCancel_devAppServer() throws Exception {
-        if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Development) {
-            verifyCancel();
-        }
+    public void testDeleteAllNoReAddTime() {
+        Map<Object, Object> cacheDat = createSmallBatchData();
+        memcache.putAll(cacheDat);
+        Future<Set<Object>> future = asyncMemcache.deleteAll(cacheDat.keySet(), 10 * 1000);
+        waitOnFuture(future);
+        Map<Object, Object> retValues = memcache.getAll(cacheDat.keySet());
+        assertEquals("All keys should be deleted.", 0, retValues.size());
+
+        memcache.putAll(cacheDat, null, MemcacheService.SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
+        Map<Object, Object> retValuesAfter = memcache.getAll(cacheDat.keySet());
+        assertEquals("No keys should be added because of policy.", 0, retValuesAfter.size());
     }
 
-    private void verifyCancel() {
-        Future<Void> future = asyncMemcache.putAll(getBatchDat());
+    @Test
+    public void testCancel() {
+        Map<Object, Object> data = createSmallBatchData();
+        Future<Void> future = asyncMemcache.putAll(data);
         boolean cancelled = future.cancel(true);
-        // N.B., there's no guarantee that the cancel succeeded.
+
+        // There's no guarantee that the cancel succeeds on the backend, so just verify that the
+        // fundamental future api works.
+        assertTrue(future.isDone());  // Should always be true once cancel() returns.
+
         if (cancelled) {
-            assertNull("bkey1 should have null value after successful cancel", memcache.get("bkey1"));
-            assertNull("bkey30 should have null value after successful cancel", memcache.get("bkey30"));
-        } else {
-            Object cached = memcache.get("bkey1");
-            assertNotNull("bkey1 should have cached data", cached);
-            assertEquals(str1mb, cached);
-            cached = memcache.get("bkey30");
-            assertNotNull("bkey30 should have cached data", cached);
-            assertEquals(str1mb, cached);
+            assertTrue(future.isCancelled());
         }
-        waitOnFuture(future);
     }
 
-    /**
-     * Tests increments.
-     *
-     * @throws InterruptedException
-     */
     @Test
-    public void testBatchIncr() throws InterruptedException {
-        Map<Object, Object> cacheDat = getBatchIntDat();
-        memcache.putAll(cacheDat);
-        Future<Map<Object, Long>> future = asyncMemcache.incrementAll(cacheDat.keySet(), 10);
-        waitOnFuture(future);
-        // Sample the key/values we set
-        assertEquals("expected ikey1 to be 11", 11, memcache.get("ikey1"));
-        assertEquals("expected ikey30 to be 40", 40, memcache.get("ikey30"));
+    public void testIncrementAll() {
+        Map<Object, Long> map = createLongBatchData();
+        memcache.putAll(map);
+
+        long delta = 10;
+        Future<Map<Object, Long>> future = asyncMemcache.incrementAll(map.keySet(), delta);
+        Map<Object, Long> returned = waitOnFuture(future);
+
+        Map<Object, Object> expected = new HashMap<Object, Object>();
+        for (Map.Entry<Object, Long> entry : map.entrySet()) {
+            expected.put(entry.getKey(), entry.getValue() + delta);
+        }
+        assertEquals(expected, returned);
+
+        Map<Object, Object> fetched = memcache.getAll(map.keySet());
+        assertEquals(expected, fetched);
     }
 
-    /**
-     * Tests GetIdentifiables.
-     *
-     * @throws InterruptedException
-     * @throws ExecutionException
-     */
     @Test
-    public void testGetIdentifiables() throws InterruptedException, ExecutionException {
-        memcache.put(KEY1, VALUE1);
+    public void testIncrementAllInitValue() {
+        Map<Object, Long> map = createLongBatchData();
+        memcache.putAll(map);
+
+        long delta = 10;
+        Long initVal = -111L;
+        Map<Object, Long> expected = copyMapIncrementLongValue(map, delta);
+
+        // Add the key which doesn't exist yet.
+        String nonExistentKey = "testIncrementAllInitValue-" + System.currentTimeMillis();
+        expected.put(nonExistentKey, initVal + delta);
+
+        Future<Map<Object, Long>> future = asyncMemcache.incrementAll(expected.keySet(), delta, initVal);
+        Map<Object, Long> returned = waitOnFuture(future);
+        assertEquals(expected, returned);
+
+        Map<Object, Object> fetched = memcache.getAll(expected.keySet());
+        assertEquals(expected, fetched);
+    }
+
+    @Test
+    public void testIncrementAllFromMap() {
+        Map<Object, Long> map = createLongBatchData();
+        memcache.putAll(map);
+
+        Map<Object, Long> incMap = createRandomIncrementMap(map);
+
+        Future<Map<Object, Long>> future = asyncMemcache.incrementAll(incMap);
+        Map<Object, Long> returned = waitOnFuture(future);
+
+        Map<Object, Long> expected = createMapFromIncrementMap(map, incMap);
+        assertEquals(expected, returned);
+
+        Map<Object, Object> fetched = memcache.getAll(map.keySet());
+        assertEquals(expected, fetched);
+    }
+
+    @Test
+    public void testIncrementAllFromMapInitValue() {
+        Map<Object, Long> map = createLongBatchData();
+        memcache.putAll(map);
+
+        Map<Object, Long> incMap = createRandomIncrementMap(map);
+
+        Map<Object, Long> expected = createMapFromIncrementMap(map, incMap);
+
+        Long initVal = -111L;
+        // Add the key which doesn't exist yet.
+        String nonExistentKey = "testIncrementAllFromMapInitValue-" + System.currentTimeMillis();
+        incMap.put(nonExistentKey, 123L);
+        expected.put(nonExistentKey, initVal + 123L);
+
+        Future<Map<Object, Long>> future = asyncMemcache.incrementAll(incMap, initVal);
+        Map<Object, Long> returned = waitOnFuture(future);
+        assertEquals(expected, returned);
+
+        Map<Object, Object> fetched = memcache.getAll(incMap.keySet());
+        assertEquals(expected, fetched);
+    }
+
+    @Test
+    public void testGetIdentifiables() {
+        memcache.put(KEY1, STR_VALUE);
 
         Future<IdentifiableValue> future = asyncMemcache.getIdentifiable(KEY1);
-        waitOnFuture(future);
-        assertEquals(VALUE1, future.get().getValue());
+        IdentifiableValue identVal = waitOnFuture(future);
+        assertEquals(STR_VALUE, identVal.getValue());
 
         // batch versions
-        Map<Object, Object> batchMap = new HashMap<>();
         for (Object key : TEST_DATA) {
-            batchMap.put(key, key);
+            asyncMemcache.put(key, key);
         }
-        waitOnFuture(asyncMemcache.putAll(batchMap));
-
-        Future<Map<Object, IdentifiableValue>> futureMap = asyncMemcache.getIdentifiables(Arrays.asList(TEST_DATA));
-        waitOnFuture(futureMap);
-        Map<Object, IdentifiableValue> ivMap = futureMap.get();
+        Future<Map<Object, IdentifiableValue>> futureMap =
+            asyncMemcache.getIdentifiables(Arrays.asList(TEST_DATA));
+        Map<Object, IdentifiableValue> ivMap = waitOnFuture(futureMap);
         for (Object key : ivMap.keySet()) {
             assertEquals(key, ivMap.get(key).getValue());
         }
     }
 
-    /**
-     * Tests PutIfUntouched.
-     *
-     * @throws InterruptedException
-     * @throws ExecutionException
-     */
     @Test
-    public void testPutIfUntouched() throws InterruptedException, ExecutionException {
-        memcache.put(KEY1, VALUE1);
-        IdentifiableValue iv = memcache.getIdentifiable(KEY1);
-        Future<Boolean> future = asyncMemcache.putIfUntouched(KEY1, iv, "new" + VALUE1);
-        waitOnFuture(future);
-        assertEquals(true, future.get());
-        assertEquals("new" + VALUE1, memcache.get(KEY1));
+    public void testPutIfUntouched() {
+        final String TS_KEY = createTimeStampKey("testPutIfUntouched");
 
-        future = asyncMemcache.putIfUntouched(KEY1, iv, "another" + VALUE1);
-        waitOnFuture(future);
-        assertEquals(false, future.get());
+        memcache.put(TS_KEY, STR_VALUE);
+        IdentifiableValue oldOriginalIdValue = memcache.getIdentifiable(TS_KEY);
+        final String NEW_VALUE = "new-" + STR_VALUE;
+        Future<Boolean> future;
+        Boolean valueWasStored;
 
+        // Store NEW_VALUE if no other value stored since oldOriginalIdValue was retrieved.
+        // memcache.get() has not been called, so this put should succeed.
+        future = asyncMemcache.putIfUntouched(TS_KEY, oldOriginalIdValue, NEW_VALUE);
+        valueWasStored = waitOnFuture(future);
+        assertEquals(true, valueWasStored);
+        assertEquals(NEW_VALUE, memcache.get(TS_KEY));
+
+        // NEW_VALUE was stored so this put should not happen.
+        final String ANOTHER_VALUE = "another-" + STR_VALUE;
+        future = asyncMemcache.putIfUntouched(TS_KEY, oldOriginalIdValue, ANOTHER_VALUE);
+        valueWasStored = waitOnFuture(future);
+        assertEquals(false, valueWasStored);
+
+        assertNotSame(ANOTHER_VALUE, memcache.get(TS_KEY));
+        assertEquals(NEW_VALUE, memcache.get(TS_KEY));
+    }
+
+    @Test
+    public void testPutIfUntouchedMap() {
         // batch versions
-        Object[] testDat = {1, VALUE1};
+        Object[] testDat = {1, STR_VALUE};
         Map<Object, Object> inputDat = new HashMap<Object, Object>();
         for (Object key : testDat) {
             inputDat.put(key, key);
         }
         memcache.putAll(inputDat);
+        Set<Object> set;
+
         Map<Object, CasValues> updateDat = new HashMap<Object, CasValues>();
         for (Object key : testDat) {
             updateDat.put(key, new CasValues(memcache.getIdentifiable(key), "new value"));
         }
         Future<Set<Object>> futureSet = asyncMemcache.putIfUntouched(updateDat);
-        waitOnFuture(futureSet);
-        assertEquals(2, futureSet.get().size());
+        set = waitOnFuture(futureSet);
+        assertEquals(2, set.size());
         assertEquals("new value", memcache.get(testDat[0]));
 
         futureSet = asyncMemcache.putIfUntouched(updateDat);
-        waitOnFuture(futureSet);
-        assertEquals(0, futureSet.get().size());
+        set = waitOnFuture(futureSet);
+        assertEquals(0, set.size());
+    }
+
+    @Test
+    public void testPutIfUntouchedExpire() {
+        final String TS_KEY = createTimeStampKey("testPutIfUntouched");
+
+        memcache.put(TS_KEY, STR_VALUE);
+        IdentifiableValue oldOriginalIdValue = memcache.getIdentifiable(TS_KEY);
+        final String NEW_VALUE = "new-" + STR_VALUE;
+        Future<Boolean> future;
+        Boolean valueWasStored;
+
+        // Store NEW_VALUE if no other value stored since oldOriginalIdValue was retrieved.
+        // memcache.get() has not been called, so this put should succeed.
+        future = asyncMemcache.putIfUntouched(TS_KEY, oldOriginalIdValue, NEW_VALUE, Expiration.byDeltaSeconds(1));
+        valueWasStored = waitOnFuture(future);
+        assertEquals(true, valueWasStored);
+        assertEquals(NEW_VALUE, memcache.get(TS_KEY));
+
+        // Value should not be stored after expiration period.
+        sync(3000);
+        assertNull(memcache.get(TS_KEY));
+    }
+
+    @Test
+    public void testPutIfUntouchedMapExpire() {
+        // batch versions
+        Object[] testDat = {1, STR_VALUE};
+        Map<Object, Object> inputDat = new HashMap<Object, Object>();
+        for (Object key : testDat) {
+            inputDat.put(key, key);
+        }
+        memcache.putAll(inputDat);
+        Set<Object> set;
+
+        Map<Object, CasValues> updateDat = new HashMap<Object, CasValues>();
+        for (Object key : testDat) {
+            updateDat.put(key, new CasValues(memcache.getIdentifiable(key), "new value"));
+        }
+        Future<Set<Object>> futureSet = asyncMemcache.putIfUntouched(updateDat, Expiration.byDeltaMillis(1000));
+        set = waitOnFuture(futureSet);
+        assertEquals(2, set.size());
+        assertEquals("new value", memcache.get(testDat[0]));
+
+        sync(3000);
+        assertNull(memcache.get(testDat));
+    }
+
+    @Test
+    public void testStatistics() {
+        Future<Stats> future = asyncMemcache.getStatistics();
+        Stats stats = waitOnFuture(future);
+        assertNotNull("Stats should never be null.", stats);
+
+        // Only verify that all stats are non-negative.
+        assertTrue(stats.getBytesReturnedForHits() > -1L);
+        assertTrue(stats.getHitCount() > -1L);
+        assertTrue(stats.getItemCount() > -1L);
+        assertTrue(stats.getMaxTimeWithoutAccess() > -1);
+        assertTrue(stats.getMissCount() > -1L);
+        assertTrue(stats.getTotalItemBytes() > -1L);
     }
 
     private static String getBigString(int len) {
@@ -244,28 +391,52 @@ public class MemcacheAsync2Test extends CacheTestBase {
         return new String(chars);
     }
 
-    private Map<Object, Object> getBatchDat() {
-        Map<Object, Object> cacheDat = new HashMap<Object, Object>();
-        for (int i = 0; i < 31; i++) {
-            cacheDat.put("bkey" + i, str1mb);
+    private Map<Object, Object> createSmallBatchData() {
+        String tsKey = createTimeStampKey("SmallBatchData");
+        Map<Object, Object> map = new HashMap<Object, Object>();
+        for (int i = 0; i < 3; i++) {
+            map.put(tsKey + "-" + i, str1K);
         }
-        return cacheDat;
+        return map;
     }
 
-    private Map<Object, Object> getSmallBatchData() {
-        Map<Object, Object> cacheDat = new HashMap<Object, Object>();
-        for (int i = 0; i < 31; i++) {
-            cacheDat.put("bkey" + i, str1K);
+    private Map<Object, Long> createLongBatchData() {
+        String tsKey = createTimeStampKey("LongBatchData");
+        Map<Object, Long> map = new HashMap<Object, Long> ();
+        for (long num = 0; num < 3; num++) {
+            map.put(tsKey + "-" + num, num);
         }
-        return cacheDat;
+        return map;
     }
 
-    private Map<Object, Object> getBatchIntDat() {
-        Map<Object, Object> cacheDat = new HashMap<Object, Object>();
-        for (int i = 0; i < 31; i++) {
-            cacheDat.put("ikey" + i, i);
+    private Map<Object, Long> copyMapIncrementLongValue(Map<Object, Long> map, long delta) {
+        Map<Object, Long> copiedMap = new HashMap<Object, Long>();
+        for (Map.Entry<Object, Long> entry : map.entrySet()) {
+            copiedMap.put(entry.getKey(), entry.getValue() + delta);
         }
-        return cacheDat;
+        return copiedMap;
+    }
+
+    private Map<Object, Long> createRandomIncrementMap(Map<Object, Long> map) {
+        Map<Object, Long> incMap = new HashMap<Object, Long>();
+        Random random = new Random();
+
+        int max = 1000;
+        for (Map.Entry<Object, Long> entry : map.entrySet()) {
+            incMap.put(entry.getKey(), new Long(random.nextInt(max)));
+        }
+        return incMap;
+    }
+
+    private Map<Object, Long> createMapFromIncrementMap(Map<Object, Long> originalMap,
+                                                        Map<Object, Long> incMap) {
+        Map<Object, Long> incrementedMap = new HashMap<Object, Long>();
+
+        for (Map.Entry<Object, Long> entry : originalMap.entrySet()) {
+            incrementedMap.put(entry.getKey(), entry.getValue() + incMap.get(entry.getKey()));
+        }
+
+        return incrementedMap;
     }
 
     private void verifyAsyncGet(Object key, Object value) {
@@ -277,30 +448,20 @@ public class MemcacheAsync2Test extends CacheTestBase {
         assertEquals(value, memcache.get(key));
     }
 
-    private void waitOnFuture(Future<?> future) {
-        while (!future.isDone()) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                // Nothing to do but try again
-            }
-        }
-    }
-
     // A debugging aid to show cache stats along with a failure message
     @SuppressWarnings("unused")
     private String failure(String msg) {
         Stats statistics = memcache.getStatistics();
         StringBuilder sb = new StringBuilder();
         sb
-                .append(msg)
-                .append(" (")
-                .append(statistics.getItemCount())
-                .append("/")
-                .append(statistics.getHitCount())
-                .append("/")
-                .append(statistics.getMissCount())
-                .append(")");
+            .append(msg)
+            .append(" (")
+            .append(statistics.getItemCount())
+            .append("/")
+            .append(statistics.getHitCount())
+            .append("/")
+            .append(statistics.getMissCount())
+            .append(")");
         return sb.toString();
     }
 }
