@@ -24,16 +24,21 @@
 
 package com.google.appengine.tck.datastore;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
+import org.hamcrest.Matcher;
+import org.hamcrest.core.IsEqual;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static com.google.appengine.api.datastore.Query.SortDirection.ASCENDING;
 import static com.google.appengine.api.datastore.Query.SortDirection.DESCENDING;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -44,60 +49,104 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Arquillian.class)
 public class QuerySortingTest extends QueryTestBase {
 
+    private static String QUERY_SORTING_ENTITY = "QuerySortingEntity";
+
     @Test
     public void testSortingByStringProperty() throws Exception {
-        // NOTE: intentionally storing entities in non-alphabetic order
-        Entity bill = storeTestEntityWithSingleProperty("Bill");
-        Entity abraham = storeTestEntityWithSingleProperty("Abraham");
-        Entity carl = storeTestEntityWithSingleProperty("Carl");
+        String methodName = "testSortingByStringProperty";
+        Entity parent = createTestEntityWithUniqueMethodNameKey(QUERY_SORTING_ENTITY, methodName);
+        Key key = parent.getKey();
 
-        assertList(whenSortingByTheSingleProperty(ASCENDING), containsResultsInOrder(abraham, bill, carl));
-        assertList(whenSortingByTheSingleProperty(DESCENDING), containsResultsInOrder(carl, bill, abraham));
+        // NOTE: intentionally storing entities in non-alphabetic order
+        Entity bill = storeTestEntityWithSingleProperty(key, "Bill");
+        Entity abraham = storeTestEntityWithSingleProperty(key, "Abraham");
+        Entity carl = storeTestEntityWithSingleProperty(key, "Carl");
+
+        assertThat(whenSortingByTheSingleProperty(ASCENDING, key), queryReturnsList(abraham, bill, carl));
+        assertThat(whenSortingByTheSingleProperty(DESCENDING, key), queryReturnsList(carl, bill, abraham));
+
+        service.delete(bill.getKey(), abraham.getKey(), carl.getKey());
     }
 
     @Test
     public void testSortingByIntegerProperty() throws Exception {
-        Entity two = storeTestEntityWithSingleProperty(2);
-        Entity one = storeTestEntityWithSingleProperty(1);
-        Entity three = storeTestEntityWithSingleProperty(3);
+        String methodName = "testSortingByIntegerProperty";
+        Entity parent = createTestEntityWithUniqueMethodNameKey(QUERY_SORTING_ENTITY, methodName);
+        Key key = parent.getKey();
 
-        assertList(whenSortingByTheSingleProperty(ASCENDING), containsResultsInOrder(one, two, three));
-        assertList(whenSortingByTheSingleProperty(DESCENDING), containsResultsInOrder(three, two, one));
+        Entity two = storeTestEntityWithSingleProperty(key, 2);
+        Entity one = storeTestEntityWithSingleProperty(key, 1);
+        Entity three = storeTestEntityWithSingleProperty(key, 3);
+
+        assertThat(whenSortingByTheSingleProperty(ASCENDING, key), queryReturnsList(one, two, three));
+        assertThat(whenSortingByTheSingleProperty(DESCENDING, key), queryReturnsList(three, two, one));
+
+        service.delete(two.getKey(), one.getKey(), three.getKey());
     }
 
     @Test
     public void testSortingByFloatProperty() throws Exception {
-        Entity thirty = storeTestEntityWithSingleProperty(30f);
-        Entity two = storeTestEntityWithSingleProperty(2f);
-        Entity hundred = storeTestEntityWithSingleProperty(100f);
+        String methodName = "testSortingByFloatProperty";
+        Entity parent = createTestEntityWithUniqueMethodNameKey(QUERY_SORTING_ENTITY, methodName);
+        Key key = parent.getKey();
 
-        assertList(whenSortingByTheSingleProperty(ASCENDING), containsResultsInOrder(two, thirty, hundred));
-        assertList(whenSortingByTheSingleProperty(DESCENDING), containsResultsInOrder(hundred, thirty, two));
+        Entity thirty = storeTestEntityWithSingleProperty(key, 30f);
+        Entity two = storeTestEntityWithSingleProperty(key, 2f);
+        Entity hundred = storeTestEntityWithSingleProperty(key, 100f);
+
+        assertThat(whenSortingByTheSingleProperty(ASCENDING, key), queryReturnsList(two, thirty, hundred));
+        assertThat(whenSortingByTheSingleProperty(DESCENDING, key), queryReturnsList(hundred, thirty, two));
+
+        service.delete(thirty.getKey(), two.getKey(), hundred.getKey());
     }
 
     @Test
     public void testIntegerPropertySortingIsNotLexicographic() throws Exception {
-        Entity ten = storeTestEntityWithSingleProperty(10);
-        Entity five = storeTestEntityWithSingleProperty(5);
+        String methodName = "testIntegerPropertySortingIsNotLexicographic";
+        Entity parent = createTestEntityWithUniqueMethodNameKey(QUERY_SORTING_ENTITY, methodName);
+        Key key = parent.getKey();
 
-        Query query = createQuery().addSort(SINGLE_PROPERTY_NAME, ASCENDING);
+        Entity ten = storeTestEntityWithSingleProperty(key, 10);
+        Entity five = storeTestEntityWithSingleProperty(key, 5);
+
+        Query query = createQuery().setAncestor(key).addSort(SINGLE_PROPERTY_NAME, ASCENDING);
         List<Entity> results = service.prepare(query).asList(withDefaults());
 
         assertTrue(results.indexOf(five) < results.indexOf(ten));   // if sorting were lexicographic, "10" would come before "5"
+        service.delete(ten.getKey(), five.getKey());
     }
 
     @Test
     public void testSortingByDateProperty() throws Exception {
-        Entity february2 = storeTestEntityWithSingleProperty(createDate(2011, 2, 2));
-        Entity march3 = storeTestEntityWithSingleProperty(createDate(2011, 3, 3));
-        Entity january1 = storeTestEntityWithSingleProperty(createDate(2011, 1, 1));
+        String methodName = "testSortingByDateProperty";
+        Entity parent = createTestEntityWithUniqueMethodNameKey(QUERY_SORTING_ENTITY, methodName);
+        Key key = parent.getKey();
 
-        assertList(whenSortingByTheSingleProperty(ASCENDING), containsResultsInOrder(january1, february2, march3));
-        assertList(whenSortingByTheSingleProperty(DESCENDING), containsResultsInOrder(march3, february2, january1));
+        Entity february2 = storeTestEntityWithSingleProperty(key, createDate(2011, 2, 2));
+        Entity march3 = storeTestEntityWithSingleProperty(key, createDate(2011, 3, 3));
+        Entity january1 = storeTestEntityWithSingleProperty(key, createDate(2011, 1, 1));
+
+        assertThat(whenSortingByTheSingleProperty(ASCENDING, key), queryReturnsList(january1, february2, march3));
+        assertThat(whenSortingByTheSingleProperty(DESCENDING, key), queryReturnsList(march3, february2, january1));
+
+        service.delete(february2.getKey(), march3.getKey(), january1.getKey());
+    }
+
+
+    private Matcher<List<Entity>> queryReturnsList(Entity... entities) {
+        return new IsEqual<List<Entity>>(Arrays.asList(entities));
     }
 
     private List<Entity> whenSortingByTheSingleProperty(Query.SortDirection direction) {
-        Query query = createQuery().addSort(SINGLE_PROPERTY_NAME, direction);
+        Query query = createQuery()
+            .addSort(SINGLE_PROPERTY_NAME, direction);
+        return service.prepare(query).asList(withDefaults());
+    }
+
+    private List<Entity> whenSortingByTheSingleProperty(Query.SortDirection direction, Key parentKey) {
+        Query query = createQuery()
+            .setAncestor(parentKey)
+            .addSort(SINGLE_PROPERTY_NAME, direction);
         return service.prepare(query).asList(withDefaults());
     }
 
