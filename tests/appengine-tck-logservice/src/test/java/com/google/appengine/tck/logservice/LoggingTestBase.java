@@ -35,6 +35,8 @@ import com.google.appengine.tck.event.TestLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycles;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
+import com.google.apphosting.api.ApiProxy;
+
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
@@ -98,6 +100,7 @@ public abstract class LoggingTestBase extends TestBase {
     }
 
     protected void flush(Logger log) {
+        ApiProxy.flushLogs();
         for (Handler handler : log.getHandlers()) {
             handler.flush();
         }
