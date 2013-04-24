@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Future;
 
@@ -44,9 +43,6 @@ import java.util.concurrent.Future;
 public class MemcacheAsync2Test extends CacheTestBase {
     private MemcacheService memcache;
     private AsyncMemcacheService asyncMemcache;
-    private int overhead = 1024;   // space for key value
-    private String str1mb = getBigString(1024 * 1024 - overhead);
-    private String str1K = getBigString(1024);
 
     @Before
     public void setUp() {
@@ -62,7 +58,7 @@ public class MemcacheAsync2Test extends CacheTestBase {
      * Tests single put/get.
      */
     @Test
-    public void testPutAndGet_basic() {
+    public void testPutAndGetBasic() {
         verifyAsyncGet(KEY1, STR_VALUE);
     }
 
@@ -136,9 +132,6 @@ public class MemcacheAsync2Test extends CacheTestBase {
         Set<Object> deletedKeys = waitOnFuture(future);
 
         assertEquals(data.keySet(), deletedKeys);
-
-//    assertNull("bkey1 should have null data", memcache.get("bkey1"));
-//    assertNull("bkey30 should have null data", memcache.get("bkey30"));
     }
 
     @Test
@@ -381,62 +374,6 @@ public class MemcacheAsync2Test extends CacheTestBase {
         assertTrue(stats.getMaxTimeWithoutAccess() > -1);
         assertTrue(stats.getMissCount() > -1L);
         assertTrue(stats.getTotalItemBytes() > -1L);
-    }
-
-    private static String getBigString(int len) {
-        char[] chars = new char[len];
-        for (int i = 0; i < len; i++) {
-            chars[i] = 'x';
-        }
-        return new String(chars);
-    }
-
-    private Map<Object, Object> createSmallBatchData() {
-        String tsKey = createTimeStampKey("SmallBatchData");
-        Map<Object, Object> map = new HashMap<Object, Object>();
-        for (int i = 0; i < 3; i++) {
-            map.put(tsKey + "-" + i, str1K);
-        }
-        return map;
-    }
-
-    private Map<Object, Long> createLongBatchData() {
-        String tsKey = createTimeStampKey("LongBatchData");
-        Map<Object, Long> map = new HashMap<Object, Long> ();
-        for (long num = 0; num < 3; num++) {
-            map.put(tsKey + "-" + num, num);
-        }
-        return map;
-    }
-
-    private Map<Object, Long> copyMapIncrementLongValue(Map<Object, Long> map, long delta) {
-        Map<Object, Long> copiedMap = new HashMap<Object, Long>();
-        for (Map.Entry<Object, Long> entry : map.entrySet()) {
-            copiedMap.put(entry.getKey(), entry.getValue() + delta);
-        }
-        return copiedMap;
-    }
-
-    private Map<Object, Long> createRandomIncrementMap(Map<Object, Long> map) {
-        Map<Object, Long> incMap = new HashMap<Object, Long>();
-        Random random = new Random();
-
-        int max = 1000;
-        for (Map.Entry<Object, Long> entry : map.entrySet()) {
-            incMap.put(entry.getKey(), new Long(random.nextInt(max)));
-        }
-        return incMap;
-    }
-
-    private Map<Object, Long> createMapFromIncrementMap(Map<Object, Long> originalMap,
-                                                        Map<Object, Long> incMap) {
-        Map<Object, Long> incrementedMap = new HashMap<Object, Long>();
-
-        for (Map.Entry<Object, Long> entry : originalMap.entrySet()) {
-            incrementedMap.put(entry.getKey(), entry.getValue() + incMap.get(entry.getKey()));
-        }
-
-        return incrementedMap;
     }
 
     private void verifyAsyncGet(Object key, Object value) {
