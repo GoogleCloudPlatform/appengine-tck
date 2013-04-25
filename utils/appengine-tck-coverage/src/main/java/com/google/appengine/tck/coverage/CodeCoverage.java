@@ -18,10 +18,12 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
+import javassist.bytecode.annotation.Annotation;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -70,7 +72,7 @@ public class CodeCoverage {
             List<MethodInfo> methods = clazz.getMethods();
 
             for (MethodInfo m : methods) {
-                if (Modifier.isPublic(m.getAccessFlags())) {
+                if (includeMethod(m)) {
                     String descriptor = m.getDescriptor();
                     Tuple tuple = new Tuple(m.getName(), descriptor);
                     map.put(tuple, new TreeSet<CodeLine>());
@@ -78,6 +80,24 @@ public class CodeCoverage {
                 }
             }
         }
+    }
+
+    protected boolean includeMethod(MethodInfo mi) {
+        if (Modifier.isPublic(mi.getAccessFlags()) == false) {
+            return false;
+        }
+
+        AnnotationsAttribute aa = (AnnotationsAttribute) mi.getAttribute(AnnotationsAttribute.visibleTag);
+        if (aa != null) {
+            Annotation annotation = aa.getAnnotation(Deprecated.class.getName());
+            if (annotation != null) {
+                return false;
+            }
+        }
+
+        // TODO -- explicit excludes
+
+        return true;
     }
 
     protected void scan(File current, String fqn) throws Exception {
