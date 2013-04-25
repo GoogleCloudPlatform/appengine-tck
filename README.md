@@ -44,17 +44,22 @@ Requirements
 ------------
 
 Java JDK7+ and Maven 3.x+.
-And of course the environment you want to test.
+And of course the environment you want to test.  It is assumed you have working knowledge
+of Maven and Git.
 
 Running the build
 -----------------
 
 The whole project is fully Mavenized, so for the simple build the process is obvious:
 
+    cd appengine-tck
     mvn clean install
 
 This builds the default profiles, which includes compiling the tests, but not running them.
-And we also output the API code coverage metrics; see console output.
+And we also output the API code coverage metrics; see console output.  Before running any tests
+you need to do this step in order to build the framework.  Then you can go into specific test
+directories and run only those tests.  If you don't do this step and go straight to the test directory
+you will get compilation errors.
 
 Building the tests
 ------------------
@@ -70,21 +75,33 @@ GAE API code coverage
 ---------------------
 
 For each set of tests we want to get code coverage, needs a coverage.txt file,
-where we list all the classes / interfaces whose usage we track.
+where we list all the classes / interfaces whose usage we track.  Deprecated classes,
+interfaces, and methods will not be reported.
 
 e.g. TaskQueue code covereage
+
+    file: appengine-tck/tests/appengine-tck-memcache/coverage.txt
 
     com.google.appengine.api.taskqueue.Queue
 
 This will print out all Queue interface usage in our TaskQueue tests.
 
 You can either see the results in console while the build is running,
-or at the end open index.html file in TCK root.
+or at the end open index.html file in TCK root.  A csv file is also generated
+which can be imported into a spreadsheet.
 
 You can override which file name is used to lookup to list classes / interfaces.
 This is done either by changing the coverage plugin's configuration in pom.xml or using -Dcoverage.file system property.
 
+    cd appengine-tck
     mvn clean install -Dcoverage.file=coverage.txt.all
+
+Or just:
+
+    cd appengine-tck
+    mvn clean install
+
+to get the default coverage report.
 
 Running the tests
 -----------------
@@ -94,7 +111,7 @@ but you also need to specify the environment you want to test.
 
 This are the current enviroments:
 
-1) GAE SKD
+1) GAE SDK
 
     mvn clean install -Psdk -Dappengine.sdk.root=<PATH_TO_SDK>
 
@@ -136,7 +153,12 @@ Running a single test
 
 Since it's all Mavenized, this is trivial, as Surefire plugin already supports this.
 
+    cd appengine-tck/tests/appengine-tck-[package]
     mvn clean install -Psdk -Dappengine.sdk.root=<PATH_TO_SDK> -Dtest=<TEST_SIMPLE_NAME>
+
+To run a specific test method.
+
+    mvn clean install -Psdk -Dappengine.sdk.root=<PATH_TO_SDK> -Dtest=<TEST_SIMPLE_NAME>#testTheMethod
 
 Adapting the environment wrt tests
 ----------------------------------
@@ -181,6 +203,8 @@ Note: adapting the tests to run against real environment can sometime be a huge 
 
 Writing the test
 ----------------
+See appengine-tck/tests/appengine-tck-example for a bare bones illustration of how to write a
+new test package.
 
 As we already mentioned, all tests are Arquillian and ShrinkWrap based,
 with JUnit being the actual test framework used, and Maven Surefire plugin to run it all.
@@ -213,3 +237,6 @@ To make things a bit easier, we already introduced a few abstract / helper class
 * if any custom behavior needs to be added per test environment, add this via TestLifecycles::before or TestLifecycles::after
 * LibUtils class can be used to grab whole libraries / jars from Maven and attach them to .war as library (WEB-INF/lib)
 * one can add its own multisuite ScanStrategy and NotificationFilter; see ScanMultiProvider class for more details
+
+
+
