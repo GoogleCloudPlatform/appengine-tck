@@ -24,21 +24,17 @@
 
 package com.google.appengine.tck.datastore;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
-import org.hamcrest.Matcher;
-import org.hamcrest.core.IsEqual;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static com.google.appengine.api.datastore.Query.SortDirection.ASCENDING;
 import static com.google.appengine.api.datastore.Query.SortDirection.DESCENDING;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -62,8 +58,8 @@ public class QuerySortingTest extends QueryTestBase {
         Entity abraham = storeTestEntityWithSingleProperty(key, "Abraham");
         Entity carl = storeTestEntityWithSingleProperty(key, "Carl");
 
-        assertThat(whenSortingByTheSingleProperty(ASCENDING, key), queryReturnsList(abraham, bill, carl));
-        assertThat(whenSortingByTheSingleProperty(DESCENDING, key), queryReturnsList(carl, bill, abraham));
+        assertList(whenSortingByTheSingleProperty(ASCENDING, key), containsResultsInOrder(abraham, bill, carl));
+        assertList(whenSortingByTheSingleProperty(DESCENDING, key), containsResultsInOrder(carl, bill, abraham));
 
         service.delete(bill.getKey(), abraham.getKey(), carl.getKey());
     }
@@ -78,8 +74,8 @@ public class QuerySortingTest extends QueryTestBase {
         Entity one = storeTestEntityWithSingleProperty(key, 1);
         Entity three = storeTestEntityWithSingleProperty(key, 3);
 
-        assertThat(whenSortingByTheSingleProperty(ASCENDING, key), queryReturnsList(one, two, three));
-        assertThat(whenSortingByTheSingleProperty(DESCENDING, key), queryReturnsList(three, two, one));
+        assertList(whenSortingByTheSingleProperty(ASCENDING, key), containsResultsInOrder(one, two, three));
+        assertList(whenSortingByTheSingleProperty(DESCENDING, key), containsResultsInOrder(three, two, one));
 
         service.delete(two.getKey(), one.getKey(), three.getKey());
     }
@@ -94,8 +90,8 @@ public class QuerySortingTest extends QueryTestBase {
         Entity two = storeTestEntityWithSingleProperty(key, 2f);
         Entity hundred = storeTestEntityWithSingleProperty(key, 100f);
 
-        assertThat(whenSortingByTheSingleProperty(ASCENDING, key), queryReturnsList(two, thirty, hundred));
-        assertThat(whenSortingByTheSingleProperty(DESCENDING, key), queryReturnsList(hundred, thirty, two));
+        assertList(whenSortingByTheSingleProperty(ASCENDING, key), containsResultsInOrder(two, thirty, hundred));
+        assertList(whenSortingByTheSingleProperty(DESCENDING, key), containsResultsInOrder(hundred, thirty, two));
 
         service.delete(thirty.getKey(), two.getKey(), hundred.getKey());
     }
@@ -126,27 +122,14 @@ public class QuerySortingTest extends QueryTestBase {
         Entity march3 = storeTestEntityWithSingleProperty(key, createDate(2011, 3, 3));
         Entity january1 = storeTestEntityWithSingleProperty(key, createDate(2011, 1, 1));
 
-        assertThat(whenSortingByTheSingleProperty(ASCENDING, key), queryReturnsList(january1, february2, march3));
-        assertThat(whenSortingByTheSingleProperty(DESCENDING, key), queryReturnsList(march3, february2, january1));
+        assertList(whenSortingByTheSingleProperty(ASCENDING, key), containsResultsInOrder(january1, february2, march3));
+        assertList(whenSortingByTheSingleProperty(DESCENDING, key), containsResultsInOrder(march3, february2, january1));
 
         service.delete(february2.getKey(), march3.getKey(), january1.getKey());
     }
 
-
-    private Matcher<List<Entity>> queryReturnsList(Entity... entities) {
-        return new IsEqual<List<Entity>>(Arrays.asList(entities));
-    }
-
-    private List<Entity> whenSortingByTheSingleProperty(Query.SortDirection direction) {
-        Query query = createQuery()
-            .addSort(SINGLE_PROPERTY_NAME, direction);
-        return service.prepare(query).asList(withDefaults());
-    }
-
     private List<Entity> whenSortingByTheSingleProperty(Query.SortDirection direction, Key parentKey) {
-        Query query = createQuery()
-            .setAncestor(parentKey)
-            .addSort(SINGLE_PROPERTY_NAME, direction);
+        Query query = createQuery().setAncestor(parentKey).addSort(SINGLE_PROPERTY_NAME, direction);
         return service.prepare(query).asList(withDefaults());
     }
 
