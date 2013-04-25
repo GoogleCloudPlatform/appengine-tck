@@ -252,11 +252,13 @@ public class MemcacheAsync2Test extends CacheTestBase {
         assertEquals(STR_VALUE, identVal.getValue());
 
         // batch versions
+        Map<Object, Object> map = new HashMap<Object, Object>();
         for (Object key : TEST_DATA) {
-            asyncMemcache.put(key, key);
+            map.put(key, key);
         }
-        Future<Map<Object, IdentifiableValue>> futureMap =
-            asyncMemcache.getIdentifiables(Arrays.asList(TEST_DATA));
+        waitOnFuture(asyncMemcache.putAll(map));
+
+        Future<Map<Object, IdentifiableValue>> futureMap = asyncMemcache.getIdentifiables(Arrays.asList(TEST_DATA));
         Map<Object, IdentifiableValue> ivMap = waitOnFuture(futureMap);
         for (Object key : ivMap.keySet()) {
             assertEquals(key, ivMap.get(key).getValue());

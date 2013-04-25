@@ -266,7 +266,8 @@ public class MemcacheTest extends CacheTestBase {
         memcache.put("key", "value");
         memcache.delete("key");
         assertFalse(memcache.contains("key"));
-    }
+        assertNull(memcache.get("key"));
+        assertEquals(0, memcache.getAll(Arrays.asList("key")).size());}
 
     @Test
     public void testDeleteNoReAddTime() {
