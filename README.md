@@ -1,6 +1,21 @@
 Google App Engine TCK
 =====================
 
+Project introduction
+--------------------
+
+This project provides Technology Compatibility Kit (TCK) for Google App Engine (GAE) API.
+
+The goals of the project are
+* comprehensive GAE API test coverage
+* GAE API usage examples
+* common GAE API test environment
+
+Project can either be used by external vendors (not Google) implementing the GAE API - such as CapeDwarf and AppScale,
+or developers writing frameworks on top of GAE API, or simply using GAE API.
+
+e.g. the easiest way to file a bug against GAE API is to provide a valid failing test
+
 License
 -------
 
