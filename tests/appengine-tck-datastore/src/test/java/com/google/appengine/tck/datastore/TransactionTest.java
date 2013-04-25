@@ -2,7 +2,9 @@ package com.google.appengine.tck.datastore;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.appengine.api.NamespaceManager;
 import com.google.appengine.api.datastore.Entity;
@@ -58,24 +60,30 @@ public class TransactionTest extends DatastoreTestBase {
     @Test
     public void testMultipleSameGroupDefault() throws InterruptedException {
         clearData(kindName);
-        List<Entity> es = new ArrayList<Entity>();
+        List<Key> keys = new ArrayList<Key>();
         Transaction tx = service.beginTransaction();
         Entity parent = new Entity(kindName);
         parent.setProperty("check", "parent");
         parent.setProperty("stamp", new Date());
         Key pKey = service.put(tx, parent);
+        keys.add(pKey);
 
         Entity child = new Entity(kindName, pKey);
         child.setProperty("check", "other");
         child.setProperty("stamp", new Date());
         Key cKey = service.put(tx, child);
+        keys.add(cKey);
         tx.commit();
         sync(sleepTime);
 
         Query q = new Query(kindName);
         int count = service.prepare(q).countEntities(FetchOptions.Builder.withDefaults());
         assertEquals(2, count);
-        for (Entity readRec : service.prepare(q).asIterable()) {
+
+        Map<Key, Entity> es;
+        tx = service.beginTransaction();
+        es = service.get(tx, keys);
+        for (Entity readRec : es.values()) {
             if (readRec.getProperty("check").equals("parent")) {
                 pKey = readRec.getKey();
             } else {
@@ -83,6 +91,12 @@ public class TransactionTest extends DatastoreTestBase {
             }
         }
         assertEquals(pKey, child.getParent());
+
+        service.delete(tx, keys);
+        tx.commit();
+        sync(sleepTime);
+        es = service.get(keys);
+        assertEquals(0, es.size());
     }
 
     // multiple entities in different group with default transaction setting
@@ -260,6 +274,7 @@ public class TransactionTest extends DatastoreTestBase {
             tx.rollback();
             throw e;
         }
+        sync(sleepTime);
     }
 
     private void writeMultipleInList(boolean allow) throws Exception {
@@ -284,6 +299,7 @@ public class TransactionTest extends DatastoreTestBase {
             tx.rollback();
             throw e;
         }
+        sync(sleepTime);
     }
 
     private List<Entity> readMultipleGroup() {
