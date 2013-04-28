@@ -126,7 +126,7 @@ public class CoverageMojo extends AbstractMojo {
             Class<MethodExclusion> clazz = (Class<MethodExclusion>) cl.loadClass(exclusion);
             return clazz.getConstructor(File.class).newInstance(root);
         } else {
-            return new FileMethodExclusion(root);
+            return FileMethodExclusion.create(root);
         }
     }
 

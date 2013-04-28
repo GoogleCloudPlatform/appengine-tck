@@ -16,16 +16,20 @@ import javassist.bytecode.MethodInfo;
 public class FileMethodExclusion extends BaseMethodExclusion {
     private Set<String> exclusions = new HashSet<String>();
 
-    public FileMethodExclusion(File root) {
+    private FileMethodExclusion() {
+    }
+
+    public static MethodExclusion create(File root) {
         File ef = new File(root, "exclusions.txt");
         if (ef.exists()) {
+            FileMethodExclusion fme = new FileMethodExclusion();
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader(new FileReader(ef));
                 String line;
                 while ((line = reader.readLine()) != null) {
                     if (line.startsWith("#")) continue;
-                    exclusions.add(line);
+                    fme.exclusions.add(line);
                 }
             } catch (Exception e) {
                 throw new IllegalArgumentException(e);
@@ -37,6 +41,9 @@ public class FileMethodExclusion extends BaseMethodExclusion {
                     }
                 }
             }
+            return fme;
+        } else {
+            return new BaseMethodExclusion();
         }
     }
 
