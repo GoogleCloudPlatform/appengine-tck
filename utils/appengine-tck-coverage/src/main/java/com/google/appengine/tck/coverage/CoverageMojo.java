@@ -41,6 +41,13 @@ public class CoverageMojo extends AbstractMojo {
     protected boolean tests = true;
 
     /**
+     * Exclusion.
+     *
+     * @parameter
+     */
+    protected String exclusion;
+
+    /**
      * Interfaces.
      *
      * @parameter
@@ -66,7 +73,8 @@ public class CoverageMojo extends AbstractMojo {
         }
         try {
             readInterfaces(classesToScan, classes);
-            CodeCoverage.report(cl, classesToScan, classes.toArray(new String[classes.size()]));
+            MethodExclusion me = createExclusion(cl, classesToScan);
+            CodeCoverage.report(cl, classesToScan, me, classes.toArray(new String[classes.size()]));
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage());
         }
@@ -112,6 +120,16 @@ public class CoverageMojo extends AbstractMojo {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private MethodExclusion createExclusion(ClassLoader cl, File root) throws Exception {
+        if (exclusion != null) {
+            Class<MethodExclusion> clazz = (Class<MethodExclusion>) cl.loadClass(exclusion);
+            return clazz.getConstructor(File.class).newInstance(root);
+        } else {
+            return new FileMethodExclusion(root);
+        }
+    }
+
     private void readInterfaces(File root, List<String> classes) throws IOException {
         String cf = System.getProperty("coverage.file", coverageFile);
         File coverage = new File(root, cf);
@@ -145,6 +163,14 @@ public class CoverageMojo extends AbstractMojo {
 
     public void setTests(boolean tests) {
         this.tests = tests;
+    }
+
+    public String getExclusion() {
+        return exclusion;
+    }
+
+    public void setExclusion(String exclusion) {
+        this.exclusion = exclusion;
     }
 
     public List<String> getInterfaces() {

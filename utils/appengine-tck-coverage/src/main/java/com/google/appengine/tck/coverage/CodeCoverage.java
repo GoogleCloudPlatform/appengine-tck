@@ -40,7 +40,7 @@ public class CodeCoverage {
         return new URLClassLoader(new URL[]{classesToScan.toURI().toURL()}, CodeCoverage.class.getClassLoader());
     }
 
-    public static void report(ClassLoader classLoader, File classesToScan, String... interfaces) throws Exception {
+    public static void report(ClassLoader classLoader, File classesToScan, MethodExclusion exclusion, String... interfaces) throws Exception {
         if (interfaces == null || interfaces.length == 0) {
             log.warning("No interfaces defined!");
             return;
@@ -50,7 +50,7 @@ public class CodeCoverage {
             classLoader = toClassLoader(classesToScan);
         }
 
-        CodeCoverage cc = new CodeCoverage(classLoader, interfaces);
+        CodeCoverage cc = new CodeCoverage(classLoader, exclusion, interfaces);
         cc.scan(classesToScan, "");
         cc.print(
                 SoutPrinter.INSTANCE,
@@ -59,7 +59,7 @@ public class CodeCoverage {
         );
     }
 
-    private CodeCoverage(ClassLoader classLoader, String... interfaces) throws Exception {
+    private CodeCoverage(ClassLoader classLoader, MethodExclusion exclusion, String... interfaces) throws Exception {
         for (String iface : interfaces) {
             Map<Tuple, Set<CodeLine>> map = new TreeMap<Tuple, Set<CodeLine>>();
             report.put(iface, map);
@@ -72,7 +72,7 @@ public class CodeCoverage {
             List<MethodInfo> methods = clazz.getMethods();
 
             for (MethodInfo m : methods) {
-                if (includeMethod(m)) {
+                if (exclusion.exclude(clazz, m) == false) {
                     String descriptor = m.getDescriptor();
                     Tuple tuple = new Tuple(m.getName(), descriptor);
                     map.put(tuple, new TreeSet<CodeLine>());
