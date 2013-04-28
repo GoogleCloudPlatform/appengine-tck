@@ -103,6 +103,16 @@ Or just:
 
 to get the default coverage report.
 
+We can also explicitly exclude some of the API methods with exclusions.txt file (deprecated methods are already excluded by default).
+
+e.g. excluding com.google.appengine.api.urlfetch.URLFetchServiceFactory's constructor
+
+    com.google.appengine.api.urlfetch.URLFetchServiceFactory@<init>@()V
+
+The default exclusion information must follow this pattern:
+
+    <fqn class name>@<method name>@<descriptor>
+
 Running the tests
 -----------------
 
