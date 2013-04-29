@@ -44,11 +44,21 @@ import static org.junit.Assert.fail;
 
 /**
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
 public class LogServiceTest extends LoggingTestBase {
 
     private LogService service;
+
+    private void assertLogQueryExecutes(LogQuery logQuery, String testName, List<String> exceptionList) {
+        try {
+            Iterable<RequestLogs> iterable = service.fetch(logQuery);
+            iterable.iterator().hasNext();
+        } catch (Exception e) {
+            exceptionList.add(testName + ": " + e.toString());
+        }
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -63,54 +73,66 @@ public class LogServiceTest extends LoggingTestBase {
     @Test
     public void testAllKindsOfLogQueries() {
         List<String> exceptions = new ArrayList<String>();
-        assertLogQueryExecutes(new LogQuery(),
-            "testDefaultQuery", exceptions);
-        assertLogQueryExecutes(new LogQuery().minLogLevel(LogService.LogLevel.WARN),
-            "testMinLogLevel", exceptions);
-        assertLogQueryExecutes(new LogQuery().includeIncomplete(true),
-            "testIncludeIncompleteTrue", exceptions);
-        assertLogQueryExecutes(new LogQuery().includeIncomplete(false),
-            "testIncludeIncompleteFalse", exceptions);
-        assertLogQueryExecutes(new LogQuery().includeAppLogs(true),
-            "testIncludeAppLogsTrue", exceptions);
-        assertLogQueryExecutes(new LogQuery().includeAppLogs(false),
-            "testIncludeAppLogsFalse", exceptions);
-        assertLogQueryExecutes(new LogQuery().batchSize(20),
-            "testBatchSize", exceptions);
-//        assertLogQueryExecutes(new LogQuery().offset());  // TODO
-        assertLogQueryExecutes(new LogQuery().majorVersionIds(Arrays.asList("1", "2", "3")),
-            "testMajorVersionIds", exceptions);
-        assertLogQueryExecutes(new LogQuery().requestIds(Arrays.asList("1", "2", "3")),
-            "testRequestIds", exceptions);
-        assertLogQueryExecutes(new LogQuery().startTimeMillis(System.currentTimeMillis()),
-            "testStartTimeMillis", exceptions);
-        assertLogQueryExecutes(new LogQuery().startTimeUsec(1000L * System.currentTimeMillis()),
-            "testStartTimeUsec", exceptions);
-        assertLogQueryExecutes(new LogQuery().endTimeMillis(System.currentTimeMillis()),
-            "testEndTimeMillis", exceptions);
-        assertLogQueryExecutes(new LogQuery().endTimeUsec(1000L * System.currentTimeMillis()),
-            "testEndTimeUsec", exceptions);
+        assertLogQueryExecutes(new LogQuery(), "testDefaultQuery", exceptions);
+        assertLogQueryExecutes(new LogQuery().minLogLevel(LogService.LogLevel.WARN), "testMinLogLevel", exceptions);
+        assertLogQueryExecutes(new LogQuery().includeIncomplete(true), "testIncludeIncompleteTrue", exceptions);
+        assertLogQueryExecutes(new LogQuery().includeIncomplete(false), "testIncludeIncompleteFalse", exceptions);
+        assertLogQueryExecutes(new LogQuery().includeAppLogs(true), "testIncludeAppLogsTrue", exceptions);
+        assertLogQueryExecutes(new LogQuery().includeAppLogs(false), "testIncludeAppLogsFalse", exceptions);
+        assertLogQueryExecutes(new LogQuery().batchSize(20), "testBatchSize", exceptions);
+        assertLogQueryExecutes(new LogQuery().offset(null), "testOffset", exceptions);
+        assertLogQueryExecutes(new LogQuery().majorVersionIds(Arrays.asList("1", "2", "3")), "testMajorVersionIds", exceptions);
+        assertLogQueryExecutes(new LogQuery().requestIds(Arrays.asList("1", "2", "3")), "testRequestIds", exceptions);
+        // TODO assertLogQueryExecutes(new LogQuery().serverVersions(Collections.singletonList(Pair.of((String) null, (String) null))), "testServerVersions", exceptions);
+        assertLogQueryExecutes(new LogQuery().startTimeMillis(System.currentTimeMillis()), "testStartTimeMillis", exceptions);
+        assertLogQueryExecutes(new LogQuery().startTimeUsec(1000L * System.currentTimeMillis()), "testStartTimeUsec", exceptions);
+        assertLogQueryExecutes(new LogQuery().endTimeMillis(System.currentTimeMillis()), "testEndTimeMillis", exceptions);
+        assertLogQueryExecutes(new LogQuery().endTimeUsec(1000L * System.currentTimeMillis()), "testEndTimeUsec", exceptions);
         assertLogQueryExecutes(
-            new LogQuery()
-                .minLogLevel(LogService.LogLevel.WARN)
-                .includeIncomplete(true)
-                .includeAppLogs(true)
-                .batchSize(20)
-//                .offset() // TODO
-                .majorVersionIds(Arrays.asList("1", "2", "3"))
-                .startTimeMillis(System.currentTimeMillis() - 3000L)
-                .endTimeMillis(System.currentTimeMillis() - 2000L),
-            "testCombo", exceptions);
+                new LogQuery()
+                        .minLogLevel(LogService.LogLevel.WARN)
+                        .includeIncomplete(true)
+                        .includeAppLogs(true)
+                        .batchSize(20)
+                        .offset(null)
+                        .majorVersionIds(Arrays.asList("1", "2", "3"))
+                        .startTimeMillis(System.currentTimeMillis() - 3000L)
+                        .endTimeMillis(System.currentTimeMillis() - 2000L),
+                "testCombo", exceptions);
         assertEquals(exceptions.toString(), 0, exceptions.size());
     }
 
-  private void assertLogQueryExecutes(LogQuery logQuery, String testName, List<String> exceptionList) {
-    try {
-      service.fetch(logQuery);
-    } catch (Exception e) {
-      exceptionList.add(testName + ": " + e.toString());
+    @Test
+    public void testAllKindsOfLogQueriesWithBuilder() {
+        List<String> exceptions = new ArrayList<String>();
+        assertLogQueryExecutes(LogQuery.Builder.withDefaults(), "testDefaultQuery", exceptions);
+        assertLogQueryExecutes(LogQuery.Builder.withMinLogLevel(LogService.LogLevel.WARN), "testMinLogLevel", exceptions);
+        assertLogQueryExecutes(LogQuery.Builder.withIncludeIncomplete(true), "testIncludeIncompleteTrue", exceptions);
+        assertLogQueryExecutes(LogQuery.Builder.withIncludeIncomplete(false), "testIncludeIncompleteFalse", exceptions);
+        assertLogQueryExecutes(LogQuery.Builder.withIncludeAppLogs(true), "testIncludeAppLogsTrue", exceptions);
+        assertLogQueryExecutes(LogQuery.Builder.withIncludeAppLogs(false), "testIncludeAppLogsFalse", exceptions);
+        assertLogQueryExecutes(LogQuery.Builder.withBatchSize(20), "testBatchSize", exceptions);
+        assertLogQueryExecutes(LogQuery.Builder.withOffset(null), "testOffset", exceptions);
+        assertLogQueryExecutes(LogQuery.Builder.withMajorVersionIds(Arrays.asList("1", "2", "3")), "testMajorVersionIds", exceptions);
+        assertLogQueryExecutes(LogQuery.Builder.withRequestIds(Arrays.asList("1", "2", "3")), "testRequestIds", exceptions);
+        // TODO assertLogQueryExecutes(LogQuery.Builder.withServerVersions(Collections.singletonList(Pair.of((String) null, (String) null))), "testServerVersions", exceptions);
+        assertLogQueryExecutes(LogQuery.Builder.withStartTimeMillis(System.currentTimeMillis()), "testStartTimeMillis", exceptions);
+        assertLogQueryExecutes(LogQuery.Builder.withStartTimeUsec(1000L * System.currentTimeMillis()), "testStartTimeUsec", exceptions);
+        assertLogQueryExecutes(LogQuery.Builder.withEndTimeMillis(System.currentTimeMillis()), "testEndTimeMillis", exceptions);
+        assertLogQueryExecutes(LogQuery.Builder.withEndTimeUsec(1000L * System.currentTimeMillis()), "testEndTimeUsec", exceptions);
+        assertLogQueryExecutes(
+                LogQuery.Builder
+                        .withMinLogLevel(LogService.LogLevel.WARN)
+                        .includeIncomplete(true)
+                        .includeAppLogs(true)
+                        .batchSize(20)
+                        .offset(null)
+                        .majorVersionIds(Arrays.asList("1", "2", "3"))
+                        .startTimeMillis(System.currentTimeMillis() - 3000L)
+                        .endTimeMillis(System.currentTimeMillis() - 2000L),
+                "testCombo", exceptions);
+        assertEquals(exceptions.toString(), 0, exceptions.size());
     }
-  }
 
     @Test
     public void testLogLinesAreReturnedOnlyWhenRequested() {

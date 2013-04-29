@@ -1,0 +1,5 @@
+com.google.appengine.api.log.AppLogLine@<init>@()V
+com.google.appengine.api.log.LogServiceFactory@<init>@()V
+com.google.appengine.api.log.LogQuery@clone@()Lcom/google/appengine/api/log/LogQuery;
+com.google.appengine.api.log.LogQuery@clone@()Ljava/lang/Object;
+com.google.appengine.api.log.LogQuery$Builder@<init>@()V
