@@ -32,7 +32,6 @@ import com.google.appengine.tck.taskqueue.support.PrintServlet;
 import com.google.appengine.tck.taskqueue.support.RequestData;
 import com.google.appengine.tck.taskqueue.support.RetryTestServlet;
 import com.google.appengine.tck.taskqueue.support.TestQueueServlet;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -40,23 +39,29 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /**
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public abstract class TaskqueueTestBase extends TestBase {
+public abstract class QueueTestBase extends TestBase {
+    protected static final String URL = "/_ah/test";
+    public static final String TASK_RETRY_COUNT = "X-AppEngine-TaskRetryCount";
+    public static final String TASK_EXECUTION_COUNT = "X-AppEngine-TaskExecutionCount";
+    public static final String QUEUE_NAME = "X-AppEngine-QueueName";
+    public static final String TASK_NAME = "X-AppEngine-TaskName";
 
     @Deployment
     public static Archive getDeployment() {
-      TestContext context = new TestContext();
-      context.setWebXmlFile("web-taskqueue.xml");
-      WebArchive war = getTckDeployment(context);
-      war.addClasses(TaskqueueTestBase.class, DatastoreUtil.class);
-      war.addClasses(ExecTask.class, ExecDeferred.class);
-      war.addClass(RequestData.class);
-      war.addClass(DefaultQueueServlet.class);
-      war.addClass(TestQueueServlet.class);
-      war.addClass(PrintServlet.class);
-      war.addClass(RetryTestServlet.class);
-      war.addAsWebInfResource("queue.xml");
-      return war;
+        TestContext context = new TestContext();
+        context.setWebXmlFile("web-taskqueue.xml");
+        WebArchive war = getTckDeployment(context);
+        war.addClasses(QueueTestBase.class, DatastoreUtil.class);
+        war.addClasses(ExecTask.class, ExecDeferred.class);
+        war.addClass(RequestData.class);
+        war.addClass(DefaultQueueServlet.class);
+        war.addClass(TestQueueServlet.class);
+        war.addClass(PrintServlet.class);
+        war.addClass(RetryTestServlet.class);
+        war.addAsWebInfResource("queue.xml");
+        return war;
     }
 
 }

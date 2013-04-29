@@ -1,6 +1,7 @@
 package com.google.appengine.tck.taskqueue;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 import com.google.appengine.api.NamespaceManager;
@@ -13,9 +14,9 @@ import com.google.appengine.api.taskqueue.RetryOptions;
 import com.google.appengine.api.taskqueue.TaskAlreadyExistsException;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.tck.taskqueue.support.DatastoreUtil;
-import org.junit.Assert;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +37,7 @@ import static com.google.appengine.tck.taskqueue.support.Constants.TEST_RUN_ID;
  * @author ales.justin@jboss.org (Ales Justin)
  */
 @RunWith(Arquillian.class)
-public class TaskQueueTest extends TaskqueueTestBase {
+public class TaskQueueTest extends QueueTestBase {
 
     private String testRunId;
     private DatastoreUtil dsUtil;
@@ -84,8 +85,7 @@ public class TaskQueueTest extends TaskqueueTestBase {
                 .url("/queuetask/addentity");
 
         QueueFactory.getQueue(E2E_TESTING).add(optionsNoName);
-        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax,
-                testMethodTag);
+        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
         Map<String, String> expectedParams = dsUtil.createParamMap(testMethodTag);
         dsUtil.assertTaskParamsMatchEntityProperties(expectedParams, entity);
     }
@@ -104,8 +104,7 @@ public class TaskQueueTest extends TaskqueueTestBase {
                 .etaMillis(0);
 
         QueueFactory.getQueue(E2E_TESTING).add(optionsHasName);
-        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax,
-                testMethodTag);
+        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
         Map<String, String> expectedParams = dsUtil.createParamMap(testMethodTag);
         expectedParams.put("X-AppEngine-TaskName", taskName);
         dsUtil.assertTaskParamsMatchEntityProperties(expectedParams, entity);
@@ -114,8 +113,8 @@ public class TaskQueueTest extends TaskqueueTestBase {
     @Test
     public void testRetryOption() {
         String testMethodTag = "testRetryOption";
-        RetryOptions retryOptions = RetryOptions.Builder
-                .withTaskRetryLimit(5)
+        RetryOptions retryOptions = new RetryOptions(RetryOptions.Builder.withDefaults())
+                .taskRetryLimit(5)
                 .taskAgeLimitSeconds(10)
                 .maxBackoffSeconds(10)
                 .maxDoublings(10)
@@ -129,8 +128,7 @@ public class TaskQueueTest extends TaskqueueTestBase {
                 .url("/queuetask/addentity");
 
         QueueFactory.getQueue(E2E_TESTING).add(taskOptions);
-        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax,
-                testMethodTag);
+        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
         Map<String, String> expectedParams = dsUtil.createParamMap(testMethodTag);
         dsUtil.assertTaskParamsMatchEntityProperties(expectedParams, entity);
     }
@@ -147,8 +145,7 @@ public class TaskQueueTest extends TaskqueueTestBase {
 
         // retry param. are defined in queue.xml
         QueueFactory.getQueue(E2E_TESTING_RETRY).add(taskOptions);
-        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax,
-                testMethodTag);
+        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
         Map<String, String> expectedParams = dsUtil.createParamMap(testMethodTag);
         dsUtil.assertTaskParamsMatchEntityProperties(expectedParams, entity);
     }
@@ -166,8 +163,7 @@ public class TaskQueueTest extends TaskqueueTestBase {
         // task name explicitly not specified.
 
         QueueFactory.getQueue(E2E_TESTING).add(taskOptions);
-        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax,
-                testMethodTag);
+        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
         Map<String, String> expectedParams = dsUtil.createParamMap(testMethodTag);
         dsUtil.assertTaskParamsMatchEntityProperties(expectedParams, entity);
     }
@@ -227,9 +223,7 @@ public class TaskQueueTest extends TaskqueueTestBase {
 
     @Test(expected = IllegalArgumentException.class)
     public void testBothQueryStringAndParameterNotAllowed() {
-        getDefaultQueue().add(
-                TaskOptions.Builder.withUrl("/someUrl?withQueryString=foo")
-                        .param("andParam", "bar"));
+        getDefaultQueue().add(TaskOptions.Builder.withUrl("/someUrl?withQueryString=foo").param("andParam", "bar"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -261,10 +255,21 @@ public class TaskQueueTest extends TaskqueueTestBase {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testTransactionalTasksMustBeNameless() {
+    public void testTransactionalTasksMustBeNamelessSingle() {
         Transaction tx = DatastoreServiceFactory.getDatastoreService().beginTransaction();
         try {
-            getDefaultQueue().add(tx, TaskOptions.Builder.withTaskName("foo"));
+            TaskOptions options = TaskOptions.Builder.withTaskName("foo");
+            getDefaultQueue().add(tx, new TaskOptions(options));
+        } finally {
+            tx.rollback();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testTransactionalTasksMustBeNamelessIterable() {
+        Transaction tx = DatastoreServiceFactory.getDatastoreService().beginTransaction();
+        try {
+            getDefaultQueue().add(tx, Collections.singleton(TaskOptions.Builder.withTaskName("foo")));
         } finally {
             tx.rollback();
         }

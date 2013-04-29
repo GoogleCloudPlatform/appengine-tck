@@ -22,14 +22,9 @@
 
 package com.google.appengine.tck.taskqueue;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.QueueStatistics;
-import com.google.appengine.api.taskqueue.TaskHandle;
-import com.google.appengine.api.taskqueue.TaskOptions;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
@@ -40,7 +35,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 //@Category(JBoss.class) // should be @All, once GAE local supports stats
-public class StatsTest extends TaskqueueTestBase {
+public class StatsTest extends QueueTestBase {
     @Test
     public void testStatsAPI() throws Exception {
         final Queue queue = QueueFactory.getQueue("pull-queue");

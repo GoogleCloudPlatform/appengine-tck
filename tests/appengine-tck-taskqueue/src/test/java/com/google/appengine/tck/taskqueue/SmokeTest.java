@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
-public class SmokeTest extends TaskqueueTestBase {
+public class SmokeTest extends QueueTestBase {
     @Test
     public void testBasics() throws Exception {
         final Queue queue = QueueFactory.getQueue("pull-queue");

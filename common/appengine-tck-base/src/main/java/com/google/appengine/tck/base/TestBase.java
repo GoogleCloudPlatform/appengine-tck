@@ -2,6 +2,8 @@ package com.google.appengine.tck.base;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -137,4 +139,20 @@ public class TestBase {
         }
     }
 
+    protected <T> T waitOnFuture(Future<T> f) {
+        try {
+            return f.get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(e);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause != null && cause instanceof RuntimeException) {
+                throw RuntimeException.class.cast(cause);
+            } else {
+                cause = e;
+            }
+            throw new IllegalStateException(cause);
+        }
+    }
 }

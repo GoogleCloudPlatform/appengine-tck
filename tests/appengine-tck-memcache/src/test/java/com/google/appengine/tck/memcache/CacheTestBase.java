@@ -9,11 +9,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import com.google.appengine.tck.base.TestBase;
-
 import com.google.appengine.tck.memcache.support.ComboType;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -43,17 +40,6 @@ public abstract class CacheTestBase extends TestBase {
         return name + "-" + System.currentTimeMillis();
     }
 
-    protected <T> T waitOnFuture(Future<T> f) {
-        try {
-            return f.get();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException(e);
-        } catch (ExecutionException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
     static {
         EMPTY_SET = new HashSet<Object>();
         SET1 = new HashSet<Object>();
@@ -63,7 +49,7 @@ public abstract class CacheTestBase extends TestBase {
     protected static final int[] ARRAY1 = {1, -1, 0};
     protected static final Object[] ARRAY2 = {1, STR_VALUE, COMBO2};
     protected static final Object[] TEST_DATA = {KEY1, 101, -1, 0, 123456789L, -987654321L, new Date(0),
-        COMBO1, EMPTY_SET, SET1};
+            COMBO1, EMPTY_SET, SET1};
 
     @Deployment
     public static WebArchive getDeployment() {
@@ -92,7 +78,7 @@ public abstract class CacheTestBase extends TestBase {
 
     protected Map<Object, Long> createLongBatchData() {
         String tsKey = createTimeStampKey("LongBatchData");
-        Map<Object, Long> map = new HashMap<Object, Long> ();
+        Map<Object, Long> map = new HashMap<Object, Long>();
         for (long num = 0; num < 3; num++) {
             map.put(tsKey + "-" + num, num);
         }
@@ -119,7 +105,7 @@ public abstract class CacheTestBase extends TestBase {
     }
 
     protected Map<Object, Long> createMapFromIncrementMap(Map<Object, Long> originalMap,
-                                                        Map<Object, Long> incMap) {
+                                                          Map<Object, Long> incMap) {
         Map<Object, Long> incrementedMap = new HashMap<Object, Long>();
 
         for (Map.Entry<Object, Long> entry : originalMap.entrySet()) {

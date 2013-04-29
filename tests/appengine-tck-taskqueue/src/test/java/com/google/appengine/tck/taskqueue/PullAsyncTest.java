@@ -43,13 +43,13 @@ import static org.junit.Assert.assertFalse;
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 @RunWith(Arquillian.class)
-public class PullTest extends QueueTestBase {
+public class PullAsyncTest extends QueueTestBase {
     @Test
     public void testPullParams() throws Exception {
         final Queue queue = QueueFactory.getQueue("pull-queue");
         TaskHandle th = queue.add(withMethod(PULL).param("foo", "bar").etaMillis(15000));
         try {
-            List<TaskHandle> handles = queue.leaseTasks(30, TimeUnit.MINUTES, 100);
+            List<TaskHandle> handles = waitOnFuture(queue.leaseTasksAsync(30, TimeUnit.MINUTES, 100));
             assertFalse(handles.isEmpty());
             TaskHandle lh = handles.get(0);
             assertEquals(th.getName(), lh.getName());
@@ -61,9 +61,9 @@ public class PullTest extends QueueTestBase {
     @Test
     public void testPullPayload() throws Exception {
         final Queue queue = QueueFactory.getQueue("pull-queue");
-        TaskHandle th = queue.add(withMethod(PULL).payload("foobar".getBytes()).etaMillis(15000));
+        TaskHandle th = queue.add(withMethod(PULL).payload("foobar").etaMillis(15000));
         try {
-            List<TaskHandle> handles = queue.leaseTasks(30, TimeUnit.MINUTES, 100);
+            List<TaskHandle> handles = waitOnFuture(queue.leaseTasksAsync(30, TimeUnit.MINUTES, 100));
             assertFalse(handles.isEmpty());
             TaskHandle lh = handles.get(0);
             assertEquals(th.getName(), lh.getName());
@@ -77,7 +77,7 @@ public class PullTest extends QueueTestBase {
         final Queue queue = QueueFactory.getQueue("pull-queue");
         TaskHandle th = queue.add(withMethod(PULL).tag("barfoo1").etaMillis(15000));
         try {
-            List<TaskHandle> handles = queue.leaseTasksByTag(30, TimeUnit.MINUTES, 100, "barfoo1");
+            List<TaskHandle> handles = waitOnFuture(queue.leaseTasksByTagAsync(30, TimeUnit.MINUTES, 100, "barfoo1"));
             assertFalse(handles.isEmpty());
             TaskHandle lh = handles.get(0);
             assertEquals(th.getName(), lh.getName());
@@ -92,43 +92,7 @@ public class PullTest extends QueueTestBase {
         TaskHandle th1 = queue.add(withMethod(PULL).tag("barfoo2").payload("foobar").etaMillis(15000));
         TaskHandle th2 = queue.add(withMethod(PULL).tag("barfoo2").payload("foofoo").etaMillis(10000));
         try {
-            List<TaskHandle> handles = queue.leaseTasksByTag(30, TimeUnit.MINUTES, 100, "barfoo2");
-            assertEquals(2, handles.size());
-            // order is reversed, due to eta-millis
-            assertEquals(th2.getName(), handles.get(0).getName());
-            assertEquals(th1.getName(), handles.get(1).getName());
-        } finally {
-            queue.deleteTask(th1);
-            queue.deleteTask(th2);
-        }
-    }
-
-    @Test
-    public void testPullMultipleWithSameTagWithOptions1() throws Exception {
-        final Queue queue = QueueFactory.getQueue("pull-queue");
-        TaskHandle th1 = queue.add(withMethod(PULL).tag("barfoo2").payload("foobar").etaMillis(15000));
-        TaskHandle th2 = queue.add(withMethod(PULL).tag("barfoo2").payload("foofoo").etaMillis(10000));
-        try {
-            LeaseOptions lo = LeaseOptions.Builder.withLeasePeriod(30, TimeUnit.MINUTES).countLimit(100).tag("barfoo2");
-            List<TaskHandle> handles = queue.leaseTasks(lo);
-            assertEquals(2, handles.size());
-            // order is reversed, due to eta-millis
-            assertEquals(th2.getName(), handles.get(0).getName());
-            assertEquals(th1.getName(), handles.get(1).getName());
-        } finally {
-            queue.deleteTask(th1);
-            queue.deleteTask(th2);
-        }
-    }
-
-    @Test
-    public void testPullMultipleWithSameTagWithOptions2() throws Exception {
-        final Queue queue = QueueFactory.getQueue("pull-queue");
-        TaskHandle th1 = queue.add(withMethod(PULL).tag("barfoo2").payload("foobar").etaMillis(15000));
-        TaskHandle th2 = queue.add(withMethod(PULL).tag("barfoo2").payload("foofoo").etaMillis(10000));
-        try {
-            LeaseOptions lo = LeaseOptions.Builder.withLeasePeriod(30, TimeUnit.MINUTES).countLimit(100).tag("barfoo2".getBytes());
-            List<TaskHandle> handles = queue.leaseTasks(lo);
+            List<TaskHandle> handles = waitOnFuture(queue.leaseTasksByTagAsync(30, TimeUnit.MINUTES, 100, "barfoo2"));
             assertEquals(2, handles.size());
             // order is reversed, due to eta-millis
             assertEquals(th2.getName(), handles.get(0).getName());
@@ -146,7 +110,7 @@ public class PullTest extends QueueTestBase {
         TaskHandle th2 = queue.add(withMethod(PULL).tag("qwerty").payload("foofoo").etaMillis(10000));
         TaskHandle th3 = queue.add(withMethod(PULL).tag("barfoo3").payload("foofoo").etaMillis(10000));
         try {
-            List<TaskHandle> handles = queue.leaseTasksByTag(30, TimeUnit.MINUTES, 100, "barfoo3");
+            List<TaskHandle> handles = waitOnFuture(queue.leaseTasksByTagAsync(30, TimeUnit.MINUTES, 100, "barfoo3"));
             assertEquals(2, handles.size());
             assertEquals(th3.getName(), handles.get(0).getName());
             assertEquals(th1.getName(), handles.get(1).getName());
@@ -168,8 +132,8 @@ public class PullTest extends QueueTestBase {
         TaskHandle th2 = queue.add(withMethod(PULL).tag("qwerty").payload("foofoo").etaMillis(11000));
         TaskHandle th3 = queue.add(withMethod(PULL).tag("barfoo3").payload("foofoo").etaMillis(10000));
         try {
-            LeaseOptions options = LeaseOptions.Builder.withLeasePeriod(1000L, TimeUnit.SECONDS).countLimit(100).groupByTag();
-            List<TaskHandle> handles = queue.leaseTasks(options);
+            LeaseOptions options = new LeaseOptions(LeaseOptions.Builder.withLeasePeriod(1000L, TimeUnit.SECONDS)).countLimit(100).groupByTag();
+            List<TaskHandle> handles = waitOnFuture(queue.leaseTasksAsync(options));
             assertEquals(2, handles.size());
             assertEquals(th3.getName(), handles.get(0).getName());
             assertEquals(th1.getName(), handles.get(1).getName());
@@ -187,7 +151,7 @@ public class PullTest extends QueueTestBase {
         TaskHandle th2 = queue.add(withMethod(PULL));
         try {
             int countLimit = 1;
-            List<TaskHandle> handles = queue.leaseTasks(10, TimeUnit.SECONDS, countLimit);
+            List<TaskHandle> handles = waitOnFuture(queue.leaseTasksAsync(10, TimeUnit.SECONDS, countLimit));
             assertEquals(countLimit, handles.size());
         } finally {
             queue.deleteTask(th1);

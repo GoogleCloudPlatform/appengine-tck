@@ -31,9 +31,10 @@ import static org.junit.Assert.assertTrue;
  *
  * @author terryok@google.com (Terry Okamoto)
  * @author mluksa@redhat.com (Marko Luksa)
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
-public class PullQueueTest extends QueueTestBase {
+public class PullQueueAsyncTest extends QueueTestBase {
     private static final int MAX_LEASE_COUNT = 1000;
     private Queue queue;
     private String timeStamp;  // make task names unique for test run.
@@ -44,8 +45,7 @@ public class PullQueueTest extends QueueTestBase {
     private final List<String> taskTags = new ArrayList<String>();
     private final List<String> deleteOnTearDownTags = new ArrayList<String>();
 
-    private static final Logger log =
-            Logger.getLogger(PullQueueTest.class.getName());
+    private static final Logger log = Logger.getLogger(PullQueueAsyncTest.class.getName());
 
     @Before
     public void setUp() {
@@ -94,19 +94,19 @@ public class PullQueueTest extends QueueTestBase {
     @Test(expected = InvalidQueueModeException.class)
     public void testLeaseFromNonPullQueue() {
         Queue remoteQueue = QueueFactory.getQueue(E2E_TESTING_REMOTE);
-        remoteQueue.leaseTasks(1, TimeUnit.MILLISECONDS, 1);
+        waitOnFuture(remoteQueue.leaseTasksAsync(1, TimeUnit.MILLISECONDS, 1));
     }
 
     @Test(expected = IllegalStateException.class)
     public void testLeaseNonExistQueue() {
         Queue nonExistQueue = QueueFactory.getQueue("nonExistQueue");
-        nonExistQueue.leaseTasks(1, TimeUnit.MILLISECONDS, 1);
+        waitOnFuture(nonExistQueue.leaseTasksAsync(1, TimeUnit.MILLISECONDS, 1));
     }
 
     @Test(expected = IllegalStateException.class)
     public void testDeleteNonExist() {
         Queue nonExistQueue = QueueFactory.getQueue("nonExistQueue");
-        nonExistQueue.deleteTask("nonexist");
+        waitOnFuture(nonExistQueue.deleteTaskAsync("nonexist"));
     }
 
     @Test
@@ -122,7 +122,7 @@ public class PullQueueTest extends QueueTestBase {
         addTasks(count, taskBaseName, groupTag, payload);
         List<TaskHandle> handleList = leaseTasksByTag60Secs(groupTag, count, false);
         assertEquals(count, handleList.size());
-        queue.deleteTask(handleList);
+        waitOnFuture(queue.deleteTaskAsync(handleList));
         sleep(7000);  // Needs extra time to delete.
         handleList = leaseTasksByTag60Secs(groupTag, count, true);
         assertEquals(0, handleList.size());
@@ -134,8 +134,8 @@ public class PullQueueTest extends QueueTestBase {
         handleList = leaseTasksByTag60Secs(groupTag, count, false);
         assertEquals(count, handleList.size());
 
-        queue.deleteTask(handleList.get(0).getName());
-        queue.deleteTask(handleList.get(1));
+        waitOnFuture(queue.deleteTaskAsync(handleList.get(0).getName()));
+        waitOnFuture(queue.deleteTaskAsync(handleList.get(1)));
         sleep(7000);  // Needs extra time to delete.
         handleList = leaseTasksByTag60Secs(groupTag, count, true);
         assertEquals(0, handleList.size());
@@ -164,7 +164,7 @@ public class PullQueueTest extends QueueTestBase {
         queue.modifyTaskLease(tasks.get(0), 30, TimeUnit.SECONDS);
 
         sleep(leaseDuration + 10000);  // wait for lease to expire...
-        List<TaskHandle> tasksAfterExpire = queue.leaseTasks(options);
+        List<TaskHandle> tasksAfterExpire = waitOnFuture(queue.leaseTasksAsync(options));
 
         // ...but it shouldn't expire since lease time was extended.
         assertEquals(0, tasksAfterExpire.size());
@@ -197,11 +197,11 @@ public class PullQueueTest extends QueueTestBase {
                 .countLimit(count)
                 .leasePeriod(leaseDuration, TimeUnit.MILLISECONDS);
 
-        List<TaskHandle> tasks = queue.leaseTasks(options);
+        List<TaskHandle> tasks = waitOnFuture(queue.leaseTasksAsync(options));
         assertEquals(count, tasks.size());
 
         sleep(leaseDuration + 1000); // wait for lease to expire
-        List<TaskHandle> tasksAfterExpire = queue.leaseTasks(options);
+        List<TaskHandle> tasksAfterExpire = waitOnFuture(queue.leaseTasksAsync(options));
 
         // expired, so it should be available for lease.
         assertEquals(count, tasksAfterExpire.size());
@@ -221,65 +221,65 @@ public class PullQueueTest extends QueueTestBase {
                 .taskName(taskBaseName + "_0")
                 .tag(tagBytes)
                 .payload("");
-        queue.add(options);
+        waitOnFuture(queue.addAsync(options));
         sleep(5000);  // Give tasks a chance to become available.
-        List<TaskHandle> tasks = queue.leaseTasksByTagBytes(1, TimeUnit.SECONDS, 10, tagBytes);
+        List<TaskHandle> tasks = waitOnFuture(queue.leaseTasksByTagBytesAsync(1, TimeUnit.SECONDS, 10, tagBytes));
         assertEquals(1, tasks.size());
         do {
             queue.purge();
             sleep(2000);
-            tasks = queue.leaseTasksByTagBytes(1, TimeUnit.SECONDS, 10, tagBytes);
+            tasks = waitOnFuture(queue.leaseTasksByTagBytesAsync(1, TimeUnit.SECONDS, 10, tagBytes));
         } while (!tasks.isEmpty());
     }
 
     @Test
     public void testEtaMillis() {
         String tag = "testEtaMillis_" + getTimeStampRandom();
-        queue.add(TaskOptions.Builder.withMethod(PULL).etaMillis(System.currentTimeMillis() + 15000).tag(tag));
+        waitOnFuture(queue.addAsync(TaskOptions.Builder.withMethod(PULL).etaMillis(System.currentTimeMillis() + 15000).tag(tag)));
         sleep(5000);  // Give tasks a chance to become available.
 
-        List<TaskHandle> tasks = queue.leaseTasks(LeaseOptions.Builder.withTag(tag).leasePeriod(1, TimeUnit.SECONDS).countLimit(1));
+        List<TaskHandle> tasks = waitOnFuture(queue.leaseTasksAsync(LeaseOptions.Builder.withTag(tag).leasePeriod(1, TimeUnit.SECONDS).countLimit(1)));
         assertEquals(0, tasks.size());
 
         sleep(10000);
 
-        tasks = queue.leaseTasks(LeaseOptions.Builder.withTag(tag).leasePeriod(1, TimeUnit.SECONDS).countLimit(1));
+        tasks = waitOnFuture(queue.leaseTasksAsync(LeaseOptions.Builder.withTag(tag).leasePeriod(1, TimeUnit.SECONDS).countLimit(1)));
         assertEquals(1, tasks.size());
 
-        queue.deleteTask(tasks);
+        waitOnFuture(queue.deleteTaskAsync(tasks));
     }
 
     @Test
     public void testCountdownMillis() {
         String tag = "testCountdownMillis_" + getTimeStampRandom();
-        queue.add(TaskOptions.Builder.withMethod(PULL).countdownMillis(15000).tag(tag));
+        waitOnFuture(queue.addAsync(TaskOptions.Builder.withMethod(PULL).countdownMillis(15000).tag(tag)));
         sleep(5000);  // Give tasks a chance to become available.
 
-        List<TaskHandle> tasks = queue.leaseTasks(LeaseOptions.Builder.withTag(tag).leasePeriod(1, TimeUnit.SECONDS).countLimit(1));
+        List<TaskHandle> tasks = waitOnFuture(queue.leaseTasksAsync(LeaseOptions.Builder.withTag(tag).leasePeriod(1, TimeUnit.SECONDS).countLimit(1)));
         assertEquals(0, tasks.size());
 
         sleep(15000);
 
-        tasks = queue.leaseTasks(LeaseOptions.Builder.withTag(tag).leasePeriod(1, TimeUnit.SECONDS).countLimit(1));
+        tasks = waitOnFuture(queue.leaseTasksAsync(LeaseOptions.Builder.withTag(tag).leasePeriod(1, TimeUnit.SECONDS).countLimit(1)));
         assertEquals(1, tasks.size());
 
-        queue.deleteTask(tasks);
+        waitOnFuture(queue.deleteTaskAsync(tasks));
     }
 
     @Test(expected = TaskAlreadyExistsException.class)
     public void testAddingTwoTasksWithSameNameThrowsException() {
         String taskName = "sameName_" + getTimeStampRandom();
-        queue.add(TaskOptions.Builder.withMethod(PULL).taskName(taskName));
-        queue.add(TaskOptions.Builder.withMethod(PULL).taskName(taskName));
+        waitOnFuture(queue.addAsync(TaskOptions.Builder.withMethod(PULL).taskName(taskName)));
+        waitOnFuture(queue.addAsync(TaskOptions.Builder.withMethod(PULL).taskName(taskName)));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testAddingTwoTasksWithSameNameInSingleRequestThrowsException() {
         String taskName = "sameName_" + getTimeStampRandom();
-        queue.add(
+        waitOnFuture(queue.addAsync(
                 Arrays.asList(
                         TaskOptions.Builder.withMethod(PULL).taskName(taskName),
-                        TaskOptions.Builder.withMethod(PULL).taskName(taskName)));
+                        TaskOptions.Builder.withMethod(PULL).taskName(taskName))));
     }
 
     private void sleep(long milliSecs) {
@@ -306,9 +306,7 @@ public class PullQueueTest extends QueueTestBase {
                                                  boolean zeroSizeAcceptable, LeaseOptions options) {
         int retryCount = 10;
         int retryInterval = 2000;
-        List<TaskHandle> handleList = leaseTasksByOptions(groupTag, count, zeroSizeAcceptable,
-                options, retryCount, retryInterval);
-        return handleList;
+        return leaseTasksByOptions(groupTag, count, zeroSizeAcceptable, options, retryCount, retryInterval);
     }
 
     /**
@@ -351,8 +349,7 @@ public class PullQueueTest extends QueueTestBase {
             }
         }
 
-        String errMsg = "Couldn't lease " + Integer.toString(count) + " tag:" +
-                groupTag + " after " + retryCount + " attempts.";
+        String errMsg = "Couldn't lease " + Integer.toString(count) + " tag:" + groupTag + " after " + retryCount + " attempts.";
         log.warning(errMsg);
         if (handleList == null) {  // Couldn't communicate with Task service.
             throw new TransientFailureException(errMsg);
@@ -398,7 +395,7 @@ public class PullQueueTest extends QueueTestBase {
             optionList.add(options);
         }
         taskTags.add(groupTag);
-        List<TaskHandle> taskHandles = queue.add(optionList);
+        List<TaskHandle> taskHandles = waitOnFuture(queue.addAsync(optionList));
         sleep(5000);  // Give tasks a chance to become available.
 
         return taskHandles;
@@ -408,13 +405,13 @@ public class PullQueueTest extends QueueTestBase {
      * @param taskName name of the task to delete.
      */
     private void deleteTaskByName(String taskName) {
-        queue.deleteTask(taskName);
+        waitOnFuture(queue.deleteTaskAsync(taskName));
     }
 
     /**
      * @param taskHandles list of handles of tasks to delete.
      */
     private void deleteMultipleTasks(List<TaskHandle> taskHandles) {
-        queue.deleteTask(taskHandles);
+        waitOnFuture(queue.deleteTaskAsync(taskHandles));
     }
 }

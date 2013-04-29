@@ -48,8 +48,12 @@ public class HttpRequestTest extends URLFetchTestBase {
         Assert.assertNotNull(request.getFetchOptions());
         Assert.assertNotNull(request.getHeaders());
         Assert.assertEquals(1, request.getHeaders().size());
-        Assert.assertEquals(new HTTPHeader("foo", "bar"), request.getHeaders().get(0));
-        Assert.assertEquals("querty".getBytes(), request.getPayload());
+        assertEquals(new HTTPHeader("foo", "bar"), request.getHeaders().get(0));
+        Assert.assertArrayEquals("qwerty".getBytes(), request.getPayload());
     }
 
+    protected void assertEquals(HTTPHeader expected, HTTPHeader received) {
+        Assert.assertEquals(expected.getName(), received.getName());
+        Assert.assertEquals(expected.getValue(), received.getValue());
+    }
 }
