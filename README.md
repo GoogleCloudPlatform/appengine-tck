@@ -47,6 +47,21 @@ Java JDK7+ and Maven 3.x+.
 And of course the environment you want to test.  It is assumed you have working knowledge
 of Maven and Git.
 
+Quick Start
+-----------
+To simply run the tests against the sdk you can follow the instructions below.  If you
+are submitting a test or making any other contribution see [How to Submit Tests](how_to_submit_tests.md)
+
+    git clone https://github.com/GoogleCloudPlatform/appengine-tck.git
+    cd appengine-tck
+    mvn clean install
+    cd tests
+    mvn clean install -Psdk,multisuite -Dappengine.sdk.root=<PATH_TO_SDK>
+
+    see tests/appengine-tck-[test_package]/target/surefire-reports for results.
+
+The rest of this document goes into the details of running and writing tests.
+
 Running the build
 -----------------
 
@@ -88,10 +103,13 @@ This will print out all Queue interface usage in our TaskQueue tests.
 
 You can either see the results in console while the build is running,
 or at the end open index.html file in TCK root.  A csv file is also generated
-which can be imported into a spreadsheet.
+which can be imported into a spreadsheet.  Each test directory has its own index.html
+and csv reports.
 
 You can override which file name is used to lookup to list classes / interfaces.
-This is done either by changing the coverage plugin's configuration in pom.xml or using -Dcoverage.file system property.
+This is done either by changing the coverage plugin's configuration in pom.xml or
+using -Dcoverage.file system property.  A copy of the coverage file is located in the respective
+test directories.
 
     cd appengine-tck
     mvn clean install -Dcoverage.file=coverage.txt.all
@@ -101,7 +119,7 @@ Or just:
     cd appengine-tck
     mvn clean install
 
-to get the default coverage report.
+to generate the default coverage report.
 
 We can also explicitly exclude some of the API methods with exclusions.txt file (deprecated methods are already excluded by default).
 
@@ -118,6 +136,18 @@ Running the tests
 
 Running the tests is same as building the project,
 but you also need to specify the environment you want to test.
+
+First, as always, build at the root directory:
+
+    cd appengine-tck
+    mvn clean install
+
+Then either go to the tests directory to run all the tests or
+the directory of the specific api, e.g. tests/appengine-tck-memcache
+
+   cd appengine-tck/tests
+or
+   cd appengine-tck/tests/appengine-tck-memcache
 
 This are the current enviroments:
 
@@ -247,6 +277,3 @@ To make things a bit easier, we already introduced a few abstract / helper class
 * if any custom behavior needs to be added per test environment, add this via TestLifecycles::before or TestLifecycles::after
 * LibUtils class can be used to grab whole libraries / jars from Maven and attach them to .war as library (WEB-INF/lib)
 * one can add its own multisuite ScanStrategy and NotificationFilter; see ScanMultiProvider class for more details
-
-
-
