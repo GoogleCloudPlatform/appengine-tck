@@ -12,6 +12,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 /**
  * datastore number data type test.
  *
@@ -71,5 +75,20 @@ public class NumberDataTest extends DatastoreTestBase {
         doSort(kindName, "shortProp", new Integer(Short.MAX_VALUE), Query.SortDirection.DESCENDING);
         doSort(kindName, "ratingProp", new Rating(11), Query.SortDirection.ASCENDING);
         doSort(kindName, "ratingProp", new Rating(99), Query.SortDirection.DESCENDING);
+    }
+  
+    @Test
+    public void testRatingType() {
+        String propertyName = "ratingProp";
+        List<Entity> elist = doQuery(kindName, propertyName, Rating.class, true);
+        Rating rate = (Rating) elist.get(0).getProperty(propertyName);
+        Rating sameDat = (Rating) elist.get(0).getProperty(propertyName);
+        Rating diffDat = (Rating) elist.get(1).getProperty(propertyName);
+        assertTrue(rate.equals(sameDat));
+        assertFalse(rate.equals(diffDat));
+        assertEquals(11, rate.getRating());
+        assertEquals(0, rate.compareTo(sameDat));
+        assertTrue(rate.compareTo(diffDat) != 0);
+        assertEquals(rate.hashCode(), rate.hashCode());
     }
 }

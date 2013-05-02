@@ -15,6 +15,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.tck.base.TestBase;
@@ -247,6 +248,17 @@ public abstract class DatastoreHelperTestBase extends TestBase {
         assertIAEWhenAccessingIterator(preparedQuery);
         assertIAEWhenAccessingIterable(preparedQuery);
         assertIAEWhenGettingSingleEntity(preparedQuery);
+    }
+  
+    protected List<Entity> doQuery(String kind, String pName, Class<?> type, boolean indexed) {
+        FetchOptions fo = FetchOptions.Builder.withDefaults();
+        Query query = new Query(kind, rootKey);
+        if (indexed) {
+            query.addProjection(new PropertyProjection(pName, type));
+            query.addSort(pName);
+        }
+        List<Entity> elist = service.prepare(query).asList(fo);
+        return elist;
     }
 
     private void assertIAEWhenAccessingList(PreparedQuery preparedQuery) {

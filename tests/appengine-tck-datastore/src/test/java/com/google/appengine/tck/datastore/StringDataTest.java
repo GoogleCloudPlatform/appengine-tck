@@ -11,6 +11,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Link;
 import com.google.appengine.api.datastore.PhoneNumber;
 import com.google.appengine.api.datastore.PostalAddress;
+import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.ShortBlob;
@@ -22,6 +23,8 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * datastore string data type test.
@@ -31,6 +34,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 public class StringDataTest extends DatastoreTestBase {
     private static final String kindName = "stringType";
+    private FetchOptions fo = FetchOptions.Builder.withDefaults();
 
     @Before
     public void createData() throws InterruptedException {
@@ -88,6 +92,111 @@ public class StringDataTest extends DatastoreTestBase {
         String[] expData = {"abc"};
         doSort(kindName, "stringProp", "abc", Query.SortDirection.ASCENDING);
         doSort(kindName, "stringProp", "xyz", Query.SortDirection.DESCENDING);
+    }
+  
+    @Test
+    public void testPhoneNumType() {
+        String propertyName = "phoneProp";
+        List<Entity> elist = doQuery(kindName, propertyName, PhoneNumber.class, true);
+        PhoneNumber phonenum = (PhoneNumber) elist.get(0).getProperty(propertyName);
+        PhoneNumber sameDat = (PhoneNumber) elist.get(0).getProperty(propertyName);
+        PhoneNumber diffDat = (PhoneNumber) elist.get(1).getProperty(propertyName);
+        assertTrue(phonenum.equals(sameDat));
+        assertFalse(phonenum.equals(diffDat));
+        assertEquals("408-123-4567", phonenum.getNumber());
+        assertEquals(0, phonenum.compareTo(sameDat));
+        assertTrue(phonenum.compareTo(diffDat) != 0);
+        assertEquals(phonenum.hashCode(), phonenum.hashCode());
+    }
+  
+    @Test
+    public void testPostalAddrType() {
+        String propertyName = "addressProp";
+        List<Entity> elist = doQuery(kindName, propertyName, PostalAddress.class, true);
+        PostalAddress postaladdr = (PostalAddress) elist.get(0).getProperty(propertyName);
+        PostalAddress sameDat = (PostalAddress) elist.get(0).getProperty(propertyName);
+        PostalAddress diffDat = (PostalAddress) elist.get(1).getProperty(propertyName);
+        assertTrue(postaladdr.equals(sameDat));
+        assertFalse(postaladdr.equals(diffDat));
+        assertEquals("123 Google Rd. CA 12345", postaladdr.getAddress());
+        assertEquals(0, postaladdr.compareTo(sameDat));
+        assertTrue(postaladdr.compareTo(diffDat) != 0);
+        assertEquals(postaladdr.hashCode(), postaladdr.hashCode());
+    }
+    
+    @Test
+    public void testEmailType() {
+        String propertyName = "emailProp";
+        List<Entity> elist = doQuery(kindName, propertyName, Email.class, true);
+        Email email = (Email) elist.get(0).getProperty(propertyName);
+        Email sameDat = (Email) elist.get(0).getProperty(propertyName);
+        Email diffDat = (Email) elist.get(1).getProperty(propertyName);
+        assertTrue(email.equals(sameDat));
+        assertFalse(email.equals(diffDat));
+        assertEquals("somebody2@gmail.com", email.getEmail());
+        assertEquals(0, email.compareTo(sameDat));
+        assertTrue(email.compareTo(diffDat) != 0);
+        assertEquals(email.hashCode(), email.hashCode());
+    }
+  
+    @Test
+    public void testLinkType() {
+        String propertyName = "linkProp";
+        List<Entity> elist = doQuery(kindName, propertyName, Link.class, true);
+        Link link = (Link) elist.get(0).getProperty(propertyName);
+        Link sameDat = (Link) elist.get(0).getProperty(propertyName);
+        Link diffDat = (Link) elist.get(1).getProperty(propertyName);
+        assertTrue(link.equals(sameDat));
+        assertFalse(link.equals(diffDat));
+        assertEquals("http://www.gmail.com", link.getValue());
+        assertEquals(0, link.compareTo(sameDat));
+        assertTrue(link.compareTo(diffDat) != 0);
+        assertEquals(link.hashCode(), link.hashCode());
+    }
+  
+    @Test
+    public void testCategoryType() {
+        String propertyName = "categoryProp";
+        List<Entity> elist = doQuery(kindName, propertyName, Category.class, true);
+        Category Category = (Category) elist.get(0).getProperty(propertyName);
+        Category sameDat = (Category) elist.get(0).getProperty(propertyName);
+        Category diffDat = (Category) elist.get(1).getProperty(propertyName);
+        assertTrue(Category.equals(sameDat));
+        assertFalse(Category.equals(diffDat));
+        assertEquals("developer", Category.getCategory());
+        assertEquals(0, Category.compareTo(sameDat));
+        assertTrue(Category.compareTo(diffDat) != 0);
+        assertEquals(Category.hashCode(), Category.hashCode());
+    }
+  
+    @Test
+    public void testShortBlobType() {
+        String propertyName = "byteStrProp";
+        List<Entity> elist = doQuery(kindName, propertyName, ShortBlob.class, true);
+        ShortBlob shortblob = (ShortBlob) elist.get(0).getProperty(propertyName);
+        ShortBlob sameDat = (ShortBlob) elist.get(0).getProperty(propertyName);
+        ShortBlob diffDat = (ShortBlob) elist.get(1).getProperty(propertyName);
+        assertTrue(shortblob.equals(sameDat));
+        assertFalse(shortblob.equals(diffDat));
+        Arrays.equals("shortblob".getBytes(), shortblob.getBytes());
+        assertEquals(0, shortblob.compareTo(sameDat));
+        assertTrue(shortblob.compareTo(diffDat) != 0);
+        assertEquals(shortblob.hashCode(), shortblob.hashCode());
+    }
+  
+    @Test
+    public void testTextType() {
+        String propertyName = "textProp";
+        List<Entity> elist = doQuery(kindName, propertyName, null, false);
+        Text text = (Text) elist.get(0).getProperty(propertyName);
+        Text sameDat = (Text) elist.get(0).getProperty(propertyName);
+        Text diffDat = (Text) elist.get(1).getProperty(propertyName);
+        assertTrue(text.equals(sameDat));
+        assertFalse(text.equals(diffDat));
+        String getText = text.getValue();
+        assertTrue(getText.equals("english") || getText.equals("chinese")
+            || getText.equals("japanese"));
+        assertEquals(text.hashCode(), text.hashCode());
     }
 
     protected void doInFilter(String kind, String pName, String[] inDat) {

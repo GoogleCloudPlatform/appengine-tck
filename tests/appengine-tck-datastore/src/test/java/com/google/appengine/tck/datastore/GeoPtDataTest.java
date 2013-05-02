@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -63,4 +64,19 @@ public class GeoPtDataTest extends DatastoreTestBase {
         assertEquals(Float.valueOf(geopt.getLatitude()).toString(), Float.valueOf(60).toString());
         assertEquals(Float.valueOf(geopt.getLongitude()).toString(), Float.valueOf(145).toString());
     }
+  
+    @Test
+    public void testGeoptType() {
+        List<Entity> elist = doQuery(kindName, propertyName, GeoPt.class, true);
+        GeoPt rate = (GeoPt) elist.get(0).getProperty(propertyName);
+        GeoPt sameDat = (GeoPt) elist.get(0).getProperty(propertyName);
+        GeoPt diffDat = (GeoPt) elist.get(1).getProperty(propertyName);
+        assertTrue(rate.equals(sameDat));
+        assertFalse(rate.equals(diffDat));
+        assertEquals(-12, rate.getLatitude(), 0);
+        assertEquals(120, rate.getLongitude(), 0);
+        assertEquals(0, rate.compareTo(sameDat));
+        assertTrue(rate.compareTo(diffDat) != 0);
+        assertEquals(rate.hashCode(), rate.hashCode());
+  }
 }
