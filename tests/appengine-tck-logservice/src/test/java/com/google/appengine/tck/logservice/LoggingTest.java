@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Marko Luksa
@@ -87,15 +88,17 @@ public class LoggingTest extends LoggingTestBase {
         // GAE dev server doesn't handle this properly (see http://code.google.com/p/googleappengine/issues/detail?id=8666)
 
         String logMark = getTimeStampRandom();
-        String logMsg = "Parameterized message " + logMark + " with params {0} and {1}";
-        String logExpect = "Parameterized message " + logMark + " with params param1 and 222";
-        log.log(Level.INFO, logMsg, new Object[] {"param1", 222});
+        String logMsg = "Parameterized message with params {0} and {1}";
+        String logExpect = "Parameterized message with params param1 and " + logMark;
+        log.log(Level.INFO, logMsg, new Object[] {"param1", logMark});
         flush(log);
+        sync(7000);
 
         int retryMax = 1;
         AppLogLine logLine = findLogLineContaining(logMark, retryMax);
-        assertNotNull("log should contain " + logMark + " but it does not", logLine);
-        assertEquals(logExpect, logLine.getLogMessage());
+        assertNotNull("log with " + logMark + " should exist.", logLine);
+        assertTrue("logLine should contain: " + logExpect + "but is: " + logLine,
+            logLine.toString().contains(logExpect));
     }
 
 }

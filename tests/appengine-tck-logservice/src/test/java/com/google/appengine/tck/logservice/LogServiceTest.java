@@ -82,7 +82,6 @@ public class LogServiceTest extends LoggingTestBase {
         assertLogQueryExecutes(new LogQuery().batchSize(20), "testBatchSize", exceptions);
         assertLogQueryExecutes(new LogQuery().offset(null), "testOffset", exceptions);
         assertLogQueryExecutes(new LogQuery().majorVersionIds(Arrays.asList("1", "2", "3")), "testMajorVersionIds", exceptions);
-        assertLogQueryExecutes(new LogQuery().requestIds(Arrays.asList("1", "2", "3")), "testRequestIds", exceptions);
         // TODO assertLogQueryExecutes(new LogQuery().serverVersions(Collections.singletonList(Pair.of((String) null, (String) null))), "testServerVersions", exceptions);
         assertLogQueryExecutes(new LogQuery().startTimeMillis(System.currentTimeMillis()), "testStartTimeMillis", exceptions);
         assertLogQueryExecutes(new LogQuery().startTimeUsec(1000L * System.currentTimeMillis()), "testStartTimeUsec", exceptions);
@@ -114,7 +113,6 @@ public class LogServiceTest extends LoggingTestBase {
         assertLogQueryExecutes(LogQuery.Builder.withBatchSize(20), "testBatchSize", exceptions);
         assertLogQueryExecutes(LogQuery.Builder.withOffset(null), "testOffset", exceptions);
         assertLogQueryExecutes(LogQuery.Builder.withMajorVersionIds(Arrays.asList("1", "2", "3")), "testMajorVersionIds", exceptions);
-        assertLogQueryExecutes(LogQuery.Builder.withRequestIds(Arrays.asList("1", "2", "3")), "testRequestIds", exceptions);
         // TODO assertLogQueryExecutes(LogQuery.Builder.withServerVersions(Collections.singletonList(Pair.of((String) null, (String) null))), "testServerVersions", exceptions);
         assertLogQueryExecutes(LogQuery.Builder.withStartTimeMillis(System.currentTimeMillis()), "testStartTimeMillis", exceptions);
         assertLogQueryExecutes(LogQuery.Builder.withStartTimeUsec(1000L * System.currentTimeMillis()), "testStartTimeUsec", exceptions);
