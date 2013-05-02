@@ -79,10 +79,11 @@ public class NumberDataTest extends DatastoreTestBase {
   
     @Test
     public void testRatingType() {
-        List<Entity> elist = doQuery(kindName, "ratingProp", Rating.class, true);
-        Rating rate = (Rating) elist.get(0).getProperty("ratingProp");
-        Rating sameDat = (Rating) elist.get(0).getProperty("ratingProp");
-        Rating diffDat = (Rating) elist.get(1).getProperty("ratingProp");
+        String propertyName = "ratingProp";
+        List<Entity> elist = doQuery(kindName, propertyName, Rating.class, true);
+        Rating rate = (Rating) elist.get(0).getProperty(propertyName);
+        Rating sameDat = (Rating) elist.get(0).getProperty(propertyName);
+        Rating diffDat = (Rating) elist.get(1).getProperty(propertyName);
         assertTrue(rate.equals(sameDat));
         assertFalse(rate.equals(diffDat));
         assertEquals(11, rate.getRating());
