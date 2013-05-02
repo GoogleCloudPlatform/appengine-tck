@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013 Google Inc. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.google.appengine.tck.datastore;
 
 import java.util.ArrayList;
@@ -248,7 +263,7 @@ public abstract class DatastoreHelperTestBase extends TestBase {
         assertIAEWhenAccessingIterable(preparedQuery);
         assertIAEWhenGettingSingleEntity(preparedQuery);
     }
-  
+
     protected List<Entity> doQuery(String kind, String pName, Class<?> type, boolean indexed) {
         FetchOptions fo = FetchOptions.Builder.withDefaults();
         Query query = new Query(kind, rootKey);
@@ -256,8 +271,7 @@ public abstract class DatastoreHelperTestBase extends TestBase {
             query.addProjection(new PropertyProjection(pName, type));
             query.addSort(pName);
         }
-        List<Entity> elist = service.prepare(query).asList(fo);
-        return elist;
+        return service.prepare(query).asList(fo);
     }
 
     private void assertIAEWhenAccessingList(PreparedQuery preparedQuery) {

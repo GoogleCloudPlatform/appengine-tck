@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013 Google Inc. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.google.appengine.tck.mapreduce;
 
 import java.util.Arrays;
@@ -19,9 +34,9 @@ import com.google.appengine.tools.mapreduce.outputs.InMemoryOutput;
 import com.google.appengine.tools.mapreduce.outputs.NoOutput;
 import com.google.appengine.tools.mapreduce.reducers.NoReducer;
 import com.google.appengine.tools.pipeline.JobInfo;
-import org.junit.Assert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -41,15 +56,15 @@ public class MapReduceTest extends MapReduceTestBase {
         int shardCount = 1;
 
         final String createHandle = MapReduceJob.start(
-                MapReduceSpecification.of(
-                        "Create MapReduce entities",
-                        new ConsecutiveLongInput(0, payloads.size() * (long) shardCount, shardCount),
-                        new EntityCreator("MapReduceTest", payloads),
-                        Marshallers.getVoidMarshaller(),
-                        Marshallers.getVoidMarshaller(),
-                        NoReducer.<Void, Void, Void>create(),
-                        NoOutput.<Void, Void>create(1)),
-                getSettings());
+            MapReduceSpecification.of(
+                "Create MapReduce entities",
+                new ConsecutiveLongInput(0, payloads.size() * (long) shardCount, shardCount),
+                new EntityCreator("MapReduceTest", payloads),
+                Marshallers.getVoidMarshaller(),
+                Marshallers.getVoidMarshaller(),
+                NoReducer.<Void, Void, Void>create(),
+                NoOutput.<Void, Void>create(1)),
+            getSettings());
 
         JobInfo createJI = waitToFinish("CREATE", createHandle);
         Object create = createJI.getOutput();
@@ -59,15 +74,15 @@ public class MapReduceTest extends MapReduceTestBase {
         int reduceShardCount = 1;
 
         String countHandle = MapReduceJob.start(
-                MapReduceSpecification.of(
-                        "MapReduceTest stats",
-                        new DatastoreInput("MapReduceTest", mapShardCount),
-                        new CountMapper(),
-                        Marshallers.getStringMarshaller(),
-                        Marshallers.getLongMarshaller(),
-                        new CountReducer(),
-                        new InMemoryOutput<KeyValue<String, Long>>(reduceShardCount)),
-                getSettings());
+            MapReduceSpecification.of(
+                "MapReduceTest stats",
+                new DatastoreInput("MapReduceTest", mapShardCount),
+                new CountMapper(),
+                Marshallers.getStringMarshaller(),
+                Marshallers.getLongMarshaller(),
+                new CountReducer(),
+                new InMemoryOutput<KeyValue<String, Long>>(reduceShardCount)),
+            getSettings());
 
         JobInfo countJI = waitToFinish("COUNT", countHandle);
         Object count = countJI.getOutput();
@@ -78,7 +93,7 @@ public class MapReduceTest extends MapReduceTestBase {
         int[] chars = toChars(payloads);
         Counters counters = result.getCounters();
         for (int i = 0; i < chars.length; i++) {
-            Counter c = counters.getCounter(CountMapper.toKey((char)('a' + i)));
+            Counter c = counters.getCounter(CountMapper.toKey((char) ('a' + i)));
             Assert.assertEquals(chars[i], c.getValue());
         }
     }

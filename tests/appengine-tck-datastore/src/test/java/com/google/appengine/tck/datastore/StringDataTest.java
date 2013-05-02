@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013 Google Inc. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.google.appengine.tck.datastore;
 
 import java.util.ArrayList;
@@ -11,7 +26,6 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Link;
 import com.google.appengine.api.datastore.PhoneNumber;
 import com.google.appengine.api.datastore.PostalAddress;
-import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.ShortBlob;
@@ -93,7 +107,7 @@ public class StringDataTest extends DatastoreTestBase {
         doSort(kindName, "stringProp", "abc", Query.SortDirection.ASCENDING);
         doSort(kindName, "stringProp", "xyz", Query.SortDirection.DESCENDING);
     }
-  
+
     @Test
     public void testPhoneNumType() {
         String propertyName = "phoneProp";
@@ -108,7 +122,7 @@ public class StringDataTest extends DatastoreTestBase {
         assertTrue(phonenum.compareTo(diffDat) != 0);
         assertEquals(phonenum.hashCode(), phonenum.hashCode());
     }
-  
+
     @Test
     public void testPostalAddrType() {
         String propertyName = "addressProp";
@@ -123,7 +137,7 @@ public class StringDataTest extends DatastoreTestBase {
         assertTrue(postaladdr.compareTo(diffDat) != 0);
         assertEquals(postaladdr.hashCode(), postaladdr.hashCode());
     }
-    
+
     @Test
     public void testEmailType() {
         String propertyName = "emailProp";
@@ -138,7 +152,7 @@ public class StringDataTest extends DatastoreTestBase {
         assertTrue(email.compareTo(diffDat) != 0);
         assertEquals(email.hashCode(), email.hashCode());
     }
-  
+
     @Test
     public void testLinkType() {
         String propertyName = "linkProp";
@@ -153,7 +167,7 @@ public class StringDataTest extends DatastoreTestBase {
         assertTrue(link.compareTo(diffDat) != 0);
         assertEquals(link.hashCode(), link.hashCode());
     }
-  
+
     @Test
     public void testCategoryType() {
         String propertyName = "categoryProp";
@@ -168,7 +182,7 @@ public class StringDataTest extends DatastoreTestBase {
         assertTrue(Category.compareTo(diffDat) != 0);
         assertEquals(Category.hashCode(), Category.hashCode());
     }
-  
+
     @Test
     public void testShortBlobType() {
         String propertyName = "byteStrProp";
@@ -183,7 +197,7 @@ public class StringDataTest extends DatastoreTestBase {
         assertTrue(shortblob.compareTo(diffDat) != 0);
         assertEquals(shortblob.hashCode(), shortblob.hashCode());
     }
-  
+
     @Test
     public void testTextType() {
         String propertyName = "textProp";
