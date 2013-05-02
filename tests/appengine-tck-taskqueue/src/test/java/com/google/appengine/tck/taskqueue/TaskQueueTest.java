@@ -62,14 +62,14 @@ public class TaskQueueTest extends QueueTestBase {
     public void testExecQueue() {
         String testMethodTag = "testDefaultTag";  // Each test tagged for DS entity.
         TaskOptions taskoptions = TaskOptions.Builder
-                .withMethod(TaskOptions.Method.POST)
-                .param(TEST_RUN_ID, testRunId)  // testRunId used to track test in DS.
-                .param(TEST_METHOD_TAG, testMethodTag)
-                .etaMillis(0);
+            .withMethod(TaskOptions.Method.POST)
+            .param(TEST_RUN_ID, testRunId)  // testRunId used to track test in DS.
+            .param(TEST_METHOD_TAG, testMethodTag)
+            .etaMillis(0);
 
         QueueFactory.getQueue(E2E_TESTING_EXEC).add(taskoptions);
         Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax,
-                testMethodTag);
+            testMethodTag);
         Map<String, String> expectedParams = dsUtil.createParamMap(testMethodTag);
         dsUtil.assertTaskParamsMatchEntityProperties(expectedParams, entity);
     }
@@ -78,11 +78,11 @@ public class TaskQueueTest extends QueueTestBase {
     public void testAddTaskWithNoName() {
         String testMethodTag = "testAddTaskWithNoName";
         TaskOptions optionsNoName = TaskOptions.Builder
-                .withMethod(TaskOptions.Method.POST)
-                .param(TEST_RUN_ID, testRunId)
-                .param(TEST_METHOD_TAG, testMethodTag)
-                .etaMillis(0)
-                .url("/queuetask/addentity");
+            .withMethod(TaskOptions.Method.POST)
+            .param(TEST_RUN_ID, testRunId)
+            .param(TEST_METHOD_TAG, testMethodTag)
+            .etaMillis(0)
+            .url("/queuetask/addentity");
 
         QueueFactory.getQueue(E2E_TESTING).add(optionsNoName);
         Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
@@ -96,12 +96,12 @@ public class TaskQueueTest extends QueueTestBase {
         String taskName = "This_is_my_task_name_" + testRunId;
         String testMethodTag = "testTaskNameSpecified";
         TaskOptions optionsHasName = TaskOptions.Builder
-                .withMethod(TaskOptions.Method.POST)
-                .param(TEST_RUN_ID, testRunId)
-                .param(TEST_METHOD_TAG, testMethodTag)
-                .taskName(taskName)
-                .url("/queuetask/addentity")
-                .etaMillis(0);
+            .withMethod(TaskOptions.Method.POST)
+            .param(TEST_RUN_ID, testRunId)
+            .param(TEST_METHOD_TAG, testMethodTag)
+            .taskName(taskName)
+            .url("/queuetask/addentity")
+            .etaMillis(0);
 
         QueueFactory.getQueue(E2E_TESTING).add(optionsHasName);
         Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
@@ -114,18 +114,18 @@ public class TaskQueueTest extends QueueTestBase {
     public void testRetryOption() {
         String testMethodTag = "testRetryOption";
         RetryOptions retryOptions = new RetryOptions(RetryOptions.Builder.withDefaults())
-                .taskRetryLimit(5)
-                .taskAgeLimitSeconds(10)
-                .maxBackoffSeconds(10)
-                .maxDoublings(10)
-                .minBackoffSeconds(10);
+            .taskRetryLimit(5)
+            .taskAgeLimitSeconds(10)
+            .maxBackoffSeconds(10)
+            .maxDoublings(10)
+            .minBackoffSeconds(10);
 
         TaskOptions taskOptions = TaskOptions.Builder
-                .withMethod(TaskOptions.Method.POST)
-                .param(TEST_RUN_ID, testRunId)
-                .param(TEST_METHOD_TAG, testMethodTag)
-                .retryOptions(retryOptions)
-                .url("/queuetask/addentity");
+            .withMethod(TaskOptions.Method.POST)
+            .param(TEST_RUN_ID, testRunId)
+            .param(TEST_METHOD_TAG, testMethodTag)
+            .retryOptions(retryOptions)
+            .url("/queuetask/addentity");
 
         QueueFactory.getQueue(E2E_TESTING).add(taskOptions);
         Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
@@ -138,10 +138,10 @@ public class TaskQueueTest extends QueueTestBase {
         String testMethodTag = "testRetryOptionViaConfigFile";
 
         TaskOptions taskOptions = TaskOptions.Builder
-                .withMethod(TaskOptions.Method.POST)
-                .param(TEST_RUN_ID, testRunId)
-                .param(TEST_METHOD_TAG, testMethodTag)
-                .url("/queuetask/addentity");
+            .withMethod(TaskOptions.Method.POST)
+            .param(TEST_RUN_ID, testRunId)
+            .param(TEST_METHOD_TAG, testMethodTag)
+            .url("/queuetask/addentity");
 
         // retry param. are defined in queue.xml
         QueueFactory.getQueue(E2E_TESTING_RETRY).add(taskOptions);
@@ -156,10 +156,10 @@ public class TaskQueueTest extends QueueTestBase {
         NamespaceManager.set("junittest");
 
         TaskOptions taskOptions = TaskOptions.Builder
-                .withMethod(TaskOptions.Method.POST)
-                .param(TEST_RUN_ID, testRunId)
-                .param(TEST_METHOD_TAG, testMethodTag)
-                .url("/queuetask/addentity");
+            .withMethod(TaskOptions.Method.POST)
+            .param(TEST_RUN_ID, testRunId)
+            .param(TEST_METHOD_TAG, testMethodTag)
+            .url("/queuetask/addentity");
         // task name explicitly not specified.
 
         QueueFactory.getQueue(E2E_TESTING).add(taskOptions);
@@ -173,10 +173,10 @@ public class TaskQueueTest extends QueueTestBase {
         String testMethodTag = "testEtaMillis";
         long etaMillis = System.currentTimeMillis() + 10000;
         TaskOptions taskoptions = TaskOptions.Builder
-                .withMethod(TaskOptions.Method.POST)
-                .param(TEST_RUN_ID, testRunId)
-                .param(TEST_METHOD_TAG, testMethodTag)
-                .etaMillis(etaMillis);
+            .withMethod(TaskOptions.Method.POST)
+            .param(TEST_RUN_ID, testRunId)
+            .param(TEST_METHOD_TAG, testMethodTag)
+            .etaMillis(etaMillis);
 
         QueueFactory.getQueue(E2E_TESTING_EXEC).add(taskoptions);
         Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
@@ -189,10 +189,10 @@ public class TaskQueueTest extends QueueTestBase {
         String testMethodTag = "testCountdownMillis";
         int countdownMillis = 10000;
         TaskOptions taskoptions = TaskOptions.Builder
-                .withMethod(TaskOptions.Method.POST)
-                .param(TEST_RUN_ID, testRunId)
-                .param(TEST_METHOD_TAG, testMethodTag)
-                .countdownMillis(countdownMillis);
+            .withMethod(TaskOptions.Method.POST)
+            .param(TEST_RUN_ID, testRunId)
+            .param(TEST_METHOD_TAG, testMethodTag)
+            .countdownMillis(countdownMillis);
 
         QueueFactory.getQueue(E2E_TESTING_EXEC).add(taskoptions);
         long etaMillis = System.currentTimeMillis() + countdownMillis;
@@ -249,9 +249,9 @@ public class TaskQueueTest extends QueueTestBase {
     @Test(expected = IllegalArgumentException.class)
     public void testPostMethodTaskCannotHaveBothPayloadAndParams() {
         getDefaultQueue().add(
-                TaskOptions.Builder.withMethod(TaskOptions.Method.POST)
-                        .payload("payload")
-                        .param("someParam", "foo"));
+            TaskOptions.Builder.withMethod(TaskOptions.Method.POST)
+                .payload("payload")
+                .param("someParam", "foo"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -288,9 +288,9 @@ public class TaskQueueTest extends QueueTestBase {
     public void testAddingTwoTasksWithSameNameInSingleRequestThrowsException() {
         String taskName = "sameName2";
         getDefaultQueue().add(
-                Arrays.asList(
-                        TaskOptions.Builder.withTaskName(taskName),
-                        TaskOptions.Builder.withTaskName(taskName)));
+            Arrays.asList(
+                TaskOptions.Builder.withTaskName(taskName),
+                TaskOptions.Builder.withTaskName(taskName)));
     }
 
     private Queue getDefaultQueue() {

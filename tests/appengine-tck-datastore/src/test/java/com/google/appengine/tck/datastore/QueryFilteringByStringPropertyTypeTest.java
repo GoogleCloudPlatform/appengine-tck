@@ -10,7 +10,6 @@ import org.junit.runner.RunWith;
 
 import static com.google.appengine.api.datastore.Query.FilterOperator.EQUAL;
 import static com.google.appengine.api.datastore.Query.FilterOperator.IN;
-import static org.junit.Assert.assertThat;
 
 /**
  * Datastore querying tests.

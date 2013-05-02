@@ -6,7 +6,6 @@ import java.util.List;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
-
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
 import org.junit.Test;
@@ -18,7 +17,6 @@ import static com.google.appengine.api.datastore.Query.FilterOperator.GREATER_TH
 import static com.google.appengine.api.datastore.Query.FilterOperator.LESS_THAN;
 import static com.google.appengine.api.datastore.Query.FilterOperator.NOT_EQUAL;
 import static com.google.appengine.api.datastore.Query.FilterPredicate;
-import static org.junit.Assert.assertThat;
 
 /**
  * Datastore querying tests.
@@ -45,11 +43,11 @@ public class QueryFilteringOnCollectionPropertyTest extends QueryTestBase {
 
         storeTestEntityWithSingleProperty(parentKey, Arrays.asList(1, 2));
         assertSet(
-                whenFilteringWith(and(
-                        new FilterPredicate(SINGLE_PROPERTY_NAME, GREATER_THAN, 1),
-                        new FilterPredicate(SINGLE_PROPERTY_NAME, LESS_THAN, 2)),
-                    parentKey),
-                queryReturnsNothing());
+            whenFilteringWith(and(
+                new FilterPredicate(SINGLE_PROPERTY_NAME, GREATER_THAN, 1),
+                new FilterPredicate(SINGLE_PROPERTY_NAME, LESS_THAN, 2)),
+                parentKey),
+            queryReturnsNothing());
     }
 
 
@@ -63,11 +61,11 @@ public class QueryFilteringOnCollectionPropertyTest extends QueryTestBase {
 
 
         assertSet(
-                whenFilteringWith(and(
-                        new FilterPredicate(SINGLE_PROPERTY_NAME, EQUAL, 1),
-                        new FilterPredicate(SINGLE_PROPERTY_NAME, EQUAL, 2)),
-                    parentKey),
-                queryReturns(entity));
+            whenFilteringWith(and(
+                new FilterPredicate(SINGLE_PROPERTY_NAME, EQUAL, 1),
+                new FilterPredicate(SINGLE_PROPERTY_NAME, EQUAL, 2)),
+                parentKey),
+            queryReturns(entity));
     }
 
     @Test

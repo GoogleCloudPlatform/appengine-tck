@@ -114,25 +114,25 @@ public class QueryBasicsTest extends QueryTestBase {
     public void testMultipleFilters() throws Exception {
         Key parentKey = createQueryBasicsTestParent("testMultipleFilters");
         Entity johnDoe = createEntity("Person", parentKey)
-                .withProperty("name", "John")
-                .withProperty("lastName", "Doe")
-                .store();
+            .withProperty("name", "John")
+            .withProperty("lastName", "Doe")
+            .store();
 
         Entity johnBooks = createEntity("Person", parentKey)
-                .withProperty("name", "John")
-                .withProperty("lastName", "Books")
-                .store();
+            .withProperty("name", "John")
+            .withProperty("lastName", "Books")
+            .store();
 
         Entity janeDoe = createEntity("Person", parentKey)
-                .withProperty("name", "Jane")
-                .withProperty("lastName", "Doe")
-                .store();
+            .withProperty("name", "Jane")
+            .withProperty("lastName", "Doe")
+            .store();
 
         Query query = new Query("Person")
-                .setAncestor(parentKey)
-                .setFilter(Query.CompositeFilterOperator.and(
-                        new Query.FilterPredicate("name", EQUAL, "John"),
-                        new Query.FilterPredicate("lastName", EQUAL, "Doe")));
+            .setAncestor(parentKey)
+            .setFilter(Query.CompositeFilterOperator.and(
+                new Query.FilterPredicate("name", EQUAL, "John"),
+                new Query.FilterPredicate("lastName", EQUAL, "Doe")));
 
         assertSingleResult(johnDoe, query);
     }
@@ -142,8 +142,8 @@ public class QueryBasicsTest extends QueryTestBase {
         Key parentKey = createQueryBasicsTestParent("testNullPropertyValue");
 
         createEntity("Entry", parentKey)
-                .withProperty("user", null)
-                .store();
+            .withProperty("user", null)
+            .store();
 
         Entity entity = service.prepare(new Query("Entry")
             .setAncestor(parentKey)).asSingleEntity();
@@ -172,8 +172,8 @@ public class QueryBasicsTest extends QueryTestBase {
     public void testFilterEqualNull() throws Exception {
         Key parentKey = createQueryBasicsTestParent("testFilterEqualNull");
         createEntity("Entry", parentKey)
-                .withProperty("user", null)
-                .store();
+            .withProperty("user", null)
+            .store();
 
         Query query = new Query("Entry")
             .setAncestor(parentKey)
@@ -185,8 +185,8 @@ public class QueryBasicsTest extends QueryTestBase {
     public void testFilterNotEqualNull() throws Exception {
         Key parentKey = createQueryBasicsTestParent("testFilterNotEqualNull");
         createEntity("Entry", parentKey)
-                .withProperty("user", "joe")
-                .store();
+            .withProperty("user", "joe")
+            .store();
 
         Query query = new Query("Entry")
             .setAncestor(parentKey)
@@ -211,8 +211,8 @@ public class QueryBasicsTest extends QueryTestBase {
     public void testFilterOnMultiValuedProperty() throws Exception {
         Key parentKey = createQueryBasicsTestParent("testFilterOnMultiValuedProperty");
         createEntity("Entry", parentKey)
-                .withProperty("letters", Arrays.asList("a", "b", "c"))
-                .store();
+            .withProperty("letters", Arrays.asList("a", "b", "c"))
+            .store();
 
         Query query = new Query("Entry")
             .setAncestor(parentKey)
@@ -256,9 +256,9 @@ public class QueryBasicsTest extends QueryTestBase {
     @Test
     public void testQueryWithInequalityFiltersOnMultiplePropertiesThrowsIllegalArgumentException() throws Exception {
         Query query = createQuery()
-                .setFilter(Query.CompositeFilterOperator.and(
-                        new Query.FilterPredicate("weight", GREATER_THAN, 3),
-                        new Query.FilterPredicate("size", GREATER_THAN, 5)));
+            .setFilter(Query.CompositeFilterOperator.and(
+                new Query.FilterPredicate("weight", GREATER_THAN, 3),
+                new Query.FilterPredicate("size", GREATER_THAN, 5)));
 
         assertIAEWhenAccessingResult(service.prepare(query));
     }
@@ -266,8 +266,8 @@ public class QueryBasicsTest extends QueryTestBase {
     @Test
     public void testQueryWithInequalityFilterAndFirstSortOnDifferentPropertyThrowsIllegalArgumentException() throws Exception {
         Query query = createQuery()
-                .setFilter(new Query.FilterPredicate("foo", GREATER_THAN, 3))
-                .addSort("bar");
+            .setFilter(new Query.FilterPredicate("foo", GREATER_THAN, 3))
+            .addSort("bar");
 
         assertIAEWhenAccessingResult(service.prepare(query));
     }
@@ -275,9 +275,9 @@ public class QueryBasicsTest extends QueryTestBase {
     @Test
     public void testQueryWithInequalityFilterAndFirstSortOnSamePropertyIsAllowed() throws Exception {
         Query query = createQuery()
-                .setFilter(new Query.FilterPredicate("foo", GREATER_THAN, 3))
-                .addSort("foo")
-                .addSort("bar");
+            .setFilter(new Query.FilterPredicate("foo", GREATER_THAN, 3))
+            .addSort("foo")
+            .addSort("bar");
 
         service.prepare(query).asList(withDefaults());
     }
@@ -287,24 +287,24 @@ public class QueryBasicsTest extends QueryTestBase {
     public void testDeprecatedFiltersAreSupported() throws Exception {
         Key parentKey = createQueryBasicsTestParent("testDeprecatedFiltersAreSupported");
         Entity johnDoe = createEntity("Person", parentKey)
-                .withProperty("name", "John")
-                .withProperty("lastName", "Doe")
-                .store();
+            .withProperty("name", "John")
+            .withProperty("lastName", "Doe")
+            .store();
 
         Entity johnBooks = createEntity("Person", parentKey)
-                .withProperty("name", "John")
-                .withProperty("lastName", "Books")
-                .store();
+            .withProperty("name", "John")
+            .withProperty("lastName", "Books")
+            .store();
 
         Entity janeDoe = createEntity("Person", parentKey)
-                .withProperty("name", "Jane")
-                .withProperty("lastName", "Doe")
-                .store();
+            .withProperty("name", "Jane")
+            .withProperty("lastName", "Doe")
+            .store();
 
         Query query = new Query("Person")
-                .setAncestor(parentKey)
-                .addFilter("name", EQUAL, "John")
-                .addFilter("lastName", EQUAL, "Doe");
+            .setAncestor(parentKey)
+            .addFilter("name", EQUAL, "John")
+            .addFilter("lastName", EQUAL, "Doe");
 
         assertSingleResult(johnDoe, query);
     }

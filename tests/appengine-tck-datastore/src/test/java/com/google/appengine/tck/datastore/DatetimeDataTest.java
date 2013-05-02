@@ -27,8 +27,7 @@ public class DatetimeDataTest extends DatastoreTestBase {
 
     @Before
     public void createData() throws InterruptedException, ParseException {
-        Date[] testDatas = {dfDateTime.parse("2001,1,1,23,59,59"),
-                dfDateTime.parse("2005,5,5,13,19,19"), dfDateTime.parse("2008,8,8,3,9,9")};
+        Date[] testDatas = {dfDateTime.parse("2001,1,1,23,59,59"), dfDateTime.parse("2005,5,5,13,19,19"), dfDateTime.parse("2008,8,8,3,9,9")};
 
         Query q = new Query(kindName, rootKey);
         if (service.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
@@ -50,9 +49,7 @@ public class DatetimeDataTest extends DatastoreTestBase {
 
     @Test
     public void testSort() throws Exception {
-        doSort(kindName, propertyName, dfDateTime.parse("2001,1,1,23,59,59"),
-                Query.SortDirection.ASCENDING);
-        doSort(kindName, propertyName, dfDateTime.parse("2008,8,8,3,9,9"),
-                Query.SortDirection.DESCENDING);
+        doSort(kindName, propertyName, dfDateTime.parse("2001,1,1,23,59,59"), Query.SortDirection.ASCENDING);
+        doSort(kindName, propertyName, dfDateTime.parse("2008,8,8,3,9,9"), Query.SortDirection.DESCENDING);
     }
 }

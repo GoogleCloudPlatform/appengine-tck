@@ -36,7 +36,6 @@ import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.tck.base.TestBase;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -84,7 +83,7 @@ public class MemcacheAsyncTest extends TestBase {
             throw new IllegalStateException(e);
         }
     }
-    
+
     @Test
     public void testClearAll() {
         unwrap(service.put("key1", "value1"));
@@ -314,15 +313,15 @@ public class MemcacheAsyncTest extends TestBase {
         assertEquals(20L, x);
         assertEquals("20", unwrap(service.get("string-key")));
 
-        unwrap(service.put("byte-key", (byte)15));
+        unwrap(service.put("byte-key", (byte) 15));
         x = unwrap(service.increment("byte-key", 5));
         assertEquals(20L, x);
-        assertEquals((byte)20, unwrap(service.get("byte-key")));
+        assertEquals((byte) 20, unwrap(service.get("byte-key")));
 
-        unwrap(service.put("short-key", (short)15));
+        unwrap(service.put("short-key", (short) 15));
         x = unwrap(service.increment("short-key", 5));
         assertEquals(20L, x);
-        assertEquals((short)20, unwrap(service.get("short-key")));
+        assertEquals((short) 20, unwrap(service.get("short-key")));
 
         unwrap(service.put("integer-key", 15));
         x = unwrap(service.increment("integer-key", 5));

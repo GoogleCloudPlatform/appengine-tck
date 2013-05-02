@@ -71,8 +71,8 @@ public class QueryTest extends DatastoreTestBase {
     public void testSetFilterString() {
         Query query = new Query(kindName, rootKey);
         Filter filter = Query.CompositeFilterOperator.or(
-                Query.FilterOperator.GREATER_THAN.of("stringData", "string data2"),
-                Query.FilterOperator.LESS_THAN.of("stringData", "string data1"));
+            Query.FilterOperator.GREATER_THAN.of("stringData", "string data2"),
+            Query.FilterOperator.LESS_THAN.of("stringData", "string data1"));
         query.setFilter(filter);
         assertEquals(1, service.prepare(query).countEntities(fo));
     }
@@ -81,9 +81,9 @@ public class QueryTest extends DatastoreTestBase {
     public void testSetFilterShortBlob() {
         Query query = new Query(kindName, rootKey);
         Filter filter1 = Query.FilterOperator.EQUAL.of("shortBlobData",
-                new ShortBlob("shortBlobData0".getBytes()));
+            new ShortBlob("shortBlobData0".getBytes()));
         Filter filter2 = Query.FilterOperator.LESS_THAN_OR_EQUAL.of("shortBlobData",
-                new ShortBlob("shortBlobData1".getBytes()));
+            new ShortBlob("shortBlobData1".getBytes()));
         query.setFilter(Query.CompositeFilterOperator.or(filter1, filter2));
         assertEquals(2, service.prepare(query).countEntities(fo));
     }
@@ -92,8 +92,8 @@ public class QueryTest extends DatastoreTestBase {
     public void testSetFilterInt() {
         Query query = new Query(kindName, rootKey);
         Filter filter = Query.CompositeFilterOperator.and(
-                Query.FilterOperator.EQUAL.of("intData", 20),
-                Query.FilterOperator.GREATER_THAN.of("intData", 0));
+            Query.FilterOperator.EQUAL.of("intData", 20),
+            Query.FilterOperator.GREATER_THAN.of("intData", 0));
         query.setFilter(filter);
         assertEquals(1, service.prepare(query).countEntities(fo));
     }
@@ -102,8 +102,8 @@ public class QueryTest extends DatastoreTestBase {
     public void testSetFilterRating() {
         Query query = new Query(kindName, rootKey);
         Filter filter1 = Query.CompositeFilterOperator.or(
-                Query.FilterOperator.LESS_THAN.of("ratingData", new Rating(30)),
-                Query.FilterOperator.GREATER_THAN.of("ratingData", new Rating(0)));
+            Query.FilterOperator.LESS_THAN.of("ratingData", new Rating(30)),
+            Query.FilterOperator.GREATER_THAN.of("ratingData", new Rating(0)));
         Filter filter2 = Query.FilterOperator.EQUAL.of("ratingData", new Rating(20));
         query.setFilter(Query.CompositeFilterOperator.and(filter1, filter2));
         assertEquals(1, service.prepare(query).countEntities(fo));
@@ -114,8 +114,8 @@ public class QueryTest extends DatastoreTestBase {
         // [0,50,90], [1,51,91], [2,52,92]
         Query query = new Query(kindName, rootKey);
         Filter filter1 = Query.CompositeFilterOperator.or(
-                Query.FilterOperator.LESS_THAN.of("intList", 5),
-                Query.FilterOperator.GREATER_THAN.of("intList", 90));
+            Query.FilterOperator.LESS_THAN.of("intList", 5),
+            Query.FilterOperator.GREATER_THAN.of("intList", 90));
         Filter filter2 = Query.FilterOperator.EQUAL.of("intList", 52);
         query.setFilter(Query.CompositeFilterOperator.and(filter1, filter2));
         assertEquals(1, service.prepare(query).countEntities(fo));
@@ -126,8 +126,8 @@ public class QueryTest extends DatastoreTestBase {
         Query query = new Query(kindName, rootKey);
         query.addProjection(new PropertyProjection("geoptData", GeoPt.class));
         Filter filter1 = Query.CompositeFilterOperator.or(
-                Query.FilterOperator.LESS_THAN.of("intList", 5),
-                Query.FilterOperator.GREATER_THAN.of("intList", 90));
+            Query.FilterOperator.LESS_THAN.of("intList", 5),
+            Query.FilterOperator.GREATER_THAN.of("intList", 90));
         Filter filter2 = Query.FilterOperator.EQUAL.of("intList", 52);
         query.setFilter(Query.CompositeFilterOperator.and(filter1, filter2));
         // sql statement

@@ -60,9 +60,9 @@ public class DistinctTest extends DatastoreTestBase {
                     newRec.setProperty("booleanData", false);
                 }
                 newRec.setProperty("geoptData",
-                        new GeoPt((float) (i / (props - 9) + 12.0), (float) (i / (props - 9) + 90.0)));
+                    new GeoPt((float) (i / (props - 9) + 12.0), (float) (i / (props - 9) + 90.0)));
                 newRec.setProperty("intList",
-                        Arrays.asList(i / (props - 11), 50 + i / (props - 11), 90 + i / (props - 11)));
+                    Arrays.asList(i / (props - 11), 50 + i / (props - 11), 90 + i / (props - 11)));
                 elist.add(newRec);
             }
             service.put(elist);
@@ -162,7 +162,7 @@ public class DistinctTest extends DatastoreTestBase {
         query.addProjection(new PropertyProjection("stringData", String.class));
         query.addProjection(new PropertyProjection("floatData", Float.class));
         query.setFilter(new FilterPredicate("stringData", Query.FilterOperator.GREATER_THAN,
-                "string0"));
+            "string0"));
         query.addSort("stringData", Query.SortDirection.DESCENDING);
         query.addSort("floatData", Query.SortDirection.DESCENDING);
         query.setDistinct(true);

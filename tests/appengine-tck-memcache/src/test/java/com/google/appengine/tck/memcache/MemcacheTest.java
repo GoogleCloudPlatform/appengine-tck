@@ -32,7 +32,6 @@ import java.util.Set;
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
-
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
 import org.junit.Before;
@@ -208,6 +207,7 @@ public class MemcacheTest extends CacheTestBase {
         assertEquals("newValue1", memcache.get("key1"));
         assertEquals("newValue2", memcache.get("key2"));
     }
+
     @Test
     public void testPutIfUntouchedExpire() {
         final String TS_KEY = createTimeStampKey("testPutIfUntouched");
@@ -267,7 +267,8 @@ public class MemcacheTest extends CacheTestBase {
         memcache.delete("key");
         assertFalse(memcache.contains("key"));
         assertNull(memcache.get("key"));
-        assertEquals(0, memcache.getAll(Arrays.asList("key")).size());}
+        assertEquals(0, memcache.getAll(Arrays.asList("key")).size());
+    }
 
     @Test
     public void testDeleteNoReAddTime() {
@@ -294,6 +295,7 @@ public class MemcacheTest extends CacheTestBase {
         assertFalse(memcache.contains("key2"));
         assertTrue(memcache.contains("key3"));
     }
+
     @Test
     public void testDeleteAllNoReAddTime() {
         Map<Object, Object> cacheDat = createSmallBatchData();
@@ -359,15 +361,15 @@ public class MemcacheTest extends CacheTestBase {
         assertEquals(20L, x);
         assertEquals("20", memcache.get("string-key"));
 
-        memcache.put("byte-key", (byte)15);
+        memcache.put("byte-key", (byte) 15);
         x = memcache.increment("byte-key", 5);
         assertEquals(20L, x);
-        assertEquals((byte)20, memcache.get("byte-key"));
+        assertEquals((byte) 20, memcache.get("byte-key"));
 
-        memcache.put("short-key", (short)15);
+        memcache.put("short-key", (short) 15);
         x = memcache.increment("short-key", 5);
         assertEquals(20L, x);
-        assertEquals((short)20, memcache.get("short-key"));
+        assertEquals((short) 20, memcache.get("short-key"));
 
         memcache.put("integer-key", 15);
         x = memcache.increment("integer-key", 5);

@@ -27,11 +27,9 @@ package com.google.appengine.tck.memcache;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.tck.base.TestBase;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;

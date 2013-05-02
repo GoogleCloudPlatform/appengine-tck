@@ -26,14 +26,12 @@ package com.google.appengine.tck.datastore;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
-
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static com.google.appengine.api.datastore.Query.FilterOperator.GREATER_THAN;
 import static com.google.appengine.api.datastore.Query.FilterOperator.LESS_THAN_OR_EQUAL;
-import static org.junit.Assert.assertThat;
 
 /**
  * Datastore querying tests.

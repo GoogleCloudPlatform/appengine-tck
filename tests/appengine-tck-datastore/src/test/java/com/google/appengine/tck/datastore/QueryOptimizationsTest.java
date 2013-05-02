@@ -80,19 +80,19 @@ public class QueryOptimizationsTest extends QueryTestBase {
         Key key = parent.getKey();
 
         Entity e = createEntity("Product", key)
-                .withProperty("price", 123L)
-                .withProperty("percent", 0.123)
-                .withProperty("x", -0.321)
-                .withProperty("diff", -5L)
-                .withProperty("weight", 10L)
-                .store();
+            .withProperty("price", 123L)
+            .withProperty("percent", 0.123)
+            .withProperty("x", -0.321)
+            .withProperty("diff", -5L)
+            .withProperty("weight", 10L)
+            .store();
 
         Query query = new Query("Product")
-                .setAncestor(key)
-                .addProjection(new PropertyProjection("price", Long.class))
-                .addProjection(new PropertyProjection("percent", Double.class))
-                .addProjection(new PropertyProjection("x", Double.class))
-                .addProjection(new PropertyProjection("diff", Long.class));
+            .setAncestor(key)
+            .addProjection(new PropertyProjection("price", Long.class))
+            .addProjection(new PropertyProjection("percent", Double.class))
+            .addProjection(new PropertyProjection("x", Double.class))
+            .addProjection(new PropertyProjection("diff", Long.class));
 
         PreparedQuery preparedQuery = service.prepare(query);
         Entity result = preparedQuery.asSingleEntity();
@@ -133,26 +133,26 @@ public class QueryOptimizationsTest extends QueryTestBase {
         Key key = parent.getKey();
 
         Entity e1 = createEntity("Kind", key)
-                .withProperty("foo", "foo")
-                .withProperty("bar", "bar")
-                .store();
+            .withProperty("foo", "foo")
+            .withProperty("bar", "bar")
+            .store();
 
         Entity e2 = createEntity("Kind", key)
-                .withProperty("foo", "foo")
-                .store();
+            .withProperty("foo", "foo")
+            .store();
 
         Entity e3 = createEntity("Kind", key)
-                .withProperty("bar", "bar")
-                .store();
+            .withProperty("bar", "bar")
+            .store();
 
         Entity e4 = createEntity("Kind", key)
-                .withProperty("baz", "baz")
-                .store();
+            .withProperty("baz", "baz")
+            .store();
 
         Query query = new Query("Kind")
-                .setAncestor(key)
-                .addProjection(new PropertyProjection("foo", String.class))
-                .addProjection(new PropertyProjection("bar", String.class));
+            .setAncestor(key)
+            .addProjection(new PropertyProjection("foo", String.class))
+            .addProjection(new PropertyProjection("bar", String.class));
 
         List<Entity> results = service.prepare(query).asList(withDefaults());
         assertEquals(Collections.singletonList(e1), results);
@@ -165,12 +165,12 @@ public class QueryOptimizationsTest extends QueryTestBase {
         Key key = parent.getKey();
 
         Entity e = createEntity("Product", key)
-                .withProperty("long", 123L)
-                .store();
+            .withProperty("long", 123L)
+            .store();
 
         Query query = new Query("Product")
-                .setAncestor(key)
-                .addProjection(new PropertyProjection("long", null));
+            .setAncestor(key)
+            .addProjection(new PropertyProjection("long", null));
 
         PreparedQuery preparedQuery = service.prepare(query);
         Entity result = preparedQuery.asSingleEntity();
@@ -189,12 +189,12 @@ public class QueryOptimizationsTest extends QueryTestBase {
         Key key = parent.getKey();
 
         Entity e = createEntity("Kind", key)
-                .withProperty("prop", Arrays.asList("bbb", "ccc", "aaa"))
-                .store();
+            .withProperty("prop", Arrays.asList("bbb", "ccc", "aaa"))
+            .store();
 
         Query query = new Query("Kind")
-                .setAncestor(key)
-                .addProjection(new PropertyProjection("prop", String.class));
+            .setAncestor(key)
+            .addProjection(new PropertyProjection("prop", String.class));
 
         PreparedQuery preparedQuery = service.prepare(query);
         List<Entity> results = preparedQuery.asList(withDefaults());
@@ -220,19 +220,19 @@ public class QueryOptimizationsTest extends QueryTestBase {
         Key key = parent.getKey();
 
         Entity a = createEntity("Product", key)
-                .withProperty("name", "b")
-                .withProperty("price", 1L)
-                .store();
+            .withProperty("name", "b")
+            .withProperty("price", 1L)
+            .store();
 
         Entity b = createEntity("Product", key)
-                .withProperty("name", "a")
-                .withProperty("price", 2L)
-                .store();
+            .withProperty("name", "a")
+            .withProperty("price", 2L)
+            .store();
 
         Query query = new Query("Product")
-                .setAncestor(key)
-                .addProjection(new PropertyProjection("price", Long.class))
-                .setFilter(new Query.FilterPredicate("name", IN, Arrays.asList("a", "b")));
+            .setAncestor(key)
+            .addProjection(new PropertyProjection("price", Long.class))
+            .setFilter(new Query.FilterPredicate("name", IN, Arrays.asList("a", "b")));
         assertResultsInOrder(query, a, b);
 
         query = query.setFilter(new Query.FilterPredicate("name", IN, Arrays.asList("b", "a")));
@@ -246,17 +246,17 @@ public class QueryOptimizationsTest extends QueryTestBase {
         Key key = parent.getKey();
 
         Entity a = createEntity("Product", key)
-                .withProperty("name", "b")
-                .store();
+            .withProperty("name", "b")
+            .store();
 
         Entity b = createEntity("Product", key)
-                .withProperty("name", "a")
-                .store();
+            .withProperty("name", "a")
+            .store();
 
         Query query = new Query("Product")
-                .setAncestor(key)
-                .setKeysOnly()
-                .setFilter(new Query.FilterPredicate("name", IN, Arrays.asList("a", "b")));
+            .setAncestor(key)
+            .setKeysOnly()
+            .setFilter(new Query.FilterPredicate("name", IN, Arrays.asList("a", "b")));
         assertResultsInOrder(query, a, b);
 
         query = query.setFilter(new Query.FilterPredicate("name", IN, Arrays.asList("b", "a")));

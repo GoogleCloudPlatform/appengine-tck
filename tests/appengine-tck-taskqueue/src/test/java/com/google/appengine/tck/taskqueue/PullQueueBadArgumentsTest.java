@@ -72,7 +72,7 @@ public class PullQueueBadArgumentsTest extends QueueTestBase {
     @Test(expected = IllegalArgumentException.class)
     public void testEtaMillisTooFarInFuture() {
         queue.add(withMethod(PULL)
-                .etaMillis(System.currentTimeMillis() + QueueConstants.getMaxEtaDeltaMillis() + 1000));
+            .etaMillis(System.currentTimeMillis() + QueueConstants.getMaxEtaDeltaMillis() + 1000));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -83,14 +83,14 @@ public class PullQueueBadArgumentsTest extends QueueTestBase {
     @Test(expected = IllegalArgumentException.class)
     public void testCountdownMillisTooLarge() {
         queue.add(withMethod(PULL)
-                .countdownMillis(QueueConstants.getMaxEtaDeltaMillis() + 1));
+            .countdownMillis(QueueConstants.getMaxEtaDeltaMillis() + 1));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEtaMillisAndCountdownMillisAreExclusive() {
         queue.add(withMethod(PULL)
-                .etaMillis(System.currentTimeMillis() + 1000)
-                .countdownMillis(1000));
+            .etaMillis(System.currentTimeMillis() + 1000)
+            .countdownMillis(1000));
     }
 
     @Test(expected = IllegalArgumentException.class)

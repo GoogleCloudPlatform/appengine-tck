@@ -73,8 +73,8 @@ public class URLFetchServiceTest extends URLFetchTestBase {
     public void fetchNonExistentLocalAppThrowsException() throws Exception {
         URL selfURL = new URL("BOGUS-" + appUrlBase + "/");
         FetchOptions fetchOptions = FetchOptions.Builder.withDefaults()
-                .doNotFollowRedirects()
-                .setDeadline(10.0);
+            .doNotFollowRedirects()
+            .setDeadline(10.0);
         HTTPRequest httpRequest = new HTTPRequest(selfURL, HTTPMethod.GET, fetchOptions);
         URLFetchService urlFetchService = URLFetchServiceFactory.getURLFetchService();
         HTTPResponse httpResponse = urlFetchService.fetch(httpRequest);

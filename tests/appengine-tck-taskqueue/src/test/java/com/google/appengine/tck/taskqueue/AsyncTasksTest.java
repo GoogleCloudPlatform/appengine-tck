@@ -215,15 +215,15 @@ public class AsyncTasksTest extends QueueTestBase {
 
         final Queue queue = QueueFactory.getQueue("tasks-queue");
         waitOnFuture(queue.addAsync(
-                withUrl(URL)
-                        .param("multi_value", "param_value1")
-                        .param("multi_value", "param_value2")));
+            withUrl(URL)
+                .param("multi_value", "param_value1")
+                .param("multi_value", "param_value2")));
         sync();
 
         assertNotNull(handler.paramValues);
         assertEquals(
-                new HashSet<String>(Arrays.asList("param_value1", "param_value2")),
-                new HashSet<String>(Arrays.asList(handler.paramValues)));
+            new HashSet<String>(Arrays.asList("param_value1", "param_value2")),
+            new HashSet<String>(Arrays.asList(handler.paramValues)));
     }
 
     @Test

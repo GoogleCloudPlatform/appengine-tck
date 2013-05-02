@@ -132,8 +132,8 @@ public class SchemaTest extends DatastoreTestBase {
         Key key1 = Entities.createPropertyKey(kindDat[0], "urlData");
         Key key2 = Entities.createPropertyKey(kindDat[2], "urlData");
         q.setFilter(CompositeFilterOperator.and(
-                new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.GREATER_THAN, key1),
-                new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.LESS_THAN_OR_EQUAL, key2)));
+            new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.GREATER_THAN, key1),
+            new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.LESS_THAN_OR_EQUAL, key2)));
         List<Entity> el = service.prepare(q).asList(fo);
         // un-indexed property, textData, will not be returned in __property__ queries.
         assertEquals(13, el.size());

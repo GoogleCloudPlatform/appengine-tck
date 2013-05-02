@@ -27,11 +27,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.appengine.tck.base.TestContext;
+import com.google.appengine.tck.logservice.LoggingTestBase;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import com.google.appengine.tck.base.TestContext;
-import com.google.appengine.tck.logservice.LoggingTestBase;
 
 /**
  * @author Marko Luksa

@@ -31,12 +31,11 @@ import com.google.appengine.api.log.LogQuery;
 import com.google.appengine.api.log.LogService;
 import com.google.appengine.api.log.LogServiceFactory;
 import com.google.appengine.api.log.RequestLogs;
-import com.google.appengine.tck.event.TestLifecycleEvent;
-import com.google.appengine.tck.event.TestLifecycles;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
+import com.google.appengine.tck.event.TestLifecycleEvent;
+import com.google.appengine.tck.event.TestLifecycles;
 import com.google.apphosting.api.ApiProxy;
-
 import org.apache.commons.codec.BinaryDecoder;
 import org.apache.commons.codec.BinaryEncoder;
 import org.apache.commons.codec.Decoder;
@@ -78,14 +77,13 @@ public abstract class LoggingTestBase extends TestBase {
         WebArchive war = getTckDeployment(context);
         war.addClasses(LoggingTestBase.class, TestBase.class)
             // classes for Base64.isArrayByteBase64()
-           .addClasses(Base64.class, BinaryEncoder.class, Encoder.class, BinaryDecoder.class,
-               Decoder.class, EncoderException.class, DecoderException.class)
-           .addAsWebInfResource("currentTimeUsec.jsp")
-           .addAsWebInfResource("doNothing.jsp")
-           .addAsWebInfResource("storeTestData.jsp")
-           .addAsWebInfResource("throwException.jsp")
-           .addAsWebInfResource("log4j-test.properties")
-           .addAsWebInfResource("logging-all.properties");
+            .addClasses(Base64.class, BinaryEncoder.class, Encoder.class, BinaryDecoder.class, Decoder.class, EncoderException.class, DecoderException.class)
+            .addAsWebInfResource("currentTimeUsec.jsp")
+            .addAsWebInfResource("doNothing.jsp")
+            .addAsWebInfResource("storeTestData.jsp")
+            .addAsWebInfResource("throwException.jsp")
+            .addAsWebInfResource("log4j-test.properties")
+            .addAsWebInfResource("logging-all.properties");
         return war;
     }
 
@@ -117,71 +115,71 @@ public abstract class LoggingTestBase extends TestBase {
     }
 
     protected void pause(long sleepTime) {
-      try {
-        Thread.sleep(sleepTime);
-      } catch (InterruptedException e) {
-        throw new IllegalStateException(e.toString());
-      }
+        try {
+            Thread.sleep(sleepTime);
+        } catch (InterruptedException e) {
+            throw new IllegalStateException(e.toString());
+        }
     }
 
     protected boolean logContains(String text, int retryMax) {
         for (int i = 0; i <= retryMax; i++) {
-          if (findLogLineContaining(text, retryMax) != null) {
-            return true;
-          }
-          pause(1500);
+            if (findLogLineContaining(text, retryMax) != null) {
+                return true;
+            }
+            pause(1500);
         }
         return false;
     }
 
     protected AppLogLine findLogLineContaining(String text, int retryMax) {
-      LogQuery logQuery = new LogQuery()
-          .includeAppLogs(true)
-          .includeIncomplete(true)
-          // Not specifying start time causes test to time out since it searches
-          // all the logs.
-          .startTimeMillis(System.currentTimeMillis() - (20 * 1000));
-      return findLogLine(text, logQuery, retryMax);
+        LogQuery logQuery = new LogQuery()
+            .includeAppLogs(true)
+            .includeIncomplete(true)
+                // Not specifying start time causes test to time out since it searches
+                // all the logs.
+            .startTimeMillis(System.currentTimeMillis() - (20 * 1000));
+        return findLogLine(text, logQuery, retryMax);
     }
 
-  protected Iterator<RequestLogs> findLogLine(LogQuery query, int retryMax) {
-    LogService service = LogServiceFactory.getLogService();
-    Iterator<RequestLogs> iterator = null;
-    for (int i = 0; i <= retryMax; i++) {
-      iterator = service.fetch(query).iterator();
-      if (iterator.hasNext()) {
+    protected Iterator<RequestLogs> findLogLine(LogQuery query, int retryMax) {
+        LogService service = LogServiceFactory.getLogService();
+        Iterator<RequestLogs> iterator = null;
+        for (int i = 0; i <= retryMax; i++) {
+            iterator = service.fetch(query).iterator();
+            if (iterator.hasNext()) {
+                return iterator;
+            }
+            pause(1500);
+        }
         return iterator;
-      }
-      pause(1500);
     }
-    return iterator;
-  }
 
-  protected AppLogLine findLogLine(String text, LogQuery logQuery, int retryMax) {
-    for (int i = 0; i <= retryMax; i++) {
-      AppLogLine line = findLogLine(text, logQuery);
-      if (line != null) {
-        return line;
-      }
-      pause(1500);
+    protected AppLogLine findLogLine(String text, LogQuery logQuery, int retryMax) {
+        for (int i = 0; i <= retryMax; i++) {
+            AppLogLine line = findLogLine(text, logQuery);
+            if (line != null) {
+                return line;
+            }
+            pause(1500);
+        }
+        return null;
     }
-    return null;
-  }
 
     protected AppLogLine findLogLine(String text, LogQuery logQuery) {
-      Iterable<RequestLogs> iterable = LogServiceFactory.getLogService().fetch(logQuery);
-      for (RequestLogs logs : iterable) {
-        for (AppLogLine logLine : logs.getAppLogLines()) {
-          if (logLine.getLogMessage().contains(text)) {
-            return logLine;
-          }
+        Iterable<RequestLogs> iterable = LogServiceFactory.getLogService().fetch(logQuery);
+        for (RequestLogs logs : iterable) {
+            for (AppLogLine logLine : logs.getAppLogLines()) {
+                if (logLine.getLogMessage().contains(text)) {
+                    return logLine;
+                }
+            }
         }
-      }
-      return null;
+        return null;
     }
 
     protected void assertLogDoesntContain(String text) {
-      int retryMax = 1;
+        int retryMax = 1;
         assertFalse("log should not contain '" + text + "', but it does", logContains(text, retryMax));
     }
 
@@ -208,16 +206,16 @@ public abstract class LoggingTestBase extends TestBase {
         assertNull("logQuery should not return '" + text + "', but it does", logLine);
     }
 
-  /**
-   * Create unique marker for a log line.
-   *
-   * @return timestamp plus random number
-   */
-  protected String getTimeStampRandom() {
-    int num = (int) (Math.random() * 1000000);
-    String rand = Integer.toString(num);
+    /**
+     * Create unique marker for a log line.
+     *
+     * @return timestamp plus random number
+     */
+    protected String getTimeStampRandom() {
+        int num = (int) (Math.random() * 1000000);
+        String rand = Integer.toString(num);
 
-    return System.currentTimeMillis() + "_" + rand;
-  }
+        return System.currentTimeMillis() + "_" + rand;
+    }
 
 }

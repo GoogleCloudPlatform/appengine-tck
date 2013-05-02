@@ -9,7 +9,6 @@ import com.google.appengine.api.capabilities.CapabilityState;
 import com.google.appengine.api.capabilities.CapabilityStatus;
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tck.base.TestBase;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -27,8 +26,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Arquillian.class)
 public class CapabilityTest extends TestBase {
     private CapabilitiesService capabilitiesService = CapabilitiesServiceFactory.getCapabilitiesService();
-    private String[] TEST_DATA = {"blobstore", "datastore_v3", "datastore_v3,write", "images",
-            "mail", "memcache", "taskqueue", "urlfetch", "xmpp"};
+    private String[] TEST_DATA = {"blobstore", "datastore_v3", "datastore_v3,write", "images", "mail", "memcache", "taskqueue", "urlfetch", "xmpp"};
 
     @Deployment
     public static WebArchive getDeployment() {

@@ -2,14 +2,11 @@
 
 package com.google.appengine.tck.datastore;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Query;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,10 +72,10 @@ public class EntityTest extends DatastoreTestBase {
 
     @Test
     public void testEntityGainsNoAdditionalPropertiesWhenStored() throws Exception {
-      clearData(kindName);
-      Entity entity = new Entity(kindName);
-      Key key = service.put(entity);
-      entity = service.get(key);
-      assertEquals(Collections.<String, Object>emptyMap(), entity.getProperties());
+        clearData(kindName);
+        Entity entity = new Entity(kindName);
+        Key key = service.put(entity);
+        entity = service.get(key);
+        assertEquals(Collections.<String, Object>emptyMap(), entity.getProperties());
     }
 }

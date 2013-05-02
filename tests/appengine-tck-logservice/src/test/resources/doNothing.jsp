@@ -1,8 +1,8 @@
 <%@ page import="com.google.appengine.api.datastore.DatastoreService" %>
 <%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory" %>
 <%@ page import="com.google.appengine.api.datastore.Entity" %>
-<%@ page import="com.google.apphosting.api.ApiProxy" %>
 <%@ page import="com.google.appengine.tck.logservice.RequestLogsTest" %>
+<%@ page import="com.google.apphosting.api.ApiProxy" %>
 <%--
   ~ JBoss, Home of Professional Open Source.
   ~ Copyright 2013, Red Hat, Inc., and individual contributors

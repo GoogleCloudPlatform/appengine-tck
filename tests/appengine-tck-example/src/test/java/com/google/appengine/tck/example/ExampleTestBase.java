@@ -18,7 +18,6 @@ package com.google.appengine.tck.example;
 
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
@@ -29,13 +28,13 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 public abstract class ExampleTestBase extends TestBase {
 
     /**
-      Every test package needs to declare a *TestBase class which
-      getDeployment() declares the resources needed to run the test.
-      Basically this is how you specify the WEB-INF files, and the
-      test classes themselves.
-
-      Note that tools may indicate that getDeployment() is not used
-      since it is called dynamically.
+     * Every test package needs to declare a *TestBase class which
+     * getDeployment() declares the resources needed to run the test.
+     * Basically this is how you specify the WEB-INF files, and the
+     * test classes themselves.
+     * <p/>
+     * Note that tools may indicate that getDeployment() is not used
+     * since it is called dynamically.
      */
     @Deployment
     public static WebArchive getDeployment() {
@@ -60,6 +59,6 @@ public abstract class ExampleTestBase extends TestBase {
         //
         // war.addAsWebInfResource("queue.xml");
 
-      return war;
+        return war;
     }
 }

@@ -61,7 +61,7 @@ public class AncestorTest extends DatastoreTestBase {
         Key pKey = getParent().getKey();
         Query query = new Query(CHILDKIND, pKey);
         assertEquals(2, service.prepare(query)
-                .countEntities(FetchOptions.Builder.withDefaults()));
+            .countEntities(FetchOptions.Builder.withDefaults()));
         for (Entity cRec : service.prepare(query).asIterable()) {
             assertEquals(pKey, cRec.getParent());
         }
@@ -73,7 +73,7 @@ public class AncestorTest extends DatastoreTestBase {
         Query query = new Query(CHILDKIND, pKey);
         query.addSort("__key__");
         assertEquals(2, service.prepare(query)
-                .countEntities(FetchOptions.Builder.withDefaults()));
+            .countEntities(FetchOptions.Builder.withDefaults()));
         for (Entity cRec : service.prepare(query).asIterable()) {
             assertEquals(pKey, cRec.getParent());
         }
@@ -86,10 +86,10 @@ public class AncestorTest extends DatastoreTestBase {
         Entity parent = service.prepare(query).asSingleEntity();
         query = new Query(parent.getKey());
         assertEquals(3, service.prepare(query)
-                .countEntities(FetchOptions.Builder.withDefaults()));
+            .countEntities(FetchOptions.Builder.withDefaults()));
         query = new Query().setAncestor(parent.getKey());
         assertEquals(3, service.prepare(query)
-                .countEntities(FetchOptions.Builder.withDefaults()));
+            .countEntities(FetchOptions.Builder.withDefaults()));
     }
 
     @Test

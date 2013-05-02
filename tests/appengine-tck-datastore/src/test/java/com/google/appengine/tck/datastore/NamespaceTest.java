@@ -90,7 +90,7 @@ public class NamespaceTest extends DatastoreTestBase {
         NamespaceManager.set("");
         Query query = new Query("__namespace__");
         int nsCount = service.prepare(query)
-                .countEntities(FetchOptions.Builder.withDefaults());
+            .countEntities(FetchOptions.Builder.withDefaults());
         assertTrue(nsCount > 0);
         String ns = "";
         for (Entity readRec : service.prepare(query).asIterable()) {

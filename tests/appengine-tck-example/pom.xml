@@ -39,14 +39,14 @@
             <scope>test</scope>
         </dependency>
 
-    <!-- Add any test specific dependencies here. -->
+        <!-- Add any test specific dependencies here. -->
 
         <dependency>
             <!--
                  This one is only needed if you use the servlet api directly.
                  It also needs to be added to the top level ../../pom.xml as
                  a dependency with a version specified.
-            --> 
+            -->
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>

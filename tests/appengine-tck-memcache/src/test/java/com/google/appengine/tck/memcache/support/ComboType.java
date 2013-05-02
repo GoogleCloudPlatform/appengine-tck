@@ -82,8 +82,7 @@ public class ComboType implements Serializable {
     }
 
     // fields that are included for comparison
-    private static final String[] FIELDS =
-            {"intField", "longField", "stringField", "dateField", "mixedField"};
+    private static final String[] FIELDS = {"intField", "longField", "stringField", "dateField", "mixedField"};
 
     @Override
     public boolean equals(Object o) {

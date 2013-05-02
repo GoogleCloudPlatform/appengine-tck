@@ -15,16 +15,16 @@
  */
 package com.google.appengine.tck.users.support;
 
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
-import com.google.appengine.api.utils.SystemProperty;
-
 import java.io.IOException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.api.utils.SystemProperty;
 
 /**
  * Used by tests marked with @RunAsClient, since it can log into the servlet authenticated and

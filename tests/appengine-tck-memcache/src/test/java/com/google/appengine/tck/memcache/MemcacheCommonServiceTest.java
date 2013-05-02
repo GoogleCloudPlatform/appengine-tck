@@ -1,22 +1,21 @@
 package com.google.appengine.tck.memcache;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import java.util.Arrays;
+import java.util.logging.Level;
 
 import com.google.appengine.api.memcache.AsyncMemcacheService;
 import com.google.appengine.api.memcache.BaseMemcacheService;
 import com.google.appengine.api.memcache.ConsistentLogAndContinueErrorHandler;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
-
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Arrays;
-import java.util.logging.Level;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests methods that are common, between MemcacheService and AsyncMemcacheService,
@@ -50,7 +49,7 @@ public class MemcacheCommonServiceTest extends CacheTestBase {
         assertTrue(handler.equals(returned));
         assertTrue(asyncHandler.equals(asyncReturned));
 
-        int recordSize = (1024 * 1024) * 2 ;  // 2MB which should fail.
+        int recordSize = (1024 * 1024) * 2;  // 2MB which should fail.
         byte[] filledRec = new byte[recordSize];
         Arrays.fill(filledRec, (byte) 0x41);
 

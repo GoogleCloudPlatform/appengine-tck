@@ -35,8 +35,8 @@ import javax.servlet.http.HttpServletRequest;
 
 
 /**
-* @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
-*/
+ * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
+ */
 public class RequestData {
 
     private byte[] body;
@@ -74,18 +74,18 @@ public class RequestData {
         return body;
     }
 
-  /**
-   * Copy stream.
-   *
-   * @param in  the input stream
-   * @param out the output stream
-   * @throws IOException for any IO error
-   */
-  private void copyStream(final InputStream in, final OutputStream out) throws IOException {
-    final byte[] bytes = new byte[8192];
-    int cnt;
-    while ((cnt = in.read(bytes)) != -1) {
-      out.write(bytes, 0, cnt);
+    /**
+     * Copy stream.
+     *
+     * @param in  the input stream
+     * @param out the output stream
+     * @throws IOException for any IO error
+     */
+    private void copyStream(final InputStream in, final OutputStream out) throws IOException {
+        final byte[] bytes = new byte[8192];
+        int cnt;
+        while ((cnt = in.read(bytes)) != -1) {
+            out.write(bytes, 0, cnt);
+        }
     }
-  }
 }

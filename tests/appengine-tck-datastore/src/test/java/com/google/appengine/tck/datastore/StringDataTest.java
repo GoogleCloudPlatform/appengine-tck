@@ -41,18 +41,18 @@ public class StringDataTest extends DatastoreTestBase {
         Entity newRec;
         String[] stringDat = {"abc", "xyz", "mno"};
         PhoneNumber[] phoneDat = {new PhoneNumber("408-123-4567"), new PhoneNumber("650-321-7654"),
-                new PhoneNumber("408-987-6543")};
+            new PhoneNumber("408-987-6543")};
         PostalAddress[] addressDat = {new PostalAddress("123 Google Rd. CA 12345"),
-                new PostalAddress("19451 Via Monte Rd. CA95070"), new PostalAddress("9 1st St. CA 95000")};
+            new PostalAddress("19451 Via Monte Rd. CA95070"), new PostalAddress("9 1st St. CA 95000")};
         Email[] emailDat = {new Email("somebody@google.com"), new Email("somebody2@gmail.com"),
-                new Email("somebody3@hotmail.com")};
+            new Email("somebody3@hotmail.com")};
         Link[] linkDat = {new Link("http://www.hotmail.com"), new Link("http://www.google.com.com"),
-                new Link("http://www.gmail.com")};
+            new Link("http://www.gmail.com")};
         Category[] categoryDat = {new Category("developer"), new Category("test"),
-                new Category("manager")};
+            new Category("manager")};
         Text[] textDat = {new Text("english"), new Text("chinese"), new Text("japanese")};
         ShortBlob[] byteString = {new ShortBlob("shortblob".getBytes()),
-                new ShortBlob("shortText".getBytes()), new ShortBlob("shortImage".getBytes())};
+            new ShortBlob("shortText".getBytes()), new ShortBlob("shortImage".getBytes())};
 
         Query q = new Query(kindName, rootKey);
         if (service.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {

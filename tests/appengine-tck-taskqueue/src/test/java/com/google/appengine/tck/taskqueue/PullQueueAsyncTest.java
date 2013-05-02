@@ -153,9 +153,9 @@ public class PullQueueAsyncTest extends QueueTestBase {
         // lease all tasks for a second lease period
         long leaseDuration = 10000;
         LeaseOptions options = LeaseOptions.Builder
-                .withTag(uniqueGroupTag)
-                .countLimit(count)
-                .leasePeriod(leaseDuration, TimeUnit.MILLISECONDS);
+            .withTag(uniqueGroupTag)
+            .countLimit(count)
+            .leasePeriod(leaseDuration, TimeUnit.MILLISECONDS);
 
         List<TaskHandle> tasks = leaseTasksByOptions(uniqueGroupTag, count, false, options);
         assertEquals(1, tasks.size());
@@ -193,9 +193,9 @@ public class PullQueueAsyncTest extends QueueTestBase {
         List<TaskHandle> taskList = addTasks(count, taskBaseName, groupTag, "nada");
         long leaseDuration = 1000;
         LeaseOptions options = LeaseOptions.Builder
-                .withTag(groupTag)
-                .countLimit(count)
-                .leasePeriod(leaseDuration, TimeUnit.MILLISECONDS);
+            .withTag(groupTag)
+            .countLimit(count)
+            .leasePeriod(leaseDuration, TimeUnit.MILLISECONDS);
 
         List<TaskHandle> tasks = waitOnFuture(queue.leaseTasksAsync(options));
         assertEquals(count, tasks.size());
@@ -217,10 +217,10 @@ public class PullQueueAsyncTest extends QueueTestBase {
         byte[] tagBytes = taskBaseName.getBytes();
 
         TaskOptions options = TaskOptions.Builder
-                .withMethod(TaskOptions.Method.PULL)
-                .taskName(taskBaseName + "_0")
-                .tag(tagBytes)
-                .payload("");
+            .withMethod(TaskOptions.Method.PULL)
+            .taskName(taskBaseName + "_0")
+            .tag(tagBytes)
+            .payload("");
         waitOnFuture(queue.addAsync(options));
         sleep(5000);  // Give tasks a chance to become available.
         List<TaskHandle> tasks = waitOnFuture(queue.leaseTasksByTagBytesAsync(1, TimeUnit.SECONDS, 10, tagBytes));
@@ -277,9 +277,9 @@ public class PullQueueAsyncTest extends QueueTestBase {
     public void testAddingTwoTasksWithSameNameInSingleRequestThrowsException() {
         String taskName = "sameName_" + getTimeStampRandom();
         waitOnFuture(queue.addAsync(
-                Arrays.asList(
-                        TaskOptions.Builder.withMethod(PULL).taskName(taskName),
-                        TaskOptions.Builder.withMethod(PULL).taskName(taskName))));
+            Arrays.asList(
+                TaskOptions.Builder.withMethod(PULL).taskName(taskName),
+                TaskOptions.Builder.withMethod(PULL).taskName(taskName))));
     }
 
     private void sleep(long milliSecs) {
@@ -369,9 +369,9 @@ public class PullQueueAsyncTest extends QueueTestBase {
     private List<TaskHandle> leaseTasksByTag60Secs(String groupTag, int count,
                                                    boolean zeroSizeAcceptable) {
         LeaseOptions options = LeaseOptions.Builder
-                .withTag(groupTag)
-                .countLimit(count)  // Max lease count is 1000.
-                .leasePeriod(60, TimeUnit.SECONDS);
+            .withTag(groupTag)
+            .countLimit(count)  // Max lease count is 1000.
+            .leasePeriod(60, TimeUnit.SECONDS);
         return leaseTasksByOptions(groupTag, count, zeroSizeAcceptable, options);
 
     }
@@ -388,10 +388,10 @@ public class PullQueueAsyncTest extends QueueTestBase {
         ArrayList<TaskOptions> optionList = new ArrayList<TaskOptions>();
         for (int i = 0; i < count; i++) {
             TaskOptions options = TaskOptions.Builder
-                    .withMethod(TaskOptions.Method.PULL)
-                    .taskName(taskBaseName + "_" + i)
-                    .tag(groupTag)
-                    .payload(payload);
+                .withMethod(TaskOptions.Method.PULL)
+                .taskName(taskBaseName + "_" + i)
+                .tag(groupTag)
+                .payload(payload);
             optionList.add(options);
         }
         taskTags.add(groupTag);

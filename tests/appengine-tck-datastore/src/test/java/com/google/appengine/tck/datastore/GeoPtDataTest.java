@@ -25,10 +25,11 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Arquillian.class)
 public class GeoPtDataTest extends DatastoreTestBase {
     private String kindName = "geoPtType";
-    private GeoPt[] testDatas =
-            {new GeoPt(Float.valueOf(-12).floatValue(), Float.valueOf(120).floatValue()),
-                    new GeoPt(Float.valueOf(24).floatValue(), Float.valueOf(-90).floatValue()),
-                    new GeoPt(Float.valueOf(60).floatValue(), Float.valueOf(145).floatValue())};
+    private GeoPt[] testDatas = {
+        new GeoPt(Float.valueOf(-12).floatValue(), Float.valueOf(120).floatValue()),
+        new GeoPt(Float.valueOf(24).floatValue(), Float.valueOf(-90).floatValue()),
+        new GeoPt(Float.valueOf(60).floatValue(), Float.valueOf(145).floatValue())
+    };
     private FetchOptions fo = FetchOptions.Builder.withDefaults();
 
     @Before
@@ -49,8 +50,7 @@ public class GeoPtDataTest extends DatastoreTestBase {
 
     @Test
     public void testFilter() throws Exception {
-        doAllFilters(kindName, propertyName,
-                new GeoPt(Float.valueOf(24).floatValue(), Float.valueOf(-90).floatValue()));
+        doAllFilters(kindName, propertyName, new GeoPt(Float.valueOf(24).floatValue(), Float.valueOf(-90).floatValue()));
     }
 
     @Test

@@ -68,7 +68,7 @@ public class KeyTest extends DatastoreTestBase {
         assertEquals(5, size);
         for (int i = 0; i < size; i++) {
             assertEquals(ascRecs.get(i).getProperty("pop").toString(),
-                    descRecs.get(size - i - 1).getProperty("pop").toString());
+                descRecs.get(size - i - 1).getProperty("pop").toString());
         }
     }
 
@@ -91,7 +91,7 @@ public class KeyTest extends DatastoreTestBase {
         int size = ascRecs.size();
         for (int i = 0; i < size; i++) {
             assertEquals(ascRecs.get(i).getProperty("pop").toString(),
-                    descRecs.get(size - i - 1).getProperty("pop").toString());
+                descRecs.get(size - i - 1).getProperty("pop").toString());
         }
     }
 
@@ -116,7 +116,7 @@ public class KeyTest extends DatastoreTestBase {
         int size = ascRecs.size();
         for (int i = 0; i < size; i++) {
             assertEquals(ascRecs.get(i).getProperty("pop").toString(),
-                    descRecs.get(size - i - 1).getProperty("pop").toString());
+                descRecs.get(size - i - 1).getProperty("pop").toString());
         }
     }
 
@@ -150,10 +150,10 @@ public class KeyTest extends DatastoreTestBase {
             q.setFilter(new FilterPredicate("__key__", Query.FilterOperator.EQUAL, kList.get(i)));
             if (namespaceDat[i].equals("")) {
                 assertEquals(service.prepare(q).asSingleEntity().getProperty("jobType"),
-                        "google");
+                    "google");
             } else {
                 assertEquals(service.prepare(q).asSingleEntity().getProperty("jobType"),
-                        namespaceDat[i]);
+                    namespaceDat[i]);
             }
         }
         // query in different namespace
@@ -175,9 +175,9 @@ public class KeyTest extends DatastoreTestBase {
 
         Entity entB2 = service.get(childKeyB);
         assertEquals(new String(MemcacheSerialization.makePbKey(entB1.getKey())),
-                new String(MemcacheSerialization.makePbKey(childKeyB)));
+            new String(MemcacheSerialization.makePbKey(childKeyB)));
         assertEquals(new String(MemcacheSerialization.makePbKey(entB2.getKey())),
-                new String(MemcacheSerialization.makePbKey(childKeyB)));
+            new String(MemcacheSerialization.makePbKey(childKeyB)));
         service.delete(childKeyB);
         service.delete(parentKeyB);
     }

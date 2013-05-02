@@ -56,23 +56,24 @@
         <version.org.log4j>1.2.16</version.org.log4j>
         <version.org.easymock>2.4</version.org.easymock>
         <!-- MapReduce -->
-        <version.com.google.gae.mapper>r365</version.com.google.gae.mapper>
-        <version.com.google.guava>13.0.1</version.com.google.guava>
+        <version.com.google.gae.mapper>r452</version.com.google.gae.mapper>
+        <version.com.google.guava>14.0.1</version.com.google.guava>
         <version.charts4j>1.3</version.charts4j>
         <version.commons-logging>1.1.1</version.commons-logging>
         <version.org.apache.hadoop.core>0.20.2</version.org.apache.hadoop.core>
         <version.org.json>20090211</version.org.json>
 
-	    <!--- Sonar -->
+        <!--- Sonar -->
         <sonar.language>java</sonar.language>
 
         <!-- Plugins -->
-        <version.compiler.plugin>3.0</version.compiler.plugin>
+        <version.compiler.plugin>3.1</version.compiler.plugin>
         <version.surefire.plugin>2.12.4</version.surefire.plugin>
         <version.release.plugin>2.3.2</version.release.plugin>
         <version.jar.plugin>2.4</version.jar.plugin>
         <version.assembly.plugin>2.4</version.assembly.plugin>
         <version.dependency.plugin>2.5.1</version.dependency.plugin>
+        <version.checkstyle.plugin>2.10</version.checkstyle.plugin>
         <!-- Compiler configuration -->
         <maven.compiler.argument.source>1.7</maven.compiler.argument.source>
         <maven.compiler.argument.target>1.7</maven.compiler.argument.target>
@@ -146,6 +147,28 @@
                     <execution>
                         <goals>
                             <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${version.checkstyle.plugin}</version>
+                <configuration>
+                    <configLocation>src/main/build-config/checkstyle.xml</configLocation>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <violationSeverity>error</violationSeverity>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>check-style</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>checkstyle</goal>
                         </goals>
                     </execution>
                 </executions>

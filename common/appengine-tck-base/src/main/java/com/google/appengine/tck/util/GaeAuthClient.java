@@ -16,17 +16,6 @@
 
 package com.google.appengine.tck.util;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -35,6 +24,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 /**
  * Use the ClientLogin API to log into a Google Account for AppEngine.
@@ -62,15 +62,15 @@ public class GaeAuthClient {
 
     protected void authInit(String servletUrl, String username, String password) throws AuthClientException {
 
-      try {
-          String authToken = getAuthToken(client, username, password);
-          String cookieUrl = getCookieUrl(servletUrl, authToken);
-          getAuthCookie(client, cookieUrl);
-      } catch (URISyntaxException e) {
-          throw new AuthClientException("Could not parse servlet URL", e);
-      } catch (IOException e) {
-          throw new AuthClientException(e);
-      }
+        try {
+            String authToken = getAuthToken(client, username, password);
+            String cookieUrl = getCookieUrl(servletUrl, authToken);
+            getAuthCookie(client, cookieUrl);
+        } catch (URISyntaxException e) {
+            throw new AuthClientException("Could not parse servlet URL", e);
+        } catch (IOException e) {
+            throw new AuthClientException(e);
+        }
     }
 
     protected String getCookieUrl(String servletUrl, String authToken) throws
@@ -80,8 +80,7 @@ public class GaeAuthClient {
         return cookieUri.toString();
     }
 
-    protected String getAuthToken(HttpClient client, String username, String password)
-        throws AuthClientException, IOException {
+    protected String getAuthToken(HttpClient client, String username, String password) throws AuthClientException, IOException {
         HttpPost request = getClientLoginRequest(username, password);
         HttpResponse response = client.execute(request);
         return parseClientLoginResponse(response);
@@ -91,18 +90,17 @@ public class GaeAuthClient {
         client.execute(new HttpGet(cookieUrl));
     }
 
-    protected HttpPost getClientLoginRequest(String username, String password)
-      throws UnsupportedEncodingException {
-    List<NameValuePair> params = new ArrayList<NameValuePair>();
-    params.add(new BasicNameValuePair("accountType", "HOSTED_OR_GOOGLE"));
-    params.add(new BasicNameValuePair("Email", username));
-    params.add(new BasicNameValuePair("Passwd", password));
-    params.add(new BasicNameValuePair("service", "ah"));
-    params.add(new BasicNameValuePair("source", "Google-gae-tck-1.0.0"));
+    protected HttpPost getClientLoginRequest(String username, String password) throws UnsupportedEncodingException {
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("accountType", "HOSTED_OR_GOOGLE"));
+        params.add(new BasicNameValuePair("Email", username));
+        params.add(new BasicNameValuePair("Passwd", password));
+        params.add(new BasicNameValuePair("service", "ah"));
+        params.add(new BasicNameValuePair("source", "Google-gae-tck-1.0.0"));
 
-    HttpPost request = new HttpPost("https://www.google.com/accounts/ClientLogin");
-    request.setEntity(new UrlEncodedFormEntity(params));
-    return request;
+        HttpPost request = new HttpPost("https://www.google.com/accounts/ClientLogin");
+        request.setEntity(new UrlEncodedFormEntity(params));
+        return request;
     }
 
     // Parse the ClientLogin response and return the auth token
@@ -110,31 +108,31 @@ public class GaeAuthClient {
         AuthClientException, IOException {
         int status = response.getStatusLine().getStatusCode();
         if (status != HttpStatus.SC_OK && status != HttpStatus.SC_FORBIDDEN) {
-          throw new AuthClientException("Unexpected ClientLogin HTTP status " + status);
+            throw new AuthClientException("Unexpected ClientLogin HTTP status " + status);
         }
 
         String body = EntityUtils.toString(response.getEntity());
         Map<String, String> responseMap = parseClientLoginBody(body);
 
         if (status == HttpStatus.SC_OK) {
-          String authToken = responseMap.get("Auth");
-          if (authToken == null) {
-            throw new AuthClientException("Auth token missing from ClientLogin response");
-          }
-          return authToken;
+            String authToken = responseMap.get("Auth");
+            if (authToken == null) {
+                throw new AuthClientException("Auth token missing from ClientLogin response");
+            }
+            return authToken;
         } else {
-          String message = "ClientLogin forbidden";
-          // Base error code (eg. BadAuthentication)
-          String error = responseMap.get("Error");
-          if (error != null) {
-            message += ": " + error;
-          }
-          // Additional error code, not usually present (eg. InvalidSecondFactor)
-          String info = responseMap.get("Info");
-          if (info != null) {
-            message += " (" + info + ")";
-          }
-          throw new AuthClientException(message);
+            String message = "ClientLogin forbidden";
+            // Base error code (eg. BadAuthentication)
+            String error = responseMap.get("Error");
+            if (error != null) {
+                message += ": " + error;
+            }
+            // Additional error code, not usually present (eg. InvalidSecondFactor)
+            String info = responseMap.get("Info");
+            if (info != null) {
+                message += " (" + info + ")";
+            }
+            throw new AuthClientException(message);
         }
     }
 
@@ -142,10 +140,10 @@ public class GaeAuthClient {
     protected Map<String, String> parseClientLoginBody(String body) {
         Map<String, String> responseMap = new HashMap<String, String>();
         for (String line : body.split("\n")) {
-          int idx = line.indexOf("=");
-          if (idx > 0) {
-            responseMap.put(line.substring(0, idx), line.substring(idx + 1));
-          }
+            int idx = line.indexOf("=");
+            if (idx > 0) {
+                responseMap.put(line.substring(0, idx), line.substring(idx + 1));
+            }
         }
         return responseMap;
     }

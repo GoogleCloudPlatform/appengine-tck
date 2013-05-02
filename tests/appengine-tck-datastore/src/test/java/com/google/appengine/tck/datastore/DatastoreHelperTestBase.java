@@ -19,7 +19,6 @@ import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.tck.base.TestBase;
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
@@ -160,7 +159,7 @@ public abstract class DatastoreHelperTestBase extends TestBase {
         // Clean up previous run
         List<Entity> entities = service.prepare(query).asList(withDefaults());
         for (Entity entity : entities) {
-           service.delete(entity.getKey());
+            service.delete(entity.getKey());
         }
 
         Entity rootEntity = service.prepare(query).asSingleEntity();

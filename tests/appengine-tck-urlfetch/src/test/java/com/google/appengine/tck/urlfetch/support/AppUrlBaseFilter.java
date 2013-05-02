@@ -15,26 +15,26 @@ import javax.servlet.ServletResponse;
  */
 public class AppUrlBaseFilter implements Filter {
 
-  public static final String APP_URL_BASE = "com.google.watr.appUrlBase";
+    public static final String APP_URL_BASE = "com.google.watr.appUrlBase";
 
-  public AppUrlBaseFilter() {
-  }
+    public AppUrlBaseFilter() {
+    }
 
-  @SuppressWarnings("unused")
-  @Override
-  public void init(FilterConfig filterConfig) throws ServletException {
-  }
+    @SuppressWarnings("unused")
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
 
-  @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-      throws IOException, ServletException {
-    String appUrlBase =
-        request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-    System.setProperty(APP_URL_BASE, appUrlBase);
-    chain.doFilter(request, response);
-  }
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
+        String appUrlBase =
+            request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        System.setProperty(APP_URL_BASE, appUrlBase);
+        chain.doFilter(request, response);
+    }
 
-  @Override
-  public void destroy() {
-  }
+    @Override
+    public void destroy() {
+    }
 }

@@ -69,8 +69,8 @@ public class QueryFilteringByGAEPropertyTypesTest extends QueryTestBase {
         service.put(fooEntity);
 
         Query query = new Query("foo")
-                .setAncestor(parentKey)
-                .setFilter(new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY, EQUAL, fooKey));
+            .setAncestor(parentKey)
+            .setFilter(new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY, EQUAL, fooKey));
 
         PreparedQuery preparedQuery = service.prepare(query);
         List<Entity> results = preparedQuery.asList(FetchOptions.Builder.withDefaults());

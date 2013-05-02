@@ -125,12 +125,12 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
 
     protected Entity storeTestEntityWithSingleProperty(Object value) {
         return buildTestEntity()
-                .withProperty(SINGLE_PROPERTY_NAME, value)
-                .store();
+            .withProperty(SINGLE_PROPERTY_NAME, value)
+            .store();
     }
 
     protected Entity storeTestEntityWithSingleProperty(Key parent, Object value) {
-        TestEntityBuilder testEntityBuilder =  createEntity(TEST_ENTITY_KIND, parent);
+        TestEntityBuilder testEntityBuilder = createEntity(TEST_ENTITY_KIND, parent);
         return testEntityBuilder
             .withProperty(SINGLE_PROPERTY_NAME, value)
             .store();

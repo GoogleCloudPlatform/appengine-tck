@@ -45,7 +45,7 @@ public class PullQueueTest extends QueueTestBase {
     private final List<String> deleteOnTearDownTags = new ArrayList<String>();
 
     private static final Logger log =
-            Logger.getLogger(PullQueueTest.class.getName());
+        Logger.getLogger(PullQueueTest.class.getName());
 
     @Before
     public void setUp() {
@@ -153,9 +153,9 @@ public class PullQueueTest extends QueueTestBase {
         // lease all tasks for a second lease period
         long leaseDuration = 10000;
         LeaseOptions options = LeaseOptions.Builder
-                .withTag(uniqueGroupTag)
-                .countLimit(count)
-                .leasePeriod(leaseDuration, TimeUnit.MILLISECONDS);
+            .withTag(uniqueGroupTag)
+            .countLimit(count)
+            .leasePeriod(leaseDuration, TimeUnit.MILLISECONDS);
 
         List<TaskHandle> tasks = leaseTasksByOptions(uniqueGroupTag, count, false, options);
         assertEquals(1, tasks.size());
@@ -193,9 +193,9 @@ public class PullQueueTest extends QueueTestBase {
         List<TaskHandle> taskList = addTasks(count, taskBaseName, groupTag, "nada");
         long leaseDuration = 1000;
         LeaseOptions options = LeaseOptions.Builder
-                .withTag(groupTag)
-                .countLimit(count)
-                .leasePeriod(leaseDuration, TimeUnit.MILLISECONDS);
+            .withTag(groupTag)
+            .countLimit(count)
+            .leasePeriod(leaseDuration, TimeUnit.MILLISECONDS);
 
         List<TaskHandle> tasks = queue.leaseTasks(options);
         assertEquals(count, tasks.size());
@@ -217,10 +217,10 @@ public class PullQueueTest extends QueueTestBase {
         byte[] tagBytes = taskBaseName.getBytes();
 
         TaskOptions options = TaskOptions.Builder
-                .withMethod(TaskOptions.Method.PULL)
-                .taskName(taskBaseName + "_0")
-                .tag(tagBytes)
-                .payload("");
+            .withMethod(TaskOptions.Method.PULL)
+            .taskName(taskBaseName + "_0")
+            .tag(tagBytes)
+            .payload("");
         queue.add(options);
         sleep(5000);  // Give tasks a chance to become available.
         List<TaskHandle> tasks = queue.leaseTasksByTagBytes(1, TimeUnit.SECONDS, 10, tagBytes);
@@ -277,9 +277,9 @@ public class PullQueueTest extends QueueTestBase {
     public void testAddingTwoTasksWithSameNameInSingleRequestThrowsException() {
         String taskName = "sameName_" + getTimeStampRandom();
         queue.add(
-                Arrays.asList(
-                        TaskOptions.Builder.withMethod(PULL).taskName(taskName),
-                        TaskOptions.Builder.withMethod(PULL).taskName(taskName)));
+            Arrays.asList(
+                TaskOptions.Builder.withMethod(PULL).taskName(taskName),
+                TaskOptions.Builder.withMethod(PULL).taskName(taskName)));
     }
 
     private void sleep(long milliSecs) {
@@ -307,7 +307,7 @@ public class PullQueueTest extends QueueTestBase {
         int retryCount = 10;
         int retryInterval = 2000;
         List<TaskHandle> handleList = leaseTasksByOptions(groupTag, count, zeroSizeAcceptable,
-                options, retryCount, retryInterval);
+            options, retryCount, retryInterval);
         return handleList;
     }
 
@@ -352,7 +352,7 @@ public class PullQueueTest extends QueueTestBase {
         }
 
         String errMsg = "Couldn't lease " + Integer.toString(count) + " tag:" +
-                groupTag + " after " + retryCount + " attempts.";
+            groupTag + " after " + retryCount + " attempts.";
         log.warning(errMsg);
         if (handleList == null) {  // Couldn't communicate with Task service.
             throw new TransientFailureException(errMsg);
@@ -372,9 +372,9 @@ public class PullQueueTest extends QueueTestBase {
     private List<TaskHandle> leaseTasksByTag60Secs(String groupTag, int count,
                                                    boolean zeroSizeAcceptable) {
         LeaseOptions options = LeaseOptions.Builder
-                .withTag(groupTag)
-                .countLimit(count)  // Max lease count is 1000.
-                .leasePeriod(60, TimeUnit.SECONDS);
+            .withTag(groupTag)
+            .countLimit(count)  // Max lease count is 1000.
+            .leasePeriod(60, TimeUnit.SECONDS);
         return leaseTasksByOptions(groupTag, count, zeroSizeAcceptable, options);
 
     }
@@ -391,10 +391,10 @@ public class PullQueueTest extends QueueTestBase {
         ArrayList<TaskOptions> optionList = new ArrayList<TaskOptions>();
         for (int i = 0; i < count; i++) {
             TaskOptions options = TaskOptions.Builder
-                    .withMethod(TaskOptions.Method.PULL)
-                    .taskName(taskBaseName + "_" + i)
-                    .tag(groupTag)
-                    .payload(payload);
+                .withMethod(TaskOptions.Method.PULL)
+                .taskName(taskBaseName + "_" + i)
+                .tag(groupTag)
+                .payload(payload);
             optionList.add(options);
         }
         taskTags.add(groupTag);

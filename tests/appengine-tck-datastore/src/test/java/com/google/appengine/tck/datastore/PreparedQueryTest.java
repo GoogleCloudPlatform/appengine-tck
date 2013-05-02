@@ -75,8 +75,8 @@ public class PreparedQueryTest extends QueryTestBase {
             .store();
 
         Query query = new Query("Person")
-                .setAncestor(key)
-                .setFilter(new Query.FilterPredicate("name", EQUAL, "John"));
+            .setAncestor(key)
+            .setFilter(new Query.FilterPredicate("name", EQUAL, "John"));
 
         preparedQuery = service.prepare(query);
     }

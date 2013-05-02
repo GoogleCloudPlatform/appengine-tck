@@ -114,7 +114,7 @@ public class CursorTest extends DatastoreTestBase {
         FetchOptions fetchOption = FetchOptions.Builder.withLimit(limit);
         // fetch 1st page and get cursor1
         QueryResultList<Entity> nextBatch = service.prepare(query)
-                .asQueryResultList(fetchOption);
+            .asQueryResultList(fetchOption);
         Cursor cursor1 = Cursor.fromWebSafeString(nextBatch.getCursor().toWebSafeString());
         // fetch 2nd page and get cursor2
         nextBatch = service.prepare(query).asQueryResultList(fetchOption.startCursor(cursor1));
@@ -137,7 +137,7 @@ public class CursorTest extends DatastoreTestBase {
             fetchOption = fetchOption.endCursor(endCursor);
         }
         QueryResultList<Entity> nextBatch = service.prepare(query)
-                .asQueryResultList(fetchOption);
+            .asQueryResultList(fetchOption);
         assertEquals(exptRet, nextBatch.size());
         if (chkSt != null) {
             assertEquals(chkSt, nextBatch.get(0).getProperty("name"));

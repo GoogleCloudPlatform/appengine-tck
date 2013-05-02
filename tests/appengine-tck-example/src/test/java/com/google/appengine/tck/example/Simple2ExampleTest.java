@@ -16,12 +16,15 @@
 
 package com.google.appengine.tck.example;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -30,11 +33,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 /**
  * Example test cases that demonstrate how to run a client side test.
@@ -50,14 +48,13 @@ public class Simple2ExampleTest extends ExampleTestBase {
     }
 
     /**
+     * @param url the url of the container.
+     * @throws Exception
      * @RunAsClient runs the test outside of the container.  The common
      * usage is to hit a test servlet with some requests, store the results in
      * datastore, then verify the results in a subsequent test case that has access
      * to the results.  @InSequence tells the runner which order to execute the test
      * cases.
-     *
-     * @param url the url of the container.
-     * @throws Exception
      */
     @Test
     @RunAsClient

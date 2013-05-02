@@ -29,9 +29,9 @@ import com.google.appengine.tools.mapreduce.MapReduceSettings;
 import com.google.appengine.tools.pipeline.JobInfo;
 import com.google.appengine.tools.pipeline.PipelineService;
 import com.google.appengine.tools.pipeline.PipelineServiceFactory;
-import org.junit.Assert;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
 import org.junit.runner.RunWith;
 
 /**
@@ -95,7 +95,7 @@ public abstract class MapReduceTestBase extends TestBase {
 
     protected static String toInfo(JobInfo info) {
         StringBuilder sb = new StringBuilder();
-        sb.append("JobInfo[ ").append(info).append( "]");
+        sb.append("JobInfo[ ").append(info).append("]");
         if (info != null) {
             sb.append(" --> ");
             sb.append("state - ").append(info.getJobState()).append(", ");

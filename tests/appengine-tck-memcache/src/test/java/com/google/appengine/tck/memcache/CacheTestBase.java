@@ -49,7 +49,7 @@ public abstract class CacheTestBase extends TestBase {
     protected static final int[] ARRAY1 = {1, -1, 0};
     protected static final Object[] ARRAY2 = {1, STR_VALUE, COMBO2};
     protected static final Object[] TEST_DATA = {KEY1, 101, -1, 0, 123456789L, -987654321L, new Date(0),
-            COMBO1, EMPTY_SET, SET1};
+        COMBO1, EMPTY_SET, SET1};
 
     @Deployment
     public static WebArchive getDeployment() {

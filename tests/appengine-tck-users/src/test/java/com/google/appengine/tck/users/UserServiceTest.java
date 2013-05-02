@@ -15,6 +15,12 @@
  */
 package com.google.appengine.tck.users;
 
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.users.UserServiceFailureException;
@@ -23,7 +29,6 @@ import com.google.appengine.tck.util.AuthClientException;
 import com.google.appengine.tck.util.GaeAuthClient;
 import com.google.appengine.tck.util.Utils;
 import com.google.apphosting.api.ApiProxy;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -37,24 +42,20 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertFalse;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.HashSet;
-import java.util.Set;
-
 
 /**
  * There are 3 authentication settings.
- *   1) Google Accounts
- *   2) Google Apps Accounts
- *   3) Federated Login/OpenId Provider
- *
+ * 1) Google Accounts
+ * 2) Google Apps Accounts
+ * 3) Federated Login/OpenId Provider
+ * <p/>
  * This test class covers #1.  See https://developers.google.com/appengine/articles/auth
- *
+ * <p/>
  * Dev_appserver and appspot differences, dev_appserver does not actually
  * authenticate a user, while appspot does.
  *
+ * @author smithd@google.com
+ * @author ales.justin@jboss.org
  */
 @RunWith(Arquillian.class)
 public class UserServiceTest extends UserTestBase {
@@ -88,10 +89,10 @@ public class UserServiceTest extends UserTestBase {
     }
 
     private boolean isServletProd(URL url) throws IOException {
-       if (prodEnv == null) {
-           initServletEnvironment(url);
-       }
-       return prodEnv;
+        if (prodEnv == null) {
+            initServletEnvironment(url);
+        }
+        return prodEnv;
     }
 
     private boolean isServletDev(URL url) throws IOException {
@@ -346,7 +347,7 @@ public class UserServiceTest extends UserTestBase {
      * On both dev_appserver and appspot, no user should be logged in.  The Arquillian container
      * does not execute the test under an authenticated user.
      */
-     @Test
+    @Test
     public void testUserShouldNotBeLoggedIn() {
         boolean loggedIn = userService.isUserLoggedIn();
         assertFalse("User should not be logged in for both dev_appserver and appspot.", loggedIn);

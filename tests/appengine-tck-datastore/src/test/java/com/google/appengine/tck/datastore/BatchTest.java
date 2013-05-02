@@ -36,7 +36,9 @@ public class BatchTest extends DatastoreTestBase {
 
     private static String getBigString(int len) {
         char[] chars = new char[len];
-        for (int i = 0; i < len; i++) chars[i] = 'x';
+        for (int i = 0; i < len; i++) {
+            chars[i] = 'x';
+        }
         return new String(chars);
     }
 
@@ -196,7 +198,9 @@ public class BatchTest extends DatastoreTestBase {
 
     private List<Integer> getFilterIn(int num) {
         List<Integer> inFilter = new ArrayList<Integer>();
-        for (int i = 0; i < num; i++) inFilter.add(i);
+        for (int i = 0; i < num; i++) {
+            inFilter.add(i);
+        }
         return inFilter;
     }
 

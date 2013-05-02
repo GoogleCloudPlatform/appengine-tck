@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 public class AsyncServiceTest extends DatastoreTestBase {
     private static final String ASYNC_ENTITY = "asyncData";
     private AsyncDatastoreService asyncService = DatastoreServiceFactory.getAsyncDatastoreService();
-    
+
     private Query simpleQuery(Key parentKey) {
         return new Query(ASYNC_ENTITY).setAncestor(parentKey);
     }
