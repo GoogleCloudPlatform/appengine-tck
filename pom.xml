@@ -75,7 +75,6 @@
         <version.com.google.guava>14.0.1</version.com.google.guava>
         <version.charts4j>1.3</version.charts4j>
         <version.commons-logging>1.1.1</version.commons-logging>
-        <version.org.apache.hadoop.core>0.20.2</version.org.apache.hadoop.core>
         <version.org.json>20090211</version.org.json>
 
         <!--- Sonar -->
@@ -543,12 +542,6 @@
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
                 <version>${version.commons-logging}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.hadoop</groupId>
-                <artifactId>hadoop-core</artifactId>
-                <version>${version.org.apache.hadoop.core}</version>
             </dependency>
 
             <dependency>
