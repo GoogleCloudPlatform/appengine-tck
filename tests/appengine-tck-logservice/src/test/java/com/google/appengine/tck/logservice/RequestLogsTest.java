@@ -40,7 +40,10 @@ import com.google.appengine.api.log.LogQuery;
 import com.google.appengine.api.log.LogService;
 import com.google.appengine.api.log.LogServiceFactory;
 import com.google.appengine.api.log.RequestLogs;
+import com.google.appengine.api.utils.SystemProperty;
 import com.google.apphosting.api.ApiProxy;
+
+import org.apache.commons.codec.binary.Base64;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -349,6 +352,36 @@ public class RequestLogsTest extends LoggingTestBase {
   public void testCurrentRequestLogId() throws Exception {
     String id = getCurrentRequestId();
     assertTrue("request_log_id:" + id, id.matches(REGEX_REQUEST_LOG_ID));
+  }
+
+    /**
+     * These could return different values from the implementations so just assert the basics.
+     */
+  @Test
+  @InSequence(20)
+  public void testMiscProperties() throws Exception {
+      RequestLogs logs = getRequestLogs1();
+
+      assertNotNull("App Engine Release, e.g. 1.7.5, or empty string.", logs.getAppEngineRelease());
+      assertTrue("Estimated cost of this request, in dollars.", logs.getCost() >= 0.0);
+      assertTrue("Time required to process this request in microseconds.", logs.getLatencyUsec() > 0);
+      assertTrue("Microseconds request spent in pending request queue, if was pending at all.",
+          logs.getPendingTimeUsec() >= 0);
+      assertFalse("This should never be a loading request: " + logs.toString(), logs.isLoadingRequest());
+
+      String appId = SystemProperty.applicationId.get();  // appIds have a prefix according to datacenter.
+      assertTrue("The application ID that handled this request.", logs.getAppId().endsWith(appId));
+
+      long cycles = logs.getMcycles();
+      assertTrue("Number of machine cycles used to process this request: " + cycles, cycles >= 0);
+
+      String getOffsetMsg = "Base64-encoded offset used with subsequent LogQuery to continue " +
+          "reading logs at the point in time immediately following this request.";
+      assertNotNull(getOffsetMsg, logs.getOffset());
+      assertTrue("Should be Base64: " + logs.getOffset(), Base64.isArrayByteBase64(logs.getOffset().getBytes()));
+
+      String mapEntryMsg = "File or class within the URL mapping used for this request: " + logs.getUrlMapEntry();
+      assertNotNull(mapEntryMsg, logs.getUrlMapEntry());
   }
 
   private RequestLogs getCurrentRequestLogs() {

@@ -37,6 +37,13 @@ import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
 import com.google.apphosting.api.ApiProxy;
 
+import org.apache.commons.codec.BinaryDecoder;
+import org.apache.commons.codec.BinaryEncoder;
+import org.apache.commons.codec.Decoder;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.Encoder;
+import org.apache.commons.codec.EncoderException;
+import org.apache.commons.codec.binary.Base64;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
@@ -70,6 +77,9 @@ public abstract class LoggingTestBase extends TestBase {
         context.setAppEngineWebXmlFile("appengine-web-with-logging-properties.xml");
         WebArchive war = getTckDeployment(context);
         war.addClasses(LoggingTestBase.class, TestBase.class)
+            // classes for Base64.isArrayByteBase64()
+           .addClasses(Base64.class, BinaryEncoder.class, Encoder.class, BinaryDecoder.class,
+               Decoder.class, EncoderException.class, DecoderException.class)
            .addAsWebInfResource("currentTimeUsec.jsp")
            .addAsWebInfResource("doNothing.jsp")
            .addAsWebInfResource("storeTestData.jsp")
