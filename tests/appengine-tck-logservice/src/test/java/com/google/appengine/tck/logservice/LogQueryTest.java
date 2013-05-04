@@ -22,8 +22,10 @@
 
 package com.google.appengine.tck.logservice;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.log.LogQuery;
@@ -44,6 +46,7 @@ import static com.google.appengine.api.log.LogService.LogLevel.ERROR;
 import static com.google.appengine.api.log.LogService.LogLevel.WARN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
@@ -156,6 +159,57 @@ public class LogQueryTest extends LoggingTestBase {
         iterator = service.fetch(logQuery).iterator();
         assertEquals(request2Id, iterator.next().getRequestId());
         assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    @InSequence(20)
+    public void testGetBatchSize() throws Exception {
+        long size = 1;
+        LogService service = LogServiceFactory.getLogService();
+        LogQuery logQuery = new LogQuery().requestIds(Arrays.asList(request1Id, request2Id)).batchSize((int)size);
+
+        Iterator<RequestLogs> iterator = service.fetch(logQuery).iterator();
+        assertNotNull(iterator.next());
+        // TODO: renable when expected behavior is confirmed.
+//        assertFalse("Batch size 1 so there should not be another log", iterator.hasNext());
+        long batchSize = logQuery.getBatchSize();
+        assertEquals(size, batchSize);
+    }
+
+    @Test
+    @InSequence(20)
+    public void testGetters() throws Exception {
+        long batchSize = 20;
+        long startMilliTime = System.currentTimeMillis() - 3000L;
+        long endMilliTime = System.currentTimeMillis() - 2000L;
+        List<String> majorVersions = Arrays.asList("1", "2", "3");
+        LogQuery logQuery =  new LogQuery()
+            .batchSize((int)batchSize)
+            .startTimeMillis(startMilliTime)
+            .endTimeMillis(endMilliTime)
+            .minLogLevel(LogService.LogLevel.WARN)
+            .includeIncomplete(true)
+            .includeAppLogs(true)
+            .offset(null)
+            .majorVersionIds(majorVersions);
+
+        // Execute the query
+        LogService service = LogServiceFactory.getLogService();
+        Iterator<RequestLogs> iterator = service.fetch(logQuery).iterator();
+
+        // The LogQuery should be unmodified, so you can re-use.
+        assertEquals(batchSize, (long)logQuery.getBatchSize());
+        assertEquals(startMilliTime, (long)logQuery.getStartTimeMillis());
+        assertEquals(startMilliTime * 1000, (long)logQuery.getStartTimeUsec());
+        assertEquals(endMilliTime, (long)logQuery.getEndTimeMillis());
+        assertEquals(endMilliTime * 1000, (long)logQuery.getEndTimeUsec());
+        assertEquals(LogService.LogLevel.WARN, logQuery.getMinLogLevel());
+        assertEquals(true, logQuery.getIncludeIncomplete());
+        assertEquals(true, logQuery.getIncludeAppLogs());
+        assertEquals(null, logQuery.getOffset());
+        assertEquals(majorVersions, logQuery.getMajorVersionIds());
+        assertEquals(new ArrayList(), logQuery.getServerVersions());
+        assertEquals(new ArrayList<String>(), logQuery.getRequestIds());
     }
 
     private String getCurrentRequestId() {
