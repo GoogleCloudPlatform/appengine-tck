@@ -40,7 +40,7 @@ public class CodeCoverage {
         return new URLClassLoader(new URL[]{classesToScan.toURI().toURL()}, CodeCoverage.class.getClassLoader());
     }
 
-    public static void report(ClassLoader classLoader, File classesToScan, MethodExclusion exclusion, String... interfaces) throws Exception {
+    public static void report(ClassLoader classLoader, File baseDir, File classesToScan, MethodExclusion exclusion, String... interfaces) throws Exception {
         if (interfaces == null || interfaces.length == 0) {
             log.warning("No interfaces defined!");
             return;
@@ -54,7 +54,7 @@ public class CodeCoverage {
         cc.scan(classesToScan, "");
         cc.print(
                 SoutPrinter.INSTANCE,
-                new HtmlPrinter(new File(classesToScan, "../../index.html")),
+                new HtmlPrinter(baseDir, new File(classesToScan, "../../index.html")),
                 new CsvPrinter(new File(classesToScan, "../../coverage-results.csv"))
         );
     }

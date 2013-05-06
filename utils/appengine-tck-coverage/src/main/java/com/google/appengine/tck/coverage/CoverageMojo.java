@@ -74,7 +74,7 @@ public class CoverageMojo extends AbstractMojo {
         try {
             readInterfaces(classesToScan, classes);
             MethodExclusion me = createExclusion(cl, classesToScan);
-            CodeCoverage.report(cl, classesToScan, me, classes.toArray(new String[classes.size()]));
+            CodeCoverage.report(cl, project.getBasedir(), classesToScan, me, classes.toArray(new String[classes.size()]));
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage());
         }
