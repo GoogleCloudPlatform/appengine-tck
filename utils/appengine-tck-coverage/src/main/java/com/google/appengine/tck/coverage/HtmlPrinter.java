@@ -87,7 +87,7 @@ class HtmlPrinter implements Printer {
                 for (Map.Entry<Tuple, Set<CodeLine>> entry : map.entrySet()) {
                     String methodSignature = SignatureConverter.convertMethodSignature(entry.getKey().getMethodName(), entry.getKey().getMethodDesc());
                     String methodJavaDocUrl = "http://developers.google.com/appengine/docs/java/javadoc/" + iface.replace('.', '/') + "#" + methodSignature;
-                    writer.append("<li class=\"blockList\">").append("<a href=\"").append(methodJavaDocUrl).append("\">").append("<h3>").append(esc(methodSignature)).append("</h3></a>");
+                    writer.append("<li class=\"blockList\">").append("<a href=\"").append(methodJavaDocUrl).append("\" target=\"_top\">").append("<h3>").append(esc(methodSignature)).append("</h3></a>");
                     writer.append("<ul class=\"blockList\">");
                     Set<CodeLine> value = entry.getValue();
                     if (value.isEmpty()) {
@@ -113,7 +113,7 @@ class HtmlPrinter implements Printer {
     protected String toLink(CodeLine cl) {
         String url = createGitHubUrl(GITHUB_USER, GITHUB_PROJECT, GITHUB_BRANCH, getPath(cl), cl.getLine());
         String text = esc(cl.getSimpleClassName() + ".java" + ":" + cl.getLine());
-        return esc(cl.getClassName() + "." + cl.getMethodName()) + " (<a href=\"" + url + "\">" + esc(text) + "</a>)";
+        return esc(cl.getClassName() + "." + cl.getMethodName()) + " (<a href=\"" + url + "\" target=\"_top\">" + esc(text) + "</a>)";
     }
 
     private String getPath(CodeLine cl) {
