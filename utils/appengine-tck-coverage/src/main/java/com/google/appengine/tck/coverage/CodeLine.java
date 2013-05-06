@@ -65,6 +65,6 @@ public class CodeLine implements Comparable<CodeLine> {
 
     public String getSimpleClassName() {
         int lastDotIndex = className.lastIndexOf('.');
-        return lastDotIndex == -1 ? className : className.substring(lastDotIndex+1);
+        return lastDotIndex == -1 ? className : className.substring(lastDotIndex + 1);
     }
 }

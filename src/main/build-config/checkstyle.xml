@@ -22,11 +22,12 @@
     <module name="TreeWalker">
         <property name="cacheFile" value="${checkstyle.cache.file}"/>
 
-        <!-- module name="Regexp">
+        <!-- Start with "Copyright yyyy Google In" -->
+        <module name="Regexp">
             <property name="format"
-                      value="TODO - force right license header!" />
-            <property name="message" value="Correct header not found" />
-        </module -->
+                      value="\A(/\*\n \* Copyright 201\d Google Inc. All Rights Reserved.\n)"/>
+            <property name="message" value="Correct header not found"/>
+        </module>
 
         <!-- Use tabs? -->
         <!-- module name="RegexpSinglelineJava">
