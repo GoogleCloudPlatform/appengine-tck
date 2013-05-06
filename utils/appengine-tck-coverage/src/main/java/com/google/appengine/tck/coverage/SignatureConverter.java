@@ -11,9 +11,24 @@ public class SignatureConverter {
         if (descriptor.charAt(0) != '(') {
             throw new IllegalArgumentException("Can't convert " + descriptor);
         }
-        String params = descriptor.substring(1, descriptor.lastIndexOf(')'));
+
+        int p = descriptor.lastIndexOf(')');
+        String params = descriptor.substring(1, p);
+
+        String retParam = descriptor.substring(p + 1);
+        if (retParam.endsWith(";")) {
+            retParam = retParam.substring(0, retParam.length() - 1);
+        }
+        String ret = convertParam(retParam);
+        // only use simple name for return type
+        int r = ret.lastIndexOf(".");
+        if (r > 0) {
+            ret = ret.substring(r + 1);
+        }
+
         StringTokenizer tokenizer = new StringTokenizer(params, ";");
         StringBuilder sb = new StringBuilder();
+        sb.append(ret).append("  ");
         sb.append(methodName).append("(");
         while (tokenizer.hasMoreTokens()) {
             String param = tokenizer.nextToken();
@@ -27,7 +42,7 @@ public class SignatureConverter {
     }
 
     private static String convertParam(String param) {
-        int i=0;
+        int i = 0;
         StringBuilder appendix = new StringBuilder();
         for (; param.charAt(i) == '['; i++) {
             appendix.append("[]");
@@ -38,20 +53,31 @@ public class SignatureConverter {
 
     private static String convertNonArrayParam(String param) {
         switch (param.charAt(0)) {
-            case 'B': return "byte";
-            case 'C': return "char";
-            case 'D': return "double";
-            case 'F': return "float";
-            case 'I': return "int";
-            case 'J': return "long";
-            case 'S': return "short";
-            case 'Z': return "boolean";
-            case 'V': return "void";
+            case 'B':
+                return "byte";
+            case 'C':
+                return "char";
+            case 'D':
+                return "double";
+            case 'F':
+                return "float";
+            case 'I':
+                return "int";
+            case 'J':
+                return "long";
+            case 'S':
+                return "short";
+            case 'Z':
+                return "boolean";
+            case 'V':
+                return "void";
 //            case 'L':
 //                int lastDotIndex = param.lastIndexOf('/');
 //                return lastDotIndex == -1 ? param.substring(1) : param.substring(lastDotIndex+1);
-            case 'L': return param.substring(1).replace('/', '.');
-            default: throw new IllegalArgumentException("Unknown param type " + param.charAt(0));
+            case 'L':
+                return param.substring(1).replace('/', '.');
+            default:
+                throw new IllegalArgumentException("Unknown param type " + param.charAt(0));
         }
     }
 }
