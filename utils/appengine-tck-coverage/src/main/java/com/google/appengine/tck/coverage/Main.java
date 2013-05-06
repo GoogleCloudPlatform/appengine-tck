@@ -19,6 +19,6 @@ public class Main {
             throw new IllegalArgumentException("Is not directory: " + classesToScan);
 
         List<String> interfaces = Arrays.asList(args).subList(1, args.length);
-        CodeCoverage.report(null, classesToScan, FileMethodExclusion.create(classesToScan), interfaces.toArray(new String[interfaces.size()]));
+        CodeCoverage.report(null, new File("").getAbsoluteFile(), classesToScan, FileMethodExclusion.create(classesToScan), interfaces.toArray(new String[interfaces.size()]));
     }
 }

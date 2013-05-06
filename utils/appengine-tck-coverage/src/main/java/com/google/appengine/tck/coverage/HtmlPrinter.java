@@ -8,11 +8,18 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
+ * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 class HtmlPrinter implements Printer {
+    public static final String GITHUB_USER = "GoogleCloudPlatform";
+    public static final String GITHUB_PROJECT = "appengine-tck";
+    public static final String GITHUB_BRANCH = "master";
+
+    private File baseDir;
     private File index;
 
-    HtmlPrinter(File index) {
+    HtmlPrinter(File baseDir, File index) {
+        this.baseDir = baseDir;
         this.index = index;
     }
 
@@ -50,8 +57,18 @@ class HtmlPrinter implements Printer {
         }
     }
 
-    protected static String toLink(CodeLine cl) {
-        return "<a href=\"" + cl.getClassName().replace('.', '/') + "#" + cl.getMethodName() + "\">" + esc(cl.getClassName() + " @ " + cl.getMethodName() + " # " + cl.getLine()) + "</a>";
+    protected String toLink(CodeLine cl) {
+        String url = createGitHubUrl(GITHUB_USER, GITHUB_PROJECT, GITHUB_BRANCH, getPath(cl), cl.getLine());
+        String text = esc(cl.getClassName() + "@" + cl.getMethodName() + "#" + cl.getLine());
+        return "<a href=\"" + url + "\">" + text + "</a>";
+    }
+
+    private String getPath(CodeLine cl) {
+        return "/tests/" + baseDir.getName() + "/src/test/java/" + cl.getClassName().replace('.', '/') + ".java";
+    }
+
+    private static String createGitHubUrl(String user, String project, String branch, String path, int lineNumber) {
+        return "http://github.com/" + user + "/" + project + "/blob/" + branch + path + "#L" + lineNumber;
     }
 
     static String esc(String token) {
