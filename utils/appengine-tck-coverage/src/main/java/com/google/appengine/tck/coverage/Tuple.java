@@ -2,6 +2,7 @@ package com.google.appengine.tck.coverage;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
+ * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 class Tuple implements Comparable<Tuple> {
     String methodName;
@@ -10,6 +11,14 @@ class Tuple implements Comparable<Tuple> {
     Tuple(String name, String methodDesc) {
         this.methodName = name;
         this.methodDesc = methodDesc;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public String getMethodDesc() {
+        return methodDesc;
     }
 
     public int compareTo(Tuple o) {
