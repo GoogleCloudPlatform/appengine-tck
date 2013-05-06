@@ -76,7 +76,8 @@ class HtmlPrinter implements Printer {
                 "    </style>\n" +
                 "</head>\n" +
                 "<body>");
-            writer.write("<h1>GAE API Code Coverage</h1>");
+//            writer.write("<h1>GAE API Code Coverage</h1>");
+            writer.write("<h1>" + baseDir.getName() + "</h1>");
             for (String iface : report.keySet()) {
                 writer.append("<div class=\"apiClass\">");
                 writer.append("<h2>").append(iface).append("</h2>");
