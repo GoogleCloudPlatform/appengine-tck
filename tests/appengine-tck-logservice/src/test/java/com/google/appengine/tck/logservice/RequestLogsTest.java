@@ -370,7 +370,7 @@ public class RequestLogsTest extends LoggingTestBase {
         String getOffsetMsg = "Base64-encoded offset used with subsequent LogQuery to continue " +
             "reading logs at the point in time immediately following this request.";
         assertNotNull(getOffsetMsg, logs.getOffset());
-        assertTrue("Should be Base64: " + logs.getOffset(), Base64.isArrayByteBase64(logs.getOffset().getBytes()));
+        assertTrue("Should be Base64: " + logs.getOffset(), Base64.isBase64(logs.getOffset().getBytes()));
 
         String mapEntryMsg = "File or class within the URL mapping used for this request: " + logs.getUrlMapEntry();
         assertNotNull(mapEntryMsg, logs.getUrlMapEntry());
@@ -437,5 +437,4 @@ public class RequestLogsTest extends LoggingTestBase {
     private String getCurrentRequestId() {
         return (String) ApiProxy.getCurrentEnvironment().getAttributes().get("com.google.appengine.runtime.request_log_id");
     }
-
 }

@@ -56,7 +56,7 @@
         <version.org.jboss.maven.transformer.plugin>1.0.0.Beta4</version.org.jboss.maven.transformer.plugin>
 
         <!-- TestUtils -->
-        <version.org.apache.httpcomponents>4.0-beta1</version.org.apache.httpcomponents>
+        <version.org.apache.httpcomponents>4.2.5</version.org.apache.httpcomponents>
 
         <!-- Maven -->
         <version.maven>3.0.4</version.maven>
