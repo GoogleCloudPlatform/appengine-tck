@@ -118,8 +118,7 @@ public class UserServiceTest extends UserTestBase {
         return new ServletAnswer(answer);
     }
 
-    private ServletAnswer getAuthServletAnswer(GaeAuthClient client, URL url,
-                                               String method) throws IOException {
+    private ServletAnswer getAuthServletAnswer(GaeAuthClient client, URL url, String method) throws IOException {
 
         HttpResponse response = client.getUrl(url + "/user-service-helper?method=" + method);
         String resp = EntityUtils.toString(response.getEntity());
@@ -145,8 +144,7 @@ public class UserServiceTest extends UserTestBase {
 
         initAuthClient(url, userId, pw);
         ServletAnswer answer = getAuthServletAnswer(authClient, url, "getEmail");
-        Assert.assertEquals("UserId should be same as authenticated user:" + answer,
-            userId, answer.getReturnVal());
+        Assert.assertEquals("UserId should be same as authenticated user:" + answer, userId, answer.getReturnVal());
     }
 
     @Test
@@ -172,8 +170,7 @@ public class UserServiceTest extends UserTestBase {
 
         initAuthClient(url, userId, pw);
         ServletAnswer answer = getAuthServletAnswer(authClient, url, "isUserLoggedIn");
-        Assert.assertEquals("User should be Logged in since the GaeAuthClient is initialized.",
-            "true", answer.getReturnVal());
+        Assert.assertEquals("User should be Logged in since the GaeAuthClient is initialized.", "true", answer.getReturnVal());
     }
 
     /**
@@ -267,11 +264,11 @@ public class UserServiceTest extends UserTestBase {
             return;
         }
 
-        // TODO: verify how to check for the authDomain.
         String authDomain = "othergaetcktest.org";
         String destURLenc = "/_ah/login?continue=" + DEST_URL_ENCODED_SINGLE;
         String createdURL = UserServiceFactory.getUserService().createLoginURL(DEST_URL, authDomain);
-        Assert.assertEquals(destURLenc, createdURL);
+        // TODO: verify how to check for the authDomain.
+        Assert.assertTrue(createdURL.startsWith(destURLenc));
     }
 
     @Test
@@ -308,11 +305,11 @@ public class UserServiceTest extends UserTestBase {
             return;
         }
 
-        // TODO: verify how to check for the authDomain.
         String authDomain = "othergaetcktest.org";
         String destURLenc = "/_ah/login?continue=" + DEST_URL_ENCODED_SINGLE;
         String createdURL = UserServiceFactory.getUserService().createLoginURL(DEST_URL, authDomain);
-        Assert.assertEquals(destURLenc, createdURL);
+        // TODO: verify how to check for the authDomain.
+        Assert.assertTrue(createdURL.startsWith(destURLenc));
     }
 
     @Test
@@ -339,7 +336,7 @@ public class UserServiceTest extends UserTestBase {
 
         String destURLenc = "/_ah/logout?continue=" + DEST_URL_ENCODED_SINGLE;
         String createdURL = UserServiceFactory.getUserService().createLogoutURL(DEST_URL);
-        Assert.assertEquals(destURLenc, createdURL);
+        Assert.assertTrue(createdURL.startsWith(destURLenc));
     }
 
     /**
