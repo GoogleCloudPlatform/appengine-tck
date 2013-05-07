@@ -1,0 +1,6 @@
+# CasValues
+com.google.appengine.api.memcache.MemcacheService$CasValues@getExipration@()Lcom/google/appengine/api/memcache/Expiration;
+com.google.appengine.api.memcache.MemcacheService$CasValues@getNewValue@()Ljava/lang/Object;
+com.google.appengine.api.memcache.MemcacheService$CasValues@getOldValue@()Lcom/google/appengine/api/memcache/MemcacheService$IdentifiableValue;
+com.google.appengine.api.memcache.MemcacheService$CasValues@equals@(Ljava/lang/Object;)Z
+com.google.appengine.api.memcache.MemcacheService$CasValues@hashCode@()I

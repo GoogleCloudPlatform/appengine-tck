@@ -4,4 +4,3 @@ com.google.appengine.api.memcache.BaseMemcacheService
 com.google.appengine.api.memcache.MemcacheServiceFactory
 com.google.appengine.api.memcache.MemcacheService$IdentifiableValue
 com.google.appengine.api.memcache.MemcacheService$CasValues
-com.google.appengine.api.memcache.MemcacheService$SetPolicy

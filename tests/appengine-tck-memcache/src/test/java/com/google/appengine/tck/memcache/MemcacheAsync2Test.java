@@ -364,7 +364,7 @@ public class MemcacheAsync2Test extends CacheTestBase {
 
         Map<Object, CasValues> updateDat = new HashMap<Object, CasValues>();
         for (Object key : testDat) {
-            updateDat.put(key, new CasValues(memcache.getIdentifiable(key), "new value"));
+            updateDat.put(key, new CasValues(memcache.getIdentifiable(key), "new value", Expiration.byDeltaSeconds(60 * 60)));
         }
         Future<Set<Object>> futureSet = asyncMemcache.putIfUntouched(updateDat, Expiration.byDeltaMillis(1000));
         set = waitOnFuture(futureSet);
