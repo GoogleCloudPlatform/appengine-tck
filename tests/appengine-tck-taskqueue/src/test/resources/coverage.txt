@@ -1,5 +1,4 @@
 com.google.appengine.api.taskqueue.Queue
-com.google.appengine.api.taskqueue.DeferredTask
 com.google.appengine.api.taskqueue.DeferredTaskContext
 com.google.appengine.api.taskqueue.LeaseOptions
 com.google.appengine.api.taskqueue.QueueFactory

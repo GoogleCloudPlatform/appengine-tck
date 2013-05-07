@@ -64,12 +64,10 @@ public class DeferredTest extends QueueTestBase {
         String testMethodTag = "testDefault";
         Map<String, String> paramMap = dsUtil.createParamMap(testMethodTag);
 
-        TaskOptions taskOptions = TaskOptions.Builder
-            .withPayload(new ExecDeferred(dsUtil, paramMap));
+        TaskOptions taskOptions = TaskOptions.Builder.withPayload(new ExecDeferred(dsUtil, paramMap));
 
         QueueFactory.getDefaultQueue().add(taskOptions);
-        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax,
-            testMethodTag);
+        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
 
         dsUtil.assertTaskParamsMatchEntityProperties(paramMap, entity);
     }
@@ -79,12 +77,10 @@ public class DeferredTest extends QueueTestBase {
         String testMethodTag = "testDeferredTaskWithNoName";
         Map<String, String> paramMap = dsUtil.createParamMap(testMethodTag);
 
-        TaskOptions taskOptions = TaskOptions.Builder
-            .withPayload(new ExecDeferred(dsUtil, paramMap));
+        TaskOptions taskOptions = TaskOptions.Builder.withPayload(new ExecDeferred(dsUtil, paramMap));
 
         QueueFactory.getQueue(E2E_TESTING_DEFERRED).add(taskOptions);
-        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax,
-            testMethodTag);
+        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
 
         dsUtil.assertTaskParamsMatchEntityProperties(paramMap, entity);
     }
@@ -95,13 +91,10 @@ public class DeferredTest extends QueueTestBase {
         String testMethodTag = "testDeferredTaskNameSpecified";
         Map<String, String> paramMap = dsUtil.createParamMap(testMethodTag);
 
-        TaskOptions taskOptions = TaskOptions.Builder
-            .withPayload(new ExecDeferred(dsUtil, paramMap))
-            .taskName(taskName);
+        TaskOptions taskOptions = TaskOptions.Builder.withTaskName(taskName).payload(new ExecDeferred(dsUtil, paramMap));
 
         QueueFactory.getQueue(E2E_TESTING_DEFERRED).add(taskOptions);
-        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax,
-            testMethodTag);
+        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
 
         Map<String, String> expectedMap = new HashMap<String, String>(paramMap);
         expectedMap.put("X-AppEngine-TaskName", taskName);
@@ -116,13 +109,11 @@ public class DeferredTest extends QueueTestBase {
 
         NamespaceManager.set(specifiedNameSpace);
 
-        TaskOptions taskOptions = TaskOptions.Builder
-            .withPayload(new ExecDeferred(dsUtil, paramMap));
+        TaskOptions taskOptions = TaskOptions.Builder.withPayload(new ExecDeferred(dsUtil, paramMap));
 
         // no task name specified.
         QueueFactory.getQueue(E2E_TESTING_DEFERRED).add(taskOptions);
-        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax,
-            testMethodTag);
+        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
 
         Map<String, String> expectedMap = new HashMap<String, String>(paramMap);
         expectedMap.put("X-AppEngine-Current-Namespace", specifiedNameSpace);

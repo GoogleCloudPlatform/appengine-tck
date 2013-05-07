@@ -19,10 +19,19 @@ import java.util.StringTokenizer;
 
 /**
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class SignatureConverter {
 
     public static String convertMethodSignature(String methodName, String descriptor) {
+        return convertToMethodSignature(methodName, descriptor, false);
+    }
+
+    public static String convertFullMethodSignature(String methodName, String descriptor) {
+        return convertToMethodSignature(methodName, descriptor, true);
+    }
+
+    protected static String convertToMethodSignature(String methodName, String descriptor, boolean full) {
         if (descriptor.charAt(0) != '(') {
             throw new IllegalArgumentException("Can't convert " + descriptor);
         }
@@ -30,20 +39,23 @@ public class SignatureConverter {
         int p = descriptor.lastIndexOf(')');
         String params = descriptor.substring(1, p);
 
-        String retParam = descriptor.substring(p + 1);
-        if (retParam.endsWith(";")) {
-            retParam = retParam.substring(0, retParam.length() - 1);
-        }
-        String ret = convertParam(retParam);
-        // only use simple name for return type
-        int r = ret.lastIndexOf(".");
-        if (r > 0) {
-            ret = ret.substring(r + 1);
-        }
-
         StringTokenizer tokenizer = new StringTokenizer(params, ";");
         StringBuilder sb = new StringBuilder();
-        sb.append(ret).append("  ");
+
+        if (full) {
+            String retParam = descriptor.substring(p + 1);
+            if (retParam.endsWith(";")) {
+                retParam = retParam.substring(0, retParam.length() - 1);
+            }
+            String ret = convertParam(retParam);
+            // only use simple name for return type
+            int r = ret.lastIndexOf(".");
+            if (r > 0) {
+                ret = ret.substring(r + 1);
+            }
+            sb.append(ret).append("  ");
+        }
+
         sb.append(methodName).append("(");
         while (tokenizer.hasMoreTokens()) {
             String param = tokenizer.nextToken();
@@ -63,7 +75,13 @@ public class SignatureConverter {
             appendix.append("[]");
         }
 
-        return convertNonArrayParam(param.substring(i)) + appendix;
+        String subparam = param.substring(i);
+        String result = convertNonArrayParam(subparam) + appendix;
+        if (isPrimitive(subparam) && subparam.length() > 1) {
+            return result + ", " + convertParam(subparam.substring(1));
+        } else {
+            return result;
+        }
     }
 
     private static String convertNonArrayParam(String param) {
@@ -92,7 +110,24 @@ public class SignatureConverter {
             case 'L':
                 return param.substring(1).replace('/', '.');
             default:
-                throw new IllegalArgumentException("Unknown param type " + param.charAt(0));
+                throw new IllegalArgumentException("Unknown param type " + param);
+        }
+    }
+
+    private static boolean isPrimitive(String param) {
+        switch (param.charAt(0)) {
+            case 'B':
+            case 'C':
+            case 'D':
+            case 'F':
+            case 'I':
+            case 'J':
+            case 'S':
+            case 'Z':
+            case 'V':
+                return true;
+            default:
+                return false;
         }
     }
 }

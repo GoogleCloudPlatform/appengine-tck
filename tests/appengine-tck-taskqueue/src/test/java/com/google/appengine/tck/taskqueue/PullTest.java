@@ -66,6 +66,34 @@ public class PullTest extends QueueTestBase {
     }
 
     @Test
+    public void testPullPayloadWithCharset() throws Exception {
+        final Queue queue = QueueFactory.getQueue("pull-queue");
+        TaskHandle th = queue.add(withMethod(PULL).payload("foobar", "utf-8").etaMillis(15000));
+        try {
+            List<TaskHandle> handles = queue.leaseTasks(30, TimeUnit.MINUTES, 100);
+            assertFalse(handles.isEmpty());
+            TaskHandle lh = handles.get(0);
+            assertEquals(th.getName(), lh.getName());
+        } finally {
+            queue.deleteTask(th);
+        }
+    }
+
+    @Test
+    public void testPullPayloadWithContentType() throws Exception {
+        final Queue queue = QueueFactory.getQueue("pull-queue");
+        TaskHandle th = queue.add(withMethod(PULL).payload("foobar".getBytes(), "text/plain").etaMillis(15000));
+        try {
+            List<TaskHandle> handles = queue.leaseTasks(30, TimeUnit.MINUTES, 100);
+            assertFalse(handles.isEmpty());
+            TaskHandle lh = handles.get(0);
+            assertEquals(th.getName(), lh.getName());
+        } finally {
+            queue.deleteTask(th);
+        }
+    }
+
+    @Test
     public void testPullWithTag() throws Exception {
         final Queue queue = QueueFactory.getQueue("pull-queue");
         TaskHandle th = queue.add(withMethod(PULL).tag("barfoo1").etaMillis(15000));

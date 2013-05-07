@@ -15,6 +15,7 @@
 
 package com.google.appengine.tck.taskqueue;
 
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -57,6 +58,11 @@ public class PullQueueBadArgumentsTest extends QueueTestBase {
     @Test(expected = IllegalArgumentException.class)
     public void testPullTaskWithHeaderIsNotAllowed() {
         queue.add(withMethod(PULL).payload("payload").header("someHeader", "foo"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPullTaskWithHeadersIsNotAllowed() {
+        queue.add(withMethod(PULL).payload("payload").headers(Collections.singletonMap("someHeader", "foo")));
     }
 
     @Test(expected = IllegalArgumentException.class)
