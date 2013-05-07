@@ -297,22 +297,26 @@ Running it is the same as code coverage:
 
 To generate an html report:
 
-    site mvn
+    mvn site
 
 The results will be located in tests/appengine-tck-[test-package]/target/site/checkstyle.html.
 
 
 Reporting Summary
 -----------------
-To summarize, there are 3 kind of reports that are generated, 1) Code Coverage,
-2) Checkstyle, and 3) Test Results.
+To summarize, there are 3 kind of reports that are generated:
+* Code Coverage,
+* Checkstyle,
+* Test Results.
 
 ### Code Coverage and Checkstyle Reports
 
     cd appengine-tck
     mvn clean install
 
-Code coverage will be located in index.html  To generate Checkstyle reports:
+Code coverage will be located in index.html file.
+
+To generate Checkstyle reports:
 
     mvn site
 
