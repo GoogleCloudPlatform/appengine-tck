@@ -145,7 +145,10 @@
                 <dependency>
                     <groupId>org.jboss.arquillian.container</groupId>
                     <artifactId>arquillian-gae-tools</artifactId>
-                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.google.appengine</groupId>
+                    <artifactId>appengine-tools-sdk</artifactId>
                 </dependency>
             </dependencies>
         </profile>

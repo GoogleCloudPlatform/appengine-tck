@@ -327,6 +327,15 @@
                 <version>${version.com.google.gae.api}</version>
             </dependency>
 
+            <!-- GAE Tools -->
+
+            <dependency>
+                <groupId>com.google.appengine</groupId>
+                <artifactId>appengine-tools-sdk</artifactId>
+                <version>${version.com.google.gae.api}</version>
+                <scope>test</scope>
+            </dependency>
+
             <!-- Ext -->
 
             <dependency>
@@ -404,6 +413,12 @@
                 <groupId>org.jboss.arquillian.container</groupId>
                 <artifactId>arquillian-gae-tools</artifactId>
                 <version>${version.arquillian.gae}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.appengine</groupId>
+                        <artifactId>appengine-tools-sdk</artifactId>
+                    </exclusion>
+                </exclusions>
                 <scope>test</scope>
             </dependency>
 

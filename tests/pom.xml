@@ -126,8 +126,7 @@
                                 <include>com/google/appengine/tck/**/*Test.java</include>
                             </includes>
                             <systemProperties>
-                                <appengine.test.datastore.default_high_rep_job_policy_unapplied_job_pct>20
-                                </appengine.test.datastore.default_high_rep_job_policy_unapplied_job_pct>
+                                <appengine.test.datastore.default_high_rep_job_policy_unapplied_job_pct>20</appengine.test.datastore.default_high_rep_job_policy_unapplied_job_pct>
                             </systemProperties>
                         </configuration>
                     </plugin>
@@ -170,7 +169,10 @@
                 <dependency>
                     <groupId>org.jboss.arquillian.container</groupId>
                     <artifactId>arquillian-gae-tools</artifactId>
-                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.google.appengine</groupId>
+                    <artifactId>appengine-tools-sdk</artifactId>
                 </dependency>
             </dependencies>
         </profile>
