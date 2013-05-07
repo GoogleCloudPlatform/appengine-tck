@@ -22,7 +22,7 @@ import com.google.appengine.tools.mapreduce.ReducerInput;
 /**
  * From Google AppEngine MapReduce Examples.
  *
- * @author ohler@google.com (Christian Ohler)
+ * @author Google App Engine Team
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class CountReducer extends Reducer<String, Long, KeyValue<String, Long>> {

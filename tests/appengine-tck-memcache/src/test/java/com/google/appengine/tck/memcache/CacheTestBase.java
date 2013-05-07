@@ -31,7 +31,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 /**
  * Tests Cache.
  *
- * @author kjin@google.com (Kevin Jin)
  * @author hchen@google.com (Hannah Chen)
  */
 public abstract class CacheTestBase extends TestBase {

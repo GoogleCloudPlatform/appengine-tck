@@ -53,8 +53,8 @@ import static org.junit.Assert.assertFalse;
  * Dev_appserver and appspot differences, dev_appserver does not actually
  * authenticate a user, while appspot does.
  *
- * @author smithd@google.com
  * @author ales.justin@jboss.org
+ * @author terryok@google.com
  */
 @RunWith(Arquillian.class)
 public class UserServiceTest extends UserTestBase {

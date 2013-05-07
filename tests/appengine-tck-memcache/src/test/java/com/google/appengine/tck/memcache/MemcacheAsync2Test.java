@@ -49,7 +49,6 @@ import static org.junit.Assert.assertTrue;
  * Tests Async Memcache.
  *
  * @author hchen@google.com (Hannah Chen)
- * @author smithd@google.com (Dave Smith)
  */
 @RunWith(Arquillian.class)
 public class MemcacheAsync2Test extends CacheTestBase {

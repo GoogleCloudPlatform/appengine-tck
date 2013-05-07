@@ -24,8 +24,6 @@ import java.util.Date;
 
 /**
  * Contains fields of various types for testing.
- *
- * @author kjin@google.com (Kevin Jin)
  */
 public class ComboType implements Serializable {
     // for Serializable
