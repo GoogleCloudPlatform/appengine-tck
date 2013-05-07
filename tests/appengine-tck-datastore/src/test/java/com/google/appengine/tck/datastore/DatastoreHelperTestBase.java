@@ -34,6 +34,14 @@ import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.tck.base.TestBase;
+import org.apache.commons.codec.BinaryDecoder;
+import org.apache.commons.codec.BinaryEncoder;
+import org.apache.commons.codec.Decoder;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.Encoder;
+import org.apache.commons.codec.EncoderException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.BaseNCodec;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
@@ -43,8 +51,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
- * @author hchen@google.com (Hannah Chen)
- * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
+ * Datastore test helper
  */
 public abstract class DatastoreHelperTestBase extends TestBase {
     protected String rootKind = "root";
@@ -55,7 +62,11 @@ public abstract class DatastoreHelperTestBase extends TestBase {
 
     protected static WebArchive getHelperDeployment() {
         WebArchive war = getTckDeployment();
-        war.addClass(DatastoreHelperTestBase.class);
+        war.addClass(DatastoreHelperTestBase.class)
+            .addClasses(Base64.class, BaseNCodec.class)
+            .addClasses(BinaryEncoder.class, Encoder.class)
+            .addClasses(BinaryDecoder.class, Decoder.class)
+            .addClasses(EncoderException.class, DecoderException.class);
         return war;
     }
 

@@ -28,6 +28,9 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.memcache.MemcacheSerialization;
+import com.google.appengine.api.utils.SystemProperty;
+
+import org.apache.commons.codec.binary.Base64;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,11 +40,10 @@ import org.junit.runner.RunWith;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * datastore key data type test.
- *
- * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
 public class KeyTest extends DatastoreTestBase {
@@ -195,5 +197,84 @@ public class KeyTest extends DatastoreTestBase {
             new String(MemcacheSerialization.makePbKey(childKeyB)));
         service.delete(childKeyB);
         service.delete(parentKeyB);
+    }
+
+    @Test
+    public void testKeyBuilder() throws InterruptedException {
+        String kind = "familyKey";
+        clearData(kind);
+        Entity parent = new Entity(kind);
+        parent.setProperty("role", "father");
+        Key pKey = service.put(parent);
+        assertEquals(kind, pKey.getKind());
+        String appId = pKey.getAppId();
+        if (appId.indexOf('~') > -1) {
+            appId = appId.substring(appId.indexOf('~') + 1);
+        }
+        assertEquals(SystemProperty.applicationId.get(), appId);
+
+        Key cKey1 = new KeyFactory.Builder(pKey).addChild(kind, 1).getKey();
+        assertEquals(-1, pKey.compareTo(cKey1));
+        Entity child1 = new Entity(cKey1);
+        child1.setProperty("role", "child1-gril");
+        service.put(child1);
+        assertEquals(pKey, cKey1.getParent());
+
+        Key cKey2 = new KeyFactory.Builder(kind, 1).addChild(kind, "cousin1").getKey();
+        Entity child2 = new Entity(cKey2);
+        child2.setProperty("role", "cousin-gril");
+        service.put(child2);
+        assertEquals(true, cKey2.isComplete());
+
+        Key cKey3 = pKey.getChild(kind, 2);
+        Entity child3 = new Entity(cKey3);
+        child1.setProperty("role", "child2-boy");
+        service.put(child3);
+        assertEquals(true, cKey3.equals(child3.getKey()));
+
+        Key cKey4 = pKey.getChild(kind, "cousin2");
+        Entity child4 = new Entity(cKey4);
+        child1.setProperty("role", "cousin-boy");
+        service.put(child4);
+        assertEquals(cKey4.hashCode(), cKey4.hashCode());
+    }
+
+    @Test
+    public void testKeyString() throws InterruptedException {
+        String kind = "familyKeyString";
+        clearData(kind);
+        Entity parent = new Entity(kind);
+        parent.setProperty("role", "father");
+        Key pKey = service.put(parent);
+
+        String keyString = KeyFactory.createKeyString(pKey, kind, 1);
+        assertTrue(Base64.isBase64(keyString.getBytes()));
+        Entity entity = new Entity(KeyFactory.stringToKey(keyString));
+        entity.setProperty("role", "keystring+id");
+        service.put(entity);
+        assertEquals(1, entity.getKey().getId());
+        assertEquals(kind, entity.getKey().getKind());
+
+        keyString = KeyFactory.createKeyString(pKey, kind, "2");
+        assertTrue(Base64.isBase64(keyString.getBytes()));
+        entity = new Entity(KeyFactory.stringToKey(keyString));
+        entity.setProperty("role", "keystring+name");
+        service.put(entity);
+        assertEquals("2", entity.getKey().getName());
+        assertEquals(pKey, entity.getParent());
+
+        keyString = KeyFactory.createKeyString(kind, 3);
+        assertTrue(Base64.isBase64(keyString.getBytes()));
+        entity = new Entity(KeyFactory.stringToKey(keyString));
+        entity.setProperty("role", "keystring+id");
+        service.put(entity);
+        assertEquals(3, entity.getKey().getId());
+
+        keyString = KeyFactory.createKeyString(kind, "4");
+        assertTrue(Base64.isBase64(keyString.getBytes()));
+        entity = new Entity(KeyFactory.stringToKey(keyString));
+        entity.setProperty("role", "keystring+name");
+        service.put(entity);
+        assertEquals("4", entity.getKey().getName());
     }
 }

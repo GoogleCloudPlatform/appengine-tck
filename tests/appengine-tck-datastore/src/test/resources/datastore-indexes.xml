@@ -60,12 +60,25 @@
         <property name="count" direction="desc"/>
     </datastore-index>
 
+    <datastore-index kind="indextest2" ancestor="false" source="manual">
+        <property name="stringData" direction="desc"/>
+        <property name="age" direction="asc"/>
+    </datastore-index>
+
     <datastore-index kind="numberType" ancestor="true" source="manual">
         <property name="intProp" direction="asc"/>
     </datastore-index>
 
+    <datastore-index kind="numberType" ancestor="true" source="auto">
+        <property name="longProp" direction="asc"/>
+    </datastore-index>
+
     <datastore-index kind="numberType" ancestor="true" source="manual">
-        <property name="intProp" direction="desc"/>
+        <property name="doubleProp" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="auto">
+        <property name="shortProp" direction="asc"/>
     </datastore-index>
 
     <datastore-index kind="numberType" ancestor="true" source="manual">
@@ -73,12 +86,27 @@
     </datastore-index>
 
     <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="ratingProp" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="intProp" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="longProp" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="doubleProp" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="numberType" ancestor="true" source="manual">
         <property name="shortProp" direction="desc"/>
     </datastore-index>
 
-    <datastore-index kind="indextest2" ancestor="false" source="manual">
-        <property name="stringData" direction="desc"/>
-        <property name="age" direction="asc"/>
+    <datastore-index kind="numberType" ancestor="true" source="manual">
+        <property name="ratingProp" direction="desc"/>
     </datastore-index>
 
     <datastore-index kind="stringType" ancestor="true" source="manual">
@@ -87,6 +115,30 @@
 
     <datastore-index kind="stringType" ancestor="true" source="manual">
         <property name="stringProp" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="stringType" ancestor="true" source="manual">
+        <property name="phoneProp" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="stringType" ancestor="true" source="manual">
+        <property name="addressProp" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="stringType" ancestor="true" source="manual">
+        <property name="emailProp" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="stringType" ancestor="true" source="manual">
+        <property name="linkProp" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="stringType" ancestor="true" source="manual">
+        <property name="categoryProp" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="stringType" ancestor="true" source="manual">
+        <property name="byteStrProp" direction="asc"/>
     </datastore-index>
 
     <datastore-index kind="indexquery" ancestor="true" source="manual">
@@ -156,36 +208,12 @@
         <property name="__key__" direction="desc"/>
     </datastore-index>
 
-    <datastore-index kind="numberType" ancestor="true" source="manual">
-        <property name="longProp" direction="asc"/>
-    </datastore-index>
-
-    <datastore-index kind="numberType" ancestor="true" source="manual">
-        <property name="intProp" direction="desc"/>
-    </datastore-index>
-
     <datastore-index kind="geoPtType" ancestor="true" source="manual">
         <property name="propName" direction="asc"/>
     </datastore-index>
 
     <datastore-index kind="geoPtType" ancestor="true" source="manual">
         <property name="propName" direction="desc"/>
-    </datastore-index>
-
-    <datastore-index kind="numberType" ancestor="true" source="manual">
-        <property name="doubleProp" direction="asc"/>
-    </datastore-index>
-
-    <datastore-index kind="numberType" ancestor="true" source="manual">
-        <property name="longProp" direction="desc"/>
-    </datastore-index>
-
-    <datastore-index kind="numberType" ancestor="true" source="manual">
-        <property name="shortProp" direction="asc"/>
-    </datastore-index>
-
-    <datastore-index kind="numberType" ancestor="true" source="manual">
-        <property name="doubleProp" direction="desc"/>
     </datastore-index>
 
     <datastore-index kind="indexquery" ancestor="true" source="manual">

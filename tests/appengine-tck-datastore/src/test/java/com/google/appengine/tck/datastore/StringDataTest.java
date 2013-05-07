@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Category;
 import com.google.appengine.api.datastore.Email;
 import com.google.appengine.api.datastore.Entity;
@@ -42,8 +43,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * datastore string data type test.
- *
- * @author hchen@google.com (Hannah Chen)
  */
 @RunWith(Arquillian.class)
 public class StringDataTest extends DatastoreTestBase {
@@ -67,25 +66,26 @@ public class StringDataTest extends DatastoreTestBase {
         Text[] textDat = {new Text("english"), new Text("chinese"), new Text("japanese")};
         ShortBlob[] byteString = {new ShortBlob("shortblob".getBytes()),
             new ShortBlob("shortText".getBytes()), new ShortBlob("shortImage".getBytes())};
+        Blob[] blobDat = {new Blob("blobImage".getBytes()), new Blob("blobText".getBytes()),
+            new Blob("blobData".getBytes())};
 
-        Query q = new Query(kindName, rootKey);
-        if (service.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
-            List<Entity> elist = new ArrayList<Entity>();
-            for (int i = 0; i < 3; i++) {
-                newRec = new Entity(kindName, rootKey);
-                newRec.setProperty("stringProp", stringDat[i]);
-                newRec.setProperty("phoneProp", phoneDat[i]);
-                newRec.setProperty("addressProp", addressDat[i]);
-                newRec.setProperty("emailProp", emailDat[i]);
-                newRec.setProperty("linkProp", linkDat[i]);
-                newRec.setProperty("categoryProp", categoryDat[i]);
-                newRec.setProperty("textProp", textDat[i]);
-                newRec.setProperty("byteStrProp", byteString[i]);
-                elist.add(newRec);
-            }
-            service.put(elist);
-            sync(waitTime);
+        clearData(kindName);
+        List<Entity> elist = new ArrayList<Entity>();
+        for (int i = 0; i < 3; i++) {
+            newRec = new Entity(kindName, rootKey);
+            newRec.setProperty("stringProp", stringDat[i]);
+            newRec.setProperty("phoneProp", phoneDat[i]);
+            newRec.setProperty("addressProp", addressDat[i]);
+            newRec.setProperty("emailProp", emailDat[i]);
+            newRec.setProperty("linkProp", linkDat[i]);
+            newRec.setProperty("categoryProp", categoryDat[i]);
+            newRec.setProperty("textProp", textDat[i]);
+            newRec.setProperty("byteStrProp", byteString[i]);
+            newRec.setProperty("blobProp", blobDat[i]);
+            elist.add(newRec);
         }
+        service.put(elist);
+        sync(waitTime);
     }
 
     @Test
@@ -211,6 +211,46 @@ public class StringDataTest extends DatastoreTestBase {
         assertTrue(getText.equals("english") || getText.equals("chinese")
             || getText.equals("japanese"));
         assertEquals(text.hashCode(), text.hashCode());
+    }
+
+    @Test
+    public void testBlobType() {
+        String propertyName = "blobProp";
+        List<Entity> elist = doQuery(kindName, propertyName, null, false);
+        Blob blob = (Blob) elist.get(0).getProperty(propertyName);
+        Blob sameDat = (Blob) elist.get(0).getProperty(propertyName);
+        Blob diffDat = (Blob) elist.get(1).getProperty(propertyName);
+        assertTrue(blob.equals(sameDat));
+        assertFalse(blob.equals(diffDat));
+        byte[] blobData = blob.getBytes();
+        assertTrue(Arrays.equals("blobImage".getBytes(), blobData) ||
+                   Arrays.equals("blobText".getBytes(), blobData) ||
+                   Arrays.equals("blobData".getBytes(), blobData));
+        assertEquals(blob.hashCode(), blob.hashCode());
+    }
+
+    @Test
+    public void testSize() {
+        String kind = kindName + "-size";
+        int recordSize = (1000 * 1000);  // Max. 1000000.
+        byte[] filledRec = new byte[recordSize];
+        Arrays.fill(filledRec, (byte) 0x41);
+        Blob bigBlob = new Blob(filledRec);
+        assertEquals(recordSize, bigBlob.getBytes().length);
+        Entity eBlob = new Entity(kind, rootKey);
+        eBlob.setProperty("blobProp", bigBlob);
+        service.put(eBlob);
+
+        recordSize = 500 ;  // Max. 500.
+        filledRec = new byte[recordSize];
+        Arrays.fill(filledRec, (byte) 0x41);
+        ShortBlob shortBlob = new ShortBlob(filledRec);
+        assertEquals(recordSize, shortBlob.getBytes().length);
+        Entity eShortBlob = new Entity(kind, rootKey);
+        eShortBlob.setProperty("byteStrProp", shortBlob);
+        service.put(eShortBlob);
+
+        service.delete(eBlob.getKey(), eShortBlob.getKey());
     }
 
     protected void doInFilter(String kind, String pName, String[] inDat) {
