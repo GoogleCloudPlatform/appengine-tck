@@ -19,7 +19,7 @@ e.g. the easiest way to file a bug against GAE API is to provide a valid failing
 License
 -------
 
-The content of this repository is released under the <PUT LICENCE TYPE HERE>
+The content of this repository is released under the Apache License 2.0
 as provided in the LICENSE file that accompanied this code.
 
 By submitting a "pull request" or otherwise contributing to this repository, you
@@ -58,7 +58,14 @@ are submitting a test or making any other contribution see [How to Submit Tests]
     cd tests
     mvn clean install -Psdk,multisuite -Dappengine.sdk.root=<PATH_TO_SDK>
 
-    see tests/appengine-tck-[test_package]/target/surefire-reports for results.
+A summary of each API (SUCCESS/FAILURE) will be listed at the end, and the raw results will
+be located in tests/appengine-tck-[test-package]/target/surefire-reports.
+
+To generate an html report:
+
+    mvn surefire-report:report
+
+There will be a report for each api located in tests/appengine-tck-[test-package]/target/site/surefire-report.html.The details of the failures will are at the bottom.
 
 The rest of this document goes into the details of running and writing tests.
 
@@ -119,7 +126,7 @@ Or just:
     cd appengine-tck
     mvn clean install
 
-to generate the default coverage report.
+The report is located here: appengine-tck/index.html
 
 We can also explicitly exclude some of the API methods with exclusions.txt file (deprecated methods are already excluded by default).
 
@@ -277,3 +284,44 @@ To make things a bit easier, we already introduced a few abstract / helper class
 * if any custom behavior needs to be added per test environment, add this via TestLifecycles::before or TestLifecycles::after
 * LibUtils class can be used to grab whole libraries / jars from Maven and attach them to .war as library (WEB-INF/lib)
 * one can add its own multisuite ScanStrategy and NotificationFilter; see ScanMultiProvider class for more details
+
+Checkstyle
+----------
+The maven-checkstyle-plugin is enabled for this project, and will report a
+build failure if there is a violation.
+
+Running it is the same as code coverage:
+
+    cd appengine-tck
+    mvn clean install
+
+To generate an html report:
+
+    site mvn
+
+The results will be located in tests/appengine-tck-[test-package]/target/site/checkstyle.html.
+
+
+Reporting Summary
+-----------------
+To summarize, there are 3 kind of reports that are generated, 1) Code Coverage,
+2) Checkstyle, and 3) Test Results.
+
+### Code Coverage and Checkstyle Reports
+
+    cd appengine-tck
+    mvn clean install
+
+Code coverage will be located in index.html  To generate Checkstyle reports:
+
+    mvn site
+
+See tests/appengine-tck-[test-package]/target/site/checkstyle.html
+
+### Test Results
+
+    cd appengine-tck/tests
+    mvn clean install -Psdk,...   (run tests)
+    mvn surefire-report:report
+
+See tests/appengine-tck-[test-package]/target/site/surefire-report.html
