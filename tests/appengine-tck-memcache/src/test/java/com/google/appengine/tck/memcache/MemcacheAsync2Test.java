@@ -30,6 +30,7 @@ import com.google.appengine.api.memcache.MemcacheService.IdentifiableValue;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.memcache.Stats;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -387,6 +388,24 @@ public class MemcacheAsync2Test extends CacheTestBase {
         assertTrue(stats.getMaxTimeWithoutAccess() > -1);
         assertTrue(stats.getMissCount() > -1L);
         assertTrue(stats.getTotalItemBytes() > -1L);
+    }
+
+    @Test
+    public void testAsyncWithNamespace() {
+        String namespace = "namespace-123";
+
+        AsyncMemcacheService ams = MemcacheServiceFactory.getAsyncMemcacheService(namespace);
+
+        String key = "some-random-key";
+        String value = "some-random-value";
+
+        waitOnFuture(ams.put(key, value));
+
+        // non-namespaced lookup
+        Assert.assertFalse(memcache.contains(key));
+
+        MemcacheService ms = MemcacheServiceFactory.getMemcacheService(namespace);
+        Assert.assertEquals(value, ms.get(key));
     }
 
     private void verifyAsyncGet(Object key, Object value) {
