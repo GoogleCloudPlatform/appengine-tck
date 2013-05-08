@@ -20,11 +20,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,12 +33,10 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
-import javassist.bytecode.annotation.Annotation;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -49,6 +47,7 @@ public class CodeCoverage {
     private static final Logger log = Logger.getLogger(CodeCoverage.class.getName());
 
     private final Map<String, List<Tuple>> descriptors = new TreeMap<String, List<Tuple>>();
+    private final Map<String, List<String>> supers = new HashMap<String, List<String>>();
     private final Map<String, Map<Tuple, Set<CodeLine>>> report = new TreeMap<String, Map<Tuple, Set<CodeLine>>>();
 
     private static ClassLoader toClassLoader(File classesToScan) throws MalformedURLException {
@@ -68,9 +67,9 @@ public class CodeCoverage {
         CodeCoverage cc = new CodeCoverage(classLoader, exclusion, interfaces);
         cc.scan(classesToScan, "");
         cc.print(
-                SoutPrinter.INSTANCE,
-                new HtmlPrinter(baseDir, new File(classesToScan, "../../index.html")),
-                new CsvPrinter(new File(classesToScan, "../../coverage-results.csv"))
+            SoutPrinter.INSTANCE,
+            new HtmlPrinter(baseDir, new File(classesToScan, "../../index.html")),
+            new CsvPrinter(new File(classesToScan, "../../coverage-results.csv"))
         );
     }
 
@@ -84,8 +83,10 @@ public class CodeCoverage {
 
             InputStream is = classLoader.getResourceAsStream(iface.replace(".", "/") + ".class");
             ClassFile clazz = getClassFile(iface, is);
-            List<MethodInfo> methods = clazz.getMethods();
 
+            fillSupers(clazz);
+
+            List<MethodInfo> methods = clazz.getMethods();
             for (MethodInfo m : methods) {
                 if (exclusion.exclude(clazz, m) == false) {
                     String descriptor = m.getDescriptor();
@@ -97,22 +98,21 @@ public class CodeCoverage {
         }
     }
 
-    protected boolean includeMethod(MethodInfo mi) {
-        if (Modifier.isPublic(mi.getAccessFlags()) == false) {
-            return false;
+    protected void fillSupers(ClassFile clazz) {
+        String name = clazz.getName();
+        List<String> list = supers.get(name);
+        if (list == null) {
+            list = new ArrayList<String>();
+            supers.put(name, list);
         }
-
-        AnnotationsAttribute aa = (AnnotationsAttribute) mi.getAttribute(AnnotationsAttribute.visibleTag);
-        if (aa != null) {
-            Annotation annotation = aa.getAnnotation(Deprecated.class.getName());
-            if (annotation != null) {
-                return false;
+        if (clazz.isInterface()) {
+            Collections.addAll(list, clazz.getInterfaces());
+        } else {
+            String superclass = clazz.getSuperclass();
+            if (superclass != null) {
+                list.add(superclass);
             }
         }
-
-        // TODO -- explicit excludes
-
-        return true;
     }
 
     protected void scan(File current, String fqn) throws Exception {
@@ -153,16 +153,9 @@ public class CodeCoverage {
             BytecodeUtils.Ref ref = BytecodeUtils.getRef(pool, i);
             String className = ref.getClassName(pool, i);
             if (className != null) {
-                List<Tuple> mds = descriptors.get(className);
-                if (mds != null) {
-                    String methodName = ref.getName(pool, i);
-                    String methodDesc = ref.getDesc(pool, i);
-                    for (Tuple tuple : mds) {
-                        if (tuple.methodName.equals(methodName) && tuple.methodDesc.equals(methodDesc)) {
-                            calls.put(i, new Triple(className, tuple));
-                        }
-                    }
-                }
+                String methodName = ref.getName(pool, i);
+                String methodDesc = ref.getDesc(pool, i);
+                fillCalls(i, className, methodName, methodDesc, calls);
             }
         }
 
@@ -198,6 +191,27 @@ public class CodeCoverage {
                 e.printStackTrace();
             }
         }
+    }
+
+    protected boolean fillCalls(int i, String className, String methodName, String methodDesc, Map<Integer, Triple> calls) {
+        List<Tuple> mds = descriptors.get(className);
+        if (mds != null) {
+            for (Tuple tuple : mds) {
+                if (tuple.methodName.equals(methodName) && tuple.methodDesc.equals(methodDesc)) {
+                    calls.put(i, new Triple(className, tuple));
+                    return true;
+                }
+            }
+        }
+        List<String> classes = supers.get(className);
+        if (classes != null) {
+            for (String clazz : classes) {
+                if (fillCalls(i, clazz, methodName, methodDesc, calls)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     protected void print(Printer... printers) throws Exception {

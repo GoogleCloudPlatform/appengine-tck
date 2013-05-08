@@ -4,4 +4,3 @@ com.google.appengine.api.datastore.DatastoreService
 com.google.appengine.api.datastore.DatastoreServiceConfig
 com.google.appengine.api.datastore.DatastoreServiceConfig$Builder
 com.google.appengine.api.datastore.DatastoreServiceFactory
-com.google.appengine.api.datastore.DatastoreService$KeyRangeState

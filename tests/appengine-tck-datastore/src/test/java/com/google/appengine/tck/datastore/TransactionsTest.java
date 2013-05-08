@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
@@ -31,7 +32,9 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
+import com.google.apphosting.api.ApiProxy;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -426,8 +429,7 @@ public class TransactionsTest extends DatastoreTestBase {
         service.beginTransaction();
         Query query = new Query("child", parentA.getKey());
         Transaction tx = service.getCurrentTransaction();
-        int numRows = service.prepare(tx, query)
-            .countEntities(FetchOptions.Builder.withDefaults());
+        int numRows = service.prepare(tx, query).countEntities(FetchOptions.Builder.withDefaults());
         tx.commit();
         assertEquals(1, numRows);
         service.beginTransaction();
@@ -435,6 +437,46 @@ public class TransactionsTest extends DatastoreTestBase {
         Entity result = service.prepare(tx, query).asSingleEntity();
         assertEquals(childA.getKey(), result.getKey());
         tx.commit();
+    }
+
+    @Test
+    public void testGetCurrentTx() throws Exception {
+        Transaction tx = service.beginTransaction();
+        try {
+            Assert.assertEquals(tx, service.getCurrentTransaction(null));
+        } finally {
+            tx.rollback();
+        }
+
+        Transaction dummy = new Transaction() {
+            public void commit() {
+            }
+
+            public Future<Void> commitAsync() {
+                return null;
+            }
+
+            public void rollback() {
+            }
+
+            public Future<Void> rollbackAsync() {
+                return null;
+            }
+
+            public String getId() {
+                return "dummy";
+            }
+
+            public String getApp() {
+                return ApiProxy.getCurrentEnvironment().getAppId();
+            }
+
+            public boolean isActive() {
+                return false;
+            }
+        };
+
+        Assert.assertSame(dummy, service.getCurrentTransaction(dummy));
     }
 
     private PreparedQuery prepareQueryWithAncestor(Transaction tx, Key someAncestor) {
