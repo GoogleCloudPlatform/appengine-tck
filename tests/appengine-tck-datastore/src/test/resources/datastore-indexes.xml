@@ -250,6 +250,10 @@
         <property name="geoptData" direction="asc"/>
     </datastore-index>
 
+    <datastore-index kind="querytest" ancestor="true" source="manual">
+        <property name="intData" direction="desc"/>
+    </datastore-index>
+
     <datastore-index kind="test" ancestor="true" source="manual">
         <property name="prop" direction="asc"/>
     </datastore-index>
