@@ -35,10 +35,13 @@ public class SmokeTest extends QueueTestBase {
     @Test
     public void testBasics() throws Exception {
         final Queue queue = QueueFactory.getQueue("pull-queue");
-        TaskHandle th = queue.add(TaskOptions.Builder.withMethod(TaskOptions.Method.PULL).param("foo", "bar".getBytes()).etaMillis(15000));
+        queue.purge();
+        sync(2000L);
+        TaskHandle th = queue.add(TaskOptions.Builder.withMethod(TaskOptions.Method.PULL).param("foo", "bar".getBytes()));
         try {
             List<TaskHandle> handles = queue.leaseTasks(30, TimeUnit.MINUTES, 100);
             Assert.assertFalse(handles.isEmpty());
+            Assert.assertEquals(1, handles.size());
             TaskHandle lh = handles.get(0);
             Assert.assertEquals(th.getName(), lh.getName());
             sync(5000L);

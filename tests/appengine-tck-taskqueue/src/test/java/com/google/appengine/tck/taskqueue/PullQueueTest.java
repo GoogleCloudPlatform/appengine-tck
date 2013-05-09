@@ -17,7 +17,9 @@ package com.google.appengine.tck.taskqueue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -35,10 +37,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withMethod;
 import static com.google.appengine.api.taskqueue.TaskOptions.Method.PULL;
 import static com.google.appengine.tck.taskqueue.support.Constants.E2E_TESTING_PULL;
 import static com.google.appengine.tck.taskqueue.support.Constants.E2E_TESTING_REMOTE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -225,17 +229,63 @@ public class PullQueueTest extends QueueTestBase {
     }
 
     @Test
+    public void testPullWithTag() throws Exception {
+        String groupTag = "testPullWithTag";
+        String taskBaseName = groupTag + "_" + getTimeStampRandom();
+
+        TaskHandle th = queue.add(withMethod(PULL).tag(taskBaseName).etaMillis(15000));
+        try {
+            List<TaskHandle> handles = queue.leaseTasksByTag(30, TimeUnit.MINUTES, 100, taskBaseName);
+            assertFalse(handles.isEmpty());
+            TaskHandle lh = handles.get(0);
+            assertEquals(th.getName(), lh.getName());
+        } finally {
+            queue.deleteTask(th);
+        }
+    }
+
+    @Test
+    public void testPullWithGroupTag() throws Exception {
+        String groupTag = "testPullWithGroupTag";
+        String taskBaseName = groupTag + "_" + getTimeStampRandom();
+        TaskHandle th1 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foobar").etaMillis(7000));
+        TaskHandle th2 = queue.add(withMethod(PULL).tag(taskBaseName + "other").payload("foofoo").etaMillis(11000));
+        TaskHandle th3 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foofoo").etaMillis(10000));
+        try {
+            // If options specifies no tag, but does specify groupByTag,
+            // only tasks having the same tag as the task with earliest eta will be returned.
+            LeaseOptions options = LeaseOptions.Builder.withLeasePeriod(1000L, TimeUnit.SECONDS).countLimit(100).groupByTag();
+            List<TaskHandle> handles = queue.leaseTasks(options);
+            assertEquals(2, handles.size());
+
+            Set<String> createdHandles = new HashSet<String>();
+            createdHandles.add(th1.getName());
+            createdHandles.add(th3.getName());
+
+            Set<String> returnedHandles = new HashSet<String>();
+            returnedHandles.add(handles.get(0).getName());
+            returnedHandles.add(handles.get(1).getName());
+
+            assertEquals(createdHandles, returnedHandles);
+        } finally {
+            queue.deleteTask(th1);
+            queue.deleteTask(th2);
+            queue.deleteTask(th3);
+        }
+    }
+
+    @Test
     public void testLeaseTasksByTagBytes() {
         String groupTag = "testLeaseTasksByTagBytes";
         String taskBaseName = groupTag + "_" + getTimeStampRandom();
         taskTags.add(taskBaseName);
         byte[] tagBytes = taskBaseName.getBytes();
 
-        TaskOptions options = TaskOptions.Builder
-            .withMethod(TaskOptions.Method.PULL)
-            .taskName(taskBaseName + "_0")
-            .tag(tagBytes)
-            .payload("");
+        TaskOptions options =
+            withMethod(TaskOptions.Method.PULL)
+                .taskName(taskBaseName + "_0")
+                .tag(tagBytes)
+                .payload("");
         queue.add(options);
         sleep(5000);  // Give tasks a chance to become available.
         List<TaskHandle> tasks = queue.leaseTasksByTagBytes(1, TimeUnit.SECONDS, 10, tagBytes);
@@ -248,9 +298,113 @@ public class PullQueueTest extends QueueTestBase {
     }
 
     @Test
+    public void testPullMultipleWithSameTag() throws Exception {
+        String groupTag = "testLeaseTasksByTagBytes";
+        String taskBaseName = groupTag + "_" + getTimeStampRandom();
+        TaskHandle th1 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foobar").etaMillis(15000));
+        TaskHandle th2 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foofoo").etaMillis(10000));
+        try {
+            int numTasksToLease = 100;
+            List<TaskHandle> handles = queue.leaseTasksByTag(30, TimeUnit.MINUTES, numTasksToLease, taskBaseName);
+            assertEquals(2, handles.size());
+
+            Set<String> createdHandles = new HashSet<String>();
+            createdHandles.add(th1.getName());
+            createdHandles.add(th2.getName());
+
+            Set<String> returnedHandles = new HashSet<String>();
+            returnedHandles.add(handles.get(0).getName());
+            returnedHandles.add(handles.get(1).getName());
+
+            assertEquals(createdHandles, returnedHandles);
+        } finally {
+            queue.deleteTask(th1);
+            queue.deleteTask(th2);
+        }
+    }
+
+    @Test
+    public void testPullMultipleWithDiffTag() throws Exception {
+        String groupTag = "testPullMultipleWithDiffTag";
+        String taskBaseName = groupTag + "_" + getTimeStampRandom();
+
+        TaskHandle th1 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foobar").etaMillis(15000));
+        TaskHandle th2 = queue.add(withMethod(PULL).tag(taskBaseName + "other").payload("foofoo").etaMillis(10000));
+        TaskHandle th3 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foofoo").etaMillis(10000));
+        try {
+            List<TaskHandle> handles = queue.leaseTasksByTag(30, TimeUnit.MINUTES, 100, taskBaseName);
+            assertEquals(2, handles.size());
+
+            handles = queue.leaseTasksByTag(30, TimeUnit.MINUTES, 100, taskBaseName + "other");
+            assertEquals(1, handles.size());
+            assertEquals(th2.getName(), handles.get(0).getName());
+        } finally {
+            queue.deleteTask(th1);
+            queue.deleteTask(th2);
+            queue.deleteTask(th3);
+        }
+    }
+
+    @Test
+    public void testPullMultipleWithSameTagWithOptions1() throws Exception {
+        String groupTag = "testPullMultipleWithSameTagWithOptions1";
+        String taskBaseName = groupTag + "_" + getTimeStampRandom();
+
+        TaskHandle th1 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foobar").etaMillis(15000));
+        TaskHandle th2 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foofoo").etaMillis(10000));
+        try {
+            LeaseOptions lo = LeaseOptions.Builder
+                .withLeasePeriod(30, TimeUnit.MINUTES).countLimit(100).tag(taskBaseName);
+            List<TaskHandle> handles = queue.leaseTasks(lo);
+            assertEquals(2, handles.size());
+
+            Set<String> createdHandles = new HashSet<String>();
+            createdHandles.add(th1.getName());
+            createdHandles.add(th2.getName());
+
+            Set<String> returnedHandles = new HashSet<String>();
+            returnedHandles.add(handles.get(0).getName());
+            returnedHandles.add(handles.get(1).getName());
+
+            assertEquals(createdHandles, returnedHandles);
+        } finally {
+            queue.deleteTask(th1);
+            queue.deleteTask(th2);
+        }
+    }
+
+    @Test
+    public void testPullMultipleWithSameTagWithOptions2() throws Exception {
+        String groupTag = "testPullMultipleWithSameTagWithOptions2";
+        String taskBaseName = groupTag + "_" + getTimeStampRandom();
+
+        TaskHandle th1 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foobar").etaMillis(15000));
+        TaskHandle th2 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foofoo").etaMillis(10000));
+        try {
+            LeaseOptions lo = LeaseOptions.Builder
+                .withLeasePeriod(30, TimeUnit.MINUTES).countLimit(100).tag(taskBaseName.getBytes());
+            List<TaskHandle> handles = queue.leaseTasks(lo);
+            assertEquals(2, handles.size());
+
+            Set<String> createdHandles = new HashSet<String>();
+            createdHandles.add(th1.getName());
+            createdHandles.add(th2.getName());
+
+            Set<String> returnedHandles = new HashSet<String>();
+            returnedHandles.add(handles.get(0).getName());
+            returnedHandles.add(handles.get(1).getName());
+
+            assertEquals(createdHandles, returnedHandles);
+        } finally {
+            queue.deleteTask(th1);
+            queue.deleteTask(th2);
+        }
+    }
+
+    @Test
     public void testEtaMillis() {
         String tag = "testEtaMillis_" + getTimeStampRandom();
-        queue.add(TaskOptions.Builder.withMethod(PULL).etaMillis(System.currentTimeMillis() + 15000).tag(tag));
+        queue.add(withMethod(PULL).etaMillis(System.currentTimeMillis() + 15000).tag(tag));
         sleep(5000);  // Give tasks a chance to become available.
 
         List<TaskHandle> tasks = queue.leaseTasks(LeaseOptions.Builder.withTag(tag).leasePeriod(1, TimeUnit.SECONDS).countLimit(1));
@@ -267,7 +421,7 @@ public class PullQueueTest extends QueueTestBase {
     @Test
     public void testCountdownMillis() {
         String tag = "testCountdownMillis_" + getTimeStampRandom();
-        queue.add(TaskOptions.Builder.withMethod(PULL).countdownMillis(15000).tag(tag));
+        queue.add(withMethod(PULL).countdownMillis(15000).tag(tag));
         sleep(5000);  // Give tasks a chance to become available.
 
         List<TaskHandle> tasks = queue.leaseTasks(LeaseOptions.Builder.withTag(tag).leasePeriod(1, TimeUnit.SECONDS).countLimit(1));
@@ -284,8 +438,8 @@ public class PullQueueTest extends QueueTestBase {
     @Test(expected = TaskAlreadyExistsException.class)
     public void testAddingTwoTasksWithSameNameThrowsException() {
         String taskName = "sameName_" + getTimeStampRandom();
-        queue.add(TaskOptions.Builder.withMethod(PULL).taskName(taskName));
-        queue.add(TaskOptions.Builder.withMethod(PULL).taskName(taskName));
+        queue.add(withMethod(PULL).taskName(taskName));
+        queue.add(withMethod(PULL).taskName(taskName));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -293,8 +447,8 @@ public class PullQueueTest extends QueueTestBase {
         String taskName = "sameName_" + getTimeStampRandom();
         queue.add(
             Arrays.asList(
-                TaskOptions.Builder.withMethod(PULL).taskName(taskName),
-                TaskOptions.Builder.withMethod(PULL).taskName(taskName)));
+                withMethod(PULL).taskName(taskName),
+                withMethod(PULL).taskName(taskName)));
     }
 
     private void sleep(long milliSecs) {
@@ -405,11 +559,11 @@ public class PullQueueTest extends QueueTestBase {
                                       String groupTag, String payload) {
         ArrayList<TaskOptions> optionList = new ArrayList<TaskOptions>();
         for (int i = 0; i < count; i++) {
-            TaskOptions options = TaskOptions.Builder
-                .withMethod(TaskOptions.Method.PULL)
-                .taskName(taskBaseName + "_" + i)
-                .tag(groupTag)
-                .payload(payload);
+            TaskOptions options =
+                withMethod(TaskOptions.Method.PULL)
+                    .taskName(taskBaseName + "_" + i)
+                    .tag(groupTag)
+                    .payload(payload);
             optionList.add(options);
         }
         taskTags.add(groupTag);
