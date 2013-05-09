@@ -31,6 +31,7 @@ import com.google.appengine.api.datastore.PostalAddress;
 import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Rating;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
@@ -106,9 +107,10 @@ public class QueryTest extends DatastoreTestBase {
     @Test
     public void testSetFilterInt() {
         Query query = new Query(kindName, rootKey);
-        Filter filter = Query.CompositeFilterOperator.and(
-            Query.FilterOperator.EQUAL.of("intData", 20),
-            Query.FilterOperator.GREATER_THAN.of("intData", 0));
+        List<Filter> filterList = new ArrayList<Filter>();
+        filterList.add(Query.FilterOperator.EQUAL.of("intData", 20));
+        filterList.add(Query.FilterOperator.GREATER_THAN.of("intData", 0));
+        Filter filter = Query.CompositeFilterOperator.and(filterList);
         query.setFilter(filter);
         assertEquals(1, service.prepare(query).countEntities(fo));
     }
@@ -116,9 +118,10 @@ public class QueryTest extends DatastoreTestBase {
     @Test
     public void testSetFilterRating() {
         Query query = new Query(kindName, rootKey);
-        Filter filter1 = Query.CompositeFilterOperator.or(
-            Query.FilterOperator.LESS_THAN.of("ratingData", new Rating(30)),
-            Query.FilterOperator.GREATER_THAN.of("ratingData", new Rating(0)));
+        List<Filter> filterList = new ArrayList<Filter>();
+        filterList.add(Query.FilterOperator.LESS_THAN.of("ratingData", new Rating(30)));
+        filterList.add(Query.FilterOperator.GREATER_THAN.of("ratingData", new Rating(0)));
+        Filter filter1 = Query.CompositeFilterOperator.or(filterList);
         Filter filter2 = Query.FilterOperator.EQUAL.of("ratingData", new Rating(20));
         query.setFilter(Query.CompositeFilterOperator.and(filter1, filter2));
         assertEquals(1, service.prepare(query).countEntities(fo));
@@ -128,11 +131,12 @@ public class QueryTest extends DatastoreTestBase {
     public void testSetFilterList() {
         // [0,50,90], [1,51,91], [2,52,92]
         Query query = new Query(kindName, rootKey);
-        Filter filter1 = Query.CompositeFilterOperator.or(
-            Query.FilterOperator.LESS_THAN.of("intList", 5),
-            Query.FilterOperator.GREATER_THAN.of("intList", 90));
+        List<Filter> filterList = new ArrayList<Filter>();
+        filterList.add(Query.FilterOperator.LESS_THAN.of("intList", 5));
+        filterList.add(Query.FilterOperator.GREATER_THAN.of("intList", 90));
+        Filter filter1 = Query.CompositeFilterOperator.OR.of(filterList);
         Filter filter2 = Query.FilterOperator.EQUAL.of("intList", 52);
-        query.setFilter(Query.CompositeFilterOperator.and(filter1, filter2));
+        query.setFilter(Query.CompositeFilterOperator.AND.of(filter1, filter2));
         assertEquals(1, service.prepare(query).countEntities(fo));
     }
 
@@ -156,6 +160,52 @@ public class QueryTest extends DatastoreTestBase {
             assertEquals(1, e.getProperties().size());
             assertTrue(e.getProperties().containsKey("geoptData"));
         }
-        assertEquals(new GeoPt((float) (2.12), (float) (2.98)), results.get(0).getProperty("geoptData"));
+        assertEquals(new GeoPt((float) (2.12), (float) (2.98)),
+            results.get(0).getProperty("geoptData"));
+    }
+
+    @Test
+    public void testFilterPredicate() {
+        Query query = new Query(kindName, rootKey);
+        query.setFilter(new FilterPredicate("intData", Query.FilterOperator.EQUAL, 20));
+        Entity e = service.prepare(query).asSingleEntity();
+        assertEquals("check query kind", kindName, query.getKind());
+        assertEquals("check query ancesor", rootKey, query.getAncestor());
+        Query.FilterPredicate fp = (Query.FilterPredicate) query.getFilter();
+        assertEquals("check FilterPredicate name", "intData", fp.getPropertyName());
+        assertEquals("check FilterPredicate operator", Query.FilterOperator.EQUAL,
+            fp.getOperator());
+        assertEquals("check FilterPredicate value", e.getProperty("intData").toString(),
+            fp.getValue().toString());
+    }
+
+    @Test
+    public void testCompositeFilter() {
+        Query query = new Query(kindName, rootKey);
+        Filter filter = Query.CompositeFilterOperator.and(
+            Query.FilterOperator.LESS_THAN_OR_EQUAL.of("intData", 40),
+            Query.FilterOperator.GREATER_THAN.of("intData", 0));
+        query.setFilter(filter);
+        query.addSort("intData", Query.SortDirection.DESCENDING);
+        List<Entity> es = service.prepare(query).asList(fo);
+        assertEquals("check return count", 2, es.size());
+        assertEquals("check query filter", filter, query.getFilter());
+        assertEquals("check query key only", false, query.isKeysOnly());
+
+        Query.CompositeFilter cf = (Query.CompositeFilter) query.getFilter();
+        assertEquals(2, cf.getSubFilters().size());
+        assertEquals(Query.CompositeFilterOperator.AND, cf.getOperator());
+    }
+
+    @Test
+    public void testSortPredicates() {
+        Query query = new Query(kindName, rootKey);
+        query.addSort("intData", Query.SortDirection.DESCENDING);
+        List<Entity> es = service.prepare(query).asList(fo);
+        assertEquals((long) 40, es.get(0).getProperty("intData"));
+        List<Query.SortPredicate> qsp = query.getSortPredicates();
+        assertEquals("check SortPredicate name", "intData", qsp.get(0).getPropertyName());
+        assertEquals("check SortPredicate direction", Query.SortDirection.DESCENDING,
+            qsp.get(0).getDirection());
     }
 }
