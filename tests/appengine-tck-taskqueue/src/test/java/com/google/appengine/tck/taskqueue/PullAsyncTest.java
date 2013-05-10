@@ -16,6 +16,7 @@
 package com.google.appengine.tck.taskqueue;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.google.appengine.api.taskqueue.LeaseOptions;
@@ -87,9 +88,11 @@ public class PullAsyncTest extends QueueTestBase {
         try {
             List<TaskHandle> handles = waitOnFuture(queue.leaseTasksByTagAsync(30, TimeUnit.MINUTES, 100, "barfoo2"));
             assertEquals(2, handles.size());
-            // order is reversed, due to eta-millis
-            assertEquals(th2.getName(), handles.get(0).getName());
-            assertEquals(th1.getName(), handles.get(1).getName());
+
+            Set<String> expectedTasks = taskHandlesToNameSet(th1, th2);
+            Set<String> returnedTasks = taskHandleListToNameSet(handles);
+            assertEquals(expectedTasks, returnedTasks);
+
         } finally {
             queue.deleteTask(th1);
             queue.deleteTask(th2);
@@ -105,12 +108,16 @@ public class PullAsyncTest extends QueueTestBase {
         try {
             List<TaskHandle> handles = waitOnFuture(queue.leaseTasksByTagAsync(30, TimeUnit.MINUTES, 100, "barfoo3"));
             assertEquals(2, handles.size());
-            assertEquals(th3.getName(), handles.get(0).getName());
-            assertEquals(th1.getName(), handles.get(1).getName());
+            Set<String> expectedTasks = taskHandlesToNameSet(th1, th3);
+            Set<String> returnedTasks = taskHandleListToNameSet(handles);
+            assertEquals(expectedTasks, returnedTasks);
 
             handles = queue.leaseTasksByTag(30, TimeUnit.MINUTES, 100, "qwerty");
             assertEquals(1, handles.size());
-            assertEquals(th2.getName(), handles.get(0).getName());
+            Set<String> expectedTasks2 = taskHandlesToNameSet(th2);
+            Set<String> returnedTasks2 = taskHandleListToNameSet(handles);
+            assertEquals(expectedTasks2, returnedTasks2);
+
         } finally {
             queue.deleteTask(th1);
             queue.deleteTask(th2);
@@ -121,15 +128,22 @@ public class PullAsyncTest extends QueueTestBase {
     @Test
     public void testPullWithGroupTag() throws Exception {
         final Queue queue = QueueFactory.getQueue("pull-queue");
-        TaskHandle th1 = queue.add(withMethod(PULL).tag("barfoo3").payload("foobar").etaMillis(15000));
+        String tag = "testPullWithGroupTag" + "_" + System.currentTimeMillis();
+        TaskHandle th1 = queue.add(withMethod(PULL).tag(tag).payload("foobar").etaMillis(15000));
         TaskHandle th2 = queue.add(withMethod(PULL).tag("qwerty").payload("foofoo").etaMillis(11000));
-        TaskHandle th3 = queue.add(withMethod(PULL).tag("barfoo3").payload("foofoo").etaMillis(10000));
+        TaskHandle th3 = queue.add(withMethod(PULL).tag(tag).payload("foofoo").etaMillis(5000));
         try {
-            LeaseOptions options = new LeaseOptions(LeaseOptions.Builder.withLeasePeriod(1000L, TimeUnit.SECONDS)).countLimit(100).groupByTag();
+            LeaseOptions options = new LeaseOptions(LeaseOptions.Builder
+                .withLeasePeriod(1000L, TimeUnit.SECONDS))
+                //.withLeasePeriod(1000L, TimeUnit.SECONDS))
+                .countLimit(100)
+                .groupByTag();
             List<TaskHandle> handles = waitOnFuture(queue.leaseTasksAsync(options));
             assertEquals(2, handles.size());
-            assertEquals(th3.getName(), handles.get(0).getName());
-            assertEquals(th1.getName(), handles.get(1).getName());
+            Set<String> expectedTasks = taskHandlesToNameSet(th1, th3);
+            Set<String> returnedTasks = taskHandleListToNameSet(handles);
+            assertEquals(expectedTasks, returnedTasks);
+
         } finally {
             queue.deleteTask(th1);
             queue.deleteTask(th2);
@@ -142,6 +156,7 @@ public class PullAsyncTest extends QueueTestBase {
         Queue queue = QueueFactory.getQueue("pull-queue");
         TaskHandle th1 = queue.add(withMethod(PULL));
         TaskHandle th2 = queue.add(withMethod(PULL));
+        sync(2000);
         try {
             int countLimit = 1;
             List<TaskHandle> handles = waitOnFuture(queue.leaseTasksAsync(10, TimeUnit.SECONDS, countLimit));

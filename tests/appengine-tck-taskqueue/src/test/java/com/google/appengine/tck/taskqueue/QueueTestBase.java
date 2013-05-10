@@ -15,6 +15,7 @@
 
 package com.google.appengine.tck.taskqueue;
 
+import com.google.appengine.api.taskqueue.TaskHandle;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.taskqueue.support.DatastoreUtil;
@@ -28,6 +29,11 @@ import com.google.appengine.tck.taskqueue.support.TestQueueServlet;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -57,4 +63,20 @@ public abstract class QueueTestBase extends TestBase {
         return war;
     }
 
+    protected Set<String> taskHandlesToNameSet(TaskHandle... handles) {
+        return taskHandleListToNameSet(Arrays.asList(handles));
+    }
+
+    /**
+     * Create a Set with task names to compare with a queried set of task handles.
+     * Used with taskHandlesToNameSet()
+     */
+    protected Set<String> taskHandleListToNameSet(List<TaskHandle> handles) {
+        Set<String> taskNames = new HashSet<String>();
+
+        for (TaskHandle handle : handles) {
+            taskNames.add(handle.getName());
+        }
+        return taskNames;
+    }
 }
