@@ -27,7 +27,6 @@ import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.RawValue;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
