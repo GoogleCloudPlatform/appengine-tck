@@ -50,7 +50,9 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        return getHelperDeployment().addClass(QueryTestBase.class);
+        return getHelperDeployment()
+            .addAsWebInfResource("datastore-indexes.xml")
+            .addClass(QueryTestBase.class);
     }
 
     protected static Date createDate(int year, int month, int day) {
