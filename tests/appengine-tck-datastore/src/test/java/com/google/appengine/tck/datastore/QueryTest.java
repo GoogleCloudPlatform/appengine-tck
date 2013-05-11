@@ -36,6 +36,7 @@ import com.google.appengine.api.datastore.Rating;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -156,12 +157,12 @@ public class QueryTest extends DatastoreTestBase {
         assertEquals(sql.toLowerCase(), query.toString().toLowerCase());
         // check query result
         List<Entity> results = service.prepare(query).asList(fo);
+        Assert.assertTrue(results.size() > 0);
+        assertEquals(new GeoPt((float) (2.12), (float) (2.98)), results.get(0).getProperty("geoptData"));
         for (Entity e : results) {
             assertEquals(1, e.getProperties().size());
             assertTrue(e.getProperties().containsKey("geoptData"));
         }
-        assertEquals(new GeoPt((float) (2.12), (float) (2.98)),
-            results.get(0).getProperty("geoptData"));
     }
 
     @Test
