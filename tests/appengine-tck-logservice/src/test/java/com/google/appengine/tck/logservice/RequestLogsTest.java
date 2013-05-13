@@ -354,11 +354,10 @@ public class RequestLogsTest extends LoggingTestBase {
     public void testMiscProperties() throws Exception {
         RequestLogs logs = getRequestLogs1();
 
-        assertNotNull("App Engine Release, e.g. 1.7.5, or empty string.", logs.getAppEngineRelease());
+        assertNotNull("App Engine Release, e.g. 1.8.0, or empty string.", logs.getAppEngineRelease());
         assertTrue("Estimated cost of this request, in dollars.", logs.getCost() >= 0.0);
-        assertTrue("Time required to process this request in microseconds.", logs.getLatencyUsec() > 0);
-        assertTrue("Microseconds request spent in pending request queue, if was pending at all.",
-            logs.getPendingTimeUsec() >= 0);
+        assertTrue("Time required to process this request in microseconds.", logs.getLatencyUsec() >= 0);
+        assertTrue("Microseconds request spent in pending request queue, if was pending at all.", logs.getPendingTimeUsec() >= 0);
         assertFalse("This should never be a loading request: " + logs.toString(), logs.isLoadingRequest());
 
         String appId = SystemProperty.applicationId.get();  // appIds have a prefix according to datacenter.
@@ -367,8 +366,7 @@ public class RequestLogsTest extends LoggingTestBase {
         long cycles = logs.getMcycles();
         assertTrue("Number of machine cycles used to process this request: " + cycles, cycles >= 0);
 
-        String getOffsetMsg = "Base64-encoded offset used with subsequent LogQuery to continue " +
-            "reading logs at the point in time immediately following this request.";
+        String getOffsetMsg = "Base64-encoded offset used with subsequent LogQuery to continue reading logs at the point in time immediately following this request.";
         assertNotNull(getOffsetMsg, logs.getOffset());
         assertTrue("Should be Base64: " + logs.getOffset(), Base64.isBase64(logs.getOffset().getBytes()));
 
