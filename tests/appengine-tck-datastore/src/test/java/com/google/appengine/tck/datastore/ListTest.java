@@ -35,6 +35,7 @@ import static org.junit.Assert.assertEquals;
  * http://b/issue?id=1458158
  *
  * @author hchen@google.com (Hannah Chen)
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
 public class ListTest extends DatastoreTestBase {
@@ -67,8 +68,10 @@ public class ListTest extends DatastoreTestBase {
     @Test
     public void testStrFilter() {
         Query q = new Query(kindName, rootKey);
-        q.setFilter(new FilterPredicate("stringData", Query.FilterOperator.LESS_THAN, "qqq"));
-        q.setFilter(new FilterPredicate("stringData", Query.FilterOperator.GREATER_THAN, "mmm"));
+        Query.Filter filter = Query.CompositeFilterOperator.and(
+            new FilterPredicate("stringData", Query.FilterOperator.LESS_THAN, "qqq"),
+            new FilterPredicate("stringData", Query.FilterOperator.GREATER_THAN, "mmm"));
+        q.setFilter(filter);
         q.addSort("stringData", Query.SortDirection.ASCENDING);
         assertEquals(2, service.prepare(q).countEntities(fo));
         List<Entity> elist = service.prepare(q).asList(fo);
@@ -79,9 +82,11 @@ public class ListTest extends DatastoreTestBase {
     @Test
     public void testIntFilter() {
         Query q = new Query(kindName, rootKey);
-        q.setFilter(new FilterPredicate("intData1", Query.FilterOperator.LESS_THAN, 20));
-        q.setFilter(new FilterPredicate("intData1", Query.FilterOperator.GREATER_THAN, 1));
-        q.setFilter(new FilterPredicate("intData1", Query.FilterOperator.EQUAL, null));
+        Query.Filter filter = Query.CompositeFilterOperator.and(
+            new FilterPredicate("intData1", Query.FilterOperator.LESS_THAN, 20),
+            new FilterPredicate("intData1", Query.FilterOperator.GREATER_THAN, 1),
+            new FilterPredicate("intData1", Query.FilterOperator.EQUAL, null));
+        q.setFilter(filter);
         q.addSort("intData1", Query.SortDirection.ASCENDING);
         assertEquals(1, service.prepare(q).countEntities(fo));
         List<Entity> elist = service.prepare(q).asList(fo);
