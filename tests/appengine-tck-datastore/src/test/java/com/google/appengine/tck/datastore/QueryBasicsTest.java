@@ -29,8 +29,10 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.google.appengine.api.datastore.Query.CompositeFilterOperator.and;
 import static com.google.appengine.api.datastore.Query.FilterOperator.EQUAL;
 import static com.google.appengine.api.datastore.Query.FilterOperator.GREATER_THAN;
+import static com.google.appengine.api.datastore.Query.FilterOperator.GREATER_THAN_OR_EQUAL;
 import static com.google.appengine.api.datastore.Query.FilterOperator.IN;
 import static com.google.appengine.api.datastore.Query.FilterOperator.NOT_EQUAL;
 import static org.junit.Assert.assertEquals;
@@ -121,7 +123,7 @@ public class QueryBasicsTest extends QueryTestBase {
 
         Query query = new Query("Person")
             .setAncestor(parentKey)
-            .setFilter(Query.CompositeFilterOperator.and(
+            .setFilter(and(
                 new Query.FilterPredicate("name", EQUAL, "John"),
                 new Query.FilterPredicate("lastName", EQUAL, "Doe")));
 
@@ -247,7 +249,7 @@ public class QueryBasicsTest extends QueryTestBase {
     @Test
     public void testQueryWithInequalityFiltersOnMultiplePropertiesThrowsIllegalArgumentException() throws Exception {
         Query query = createQuery()
-            .setFilter(Query.CompositeFilterOperator.and(
+            .setFilter(and(
                 new Query.FilterPredicate("weight", GREATER_THAN, 3),
                 new Query.FilterPredicate("size", GREATER_THAN, 5)));
 
@@ -271,6 +273,31 @@ public class QueryBasicsTest extends QueryTestBase {
             .addSort("bar");
 
         service.prepare(query).asList(withDefaults());
+    }
+
+    @Test
+    public void testDefaultSortOrderIsDefinedByIndexDefinition() throws Exception {
+        Key parentKey = createQueryBasicsTestParent("testDefaultSortOrderIsDefinedByIndexDefinition");
+        Entity aaa = createEntity("Product", parentKey)
+            .withProperty("name", "aaa")
+            .withProperty("price", 10)
+            .store();
+        Entity ccc = createEntity("Product", parentKey)
+            .withProperty("name", "ccc")
+            .withProperty("price", 10)
+            .store();
+        Entity bbb = createEntity("Product", parentKey)
+            .withProperty("name", "bbb")
+            .withProperty("price", 10)
+            .store();
+
+        Query query = new Query("Product")
+            .setAncestor(parentKey)
+            .setFilter(and(
+                new Query.FilterPredicate("name", GREATER_THAN_OR_EQUAL, "aaa"),
+                new Query.FilterPredicate("price", EQUAL, 10)
+            ));
+        assertEquals(Arrays.asList(aaa, bbb, ccc), service.prepare(query).asList(withDefaults()));
     }
 
     @SuppressWarnings("deprecation")
