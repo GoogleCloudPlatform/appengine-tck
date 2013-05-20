@@ -290,12 +290,12 @@ public class QueryOptimizationsTest extends QueryTestBase {
         Entity parent = createTestEntityWithUniqueMethodNameKey("Product", methodName);
         Key key = parent.getKey();
 
-        Entity a = createEntity("Product", key)
+        Entity b = createEntity("Product", key)
             .withProperty("name", "b")
             .withProperty("price", 1L)
             .store();
 
-        Entity b = createEntity("Product", key)
+        Entity a = createEntity("Product", key)
             .withProperty("name", "a")
             .withProperty("price", 2L)
             .store();
@@ -316,11 +316,11 @@ public class QueryOptimizationsTest extends QueryTestBase {
         Entity parent = createTestEntityWithUniqueMethodNameKey("Product", methodName);
         Key key = parent.getKey();
 
-        Entity a = createEntity("Product", key)
+        Entity b = createEntity("Product", key)
             .withProperty("name", "b")
             .store();
 
-        Entity b = createEntity("Product", key)
+        Entity a = createEntity("Product", key)
             .withProperty("name", "a")
             .store();
 
@@ -340,12 +340,12 @@ public class QueryOptimizationsTest extends QueryTestBase {
         Entity parent = createTestEntityWithUniqueMethodNameKey("Product", methodName);
         Key key = parent.getKey();
 
-        Entity a = createEntity("Product", key)
+        Entity b = createEntity("Product", key)
             .withProperty("name", "b")
             .withProperty("price", 1L)
             .store();
 
-        Entity b = createEntity("Product", key)
+        Entity a = createEntity("Product", key)
             .withProperty("name", "a")
             .withProperty("price", 2L)
             .store();
@@ -367,14 +367,14 @@ public class QueryOptimizationsTest extends QueryTestBase {
         assertEquals(0, firstResult.getProperties().size());
     }
 
-    private void assertResultsInOrder(Query query, Entity a, Entity b) {
+    private void assertResultsInOrder(Query query, Entity first, Entity second) {
         PreparedQuery preparedQuery = service.prepare(query);
         List<Entity> results = preparedQuery.asList(FetchOptions.Builder.withDefaults());
 
         Entity firstResult = results.get(0);
         Entity secondResult = results.get(1);
 
-        assertEquals(b.getKey(), firstResult.getKey());
-        assertEquals(a.getKey(), secondResult.getKey());
+        assertEquals(first.getKey(), firstResult.getKey());
+        assertEquals(second.getKey(), secondResult.getKey());
     }
 }
