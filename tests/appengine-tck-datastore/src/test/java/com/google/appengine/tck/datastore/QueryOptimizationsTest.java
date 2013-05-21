@@ -15,6 +15,7 @@
 
 package com.google.appengine.tck.datastore;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -285,17 +286,61 @@ public class QueryOptimizationsTest extends QueryTestBase {
     }
 
     @Test
+    public void testProjectionQueryDefaultSortOrderIsDefinedByIndexDefinition() throws Exception {
+        String methodName = "testProjectionQueryDefaultSortOrderIsDefinedByIndexDefinition";
+        Entity parent = createTestEntityWithUniqueMethodNameKey("Product", methodName);
+        Key key = parent.getKey();
+
+        Entity b1 = createEntity("Product", key)
+            .withProperty("name", "b")
+            .withProperty("price", 1L)
+            .withProperty("group", "x")
+            .store();
+
+        Entity c2 = createEntity("Product", key)
+            .withProperty("name", "c")
+            .withProperty("price", 2L)
+            .withProperty("group", "y")
+            .store();
+
+        Entity c1 = createEntity("Product", key)
+            .withProperty("name", "c")
+            .withProperty("price", 1L)
+            .withProperty("group", "y")
+            .store();
+
+        Entity a1 = createEntity("Product", key)
+            .withProperty("name", "a")
+            .withProperty("price", 1L)
+            .withProperty("group", "z")
+            .store();
+
+        Query query = new Query("Product")
+            .setAncestor(key)
+            .addProjection(new PropertyProjection("name", String.class))
+            .addProjection(new PropertyProjection("price", Long.class));
+        assertResultsInOrder(query, a1, b1, c1, c2);
+
+        query = new Query("Product")
+            .setAncestor(key)
+            .addProjection(new PropertyProjection("name", String.class))
+            .addProjection(new PropertyProjection("group", String.class))
+            .addProjection(new PropertyProjection("price", Long.class));
+        assertResultsInOrder(query, c1, c2, b1, a1);
+    }
+
+    @Test
     public void testOrderOfReturnedResultsIsSameAsOrderOfElementsInInStatementWhenUsingProjections() throws Exception {
         String methodName = "testOrderOfReturnedResultsIsSameAsOrderOfElementsInInStatementWhenUsingProjections";
         Entity parent = createTestEntityWithUniqueMethodNameKey("Product", methodName);
         Key key = parent.getKey();
 
-        Entity a = createEntity("Product", key)
+        Entity b = createEntity("Product", key)
             .withProperty("name", "b")
             .withProperty("price", 1L)
             .store();
 
-        Entity b = createEntity("Product", key)
+        Entity a = createEntity("Product", key)
             .withProperty("name", "a")
             .withProperty("price", 2L)
             .store();
@@ -316,11 +361,11 @@ public class QueryOptimizationsTest extends QueryTestBase {
         Entity parent = createTestEntityWithUniqueMethodNameKey("Product", methodName);
         Key key = parent.getKey();
 
-        Entity a = createEntity("Product", key)
+        Entity b = createEntity("Product", key)
             .withProperty("name", "b")
             .store();
 
-        Entity b = createEntity("Product", key)
+        Entity a = createEntity("Product", key)
             .withProperty("name", "a")
             .store();
 
@@ -340,12 +385,12 @@ public class QueryOptimizationsTest extends QueryTestBase {
         Entity parent = createTestEntityWithUniqueMethodNameKey("Product", methodName);
         Key key = parent.getKey();
 
-        Entity a = createEntity("Product", key)
+        Entity b = createEntity("Product", key)
             .withProperty("name", "b")
             .withProperty("price", 1L)
             .store();
 
-        Entity b = createEntity("Product", key)
+        Entity a = createEntity("Product", key)
             .withProperty("name", "a")
             .withProperty("price", 2L)
             .store();
@@ -367,14 +412,17 @@ public class QueryOptimizationsTest extends QueryTestBase {
         assertEquals(0, firstResult.getProperties().size());
     }
 
-    private void assertResultsInOrder(Query query, Entity a, Entity b) {
-        PreparedQuery preparedQuery = service.prepare(query);
-        List<Entity> results = preparedQuery.asList(FetchOptions.Builder.withDefaults());
+    private void assertResultsInOrder(Query query, Entity... expectedResults) {
+        List<Key> expected = getKeys(Arrays.asList(expectedResults));
+        List<Key> results = getKeys(service.prepare(query).asList(withDefaults()));
+        assertEquals(expected, results);
+    }
 
-        Entity firstResult = results.get(0);
-        Entity secondResult = results.get(1);
-
-        assertEquals(b.getKey(), firstResult.getKey());
-        assertEquals(a.getKey(), secondResult.getKey());
+    private List<Key> getKeys(List<Entity> entities) {
+        List<Key> keys = new ArrayList<Key>();
+        for (Entity entity : entities) {
+            keys.add(entity.getKey());
+        }
+        return keys;
     }
 }

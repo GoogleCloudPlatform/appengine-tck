@@ -248,6 +248,14 @@ e.g. running MapReduce tests against SDK
 
 Note: adapting the tests to run against real environment can sometime be a huge (bytecode) hack. :-)
 
+Running existing JUnit tests
+----------------------------
+
+In case you already have existing JUnit tests, running against local test environment; e.g. similar to DataNucleus plugin,
+you can - with some bytecode magic - easily re-use those tests to run against any environment, in-container this time.
+
+To see how that's done, see GAE DataNucleus Plugin external testing.
+
 Writing the test
 ----------------
 See appengine-tck/tests/appengine-tck-example for a bare bones illustration of how to write a

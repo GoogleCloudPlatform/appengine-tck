@@ -304,6 +304,17 @@
     </datastore-index>
 
     <datastore-index kind="Product" ancestor="true" source="manual">
+        <property name="name" direction="asc"/>
+        <property name="price" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="Product" ancestor="true" source="manual">
+        <property name="name" direction="desc"/>
+        <property name="group" direction="asc"/>
+        <property name="price" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="Product" ancestor="true" source="manual">
         <property name="price" direction="asc"/>
         <property name="name" direction="asc"/>
     </datastore-index>
