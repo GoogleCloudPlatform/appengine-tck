@@ -47,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Arquillian.class)
 public class AsyncServiceTest extends DatastoreTestBase {
     private static final String ASYNC_ENTITY = "asyncData";
-    private AsyncDatastoreService asyncService = DatastoreServiceFactory.getAsyncDatastoreService();
+    private AsyncDatastoreService asyncService;
 
     private Query simpleQuery(Key parentKey) {
         return new Query(ASYNC_ENTITY).setAncestor(parentKey);
@@ -60,6 +60,8 @@ public class AsyncServiceTest extends DatastoreTestBase {
 
     @Before
     public void clearData() {
+        asyncService = DatastoreServiceFactory.getAsyncDatastoreService();
+
         List<Key> elist = new ArrayList<Key>();
         Query query = new Query(ASYNC_ENTITY);
         for (Entity readRec : service.prepare(query).asIterable()) {
