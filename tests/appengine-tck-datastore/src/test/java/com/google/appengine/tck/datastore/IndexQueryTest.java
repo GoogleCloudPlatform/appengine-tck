@@ -145,7 +145,7 @@ public class IndexQueryTest extends DatastoreTestBase {
     }
 
     @Test
-    public void testQueryFloadType() {
+    public void testQueryFloatType() {
         checkQueryType("floatData", Float.class);
     }
 
