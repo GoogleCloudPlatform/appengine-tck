@@ -35,6 +35,7 @@ Directory structure
 -------------------
 
 * `common`      - common test code; base tests and multisuite support
+* `common`      - core test code; black list, endpoints, ...
 * `env`         - custom environment hooks; GAE SDK, Appspot, CapeDwarf, AppScale, ...
 * `ext`         - external (useful) tests; e.g. DataNucleus, MapReduce, Objectify, ...
 * `tests`       - the main TCK API tests
@@ -223,6 +224,24 @@ e.g.
             }
         }
 
+Core tests
+----------
+
+This module is testing GAE built-in core functionality beyond APIs.
+
+Current core tests:
+
+* Endpoints support
+* Miscellaneous; e.g. black list usage, etc
+
+As we don't want to overload the testing, each custom core set of tests should be under unique profile.
+
+e.g. in the case of Endpoints support we use -Pendpoints
+
+    mvn clean install -Pcapedwarf,endpoints
+
+This will run all Endpoints tests against CapeDwarf environment.
+
 External tests
 --------------
 
@@ -232,9 +251,8 @@ Current external tests:
 
 * GAE DataNucleus Plugin
 * GAE MapReduce Library
-* Miscellaneous; e.g. black list usage, etc
 
-As we don't want to overload the testing, each custom external set of tests should be under unique profile.
+Same as core tests, each custom external set of tests is under unique profile.
 
 e.g. in the case of DataNucleus GAE plugin we use -Pdatanucleus
 

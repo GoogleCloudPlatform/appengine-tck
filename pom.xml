@@ -25,6 +25,7 @@
 
     <modules>
         <module>common</module>
+        <module>core</module>
         <module>dist</module>
         <module>env</module>
         <module>ext</module>
@@ -123,6 +124,11 @@
                             <descriptor>src/assemble/bin.xml</descriptor>
                         </descriptors>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.google.appengine</groupId>
+                    <artifactId>appengine-maven-plugin</artifactId>
+                    <version>${version.com.google.gae.api}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

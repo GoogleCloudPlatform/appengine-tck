@@ -8,16 +8,16 @@
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>appengine-tck-ext</artifactId>
+    <artifactId>appengine-tck-core</artifactId>
     <packaging>pom</packaging>
-    <name>GAE TCK External</name>
+    <name>GAE TCK Core</name>
     <url>https://developers.google.com/appengine/</url>
     <description>Google AppEngine Test Compatability Kit</description>
 
     <modules>
         <!-- External -->
-        <module>datanucleus</module>
-        <module>mapreduce</module>
+        <module>endpoints</module>
+        <module>misc</module>
     </modules>
 
     <dependencies>
