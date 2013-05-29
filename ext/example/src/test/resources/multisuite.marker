@@ -1,0 +1,3 @@
+# Multisuite root marker -- Simple example of how to enable an existing test class
+# to run under the TCK framework.
+#strategy=com.google.appengine.tck.datanucleus.DataNucleusScanStrategy

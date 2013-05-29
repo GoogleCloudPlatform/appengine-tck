@@ -17,6 +17,7 @@
     <modules>
         <!-- External -->
         <module>datanucleus</module>
+        <module>example</module>
         <module>mapreduce</module>
         <module>misc</module>
     </modules>
