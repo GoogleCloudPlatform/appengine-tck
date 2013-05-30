@@ -250,6 +250,7 @@ Here we try to gather any useful tests that will help make GAE API implementatio
 Current external tests:
 
 * GAE DataNucleus Plugin
+* JUnit Example
 * GAE MapReduce Library
 
 Same as core tests, each custom external set of tests is under unique profile.
@@ -266,13 +267,15 @@ e.g. running MapReduce tests against SDK
 
 Note: adapting the tests to run against real environment can sometime be a huge (bytecode) hack. :-)
 
+More info can be found here: [How to run external tests](ext/how_to_external_tests.md)
+
 Running existing JUnit tests
 ----------------------------
 
 In case you already have existing JUnit tests, running against local test environment; e.g. similar to DataNucleus plugin,
 you can - with some bytecode magic - easily re-use those tests to run against any environment, in-container this time.
 
-To see how that's done, see GAE DataNucleus Plugin external testing.
+To see how that's done, see JUnit example or GAE DataNucleus Plugin external testing.
 
 Writing the test
 ----------------
