@@ -64,7 +64,7 @@ public class AppEngineDataNucleusTransformer extends ArquillianJUnitTransformer 
 
     public static WebArchive buildArchive(String clazz) {
         WebArchive war = createWar();
-        addClasses(war, clazz);
+        addClasses(war, clazz, AppEngineDataNucleusTransformer.class.getClassLoader());
 
         war.addPackage("com.google.appengine.datanucleus");
 
@@ -100,23 +100,6 @@ public class AppEngineDataNucleusTransformer extends ArquillianJUnitTransformer 
         war.addAsLibraries(resolve(resolver, "com.google.appengine.tck:appengine-tck-base")); // lifecycle dep
 
         return war;
-    }
-
-    private static void addClasses(WebArchive war, String clazz) {
-        try {
-            ClassLoader cl = AppEngineDataNucleusTransformer.class.getClassLoader();
-            Class<?> current = cl.loadClass(clazz);
-            addClasses(war, current);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void addClasses(WebArchive war, Class<?> current) {
-        while (current != null && current != Object.class && "junit.framework.TestCase".equals(current.getName()) == false) {
-            war.addClass(current);
-            current = current.getSuperclass();
-        }
     }
 
     @Override

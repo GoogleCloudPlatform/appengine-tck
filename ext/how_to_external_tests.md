@@ -16,8 +16,6 @@ this category.  Currently we have 4 external test suites.
 
     1. mapreduce - These tests are for the [Java MapReduce for App Engine](https://code.google.com/p/appengine-mapreduce/wiki/GettingStartedInJava)  The tests are annotated to run with the TCK framework.  Because it is not part of the core GAE Apis it is inclued here.  The tests themselves are checked in as well.
 
-    1. misc - This is a location to include small tests that are not part of the core api.  They also follow the TCK framework.
-
 
 Running DataNucleus Tests
 -------------------------
@@ -39,7 +37,7 @@ Running the Example
     cd ext/example
     mvn clean install -Pappspot,ext-junit-example
 
-One test passes, and one purposely fails for illustration.
+We have one test, that now goes against real in-container DatastoreService.
 
 
 Running MapReduce Tests
@@ -49,12 +47,3 @@ Running MapReduce Tests
     mvn clean install
     cd ext/mapreduce
     mvn clean install -Psdk,mapreduce
-
-
-Running Misc
-------------
-
-    cd appengine-tck
-    mvn clean install
-    cd ext/misc
-    mvn clean install -Psdk,misc

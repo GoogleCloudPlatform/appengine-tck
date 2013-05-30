@@ -11,15 +11,29 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>ext-junit-example</artifactId>
     <packaging>jar</packaging>
-    <name>GAE TCK External Example</name>
+    <name>GAE TCK External JUnit Example</name>
     <url>https://developers.google.com/appengine/</url>
-    <description>GAE TCK External junit example</description>
+    <description>GAE TCK External JUnit Example</description>
 
     <dependencies>
         <dependency>
             <groupId>com.google.appengine.tck</groupId>
-            <artifactId>appengine-tck-multisuite</artifactId>
-            <scope>test</scope>
+            <artifactId>appengine-tck-transformers</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-api-1.0-sdk</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-testing</artifactId>
         </dependency>
     </dependencies>
 
@@ -45,28 +59,6 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <version>${version.dependency.plugin}</version>
-                        <executions>
-                            <execution>
-                                <id>unpack-dependencies</id>
-                                <phase>process-test-classes</phase>
-                                <goals>
-                                    <goal>unpack-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- <includeGroupIds>com.google.appengine.orm</includeGroupIds>  -->
-                                    <includeTypes>test-jar</includeTypes>
-                                    <includeScope>test</includeScope>
-                                    <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
-                                    <overWriteReleases>false</overWriteReleases>
-                                    <overWriteSnapshots>true</overWriteSnapshots>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
                         <groupId>org.jboss.maven.plugins</groupId>
                         <artifactId>maven-transformer-plugin</artifactId>
                         <version>${version.org.jboss.maven.transformer.plugin}</version>
@@ -79,8 +71,10 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <filterPattern>(((.+)Test.class$)|((.+)TestCase.class$))</filterPattern>
-                            <transformerClassName>com.google.appengine.tck.transformers.example.ExampleJUnitTransformer</transformerClassName>
+                            <filterPattern>(.+)Test.class$</filterPattern>
+                            <transformerClassName>
+                                com.google.appengine.tck.transformers.example.ExampleJUnitTransformer
+                            </transformerClassName>
                             <output>test</output>
                         </configuration>
                     </plugin>
@@ -94,7 +88,6 @@
                             <!-- forkMode>always</forkMode -->
                             <includes>
                                 <include>**/*Test.java</include>
-                                <include>**/*TestCase.java</include>
                             </includes>
                             <skipTests>false</skipTests>
                             <systemProperties>
@@ -106,28 +99,6 @@
             </build>
 
             <dependencies>
-
-<!-- terryok here -->
-                <dependency>
-                    <groupId>com.google.appengine.tck</groupId>
-                    <artifactId>appengine-tck-transformers</artifactId>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.google.appengine</groupId>
-                    <artifactId>appengine-api-1.0-sdk</artifactId>
-                </dependency>
-
-                <dependency>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.javassist</groupId>
-                    <artifactId>javassist</artifactId>
-                </dependency>
-
                 <dependency>
                     <groupId>org.jboss.arquillian.junit</groupId>
                     <artifactId>arquillian-junit-container</artifactId>

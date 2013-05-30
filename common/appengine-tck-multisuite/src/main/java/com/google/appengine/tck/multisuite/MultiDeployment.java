@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-package com.google.appengine.testing.e2e.multisuite;
+package com.google.appengine.tck.multisuite;
 
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
-import com.google.appengine.testing.e2e.multisuite.scan.ScanMultiProvider;
+import com.google.appengine.tck.multisuite.scan.ScanMultiProvider;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;

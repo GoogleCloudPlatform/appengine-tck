@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.google.appengine.testing.e2e.multisuite.scan;
+package com.google.appengine.tck.multisuite.scan;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -97,7 +97,7 @@ public abstract class ArquillianJUnitTransformer extends ShrinkWrapTransformer {
 
     protected void addTestAnnotations(CtClass clazz) throws Exception {
         for (CtMethod m : clazz.getMethods()) {
-            if (isTestMethod(m)) {
+            if (isTestMethod(m) && hasTestAnnotation(m) == false) {
                 addTestAnnotation(clazz, m);
             }
         }
@@ -105,6 +105,10 @@ public abstract class ArquillianJUnitTransformer extends ShrinkWrapTransformer {
 
     protected boolean isTestMethod(CtMethod m) throws Exception {
         return m.getName().startsWith("test") && m.getParameterTypes().length == 0 && ((m.getModifiers() & Modifier.PUBLIC) == Modifier.PUBLIC);
+    }
+
+    protected boolean hasTestAnnotation(CtMethod m) throws Exception {
+        return m.hasAnnotation(Test.class);
     }
 
     protected void addDeploymentAnnotation(CtClass clazz, CtMethod method) throws Exception {
@@ -156,5 +160,21 @@ public abstract class ArquillianJUnitTransformer extends ShrinkWrapTransformer {
 
     protected String tearDownSrc() {
         return "tearDown();";
+    }
+
+    protected static void addClasses(WebArchive war, String clazz, ClassLoader cl) {
+        try {
+            Class<?> current = cl.loadClass(clazz);
+            addClasses(war, current);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected static void addClasses(WebArchive war, Class<?> current) {
+        while (current != null && current != Object.class && "junit.framework.TestCase".equals(current.getName()) == false) {
+            war.addClass(current);
+            current = current.getSuperclass();
+        }
     }
 }

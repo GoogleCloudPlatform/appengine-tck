@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.google.appengine.testing.e2e.multisuite;
+package com.google.appengine.tck.multisuite;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>

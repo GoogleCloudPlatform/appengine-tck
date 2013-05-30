@@ -13,22 +13,22 @@
  * limitations under the License.
  */
 
-package com.google.appengine.tck.datanucleus;
+package com.google.appengine.tck.multisuite.scan;
 
-import com.google.appengine.testing.e2e.multisuite.MultiContext;
-import com.google.appengine.testing.e2e.multisuite.scan.ScanStrategy;
+import org.jboss.shrinkwrap.api.ArchivePath;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /**
- * One time merge, as all archives are the same.
- *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class DataNucleusScanStrategy implements ScanStrategy {
-    private boolean flag = true;
+public class FailFilter extends NotificationFilter {
+    public FailFilter(WebArchive uber, WebArchive archive) {
+        super(uber, archive);
+    }
 
-    public boolean doMerge(MultiContext context, Class<?> clazz) {
-        boolean tmp = flag;
-        flag = false;
-        return tmp;
+    protected void validate(ArchivePath path, boolean equal) {
+        if (equal == false) {
+            throw new IllegalArgumentException("Different resource already exists: " + path.get() + " !!");
+        }
     }
 }

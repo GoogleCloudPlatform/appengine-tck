@@ -13,19 +13,20 @@
  * limitations under the License.
  */
 
-package com.google.appengine.testing.e2e.multisuite;
+package com.google.appengine.tck.multisuite;
 
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 
+import com.google.appengine.tck.scan.Context;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class MultiContext {
+public class MultiContext implements Context {
     private final WebArchive war;
     private final File root;
     private final ClassLoader classLoader;

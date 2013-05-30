@@ -18,8 +18,12 @@
     <dependencies>
         <dependency>
             <groupId>com.google.appengine.tck</groupId>
-            <artifactId>appengine-tck-multisuite</artifactId>
-            <scope>test</scope>
+            <artifactId>appengine-tck-transformers</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-base</artifactId>
         </dependency>
     </dependencies>
 
@@ -80,7 +84,9 @@
                         </executions>
                         <configuration>
                             <filterPattern>(((.+)Test.class$)|((.+)DatastoreTestCase.class$))</filterPattern>
-                            <transformerClassName>com.google.appengine.tck.transformers.dn.MultipleDataNucleusTransformer</transformerClassName>
+                            <transformerClassName>
+                                com.google.appengine.tck.transformers.dn.MultipleDataNucleusTransformer
+                            </transformerClassName>
                             <output>test</output>
                         </configuration>
                     </plugin>
@@ -168,11 +174,6 @@
                 <dependency>
                     <groupId>com.google.appengine</groupId>
                     <artifactId>appengine-testing</artifactId>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.google.appengine.tck</groupId>
-                    <artifactId>appengine-tck-transformers</artifactId>
                 </dependency>
 
                 <dependency>

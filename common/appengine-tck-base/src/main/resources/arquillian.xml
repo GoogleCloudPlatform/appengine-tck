@@ -25,7 +25,7 @@
     </engine -->
 
     <extension qualifier="suite">
-        <property name="deploymentClass">com.google.appengine.testing.e2e.multisuite.MultiDeployment</property>
+        <property name="deploymentClass">com.google.appengine.tck.multisuite.MultiDeployment</property>
     </extension>
 
 </arquillian>

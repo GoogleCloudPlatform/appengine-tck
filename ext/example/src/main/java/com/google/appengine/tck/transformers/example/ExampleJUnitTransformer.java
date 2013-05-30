@@ -16,33 +16,25 @@
 package com.google.appengine.tck.transformers.example;
 
 import com.google.appengine.tck.transformers.ArquillianJUnitTransformer;
-import com.google.appengine.tck.transformers.MatchingClassFileTransformer;
-
 import javassist.CtClass;
-
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 
 /**
  * A simple example of how to enable an existing test that does not follow the TCK framework.
  *
- *
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class ExampleJUnitTransformer  extends ArquillianJUnitTransformer implements MatchingClassFileTransformer {
-
-    // See the maven-transformer-plugin configuration in the pom.xml.
-    public boolean match(String className) {
-        return className.endsWith("Test") || className.endsWith("TestCase");
-    }
+public class ExampleJUnitTransformer extends ArquillianJUnitTransformer {
 
     protected String getDeploymentMethodBody(CtClass clazz) throws Exception {
         return "{return com.google.appengine.tck.transformers.example.ExampleJUnitTransformer.buildArchive(\"" + clazz.getName() + "\");}";
     }
 
     public static WebArchive buildArchive(String clazz) {
-        WebArchive war = createWar();
-        addClasses(war, clazz);
+        WebArchive war = ArquillianJUnitTransformer.createWar();
+        ArquillianJUnitTransformer.addClasses(war, clazz, ExampleJUnitTransformer.class.getClassLoader());
 
         // Your test suite is most likely built separately from the TCK.  You would include all the
         // dependencies in the pom.xml, and then declare the packages and classes here.
@@ -56,6 +48,9 @@ public class ExampleJUnitTransformer  extends ArquillianJUnitTransformer impleme
         // Necessary to run under App Engine.
         war.addAsLibraries(resolve(resolver, "com.google.appengine:appengine-api-1.0-sdk"));
 
+        // GAE testing lib
+        war.addAsLibraries(resolve(resolver, "com.google.appengine:appengine-testing"));
+
         // TCK Internals necessary for any tests to run under the TCK.
         war.addAsLibraries(resolve(resolver, "com.google.appengine.tck:appengine-tck-transformers")); // cleanup dep
         war.addAsLibraries(resolve(resolver, "com.google.appengine.tck:appengine-tck-base")); // lifecycle dep
@@ -63,26 +58,14 @@ public class ExampleJUnitTransformer  extends ArquillianJUnitTransformer impleme
         return war;
     }
 
-    private static void addClasses(WebArchive war, String clazz) {
-        try {
-            ClassLoader cl = ExampleJUnitTransformer.class.getClassLoader();
-            Class<?> current = cl.loadClass(clazz);
-            addClasses(war, current);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void addClasses(WebArchive war, Class<?> current) {
-        while (current != null && current != Object.class && "junit.framework.TestCase".equals(current.getName()) == false) {
-            war.addClass(current);
-            current = current.getSuperclass();
-        }
+    @Override
+    protected String setUpSrc() {
+        // ignore helper, just setup service
+        return "service = com.google.appengine.api.datastore.DatastoreServiceFactory.getDatastoreService();";
     }
 
     @Override
     protected String tearDownSrc() {
-        return "com.google.appengine.tck.transformers.TestUtils.clean();" + super.tearDownSrc();
+        return ""; // ignore current tearDown(), as we don't need helper
     }
-
 }

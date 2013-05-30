@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.google.appengine.testing.e2e.multisuite.scan;
+package com.google.appengine.tck.multisuite.scan;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -27,8 +27,10 @@ import java.util.regex.Pattern;
 import com.google.appengine.tck.category.IgnoreMultisuite;
 import com.google.appengine.tck.event.TestLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycles;
-import com.google.appengine.testing.e2e.multisuite.MultiContext;
-import com.google.appengine.testing.e2e.multisuite.MultiProvider;
+import com.google.appengine.tck.multisuite.MultiContext;
+import com.google.appengine.tck.multisuite.MultiProvider;
+import com.google.appengine.tck.scan.Context;
+import com.google.appengine.tck.scan.ScanStrategy;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.Filter;
@@ -85,7 +87,7 @@ public class ScanMultiProvider implements MultiProvider, ScanStrategy {
         }
     }
 
-    public boolean doMerge(MultiContext context, Class<?> clazz) {
+    public boolean doMerge(Context context, Class<?> clazz) {
         return true;
     }
 
