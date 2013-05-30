@@ -26,6 +26,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -275,6 +276,8 @@ public class QueryBasicsTest extends QueryTestBase {
         service.prepare(query).asList(withDefaults());
     }
 
+    @Ignore("According to the docs, ordering of query results is undefined when no sort order is specified. They are " +
+        "currently ordered according to the index, but this may change in the future and so it shouldn't be tested by the TCK.")
     @Test
     public void testDefaultSortOrderIsDefinedByIndexDefinition() throws Exception {
         Key parentKey = createQueryBasicsTestParent("testDefaultSortOrderIsDefinedByIndexDefinition");

@@ -28,6 +28,7 @@ import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.RawValue;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -285,6 +286,8 @@ public class QueryOptimizationsTest extends QueryTestBase {
         assertEquals(0, service.prepare(query).asList(withDefaults()).size());
     }
 
+    @Ignore("According to the docs, ordering of query results is undefined when no sort order is specified. They are " +
+        "currently ordered according to the index, but this may change in the future and so it shouldn't be tested by the TCK.")
     @Test
     public void testProjectionQueryDefaultSortOrderIsDefinedByIndexDefinition() throws Exception {
         String methodName = "testProjectionQueryDefaultSortOrderIsDefinedByIndexDefinition";
