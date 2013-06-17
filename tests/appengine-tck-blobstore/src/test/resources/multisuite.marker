@@ -1,0 +1,2 @@
+# Multisuite root marker.
+#filter=com.google.appengine.testing.e2e.multisuite.scan.FailFilter

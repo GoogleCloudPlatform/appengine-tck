@@ -474,6 +474,11 @@
                 <version>${version.org.apache.httpcomponents}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpmime</artifactId>
+                <version>${version.org.apache.httpcomponents}</version>
+            </dependency>
 
             <!-- Maven -->
 

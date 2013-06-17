@@ -1,0 +1,2 @@
+com.google.appengine.api.blobstore.BlobstoreService
+com.google.appengine.api.blobstore.BlobstoreServiceFactory

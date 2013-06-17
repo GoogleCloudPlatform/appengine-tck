@@ -31,6 +31,7 @@
 
     <modules>
         <!-- APIs -->
+        <module>appengine-tck-blobstore</module>
         <module>appengine-tck-capability</module>
         <module>appengine-tck-datastore</module>
         <module>appengine-tck-example</module>
