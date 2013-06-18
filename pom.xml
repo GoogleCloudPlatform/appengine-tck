@@ -408,6 +408,12 @@
                 <scope>test</scope>
             </dependency>
 
+            <dependency>
+                <groupId>com.google.appengine</groupId>
+                <artifactId>appengine-endpoints</artifactId>
+                <version>${version.com.google.gae.api}</version>
+            </dependency>
+
             <!-- Site -->
 
             <dependency>

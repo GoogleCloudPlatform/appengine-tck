@@ -1,0 +1,68 @@
+{
+    "extends" : "thirdParty.api",
+    "abstract" : false,
+    "root" : "https://your-app-id.appspot.com/_ah/api",
+    "name" : "zuEndPoint",
+    "version" : "v1",
+    "defaultVersion" : false,
+    "adapter" : {
+        "bns" : "https://your-app-id.appspot.com/_ah/spi",
+        "deadline" : 10.0,
+        "type" : "lily"
+    },
+    "auth" : {
+        "allowCookieAuth" : false
+    },
+    "frontendLimits" : {
+        "unregisteredUserQps" : -1,
+        "unregisteredQps" : -1,
+        "unregisteredDaily" : -1,
+        "rules" : [ ]
+    },
+    "cacheControl" : {
+        "type" : "no-cache",
+        "maxAge" : 0
+    },
+    "methods" : {
+        "zuEndPoint.foo.bar" : {
+            "path" : "foo",
+            "httpMethod" : "POST",
+            "scopes" : [ ],
+            "audiences" : [ ],
+            "clientIds" : [ ],
+            "rosyMethod" : "com.google.appengine.tck.endpoints.FooEndPoint.foo",
+            "request" : {
+                "parameters" : {
+                    "param" : {
+                        "type" : "string",
+                        "required" : true
+                    }
+                },
+                "body" : "empty"
+            },
+            "response" : {
+                "body" : "autoTemplate(backendResponse)"
+            }
+        }
+    },
+    "descriptor" : {
+        "schemas" : {
+            "EndPointResponse" : {
+                "id" : "EndPointResponse",
+                "type" : "object",
+                "properties" : {
+                    "response" : {
+                        "type" : "string"
+                    }
+                }
+            }
+        },
+        "methods" : {
+            "com.google.appengine.tck.endpoints.FooEndPoint.foo" : {
+                "response" : {
+                    "$ref" : "EndPointResponse"
+                }
+            }
+        }
+    }
+}
