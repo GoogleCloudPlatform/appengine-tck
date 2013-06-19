@@ -24,6 +24,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,43 +46,43 @@ public class RequiredIndexesTest extends QueryTestBase {
     @Test
     public void testKindlessQueryUsingOnlyAncestorAndKeyFiltersDoesNotRequireConfiguredIndex() throws Exception {
         executeQuery(new Query()
-                .setAncestor(KeyFactory.createKey("Ancestor", 1))
-                .setFilter(new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY, GREATER_THAN, KeyFactory.createKey("Kind", 1))));
+            .setAncestor(KeyFactory.createKey("Ancestor", 1))
+            .setFilter(new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY, GREATER_THAN, KeyFactory.createKey("Kind", 1))));
     }
 
     @Test
     public void testQueryUsingOnlyEqualityFiltersDoesNotRequireConfiguredIndex() throws Exception {
         executeQuery(new Query("Unindexed")
-                .setFilter(new Query.FilterPredicate("someProperty", EQUAL, "foo")));
+            .setFilter(new Query.FilterPredicate("someProperty", EQUAL, "foo")));
 
         executeQuery(new Query("Unindexed")
-                .setFilter(
-                    and(new Query.FilterPredicate("someProperty", EQUAL, "foo"),
-                        new Query.FilterPredicate("otherProperty", EQUAL, "bar"))));
+            .setFilter(
+                and(new Query.FilterPredicate("someProperty", EQUAL, "foo"),
+                    new Query.FilterPredicate("otherProperty", EQUAL, "bar"))));
     }
 
     @Test
     public void testQueryUsingOnlyInequalityFiltersOnSinglePropertyDoesNotRequireConfiguredIndex() throws Exception {
         executeQuery(new Query("Unindexed")
-                .setFilter(new Query.FilterPredicate("someProperty", GREATER_THAN, "foo")));
+            .setFilter(new Query.FilterPredicate("someProperty", GREATER_THAN, "foo")));
 
         executeQuery(new Query("Unindexed")
-                .setFilter(
-                    and(new Query.FilterPredicate("someProperty", GREATER_THAN, "foo"),
-                        new Query.FilterPredicate("someProperty", LESS_THAN, "bar"))));
+            .setFilter(
+                and(new Query.FilterPredicate("someProperty", GREATER_THAN, "foo"),
+                    new Query.FilterPredicate("someProperty", LESS_THAN, "bar"))));
     }
 
     @Test
     public void testQueryUsingOnlyAncestorAndEqualityFiltersDoesNotRequireConfiguredIndex() throws Exception {
         executeQuery(new Query("Unindexed")
-                .setAncestor(KeyFactory.createKey("Ancestor", 1))
-                .setFilter(new Query.FilterPredicate("someProperty", EQUAL, "foo")));
+            .setAncestor(KeyFactory.createKey("Ancestor", 1))
+            .setFilter(new Query.FilterPredicate("someProperty", EQUAL, "foo")));
 
         executeQuery(new Query("Unindexed")
-                .setAncestor(KeyFactory.createKey("Ancestor", 1))
-                .setFilter(
-                    and(new Query.FilterPredicate("someProperty", EQUAL, "foo"),
-                        new Query.FilterPredicate("otherProperty", EQUAL, "bar"))));
+            .setAncestor(KeyFactory.createKey("Ancestor", 1))
+            .setFilter(
+                and(new Query.FilterPredicate("someProperty", EQUAL, "foo"),
+                    new Query.FilterPredicate("otherProperty", EQUAL, "bar"))));
     }
 
     @Test(expected = DatastoreNeedIndexException.class)
@@ -137,29 +138,60 @@ public class RequiredIndexesTest extends QueryTestBase {
                         new Query.FilterPredicate("someProperty", GREATER_THAN, "a"))));
     }
 
+    @Test(expected = DatastoreNeedIndexException.class)
+    public void testAncestorQueryWithInequalityFilterOnSomePropertyAndEqualityFilterOnSamePropertyRequiresConfiguredIndex() throws Exception {
+        executeQuery(
+            new Query("Unindexed")
+                .setAncestor(KeyFactory.createKey("Ancestor", 1))
+                .setFilter(
+                    and(new Query.FilterPredicate("someProperty", EQUAL, "b"),
+                        new Query.FilterPredicate("someProperty", GREATER_THAN, "a"))));
+    }
+
+    @Test
+    public void testQueryWithEqualityAndInequalityFiltersAndSortOnASinglePropertyDoesNotRequireConfiguredIndex() throws Exception {
+        executeQuery(
+            new Query("Unindexed")
+                .setFilter(
+                    and(new Query.FilterPredicate("someProperty", GREATER_THAN, "a"),
+                        new Query.FilterPredicate("someProperty", EQUAL, "b")))
+                .addSort("someProperty"));
+    }
+
+    @Test
+    public void testAncestorQueryWithEqualityAndInequalityFiltersAndSortOnASinglePropertyDoesNotRequireConfiguredIndex() throws Exception {
+        executeQuery(
+            new Query("Unindexed")
+                .setAncestor(KeyFactory.createKey("Ancestor", 1))
+                .setFilter(
+                    and(new Query.FilterPredicate("someProperty", GREATER_THAN, "a"),
+                        new Query.FilterPredicate("someProperty", EQUAL, "b")))
+                .addSort("someProperty"));
+    }
+
     @Test
     public void testQueryUsingOnlyAncestorFiltersAndEqualityFiltersOnPropertiesAndInequalityFiltersOnKeysDoesNotRequireConfiguredIndex() throws Exception {
         executeQuery(new Query("Unindexed")
-                .setAncestor(KeyFactory.createKey("Ancestor", 1))
-                .setFilter(
-                    and(new Query.FilterPredicate("someProperty", EQUAL, "foo"),
-                        new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY, GREATER_THAN, KeyFactory.createKey("Unindexed", 1)))));
+            .setAncestor(KeyFactory.createKey("Ancestor", 1))
+            .setFilter(
+                and(new Query.FilterPredicate("someProperty", EQUAL, "foo"),
+                    new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY, GREATER_THAN, KeyFactory.createKey("Unindexed", 1)))));
     }
 
     @Test
     public void testQueryWithoutFiltersAndOnlyOneSortOrderDoesNotRequireConfiguredIndex() throws Exception {
         executeQuery(new Query("Unindexed")
-                .addSort("someProperty"));
+            .addSort("someProperty"));
 
         executeQuery(new Query("Unindexed")
-                .addSort("someProperty", Query.SortDirection.DESCENDING));
+            .addSort("someProperty", Query.SortDirection.DESCENDING));
     }
 
     @Test
     public void testQueryWithAncestorAndSortOrderOnKeyPropertyDoesNotRequireConfiguredIndex() throws Exception {
         executeQuery(new Query("Unindexed")
-                .setAncestor(KeyFactory.createKey("Ancestor", 1))
-                .addSort(Entity.KEY_RESERVED_PROPERTY));
+            .setAncestor(KeyFactory.createKey("Ancestor", 1))
+            .addSort(Entity.KEY_RESERVED_PROPERTY));
     }
 
     @Test(expected = DatastoreNeedIndexException.class)
@@ -173,21 +205,21 @@ public class RequiredIndexesTest extends QueryTestBase {
     @Test
     public void testProjectionQueryOperatingOnlyOnASinglePropertyDoesNotRequireConfiguredIndex() throws Exception {
         executeQuery(new Query("Unindexed")
-                .addProjection(new PropertyProjection("someProperty", null)));
+            .addProjection(new PropertyProjection("someProperty", null)));
 
         executeQuery(new Query("Unindexed")
-                .addProjection(new PropertyProjection("someProperty", null))
-                .setFilter(new Query.FilterPredicate("someProperty", GREATER_THAN, "a")));
+            .addProjection(new PropertyProjection("someProperty", null))
+            .setFilter(new Query.FilterPredicate("someProperty", GREATER_THAN, "a")));
 
         executeQuery(new Query("Unindexed")
-                .addProjection(new PropertyProjection("someProperty", null))
-                .setFilter(new Query.FilterPredicate("someProperty", GREATER_THAN, "a"))
-                .addSort("someProperty"));
+            .addProjection(new PropertyProjection("someProperty", null))
+            .setFilter(new Query.FilterPredicate("someProperty", GREATER_THAN, "a"))
+            .addSort("someProperty"));
 
         executeQuery(new Query("Unindexed")
-                .addProjection(new PropertyProjection("someProperty", null))
-                .setFilter(new Query.FilterPredicate("someProperty", GREATER_THAN, "a"))
-                .addSort("someProperty", Query.SortDirection.DESCENDING));
+            .addProjection(new PropertyProjection("someProperty", null))
+            .setFilter(new Query.FilterPredicate("someProperty", GREATER_THAN, "a"))
+            .addSort("someProperty", Query.SortDirection.DESCENDING));
     }
 
     @Test(expected = DatastoreNeedIndexException.class)
@@ -216,8 +248,8 @@ public class RequiredIndexesTest extends QueryTestBase {
     @Test
     public void testQueryWithEqualityFilterAndSortOnKeyPropertyDoesNotRequireConfiguredIndex() throws Exception {
         executeQuery(new Query("Unindexed")
-                .setFilter(new Query.FilterPredicate("someProperty", EQUAL, "foo"))
-                .addSort(Entity.KEY_RESERVED_PROPERTY));
+            .setFilter(new Query.FilterPredicate("someProperty", EQUAL, "foo"))
+            .addSort(Entity.KEY_RESERVED_PROPERTY));
     }
 
     @Test(expected = DatastoreNeedIndexException.class)
@@ -227,6 +259,28 @@ public class RequiredIndexesTest extends QueryTestBase {
                 .setFilter(new Query.FilterPredicate("someProperty", GREATER_THAN, "foo"))
                 .addSort("someProperty")
                 .addSort("otherProperty"));
+    }
+
+    @Test
+    public void testExceptionIsThrownOnlyWhenResultsAreAccessedAndNotEarlier() throws Exception {
+        List<Entity> list = null;
+        try {
+            Query query = new Query("Unindexed")
+                .addSort("someProperty")
+                .addSort("otherProperty");
+
+            PreparedQuery preparedQuery = service.prepare(query);
+            list = preparedQuery.asList(withDefaults());
+        } catch (DatastoreNeedIndexException ex) {
+            Assert.fail("DatastoreNeedIndexException thrown too early");
+        }
+
+        try {
+            list.size();
+            Assert.fail("Expected DatastoreNeedIndexException");
+        } catch (DatastoreNeedIndexException ex) {
+            // pass
+        }
     }
 
     private void executeQuery(Query query) {
