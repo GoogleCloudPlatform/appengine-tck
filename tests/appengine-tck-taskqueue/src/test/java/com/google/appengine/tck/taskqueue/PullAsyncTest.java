@@ -129,17 +129,21 @@ public class PullAsyncTest extends QueueTestBase {
     public void testPullWithGroupTag() throws Exception {
         final Queue queue = QueueFactory.getQueue("pull-queue");
         String tag = "testPullWithGroupTag" + "_" + System.currentTimeMillis();
-        TaskHandle th1 = queue.add(withMethod(PULL).tag(tag).payload("foobar").etaMillis(15000));
-        TaskHandle th2 = queue.add(withMethod(PULL).tag("qwerty").payload("foofoo").etaMillis(11000));
-        TaskHandle th3 = queue.add(withMethod(PULL).tag(tag).payload("foofoo").etaMillis(5000));
+
+        long currentTime = System.currentTimeMillis();
+        TaskHandle th1 = queue.add(withMethod(PULL).tag(tag).payload("foobar").etaMillis(currentTime));
+        TaskHandle th2 = queue.add(withMethod(PULL).tag(tag + "qwerty").payload("foofoo").etaMillis(currentTime + 1000));
+        TaskHandle th3 = queue.add(withMethod(PULL).tag(tag).payload("foofoo").etaMillis(currentTime + 2000));
+        sync();
+
         try {
             LeaseOptions options = new LeaseOptions(LeaseOptions.Builder
                 .withLeasePeriod(1000L, TimeUnit.SECONDS))
-                //.withLeasePeriod(1000L, TimeUnit.SECONDS))
                 .countLimit(100)
                 .groupByTag();
             List<TaskHandle> handles = waitOnFuture(queue.leaseTasksAsync(options));
             assertEquals(2, handles.size());
+
             Set<String> expectedTasks = taskHandlesToNameSet(th1, th3);
             Set<String> returnedTasks = taskHandleListToNameSet(handles);
             assertEquals(expectedTasks, returnedTasks);

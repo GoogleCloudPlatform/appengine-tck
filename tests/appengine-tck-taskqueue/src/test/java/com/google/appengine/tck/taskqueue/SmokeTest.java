@@ -35,7 +35,6 @@ public class SmokeTest extends QueueTestBase {
     @Test
     public void testBasics() throws Exception {
         final Queue queue = QueueFactory.getQueue("pull-queue");
-        queue.purge();
         sync(2000L);
         TaskHandle th = queue.add(TaskOptions.Builder.withMethod(TaskOptions.Method.PULL).param("foo", "bar".getBytes()));
         try {

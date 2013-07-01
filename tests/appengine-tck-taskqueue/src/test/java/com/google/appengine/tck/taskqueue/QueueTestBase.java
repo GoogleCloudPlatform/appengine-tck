@@ -15,6 +15,8 @@
 
 package com.google.appengine.tck.taskqueue;
 
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
@@ -47,6 +49,8 @@ public abstract class QueueTestBase extends TestBase {
     public static final String QUEUE_NAME = "X-AppEngine-QueueName";
     public static final String TASK_NAME = "X-AppEngine-TaskName";
 
+    private static MemcacheService cache = MemcacheServiceFactory.getMemcacheService();
+
     @Deployment
     public static Archive getDeployment() {
         TestContext context = new TestContext();
@@ -78,5 +82,59 @@ public abstract class QueueTestBase extends TestBase {
             taskNames.add(handle.getName());
         }
         return taskNames;
+    }
+
+    /**
+     *
+     * @param key memcache key
+     * @param targetValue object value to wait for.
+     * @param <T> memcache object type.
+     * @return the current value from memcache (targetValue, not targetValue, or null)
+     */
+    protected <T> T waitForTestData(String key, T targetValue) {
+        int milliSeconds = 0;
+        int maxMilliSeconds = 30 * 1000;
+
+        T currentValue = (T) cache.get(key);
+
+        while (currentValue == null && milliSeconds <= maxMilliSeconds) {
+            sync(1000);
+            milliSeconds += 1000;
+            currentValue = (T) cache.get(key);
+        }
+
+        if (!cache.contains(key)) {
+            log.warning("cache item:" + key + " does not exist.");
+            return null;
+        }
+
+        if (currentValue == null) {
+            log.warning("cache item: " + key + " exists, but is null.");
+            return null;
+        }
+
+        while (!currentValue.equals(targetValue) && milliSeconds <= maxMilliSeconds) {
+            sync(1000);
+            milliSeconds += 1000;
+            currentValue = (T) cache.get(key);
+        }
+
+        return currentValue;
+    }
+
+    protected <T> T waitForTestDataToExist(String key) {
+        int milliSeconds = 0;
+        int maxMilliSeconds = 20 * 1000;
+
+        T currentValue = (T) cache.get(key);
+
+        while (!cache.contains(key) && milliSeconds <= maxMilliSeconds) {
+            log.info(key + ": does not exist.");
+            sync(1000);
+            milliSeconds += 1000;
+            currentValue = (T) cache.get(key);
+        }
+
+        return currentValue;
     }
 }
