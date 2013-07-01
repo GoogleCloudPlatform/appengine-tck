@@ -92,14 +92,15 @@ public class AsyncTasksTest extends QueueTestBase {
 
     @Test
     public void testTaskHandleContainsAllNecessaryProperties() throws Exception {
+        String name = "testTaskHandleContainsAllNecessaryProperties-" + System.currentTimeMillis();
         Queue queue = QueueFactory.getDefaultQueue();
-        TaskHandle handle = waitOnFuture(queue.addAsync(withTaskName("foo").payload("payload")));
+        TaskHandle handle = waitOnFuture(queue.addAsync(withTaskName(name).payload("payload")));
 
         assertEquals("default", handle.getQueueName());
-        assertEquals("foo", handle.getName());
+        assertEquals(name, handle.getName());
         assertEquals("payload", new String(handle.getPayload(), "UTF-8"));
-//        assertEquals(, handle.getEtaMillis());    // TODO
-//        assertEquals(, handle.getRetryCount());
+        assertNotNull(handle.getEtaMillis());
+        assertEquals(0, (int) handle.getRetryCount());
     }
 
     @Test
@@ -111,24 +112,26 @@ public class AsyncTasksTest extends QueueTestBase {
 
     @Test
     public void testRequestHeaders() throws Exception {
+        String name = "testRequestHeaders-1-" + System.currentTimeMillis();
         Queue defaultQueue = QueueFactory.getDefaultQueue();
-        waitOnFuture(defaultQueue.addAsync(withTaskName("task1")));
+        waitOnFuture(defaultQueue.addAsync(withTaskName(name)));
         sync();
 
         RequestData request = DefaultQueueServlet.getLastRequest();
         assertEquals("default", request.getHeader(QUEUE_NAME));
-        assertEquals("task1", request.getHeader(TASK_NAME));
+        assertEquals(name, request.getHeader(TASK_NAME));
         assertNotNull(request.getHeader(TASK_RETRY_COUNT));
         assertNotNull(request.getHeader(TASK_EXECUTION_COUNT));
-//        assertNotNull(request.getHeader("X-AppEngine-TaskETA"));    // TODO
+        assertNotNull(request.getHeader("X-AppEngine-TaskETA"));
 
+        String name2 = "testRequestHeaders-2-" + System.currentTimeMillis();
         Queue testQueue = QueueFactory.getQueue("test");
-        waitOnFuture(testQueue.addAsync(withTaskName("task2")));
+        waitOnFuture(testQueue.addAsync(withTaskName(name2)));
         sync();
 
         request = TestQueueServlet.getLastRequest();
         assertEquals("test", request.getHeader(QUEUE_NAME));
-        assertEquals("task2", request.getHeader(TASK_NAME));
+        assertEquals(name2, request.getHeader(TASK_NAME));
     }
 
     @Test
@@ -221,32 +224,54 @@ public class AsyncTasksTest extends QueueTestBase {
 
     @Test
     public void testRetry() throws Exception {
-        RetryTestServlet.setNumberOfTimesToFail(1);
+        long numTimesToFail = 1;
+        String key = "testRetry-" + System.currentTimeMillis();
 
         Queue queue = QueueFactory.getDefaultQueue();
-        waitOnFuture(queue.addAsync(withUrl("/_ah/retryTest").retryOptions(RetryOptions.Builder.withTaskRetryLimit(5))));
-        sync();
+        waitOnFuture(queue.addAsync(withUrl("/_ah/retryTest")
+            .param("testdata-key", key)
+            .param("times-to-fail", String.valueOf(numTimesToFail))
+            .retryOptions(RetryOptions.Builder.withTaskRetryLimit(5))));
 
-        assertEquals(2, RetryTestServlet.getInvocationCount());
+        String countKey = RetryTestServlet.getInvocationCountKey(key);
+        Long expectedAttempts = (long) (numTimesToFail + 1);
+        Long actualAttempts = waitForTestData(countKey, expectedAttempts);
+        assertEquals(expectedAttempts, actualAttempts);
 
-        RequestData request1 = RetryTestServlet.getRequest(0);
+        String requestKey1 = RetryTestServlet.getRequestDataKey(key, 1);
+        RequestData request1 = waitForTestDataToExist(requestKey1);
         assertEquals("0", request1.getHeader(TASK_RETRY_COUNT));
         assertEquals("0", request1.getHeader(TASK_EXECUTION_COUNT));
 
-        RequestData request2 = RetryTestServlet.getRequest(1);
+        String requestKey2 = RetryTestServlet.getRequestDataKey(key, 2);
+        RequestData request2 = waitForTestDataToExist(requestKey2);
         assertEquals("1", request2.getHeader(TASK_RETRY_COUNT));
         assertEquals("1", request2.getHeader(TASK_EXECUTION_COUNT));
     }
 
     @Test
     public void testRetryLimitIsHonored() throws Exception {
-        RetryTestServlet.setNumberOfTimesToFail(10);
+        long numTimesToFail = 10;
+        int retryLimit = 2;
+        String key = "testRetryLimitIsHonored-" + System.currentTimeMillis();
 
         Queue queue = QueueFactory.getDefaultQueue();
-        waitOnFuture(queue.addAsync(withUrl("/_ah/retryTest").retryOptions(RetryOptions.Builder.withTaskRetryLimit(2))));
-        sync();
+        waitOnFuture(queue.addAsync(withUrl("/_ah/retryTest")
+            .param("testdata-key", key)
+            .param("times-to-fail", String.valueOf(numTimesToFail))
+            .retryOptions(RetryOptions.Builder.withTaskRetryLimit(retryLimit))));
 
-        assertEquals(2, RetryTestServlet.getInvocationCount());
+        Long expectedAttempts = (long) (retryLimit + 1);
+        String countKey = RetryTestServlet.getInvocationCountKey(key);
+        Long actualAttempts = waitForTestData(countKey, expectedAttempts);
+
+        // Ideally this would be the assert, but when a task fails with 500, the test framework
+        // cannot capture it for the attempt count.
+        // assertEquals(expectedAttempts, actualAttempts);
+
+        // Allow room for one task to fail with 500.
+        assertTrue("Task retries lower than specified via withTaskRetryLimit()",
+                   actualAttempts == expectedAttempts || actualAttempts == expectedAttempts - 1);
     }
 
     private class MethodRequestHandler implements PrintServlet.RequestHandler {

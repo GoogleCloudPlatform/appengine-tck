@@ -22,7 +22,6 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,14 +41,6 @@ public class PullTest extends QueueTestBase {
     @Before
     public void setUp() {
         Queue queue = QueueFactory.getQueue("pull-queue");
-        queue.purge();
-        sync(2000L);
-    }
-
-    @After
-    public void tearDown() {
-        Queue queue = QueueFactory.getQueue("pull-queue");
-        queue.purge();
     }
 
     @Test

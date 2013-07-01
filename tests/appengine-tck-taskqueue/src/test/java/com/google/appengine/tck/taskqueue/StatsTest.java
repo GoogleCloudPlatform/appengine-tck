@@ -15,9 +15,12 @@
 
 package com.google.appengine.tck.taskqueue;
 
+import static junit.framework.Assert.assertEquals;
+
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.QueueStatistics;
+
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,40 +30,22 @@ import org.junit.runner.RunWith;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
-//@Category(JBoss.class) // should be @All, once GAE local supports stats
 public class StatsTest extends QueueTestBase {
+
+    /**
+     * Because the stats processing is approximate, this test only verifies the basics.
+     */
     @Test
-    public void testStatsAPI() throws Exception {
+    public void testStatsApiBasic() throws Exception {
         final Queue queue = QueueFactory.getQueue("pull-queue");
         QueueStatistics stats = queue.fetchStatistics();
         Assert.assertNotNull(stats);
         Assert.assertEquals("pull-queue", stats.getQueueName());
-        // TODO -- more stats checks
-    }
+        assertEquals(1.0, stats.getEnforcedRate());
 
-//    @Test
-//    public void testBasics() throws Exception {
-//        final Queue queue = QueueFactory.getQueue("pull-queue");
-//        queue.purge();
-//        QueueStatistics preStats = queue.fetchStatistics();
-//        Assert.assertNotNull(preStats);
-//        int currentTaskCount = preStats.getNumTasks();
-//        long taskExecuteTime = System.currentTimeMillis() + (15 * 1000);
-//        TaskHandle th = queue.add(TaskOptions.Builder.withMethod(TaskOptions.Method.PULL).param("foo", "bar").etaMillis(taskExecuteTime));
-//        sync(2000L);
-//        try {
-//            queue.purge();
-//            QueueStatistics postStats = queue.fetchStatistics();
-//            Assert.assertNotNull(postStats);
-//            Assert.assertEquals(currentTaskCount + 1, postStats.getNumTasks());
-//
-//            List<TaskHandle> handles = queue.leaseTasks(30, TimeUnit.MINUTES, 100);
-//            Assert.assertFalse(handles.isEmpty());
-//            TaskHandle lh = handles.get(0);
-//            Assert.assertEquals(th.getName(), lh.getName());
-//            sync(5000L);
-//        } finally {
-//            queue.deleteTask(th);
-//        }
-//    }
+        Assert.assertTrue(stats.getNumTasks() >= 0);
+        Assert.assertTrue(stats.getExecutedLastMinute() >= 0);
+        Assert.assertTrue(stats.getOldestEtaUsec() == null || stats.getOldestEtaUsec() >= 0);
+        Assert.assertTrue(stats.getRequestsInFlight() >= 0);
+    }
 }

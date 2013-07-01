@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
-public class RequestData {
+public class RequestData implements Serializable {
 
     private byte[] body;
     private Map<String, String> headers = new HashMap<String, String>();
