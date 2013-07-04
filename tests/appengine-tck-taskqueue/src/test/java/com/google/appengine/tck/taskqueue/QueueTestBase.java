@@ -15,6 +15,11 @@
 
 package com.google.appengine.tck.taskqueue;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
@@ -31,11 +36,7 @@ import com.google.appengine.tck.taskqueue.support.TestQueueServlet;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.junit.Before;
 
 
 /**
@@ -49,7 +50,12 @@ public abstract class QueueTestBase extends TestBase {
     public static final String QUEUE_NAME = "X-AppEngine-QueueName";
     public static final String TASK_NAME = "X-AppEngine-TaskName";
 
-    private static MemcacheService cache = MemcacheServiceFactory.getMemcacheService();
+    private MemcacheService cache;
+
+    @Before
+    public void init() {
+        cache = MemcacheServiceFactory.getMemcacheService();
+    }
 
     @Deployment
     public static Archive getDeployment() {
@@ -85,10 +91,9 @@ public abstract class QueueTestBase extends TestBase {
     }
 
     /**
-     *
-     * @param key memcache key
+     * @param key         memcache key
      * @param targetValue object value to wait for.
-     * @param <T> memcache object type.
+     * @param <T>         memcache object type.
      * @return the current value from memcache (targetValue, not targetValue, or null)
      */
     protected <T> T waitForTestData(String key, T targetValue) {
