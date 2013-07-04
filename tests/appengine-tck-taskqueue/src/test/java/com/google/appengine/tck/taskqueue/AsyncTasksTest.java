@@ -94,7 +94,11 @@ public class AsyncTasksTest extends QueueTestBase {
     public void testTaskHandleContainsAllNecessaryProperties() throws Exception {
         String name = "testTaskHandleContainsAllNecessaryProperties-" + System.currentTimeMillis();
         Queue queue = QueueFactory.getDefaultQueue();
-        TaskHandle handle = waitOnFuture(queue.addAsync(withTaskName(name).payload("payload")));
+
+        TaskOptions options = withTaskName(name).payload("payload");
+        options.etaMillis(0); // TODO -- remove this once NPE is fixewd
+
+        TaskHandle handle = waitOnFuture(queue.addAsync(options));
 
         assertEquals("default", handle.getQueueName());
         assertEquals(name, handle.getName());
@@ -271,7 +275,7 @@ public class AsyncTasksTest extends QueueTestBase {
 
         // Allow room for one task to fail with 500.
         assertTrue("Task retries lower than specified via withTaskRetryLimit()",
-                   actualAttempts == expectedAttempts || actualAttempts == expectedAttempts - 1);
+            actualAttempts == expectedAttempts || actualAttempts == expectedAttempts - 1);
     }
 
     private class MethodRequestHandler implements PrintServlet.RequestHandler {

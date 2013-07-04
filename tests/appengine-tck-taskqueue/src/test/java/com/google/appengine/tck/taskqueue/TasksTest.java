@@ -103,7 +103,11 @@ public class TasksTest extends QueueTestBase {
     public void testTaskHandleContainsAllNecessaryProperties() throws Exception {
         String name = "testTaskHandleContainsAllNecessaryProperties-" + System.currentTimeMillis();
         Queue queue = QueueFactory.getDefaultQueue();
-        TaskHandle handle = queue.add(withTaskName(name).payload("payload"));
+
+        TaskOptions options = withTaskName(name).payload("payload");
+        options.etaMillis(0); // TODO -- remove this once NPE is fixewd
+
+        TaskHandle handle = queue.add(options);
 
         assertEquals("default", handle.getQueueName());
         assertEquals(name, handle.getName());
