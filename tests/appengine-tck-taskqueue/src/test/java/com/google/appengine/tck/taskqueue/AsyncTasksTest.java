@@ -126,7 +126,7 @@ public class AsyncTasksTest extends QueueTestBase {
         assertEquals(name, request.getHeader(TASK_NAME));
         assertNotNull(request.getHeader(TASK_RETRY_COUNT));
         assertNotNull(request.getHeader(TASK_EXECUTION_COUNT));
-        assertNotNull(request.getHeader("X-AppEngine-TaskETA"));
+        assertNotNull(request.getHeader(TASK_ETA));
 
         String name2 = "testRequestHeaders-2-" + System.currentTimeMillis();
         Queue testQueue = QueueFactory.getQueue("test");

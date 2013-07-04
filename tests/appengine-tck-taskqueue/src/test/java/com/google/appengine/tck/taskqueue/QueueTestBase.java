@@ -47,6 +47,7 @@ public abstract class QueueTestBase extends TestBase {
     protected static final String URL = "/_ah/test";
     public static final String TASK_RETRY_COUNT = "X-AppEngine-TaskRetryCount";
     public static final String TASK_EXECUTION_COUNT = "X-AppEngine-TaskExecutionCount";
+    public static final String TASK_ETA = "X-AppEngine-TaskETA";
     public static final String QUEUE_NAME = "X-AppEngine-QueueName";
     public static final String TASK_NAME = "X-AppEngine-TaskName";
 

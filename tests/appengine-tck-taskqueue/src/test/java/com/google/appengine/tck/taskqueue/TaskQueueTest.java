@@ -213,7 +213,7 @@ public class TaskQueueTest extends QueueTestBase {
         long etaMillis = System.currentTimeMillis() + countdownMillis;
         Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
         long executedAt = (Long) entity.getProperty(EXECUTED_AT);
-        Assert.assertTrue(executedAt >= etaMillis);
+        Assert.assertTrue("Expected executed_at to be >= " + etaMillis + ", but was: " + executedAt, executedAt >= etaMillis);
     }
 
     @Test(expected = IllegalArgumentException.class)
