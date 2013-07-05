@@ -141,11 +141,11 @@ public class OrderingTest extends QueryTestBase {
         for (int i = 0; i < values.size(); i++) {
             Set<?> values2 = values.get(i);
             for (Object value : values2) {
-                assertSet("when filtering with = " + value, whenFilteringBy(EQUAL, value), queryReturns(entities.get(i).toArray(new Entity[0])));
-                assertSet("when filtering with <= " + value, whenFilteringBy(LESS_THAN_OR_EQUAL, value), queryReturns(flatten(entities.subList(0, i + 1))));
-                assertSet("when filtering with < " + value, whenFilteringBy(LESS_THAN, value), queryReturns(flatten(entities.subList(0, i))));
-                assertSet("when filtering with >= " + value, whenFilteringBy(GREATER_THAN_OR_EQUAL, value), queryReturns(flatten(entities.subList(i, entities.size()))));
-                assertSet("when filtering with > " + value, whenFilteringBy(GREATER_THAN, value), queryReturns(flatten(entities.subList(i + 1, entities.size()))));
+                assertSet("when filtering with = " + value, queryReturns(entities.get(i).toArray(new Entity[0])), whenFilteringBy(EQUAL, value));
+                assertSet("when filtering with <= " + value, queryReturns(flatten(entities.subList(0, i + 1))), whenFilteringBy(LESS_THAN_OR_EQUAL, value));
+                assertSet("when filtering with < " + value, queryReturns(flatten(entities.subList(0, i))), whenFilteringBy(LESS_THAN, value));
+                assertSet("when filtering with >= " + value, queryReturns(flatten(entities.subList(i, entities.size()))), whenFilteringBy(GREATER_THAN_OR_EQUAL, value));
+                assertSet("when filtering with > " + value, queryReturns(flatten(entities.subList(i + 1, entities.size()))), whenFilteringBy(GREATER_THAN, value));
             }
         }
     }
