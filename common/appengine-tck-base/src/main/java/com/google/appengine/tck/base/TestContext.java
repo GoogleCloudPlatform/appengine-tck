@@ -32,6 +32,7 @@ public class TestContext implements Cloneable {
 
     private String compatibilityProperties;
     private Properties properties = new Properties();
+    private boolean useSystemProperties;
 
     private boolean callbacks;
 
@@ -98,6 +99,15 @@ public class TestContext implements Cloneable {
 
     public Properties getProperties() {
         return properties;
+    }
+
+    public boolean isUseSystemProperties() {
+        return useSystemProperties;
+    }
+
+    public TestContext setUseSystemProperties(boolean useSystemProperties) {
+        this.useSystemProperties = useSystemProperties;
+        return this;
     }
 
     public boolean hasCallbacks() {

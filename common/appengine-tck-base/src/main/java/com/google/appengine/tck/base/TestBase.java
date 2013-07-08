@@ -16,7 +16,9 @@
 package com.google.appengine.tck.base;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
@@ -40,6 +42,7 @@ import org.junit.Assert;
  */
 public class TestBase {
     protected static final long DEFAULT_SLEEP = 3000L;
+    protected static final String TCK_PROPERTIES = "tck.properties";
 
     protected final Logger log = Logger.getLogger(getClass().getName());
 
@@ -95,15 +98,23 @@ public class TestBase {
             war.addAsWebInfResource("META-INF/datastorecallbacks.xml", "classes/META-INF/datastorecallbacks.xml");
         }
 
-        if (context.getCompatibilityProperties() != null && context.getProperties().isEmpty() == false) {
+        if (context.getCompatibilityProperties() != null && (context.getProperties().isEmpty() == false || context.isUseSystemProperties())) {
+            Properties properties = new Properties();
+
+            if (context.isUseSystemProperties()) {
+                properties.putAll(System.getProperties());
+            }
+            properties.putAll(context.getProperties());
+
             final StringWriter writer = new StringWriter();
             try {
-                context.getProperties().store(writer, "GAE TCK testing!");
+                properties.store(writer, "GAE TCK testing!");
             } catch (IOException e) {
                 throw new RuntimeException("Cannot write compatibility properties.", e);
             }
+
             final StringAsset asset = new StringAsset(writer.toString());
-            war.addAsResource(asset, context.getCompatibilityProperties());
+            war.addAsWebInfResource(asset, "classes/" + context.getCompatibilityProperties());
         }
 
         return war;
@@ -168,6 +179,25 @@ public class TestBase {
                 cause = e;
             }
             throw new IllegalStateException(cause);
+        }
+    }
+
+    protected Properties readProperties(String name) throws IOException {
+        InputStream is = getClass().getClassLoader().getResourceAsStream(name);
+
+        if (is == null) {
+            throw new IllegalArgumentException("No such resource: " + name);
+        }
+
+        try {
+            Properties properties = new Properties();
+            properties.load(is);
+            return properties;
+        } finally {
+            try {
+                is.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 }

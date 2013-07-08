@@ -16,6 +16,7 @@
 package com.google.appengine.tck.capability;
 
 import com.google.appengine.tck.base.TestBase;
+import com.google.appengine.tck.base.TestContext;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -32,12 +33,18 @@ import org.junit.runner.RunWith;
 public class DummyTest extends TestBase {
     @Deployment
     public static WebArchive getDeployment() {
-        WebArchive war = getTckDeployment();
+        TestContext context = new TestContext().setUseSystemProperties(true).setCompatibilityProperties(TCK_PROPERTIES);
+        WebArchive war = getTckDeployment(context);
         war.addAsWebInfResource(new StringAsset("qwert"), "dummy.txt");
         return war;
     }
 
     @Test
     public void testDummy() {
+    }
+
+    @Test
+    public void testProps() throws Exception {
+        System.out.println("tck.email = " + readProperties(TCK_PROPERTIES).getProperty("tck.email"));
     }
 }
