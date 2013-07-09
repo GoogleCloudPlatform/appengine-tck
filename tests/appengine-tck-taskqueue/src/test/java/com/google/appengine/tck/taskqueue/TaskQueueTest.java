@@ -209,8 +209,9 @@ public class TaskQueueTest extends QueueTestBase {
             .param(TEST_METHOD_TAG, testMethodTag)
             .countdownMillis(countdownMillis);
 
-        QueueFactory.getQueue(E2E_TESTING_EXEC).add(taskoptions);
         long etaMillis = System.currentTimeMillis() + countdownMillis;
+        QueueFactory.getQueue(E2E_TESTING_EXEC).add(taskoptions);
+
         Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
         long executedAt = (Long) entity.getProperty(EXECUTED_AT);
         Assert.assertTrue("Expected executed_at to be >= " + etaMillis + ", but was: " + executedAt, executedAt >= etaMillis);
