@@ -14,11 +14,6 @@
     <url-pattern>/_ah/mail/*</url-pattern>
   </servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>mailHandler</servlet-name>
-        <url-pattern>/mytest/*</url-pattern>
-    </servlet-mapping>
-
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>mail constraints</web-resource-name>

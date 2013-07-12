@@ -163,10 +163,6 @@
                             <includes>
                                 <include>com/google/appengine/tck/**/*Test.java</include>
                             </includes>
-                            <systemProperties>
-                                <appengine.mail.gateway>appspotmail.com</appengine.mail.gateway>
-                                <appengine.mail.email>SET-VIA-COMMANDLINE</appengine.mail.email>
-                            </systemProperties>
                         </configuration>
                     </plugin>
                 </plugins>
