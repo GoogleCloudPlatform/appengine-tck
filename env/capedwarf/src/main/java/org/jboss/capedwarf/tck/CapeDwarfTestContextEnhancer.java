@@ -17,24 +17,21 @@ package org.jboss.capedwarf.tck;
 
 import com.google.appengine.tck.base.ContextRoot;
 import com.google.appengine.tck.base.TestContext;
+import com.google.appengine.tck.event.AbstractTestContextLifecycle;
 import com.google.appengine.tck.event.TestContextLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycle;
-import com.google.appengine.tck.event.TestLifecycleEvent;
 import org.kohsuke.MetaInfServices;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-@MetaInfServices
-public class CapeDwarfTestContextEnhancer implements TestLifecycle {
-    public void before(TestLifecycleEvent event) {
-        if (event instanceof TestContextLifecycleEvent) {
-            TestContextLifecycleEvent tcle = (TestContextLifecycleEvent) event;
-            enhance(tcle.getTestContext());
-        }
+@MetaInfServices(TestLifecycle.class)
+public class CapeDwarfTestContextEnhancer extends AbstractTestContextLifecycle {
+    protected void doBefore(TestContextLifecycleEvent event) {
+        enhance(event.getTestContext());
     }
 
-    public void after(TestLifecycleEvent event) {
+    protected void doAfter(TestContextLifecycleEvent event) {
     }
 
     protected void enhance(TestContext context) {

@@ -72,4 +72,8 @@ public class TestLifecycles {
     public static TestLifecycleEvent createServiceLifecycleEvent(Class<?> caller, Object service) {
         return new ServiceLifecycleEventImpl(caller, service);
     }
+
+    public static ExecutionLifecycleEvent createExecutionLifecycleEvent(Class<?> caller, String context) {
+        return new ExecutionLifecycleEventImpl(caller, context);
+    }
 }

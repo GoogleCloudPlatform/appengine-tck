@@ -41,7 +41,7 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
     // ROTATE, NORMAL for Rotate; HMINUS for VerticalFlip; WMINUS for HorizontalFlip.
     private enum ChkType { NORMAL, ROTATE, WMINUS, HMINUS, CROP }
     private static int[] DEGREES = {90, 180, 270, 360};
-    private static int[] QUALITY = {10, 50, 100};
+    // private static int[] QUALITY = {10, 50, 100};
     private static int[][] NEW_SIZES = {{500, 500}, {50, 500}, {500, 50}};
     private static OutputEncoding[] ENCODES = {OutputEncoding.JPEG, OutputEncoding.PNG};
     private ImagesService imgService = ImagesServiceFactory.getImagesService();
@@ -49,7 +49,7 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
     @Test
     public void testFeelLucky() throws IOException {
         // I'm Feeling Lucky is not available in dev_appserver
-        if (onAppServer()) {
+        if (isRuntimeProduction()) {
             Transform transform = ImagesServiceFactory.makeImFeelingLucky();
             for (String sfile : FNAMES) {
                 for (OutputEncoding encoding : ENCODES) {
@@ -62,10 +62,10 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
     @Test
     public void testHorizontalFlip() throws IOException {
         ChkType chkType = ChkType.NORMAL;
-
-        if (onDevAppServer()) {
-            chkType = ChkType.WMINUS;
-        }
+//        TODO -- fix this for GAE!?
+//        if (isRuntimeDev()) {
+//            chkType = ChkType.WMINUS;
+//        }
         Transform transform = ImagesServiceFactory.makeHorizontalFlip();
         for (String sfile : FNAMES) {
             for (OutputEncoding encoding : ENCODES) {
@@ -77,9 +77,10 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
     @Test
     public void testVerticalFlip() throws IOException {
         ChkType chkType = ChkType.NORMAL;
-        if (onDevAppServer()) {
-            chkType = ChkType.HMINUS;
-        }
+//        TODO -- fix this for GAE!?
+//        if (isRuntimeProduction()) {
+//            chkType = ChkType.HMINUS;
+//        }
         Transform transform = ImagesServiceFactory.makeVerticalFlip();
         for (String sfile : FNAMES) {
             for (OutputEncoding encoding : ENCODES) {
@@ -90,15 +91,12 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
 
     @Test
     public void testResize() throws IOException {
-        Image image;
         for (String sfile : FNAMES) {
-            image = readImage(sfile);
             for (int[] exptSize : NEW_SIZES) {
                 Transform transform = ImagesServiceFactory.makeResize(exptSize[0], exptSize[1]);
                 for (OutputEncoding encoding : ENCODES) {
-                    image = imgService.applyTransform(transform, readImage(sfile), encoding);
-                    assertTrue((exptSize[0] == image.getWidth()) ||
-                               (exptSize[1] == image.getHeight()));
+                    Image image = imgService.applyTransform(transform, readImage(sfile), encoding);
+                    assertTrue((exptSize[0] == image.getWidth()) || (exptSize[1] == image.getHeight()));
                 }
             }
         }
@@ -129,8 +127,7 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
         String cropTopY = "0.0";
         String cropRightX = "0.5";
         String cropBottomY = "0.5";
-        Transform transform = ImagesServiceFactory.makeCrop(new Float(cropLeftX),
-             new Float(cropTopY), new Float(cropRightX), new Float(cropBottomY));
+        Transform transform = ImagesServiceFactory.makeCrop(new Float(cropLeftX), new Float(cropTopY), new Float(cropRightX), new Float(cropBottomY));
         for (OutputEncoding encoding : ENCODES) {
             applyAndVerify("pngAttach.png", transform, chkType, encoding);
         }
@@ -151,8 +148,7 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
         }
     }
 
-    private void applyAndVerify(String fname, Transform transform, ChkType chkType,
-                              OutputEncoding outType) throws IOException {
+    private void applyAndVerify(String fname, Transform transform, ChkType chkType, OutputEncoding outType) throws IOException {
         int[] exptSize = new int[2];
         Image image = readImage(fname);
         if (chkType == ChkType.NORMAL) {

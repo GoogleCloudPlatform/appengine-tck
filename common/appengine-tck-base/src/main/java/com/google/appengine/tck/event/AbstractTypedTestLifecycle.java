@@ -13,23 +13,27 @@
  * limitations under the License.
  */
 
-package org.jboss.capedwarf.tck;
-
-import com.google.appengine.tck.event.TestLifecycle;
-import com.google.appengine.tck.event.TestLifecycleEvent;
-import org.jboss.shrinkwrap.api.asset.Asset;
+package com.google.appengine.tck.event;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public abstract class AbstractCapeDwarfTestLifecycle implements TestLifecycle {
+public abstract class AbstractTypedTestLifecycle<T extends TestLifecycleEvent> extends AbstractTestLifecycle {
+    protected abstract Class<T> getExactEventType();
+
     public void before(TestLifecycleEvent event) {
+        if (getExactEventType().isInstance(event)) {
+            doBefore(getExactEventType().cast(event));
+        }
     }
+
+    protected abstract void doBefore(T event);
 
     public void after(TestLifecycleEvent event) {
+        if (getExactEventType().isInstance(event)) {
+            doAfter(getExactEventType().cast(event));
+        }
     }
 
-    protected static Asset getCompatibility(String key, String value) {
-        return null;
-    }
+    protected abstract void doAfter(T event);
 }

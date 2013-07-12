@@ -15,40 +15,41 @@
 
 package com.google.appengine.tck.images;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
+
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
-import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.images.util.ImageRequest;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.asset.FileAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import java.nio.ByteBuffer;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 
 /**
  * @author <a href="mailto:marko.luksa@gmail.com">Marko Luksa</a>
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public abstract class ImagesServiceTestBase extends TestBase {
-    protected static final String[] TEST_FILES = {"jpgAttach.jpg", "pngAttach.png",
-        "bmpAttach.bmp", "beach.tif", "beachCrop.jpeg", "beachCrop.png",
-        "beachHorizontalFlip.jpeg", "beachHorizontalFlip.png", "beachImFeelingLucky.jpeg",
-        "beachImFeelingLucky.png", "beachResize.jpeg", "beachResize.png", "beachRotate.jpeg",
-        "beachRotate.png", "beachVerticalFlip.jpeg", "beachVerticalFlip.png", "capedwarf.jpg",
-        "capedwarf.png", "capedwarf.gif", "capedwarf.bmp", "capedwarf.tif"};
+    protected static final String[] TEST_FILES = {
+        "jpgAttach.jpg",
+        "pngAttach.png",
+        "bmpAttach.bmp",
+        "beach.tif",
+        "beachCrop.jpeg", "beachCrop.png",
+        "beachHorizontalFlip.jpeg", "beachHorizontalFlip.png",
+        "beachImFeelingLucky.jpeg", "beachImFeelingLucky.png",
+        "beachResize.jpeg", "beachResize.png",
+        "beachRotate.jpeg", "beachRotate.png",
+        "beachVerticalFlip.jpeg", "beachVerticalFlip.png",
+        "capedwarf.jpg", "capedwarf.png", "capedwarf.gif", "capedwarf.bmp", "capedwarf.tif"};
 
     protected ImagesService imagesService;
 
@@ -57,31 +58,34 @@ public abstract class ImagesServiceTestBase extends TestBase {
         TestContext context = new TestContext();
         WebArchive war = getTckDeployment(context);
 
-        war.addClasses(ImagesServiceTestBase.class)
-            .addClasses(ImageRequest.class)
-            .addClasses(ImageRequestTest.class)
-            .addClasses(ImagesServiceTest.class)
-            .addClasses(IntegrationTest.class)
-            .addClasses(MakeImageTest.class)
-            .addClasses(TifImageTest.class)
-            .addClasses(TransformationsTest.class);
-        String filePath = "target/test-classes/testdata/";
-        for (String fName : TEST_FILES ) {
-            war.add(new FileAsset(new File(filePath + fName)), fName);
+        war.addClasses(ImagesServiceTestBase.class, ImageRequest.class);
+
+        for (String fName : TEST_FILES) {
+            war.addAsResource("testdata/" + fName, fName);
         }
+
         return war;
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void init() throws Exception {
         imagesService = ImagesServiceFactory.getImagesService();
     }
 
+    protected InputStream getImageStream(String filename) throws IOException {
+        InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
+        if (is == null) {
+            throw new IOException("No such resource: " + filename);
+        }
+        return is;
+    }
+
+    protected byte[] readImageBytes(String resourceName) throws IOException {
+        return toBytes(getImageStream(resourceName), true);
+    }
+
     protected Image readImage(String filename) throws IOException {
-        Image image = null;
-        FileInputStream fPath = new FileInputStream(filename);
-        image = ImagesServiceFactory.makeImage(toByteArray(fPath));
-        return image;
+        return ImagesServiceFactory.makeImage(toByteArray(getImageStream(filename)));
     }
 
     protected static byte[] toBytes(InputStream is, boolean closeStream) throws IOException {
@@ -136,15 +140,6 @@ public abstract class ImagesServiceTestBase extends TestBase {
     protected static String toString(InputStream in) throws IOException {
         return new String(toByteArray(in));
     }
-
-    protected boolean onAppServer() {
-        return SystemProperty.environment.value() == SystemProperty.Environment.Value.Production;
-    }
-
-    protected boolean onDevAppServer() {
-        return SystemProperty.environment.value() == SystemProperty.Environment.Value.Development;
-    }
-
 
     public static void copy(ReadableByteChannel in, WritableByteChannel out) throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(16 * 1024);

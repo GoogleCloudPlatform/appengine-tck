@@ -16,7 +16,6 @@
 package com.google.appengine.tck.images;
 
 import java.io.IOException;
-import java.io.FileInputStream;
 
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesServiceFactory;
@@ -34,31 +33,31 @@ public class MakeImageTest extends ImagesServiceTestBase {
 
     @Test
     public void makeImageCanReadJPG() throws IOException {
-        byte[] imageData = readImageResource("capedwarf.jpg");
+        byte[] imageData = readImageBytes("capedwarf.jpg");
         assertMakeImageCanReadImage(imageData);
     }
 
     @Test
     public void makeImageCanReadPNG() throws IOException {
-        byte[] imageData = readImageResource("capedwarf.png");
+        byte[] imageData = readImageBytes("capedwarf.png");
         assertMakeImageCanReadImage(imageData);
     }
 
     @Test
     public void makeImageCanReadGIF() throws IOException {
-        byte[] imageData = readImageResource("capedwarf.gif");
+        byte[] imageData = readImageBytes("capedwarf.gif");
         assertMakeImageCanReadImage(imageData);
     }
 
     @Test
     public void makeImageCanReadBMP() throws IOException {
-        byte[] imageData = readImageResource("capedwarf.bmp");
+        byte[] imageData = readImageBytes("capedwarf.bmp");
         assertMakeImageCanReadImage(imageData);
     }
 
     @Test
     public void makeImageCanReadTIF() throws IOException {
-        byte[] imageData = readImageResource("capedwarf.tif");
+        byte[] imageData = readImageBytes("capedwarf.tif");
         assertMakeImageCanReadImage(imageData);
     }
 
@@ -66,9 +65,4 @@ public class MakeImageTest extends ImagesServiceTestBase {
         Image image = ImagesServiceFactory.makeImage(imageData);
         assertNotNull(image);
     }
-
-    private byte[] readImageResource(String resourceName) throws IOException {
-        return toBytes(new FileInputStream(resourceName), true);
-    }
-
 }

@@ -57,5 +57,4 @@ public class ImageRequestTest extends ImagesServiceTestBase {
         assertTrue(request.isCrop());
     }
 
-
 }

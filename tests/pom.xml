@@ -35,6 +35,7 @@
         <module>appengine-tck-capability</module>
         <module>appengine-tck-datastore</module>
         <module>appengine-tck-example</module>
+        <module>appengine-tck-images</module>
         <module>appengine-tck-logservice</module>
         <module>appengine-tck-memcache</module>
         <module>appengine-tck-taskqueue</module>

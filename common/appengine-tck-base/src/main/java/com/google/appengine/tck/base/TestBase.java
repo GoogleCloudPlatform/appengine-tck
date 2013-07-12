@@ -28,6 +28,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tck.category.IgnoreMultisuite;
+import com.google.appengine.tck.event.ExecutionLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycles;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -150,6 +151,17 @@ public class TestBase {
 
     protected boolean isRuntimeDev() {
         return SystemProperty.environment.value() == SystemProperty.Environment.Value.Development;
+    }
+
+    protected boolean execute(String context) {
+        Boolean result = executeRaw(context);
+        return (result != null && result);
+    }
+
+    protected Boolean executeRaw(String context) {
+        ExecutionLifecycleEvent event = TestLifecycles.createExecutionLifecycleEvent(getClass(), context);
+        TestLifecycles.before(event);
+        return event.execute();
     }
 
     protected static void sync() {

@@ -41,31 +41,27 @@ public class TransformationsTest extends ImagesServiceTestBase {
     public void testResize() throws IOException {
         InputSettings inputSettings = new InputSettings();
         OutputSettings outputSettings = new OutputSettings(OutputEncoding.PNG);
-        Image resizedImage = null;
 
         Image originalImage = readImage(CAPEDWARF_PNG);
         assertEquals(200, originalImage.getWidth());
         assertEquals(143, originalImage.getHeight());
 
         originalImage = readImage(CAPEDWARF_PNG);
-        resizedImage = imagesService.applyTransform(ImagesServiceFactory.makeResize(400, 286),
-             originalImage);
+        Image resizedImage = imagesService.applyTransform(ImagesServiceFactory.makeResize(400, 286), originalImage);
         assertEquals(400, resizedImage.getWidth());
         assertEquals(286, resizedImage.getHeight());
 
         originalImage = readImage(CAPEDWARF_PNG);
-        resizedImage = imagesService.applyTransform(ImagesServiceFactory.makeResize(300, 286),
-             originalImage, inputSettings, outputSettings);
+        resizedImage = imagesService.applyTransform(ImagesServiceFactory.makeResize(300, 286), originalImage, inputSettings, outputSettings);
         assertEquals(300, resizedImage.getWidth());
-        if (onAppServer()) {
+        if (isRuntimeProduction()) {
             assertEquals(214, resizedImage.getHeight());
         } else {
             assertEquals(215, resizedImage.getHeight());
         }
 
         originalImage = readImage(CAPEDWARF_PNG);
-        resizedImage = imagesService.applyTransform(ImagesServiceFactory.makeResize(400, 200),
-             originalImage, outputSettings);
+        resizedImage = imagesService.applyTransform(ImagesServiceFactory.makeResize(400, 200), originalImage, outputSettings);
         assertEquals(280, resizedImage.getWidth());
         assertEquals(200, resizedImage.getHeight());
     }
