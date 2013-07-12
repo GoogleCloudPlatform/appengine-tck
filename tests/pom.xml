@@ -36,6 +36,7 @@
         <module>appengine-tck-datastore</module>
         <module>appengine-tck-example</module>
         <module>appengine-tck-logservice</module>
+        <module>appengine-tck-mail</module>
         <module>appengine-tck-memcache</module>
         <module>appengine-tck-taskqueue</module>
         <module>appengine-tck-urlfetch</module>
@@ -162,6 +163,10 @@
                             <includes>
                                 <include>com/google/appengine/tck/**/*Test.java</include>
                             </includes>
+                            <systemProperties>
+                                <appengine.mail.gateway>appspotmail.com</appengine.mail.gateway>
+                                <appengine.mail.email>SET-VIA-COMMANDLINE</appengine.mail.email>
+                            </systemProperties>
                         </configuration>
                     </plugin>
                 </plugins>
