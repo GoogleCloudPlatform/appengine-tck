@@ -15,20 +15,18 @@
 
 package com.google.appengine.tck.images;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import java.io.IOException;
 
 import com.google.appengine.api.images.Image;
-import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesService.OutputEncoding;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.Transform;
 import org.jboss.arquillian.junit.Arquillian;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for images service.
@@ -38,13 +36,16 @@ import java.io.IOException;
 @RunWith(Arquillian.class)
 public class ImagesServiceTest extends ImagesServiceTestBase {
     private static String[] FNAMES = {"jpgAttach.jpg", "pngAttach.png", "bmpAttach.bmp"};
+
     // ROTATE, NORMAL for Rotate; HMINUS for VerticalFlip; WMINUS for HorizontalFlip.
-    private enum ChkType { NORMAL, ROTATE, WMINUS, HMINUS, CROP }
+    private enum ChkType {
+        NORMAL, ROTATE, WMINUS, HMINUS, CROP
+    }
+
     private static int[] DEGREES = {90, 180, 270, 360};
     // private static int[] QUALITY = {10, 50, 100};
     private static int[][] NEW_SIZES = {{500, 500}, {50, 500}, {500, 50}};
     private static OutputEncoding[] ENCODES = {OutputEncoding.JPEG, OutputEncoding.PNG};
-    private ImagesService imgService = ImagesServiceFactory.getImagesService();
 
     @Test
     public void testFeelLucky() throws IOException {
@@ -95,7 +96,7 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
             for (int[] exptSize : NEW_SIZES) {
                 Transform transform = ImagesServiceFactory.makeResize(exptSize[0], exptSize[1]);
                 for (OutputEncoding encoding : ENCODES) {
-                    Image image = imgService.applyTransform(transform, readImage(sfile), encoding);
+                    Image image = imagesService.applyTransform(transform, readImage(sfile), encoding);
                     assertTrue((exptSize[0] == image.getWidth()) || (exptSize[1] == image.getHeight()));
                 }
             }
@@ -137,7 +138,7 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
     public void testHistogram() throws IOException {
         int[][] expect = {{1, 63, 148, 23036}, {1408, 80, 79, 22192}, {1329, 82, 83, 22243}};
         Image image = readImage("jpgAttach.jpg");
-        int[][] color = imgService.histogram(image);
+        int[][] color = imagesService.histogram(image);
         assertEquals(3, color.length);
         for (int i = 0; i < color.length; i++) {
             assertEquals(256, color[i].length);
@@ -167,7 +168,7 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
             exptSize[0] = image.getWidth() / 2;
             exptSize[1] = image.getHeight() / 2;
         }
-        Image transImg = imgService.applyTransform(transform, image, outType);
+        Image transImg = imagesService.applyTransform(transform, image, outType);
         assertEquals(exptSize[0], transImg.getWidth());
         assertEquals(exptSize[1], transImg.getHeight());
     }
