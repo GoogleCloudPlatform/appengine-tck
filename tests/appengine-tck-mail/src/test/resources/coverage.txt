@@ -1,0 +1,15 @@
+# List the appengine classes that require test coverage information.
+# To run coverage go to the base tck directory with the parent pom,
+# and run $ mvn clean install  A coverage report will be located in the
+# relative test directory as index.html.
+#
+com.google.appengine.api.mail.IMailServiceFactory
+com.google.appengine.api.mail.MailService
+com.google.appengine.api.mail.BounceNotification
+com.google.appengine.api.mail.BounceNotification$Details
+com.google.appengine.api.mail.BounceNotificationParser
+com.google.appengine.api.mail.IMailServiceFactoryProvider
+com.google.appengine.api.mail.MailService$Attachment
+com.google.appengine.api.mail.MailService$Header
+com.google.appengine.api.mail.MailService$Message
+com.google.appengine.api.mail.MailServiceFactory
