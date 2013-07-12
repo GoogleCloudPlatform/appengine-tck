@@ -1,0 +1,2 @@
+com.google.appengine.api.images.ImagesService
+com.google.appengine.api.images.ImagesServiceFactory
