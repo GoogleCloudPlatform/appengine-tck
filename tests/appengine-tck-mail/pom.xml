@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <!-- Parent -->
+    <parent>
+        <groupId>com.google.appengine.tck</groupId>
+        <artifactId>appengine-tck-tests</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>appengine-tck-mail</artifactId>
+    <packaging>jar</packaging>
+    <name>GAE TCK Mail Test</name>
+    <url>https://developers.google.com/appengine/</url>
+    <description>GAE TCK Mail Tests</description>
+
+    <!-- These dependencies are required for all TCK tests. -->
+    <dependencies>
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-api-1.0-sdk</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-base</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Add any test specific dependencies here. -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>
