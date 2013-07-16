@@ -17,7 +17,6 @@ package com.google.appengine.tck.mail;
 
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
@@ -35,14 +34,11 @@ public abstract class MailTestBase extends TestBase {
      */
     @Deployment
     public static WebArchive getDeployment() {
-//        TestContext context = new TestContext();
-
         TestContext context = new TestContext().setUseSystemProperties(true).setCompatibilityProperties(TCK_PROPERTIES);
         context.setAppEngineWebXmlFile("mail-appengine-web.xml");
         context.setWebXmlFile("mail-web.xml");
+
         WebArchive war = getTckDeployment(context);
-
-
         war.addClass(TestBase.class);
         war.addClass(MailTestBase.class);
         war.addClasses(MailServiceTest.class, MailHandlerServlet.class);

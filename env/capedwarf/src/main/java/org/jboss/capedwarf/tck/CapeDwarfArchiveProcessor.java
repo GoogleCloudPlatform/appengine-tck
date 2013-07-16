@@ -33,6 +33,11 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class CapeDwarfArchiveProcessor implements ApplicationArchiveProcessor {
+    private static final String CAPEDWARF_WEB =
+        "<capedwarf-web-app>" +
+            "    <admin>admin@capedwarf.org</admin>" +
+            "</capedwarf-web-app>";
+
     private static final String COMPATIBILITY_PROPERTIES = "capedwarf-compatibility.properties";
     private static final Properties COMPATIBILITY;
 
@@ -44,13 +49,17 @@ public class CapeDwarfArchiveProcessor implements ApplicationArchiveProcessor {
     public void process(Archive<?> archive, TestClass testClass) {
         if (archive instanceof WebArchive) {
             WebArchive war = (WebArchive) archive;
+
             addService(war, TestLifecycle.class,
-                CapeDwarfTestContextEnhancer.class,
+                CapeDwarfExecutionLifecycle.class,
+                CapeDwarfMergeLifecycle.class,
                 CapeDwarfServicesLifecycle.class,
-                CapeDwarfMergeLifecycle.class
+                CapeDwarfTestContextEnhancer.class
             );
 
             addCompatibility(war, COMPATIBILITY);
+
+            war.addAsWebInfResource(new StringAsset(CAPEDWARF_WEB), "capedwarf-web.xml");
         }
     }
 

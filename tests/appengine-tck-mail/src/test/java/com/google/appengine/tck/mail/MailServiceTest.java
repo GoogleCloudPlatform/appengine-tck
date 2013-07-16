@@ -14,21 +14,6 @@
  */
 package com.google.appengine.tck.mail;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import com.google.appengine.api.mail.MailService;
-import com.google.appengine.api.mail.MailServiceFactory;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
-import com.google.appengine.api.utils.SystemProperty;
-
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,21 +29,35 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.google.appengine.api.mail.MailService;
+import com.google.appengine.api.mail.MailServiceFactory;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.api.utils.SystemProperty;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 
 /**
  * Tests sending via {@link MailService#send} and {@link javax.mail.Transport#send}, and, for a
  * deployed application, receiving via a POST.
- *
+ * <p/>
  * Set the gateway via the commandline with -Dtck.mail.gateway=your-gateway Emails will look like
  * this: testuser@your-gateway.theappid.appspot.com
  *
  * @author terryok@google.com
+ * @author ales.justin@jboss.org
  */
 @RunWith(Arquillian.class)
 public class MailServiceTest extends MailTestBase {
 
-    private static final String BODY =
-        "from GAE TCK Mail Test.\n";
+    private static final String BODY = "from GAE TCK Mail Test.\n";
 
     private static final int TIMEOUT_MAX = 30;
 
@@ -69,6 +68,10 @@ public class MailServiceTest extends MailTestBase {
     public void setUp() {
         mailService = MailServiceFactory.getMailService();
         memcache = MemcacheServiceFactory.getMemcacheService();
+    }
+
+    protected boolean doExecute(String context) {
+        return (isRuntimeProduction() || execute(context));
     }
 
     @Test
@@ -85,11 +88,11 @@ public class MailServiceTest extends MailTestBase {
 
         mailService.send(msg);
 
-        if (isRuntimeDev()) {
+        if (doExecute("testSendAndReceiveBasicMessage") == false) {
             log.info("Not running on production, skipping assert.");
-            return;
+        } else {
+            assertMessageReceived(subjectTag);
         }
-        assertMessageReceived(subjectTag);
     }
 
     @Test
@@ -109,18 +112,17 @@ public class MailServiceTest extends MailTestBase {
         Map<String, String> headersMap = createExpectedHeaders();
 
         for (Map.Entry entry : headersMap.entrySet()) {
-            headers.add(new MailService.Header(entry.getKey().toString(),
-                entry.getValue().toString()));
+            headers.add(new MailService.Header(entry.getKey().toString(), entry.getValue().toString()));
         }
         msg.setHeaders(headers);
         mailService.send(msg);
 
-        if (isRuntimeDev()) {
+        if (doExecute("testAllowedHeaders") == false) {
             log.info("Not running on production, skipping assert.");
-            return;
+        } else {
+            assertMessageReceived(subjectTag);
+            assertHeadersExist(headersMap, getMessageHeaders(subjectTag));
         }
-        assertMessageReceived(subjectTag);
-        assertHeadersExist(headersMap, getMessageHeaders(subjectTag));
     }
 
     @Test
@@ -137,11 +139,11 @@ public class MailServiceTest extends MailTestBase {
         msg.setText(BODY);
         Transport.send(msg);
 
-        if (isRuntimeDev()) {
+        if (doExecute("testJavaxTransportSendAndReceiveBasicMessage") == false) {
             log.info("Not running on production, skipping assert.");
-            return;
+        } else {
+            assertMessageReceived(subjectTag);
         }
-        assertMessageReceived(subjectTag);
     }
 
     @Test
@@ -186,7 +188,7 @@ public class MailServiceTest extends MailTestBase {
                 errors.add(expectedHeader + ": " + expectedHeader + " != " + actual.get(expectedHeader));
             }
         }
-        assertTrue(errors.toString(), errors.size() == 0);
+        assertTrue(errors.toString(), errors.isEmpty());
     }
 
     private Map<String, String> createExpectedMimePropertiesMap(String subjectKey) {
@@ -194,11 +196,13 @@ public class MailServiceTest extends MailTestBase {
 
         mimeProps.put("subject", subjectKey);
         mimeProps.put("from", getFrom());
+
         return mimeProps;
     }
 
     /**
      * Allowed headers.
+     *
      * @return map of headers to be set and verified.
      */
     private Map<String, String> createExpectedHeaders() {
@@ -230,7 +234,6 @@ public class MailServiceTest extends MailTestBase {
     }
 
     private String mailGateway() {
-
         String gateway;
         try {
             gateway = readProperties(TCK_PROPERTIES).getProperty("tck.mail.gateway");
@@ -245,11 +248,11 @@ public class MailServiceTest extends MailTestBase {
     }
 
     private Map<String, String> pollForMail(String subjectTag) {
-
         int secondsElapsed = 0;
 
         Map<String, String> testData = null;
         while (secondsElapsed++ <= TIMEOUT_MAX) {
+            //noinspection unchecked
             testData = (Map<String, String>) memcache.get(subjectTag);
             if (testData != null) {
                 return testData;

@@ -28,7 +28,7 @@ public class CapeDwarfExecutionLifecycle extends AbstractExecutionLifecycle {
     protected void doBefore(ExecutionLifecycleEvent event) {
         Class<?> caller = event.getCallerClass();
         if (caller.getName().contains("Image")) {
-            event.setExecute(true);
+            // event.setExecute(true); // TODO -- enable once we add TIFF support
         }
     }
 
