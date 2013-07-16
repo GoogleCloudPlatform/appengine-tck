@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.WeakHashMap;
 
+import com.google.appengine.api.images.Image;
+import com.google.appengine.api.images.Transform;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -75,5 +77,9 @@ public class TestLifecycles {
 
     public static ExecutionLifecycleEvent createExecutionLifecycleEvent(Class<?> caller, String context) {
         return new ExecutionLifecycleEventImpl(caller, context);
+    }
+
+    public static ImageLifecycleEvent createImageLifecycleEvent(Class<?> caller, Transform op, Image expected, Image transformed) {
+        return new ImageLifecycleEventImpl(caller, op, expected, transformed);
     }
 }

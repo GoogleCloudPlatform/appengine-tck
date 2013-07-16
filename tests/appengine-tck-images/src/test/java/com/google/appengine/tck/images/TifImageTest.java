@@ -21,7 +21,10 @@ import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService.OutputEncoding;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.Transform;
+import com.google.appengine.tck.event.ImageLifecycleEvent;
+import com.google.appengine.tck.event.TestLifecycles;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -106,11 +109,18 @@ public class TifImageTest extends ImagesServiceTestBase {
         for (OutputEncoding outType : OUTPUT_ENCODE) {
             String expectImageFile = expectedImage + outType.toString().toLowerCase();
             Image expected = readImage(expectImageFile);
-            byte[] expect = expected.getImageData();
             Image image = readImage(BEACH_TIF);
             Image transImg = imagesService.applyTransform(transform, image, outType);
-            byte[] result = transImg.getImageData();
-            assertArrayEquals(expect, result);
+
+            ImageLifecycleEvent event = TestLifecycles.createImageLifecycleEvent(getClass(), transform, expected, transImg);
+            TestLifecycles.before(event);
+            Boolean result = event.result();
+
+            if (result == null) {
+                assertArrayEquals(expected.getImageData(), transImg.getImageData());
+            } else {
+                Assert.assertTrue("Images are not equal.", result);
+            }
         }
     }
 }

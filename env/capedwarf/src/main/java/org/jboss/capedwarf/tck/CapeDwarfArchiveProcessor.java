@@ -52,6 +52,7 @@ public class CapeDwarfArchiveProcessor implements ApplicationArchiveProcessor {
 
             addService(war, TestLifecycle.class,
                 CapeDwarfExecutionLifecycle.class,
+                CapeDwarfImageLifecycle.class,
                 CapeDwarfMergeLifecycle.class,
                 CapeDwarfServicesLifecycle.class,
                 CapeDwarfTestContextEnhancer.class
