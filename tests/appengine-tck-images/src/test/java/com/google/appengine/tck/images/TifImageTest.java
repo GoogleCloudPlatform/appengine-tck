@@ -79,15 +79,15 @@ public class TifImageTest extends ImagesServiceTestBase {
     @Test
     public void testCrop() throws IOException {
         if (doExecute("testCrop")) {
-            String cropLeftX = "0.0";
-            String cropTopY = "0.0";
-            String cropRightX = "0.5";
-            String cropBottomY = "0.5";
+            double cropLeftX = 0.0;
+            double cropTopY = 0.0;
+            double cropRightX = 0.5;
+            double cropBottomY = 0.5;
             Transform transform = ImagesServiceFactory.makeCrop(
-                new Double(cropLeftX),
-                new Float(cropTopY),
-                new Float(cropRightX),
-                new Float(cropBottomY)
+                cropLeftX,
+                cropTopY,
+                cropRightX,
+                cropBottomY
             );
             assertTransformation(transform, "Crop");
         }
