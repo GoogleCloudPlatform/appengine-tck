@@ -296,6 +296,13 @@
 
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-sql</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
                 <artifactId>appengine-tck-taskqueue</artifactId>
                 <version>${project.version}</version>
                 <type>test-jar</type>
