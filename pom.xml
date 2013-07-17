@@ -35,7 +35,7 @@
 
     <properties>
         <!-- GAE -->
-        <version.com.google.gae.api>1.8.1.1</version.com.google.gae.api>
+        <version.com.google.gae.api>1.8.2</version.com.google.gae.api>
 
         <!-- Ext -->
         <version.metainf>1.1</version.metainf>
@@ -48,7 +48,7 @@
         <version.javax.servlet>3.0.1</version.javax.servlet>
         <version.junit>4.11</version.junit>
         <version.arquillian>1.0.3.Final</version.arquillian>
-        <version.arquillian.gae>1.0.0.Alpha8</version.arquillian.gae>
+        <version.arquillian.gae>1.0.0.Alpha9</version.arquillian.gae>
         <version.shrinkwrap>1.1.2</version.shrinkwrap>
         <version.shrinkwrap.resolver>2.0.0-beta-3</version.shrinkwrap.resolver>
 
@@ -215,20 +215,20 @@
     </repositories>
 
     <pluginRepositories>
-      <pluginRepository>
-        <id>jboss-public-repository-group</id>
-        <name>JBoss Public Maven Repository Group</name>
-        <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
-        <layout>default</layout>
-        <releases>
-          <enabled>true</enabled>
-          <updatePolicy>never</updatePolicy>
-        </releases>
-        <snapshots>
-          <enabled>true</enabled>
-          <updatePolicy>never</updatePolicy>
-        </snapshots>
-      </pluginRepository>
+        <pluginRepository>
+            <id>jboss-public-repository-group</id>
+            <name>JBoss Public Maven Repository Group</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </pluginRepository>
     </pluginRepositories>
 
     <dependencyManagement>
