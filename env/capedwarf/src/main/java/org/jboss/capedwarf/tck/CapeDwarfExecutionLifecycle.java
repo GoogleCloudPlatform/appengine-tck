@@ -28,7 +28,7 @@ public class CapeDwarfExecutionLifecycle extends AbstractExecutionLifecycle {
     protected void doBefore(ExecutionLifecycleEvent event) {
         Class<?> caller = event.getCallerClass();
         String name = caller.getName();
-        if (name.contains("Image") || name.contains("Sql")) {
+        if (name.contains("Image") || name.contains("DriverTest")) {
             event.setExecute(true);
         }
     }
