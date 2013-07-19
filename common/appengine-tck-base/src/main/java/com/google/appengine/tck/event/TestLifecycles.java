@@ -79,6 +79,10 @@ public class TestLifecycles {
         return new ExecutionLifecycleEventImpl(caller, context);
     }
 
+    public static PropertyLifecycleEvent createPropertyLifecycleEvent(Class<?> caller, String propertyName) {
+        return new PropertyLifecycleEventImpl(caller, propertyName);
+    }
+
     public static ImageLifecycleEvent createImageLifecycleEvent(Class<?> caller, Transform op, Image expected, Image transformed) {
         return new ImageLifecycleEventImpl(caller, op, expected, transformed);
     }

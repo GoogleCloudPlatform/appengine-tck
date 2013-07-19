@@ -15,10 +15,6 @@
 
 package com.google.appengine.tck.sql.support;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -28,14 +24,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * Create a sql table with all data types.
  *
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public final class SqlUtil {
-
     // Column names of the various data types
     private static final String TINYINT_COLUMN = "TINYINT_VALUE";
     private static final String TINYINTUNSIGNED_COLUMN = "TINYINTUNSIGNED_VALUE";
@@ -63,16 +63,17 @@ public final class SqlUtil {
     private static final String TIMESTAMP_COLUMN = "TIMESTAMP_VALUE";
 
     // Values to be inserted for the data types
+    // TODO -- not all DBs support unsigned, hence values still in the limit of basic types
     private static final int TINYINT_VALUE = 127;
-    private static final int TINYINTUNSIGNED_VALUE = 255;
+    private static final int TINYINTUNSIGNED_VALUE = 127;
     private static final int SMALLINT_VALUE = 32767;
-    private static final int SMALLINTUNSIGNED_VALUE = 65535;
+    private static final int SMALLINTUNSIGNED_VALUE = 32767;
     private static final int MEDIUMINT_VALUE = 8388607;
-    private static final int MEDIUMINTUNSIGNED_VALUE = 16777215;
+    private static final int MEDIUMINTUNSIGNED_VALUE = 8388607;
     private static final int INT_VALUE = 2147483647;
-    private static final long INTUNSIGNED_VALUE = 4294967295L;
+    private static final long INTUNSIGNED_VALUE = 2147483647L;
     private static final long BIGINT_VALUE = 9223372036854775807L;
-    private static final BigInteger BIGINTUNSIGNED_VALUE = new BigInteger("18446744073709551615");
+    private static final BigInteger BIGINTUNSIGNED_VALUE = new BigInteger("9223372036854775807");
 
     private static final String CHAR_VALUE = "temp_char";
     private static final String VARCHAR_VALUE = "temp_varchar";
@@ -81,7 +82,7 @@ public final class SqlUtil {
     private static final int BOOLINT_VALUE = 1;
 
     private static final float FLOAT_VALUE = new Float(3.40282e+38);
-    private static final double DOUBLE_VALUE = new Double(9E253);
+    private static final double DOUBLE_VALUE = 9E253;
     private static final BigDecimal DECIMAL_VALUE = new BigDecimal(100000);
 
     private static final Date DATE_VALUE = Date.valueOf("9999-12-31");
@@ -139,7 +140,7 @@ public final class SqlUtil {
 
     public static void insertValues(Connection conn, String tableName) throws SQLException {
         String insertCommand = String.format(
-            "INSERT INTO %s () VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", tableName);
+            "INSERT INTO %s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", tableName);
         PreparedStatement ps = conn.prepareStatement(insertCommand);
 
         try {
@@ -167,8 +168,8 @@ public final class SqlUtil {
             ps.setDate(18, DATE_VALUE);
             ps.setTimestamp(19, DATETIME_VALUE);
             ps.setTimestamp(20, TIMESTAMP_VALUE);
-            ps.executeUpdate();
 
+            ps.executeUpdate();
         } finally {
             if (ps != null) {
                 ps.close();
@@ -184,6 +185,7 @@ public final class SqlUtil {
             rs = conn.createStatement().executeQuery(selectCommand);
 
             assertTrue(rs.next());
+
             assertEquals(TINYINT_VALUE, rs.getInt(TINYINT_COLUMN));
             assertEquals(TINYINTUNSIGNED_VALUE, rs.getInt(TINYINTUNSIGNED_COLUMN));
             assertEquals(SMALLINT_VALUE, rs.getInt(SMALLINT_COLUMN));
@@ -208,8 +210,8 @@ public final class SqlUtil {
             assertEquals(DATE_VALUE, rs.getDate(DATE_COLUMN));
             assertEquals(DATETIME_VALUE, rs.getTimestamp(DATETIME_COLUMN));
             assertEquals(TIMESTAMP_VALUE, rs.getTimestamp(TIMESTAMP_COLUMN));
-            assertFalse(rs.next());
 
+            assertFalse(rs.next());
         } finally {
             if (rs != null) {
                 rs.close();

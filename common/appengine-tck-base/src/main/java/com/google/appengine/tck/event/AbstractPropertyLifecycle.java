@@ -13,26 +13,13 @@
  * limitations under the License.
  */
 
-package org.jboss.capedwarf.tck;
-
-import com.google.appengine.tck.event.AbstractExecutionLifecycle;
-import com.google.appengine.tck.event.ExecutionLifecycleEvent;
-import com.google.appengine.tck.event.TestLifecycle;
-import org.kohsuke.MetaInfServices;
+package com.google.appengine.tck.event;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-@MetaInfServices(TestLifecycle.class)
-public class CapeDwarfExecutionLifecycle extends AbstractExecutionLifecycle {
-    protected void doBefore(ExecutionLifecycleEvent event) {
-        Class<?> caller = event.getCallerClass();
-        String name = caller.getName();
-        if (name.contains("Image") || name.contains("Sql")) {
-            event.setExecute(true);
-        }
-    }
-
-    protected void doAfter(ExecutionLifecycleEvent event) {
+public abstract class AbstractPropertyLifecycle extends AbstractTypedTestLifecycle<PropertyLifecycleEvent> {
+    protected Class<PropertyLifecycleEvent> getExactEventType() {
+        return PropertyLifecycleEvent.class;
     }
 }

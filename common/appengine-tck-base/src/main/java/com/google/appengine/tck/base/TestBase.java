@@ -29,6 +29,7 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tck.category.IgnoreMultisuite;
 import com.google.appengine.tck.event.ExecutionLifecycleEvent;
+import com.google.appengine.tck.event.PropertyLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycles;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -162,6 +163,17 @@ public class TestBase {
         ExecutionLifecycleEvent event = TestLifecycles.createExecutionLifecycleEvent(getClass(), context);
         TestLifecycles.before(event);
         return event.execute();
+    }
+
+    protected boolean required(String propertyName) {
+        Boolean result = requiredRaw(propertyName);
+        return (result == null || result); // by default null means it's required
+    }
+
+    protected Boolean requiredRaw(String propertyName) {
+        PropertyLifecycleEvent event = TestLifecycles.createPropertyLifecycleEvent(getClass(), propertyName);
+        TestLifecycles.before(event);
+        return event.required();
     }
 
     protected static void sync() {

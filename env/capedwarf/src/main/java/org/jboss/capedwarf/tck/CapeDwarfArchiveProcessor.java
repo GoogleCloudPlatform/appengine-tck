@@ -54,6 +54,7 @@ public class CapeDwarfArchiveProcessor implements ApplicationArchiveProcessor {
                 CapeDwarfExecutionLifecycle.class,
                 CapeDwarfImageLifecycle.class,
                 CapeDwarfMergeLifecycle.class,
+                CapeDwarfPropertyLifecycle.class,
                 CapeDwarfServicesLifecycle.class,
                 CapeDwarfTestContextEnhancer.class
             );
