@@ -9,10 +9,10 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>appengine-tck-sql</artifactId>
+    <artifactId>sql</artifactId>
     <packaging>jar</packaging>
-    <name>GAE TCK SQL Test</name>
+    <name>GAE TCK Core SQL</name>
     <url>https://developers.google.com/appengine/</url>
-    <description>GAE TCK SQL Tests</description>
+    <description>GAE TCK Core SQL</description>
 
 </project>

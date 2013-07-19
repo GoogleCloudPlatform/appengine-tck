@@ -1,4 +1,0 @@
-com.google.appengine.api.rdbms.AppEngineDriver
-
-# No coverage for this class since it is loaded dynamically in GAE servlet.
-# com.mysql.jdbc.GoogleDriver
