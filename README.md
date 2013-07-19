@@ -35,7 +35,7 @@ Directory structure
 -------------------
 
 * `common`      - common test code; base tests and multisuite support
-* `core`        - core test code; black list, endpoints, ...
+* `core`        - core test code; black list, endpoints, SQL, ...
 * `env`         - custom environment hooks; GAE SDK, Appspot, CapeDwarf, AppScale, ...
 * `ext`         - external (useful) tests; e.g. DataNucleus, MapReduce, Objectify, ...
 * `tests`       - the main TCK API tests
@@ -224,6 +224,21 @@ e.g.
             }
         }
 
+API tests
+----------
+
+Current API tests:
+
+* Blobstore
+* Datastore
+* Images
+* Logging
+* Mail
+* Memcache
+* TaskQueue
+* UrlFetch
+* Users
+
 Core tests
 ----------
 
@@ -233,6 +248,7 @@ Current core tests:
 
 * Endpoints support
 * Miscellaneous; e.g. black list usage, etc
+* SQL
 
 As we don't want to overload the testing, each custom core set of tests should be under unique profile.
 
