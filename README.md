@@ -92,7 +92,8 @@ Each different environment has a custom Arquillian container implementation.
 
 GAE container implementations can be found here: https://github.com/alesj/arquillian-container-gae
 
-CapeDwarf uses plain JBossAS Arquillian remote container implementation.
+CapeDwarf uses plain JBossAS Arquillian container implementations - remote and managed.
+Where we recommend remote for manual (simple) testing, and managed for automated (e.g. TeamCity, Hudson, ...) testing.
 
 GAE API code coverage
 ---------------------
@@ -167,11 +168,17 @@ This are the current enviroments:
 
     mvn clean install -Pappspot -Dappengine.sdk.root=<PATH_TO_SDK> -Dappengine.userId=<USER_ID> -Dappengine.password=<USER_PASSWORD> -Dappengine.appId=<APPSPOT_APP_ID>
 
-3) JBoss CapeDwarf
+3) JBoss CapeDwarf (remote)
 
     mvn clean install -Pcapedwarf
 
 Where you need a running instance of CapeDwarf environment to be present.
+
+4) JBoss CapeDwarf (managed)
+
+    mvn clean install -Dcapedwarf.home
+
+Where you need CapeDwarf distribution to be present under "capedwarf.home" directory.
 
 Deploying all tests at once
 ---------------------------
