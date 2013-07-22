@@ -16,10 +16,9 @@
 package com.google.appengine.tck.memcache.support;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -35,6 +34,7 @@ public class ComboType implements Serializable {
         this.longField = longField;
         this.stringField = stringField;
         this.dateField = dateField;
+
         this.mixedField = new ArrayList<Object>();
         mixedField.add(intField);
         mixedField.add(longField);
@@ -42,21 +42,18 @@ public class ComboType implements Serializable {
         mixedField.add(dateField);
     }
 
-    private String stringField;
-
     private int intField = 0;
-
     private long longField = 0L;
-
+    private String stringField;
     private Date dateField;
 
-    private Collection<Object> mixedField; // for testing value of mixed types.
+    private List<Object> mixedField; // for testing value of mixed types.
 
-    public final Collection<Object> getMixedField() {
+    public final List<Object> getMixedField() {
         return mixedField;
     }
 
-    public final void setMixedField(Collection<Object> mixedField) {
+    public final void setMixedField(List<Object> mixedField) {
         this.mixedField = mixedField;
     }
 
@@ -93,7 +90,7 @@ public class ComboType implements Serializable {
     }
 
     // fields that are included for comparison
-    private static final String[] FIELDS = {"intField", "longField", "stringField", "dateField", "mixedField"};
+    private static final String[] FIELDS = {"intField", "longField", "stringField", "dateField"};
 
     @Override
     public boolean equals(Object o) {
@@ -105,18 +102,14 @@ public class ComboType implements Serializable {
             return false;
         }
 
-        for (String name : FIELDS) {
-            try {
-                Field field = ComboType.class.getDeclaredField(name);
-                if (!isEqual(field.get(o), field.get(this))) {
-                    return false;
-                }
-            } catch (NoSuchFieldException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+        ComboType ct = ComboType.class.cast(o);
+
+        for (int i = 0; i < mixedField.size(); i++) {
+            if (isEqual(mixedField.get(i), ct.mixedField.get(i)) == false) {
+                return false;
             }
         }
+
         return true;
     }
 
@@ -128,17 +121,10 @@ public class ComboType implements Serializable {
     @Override
     public int hashCode() {
         int h = 0;
-        for (String name : FIELDS) {
-            try {
-                Field field = ComboType.class.getDeclaredField(name);
-                Object obj = field.get(this);
-                if (obj != null) {
-                    h += obj.hashCode();
-                }
-            } catch (NoSuchFieldException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+
+        for (Object o : mixedField) {
+            if (o != null) {
+                h += o.hashCode();
             }
         }
 
@@ -147,22 +133,13 @@ public class ComboType implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ComboType[");
-        for (String name : FIELDS) {
-            try {
-                Field field = ComboType.class.getDeclaredField(name);
-                sb.append(name);
-                sb.append("=");
-                sb.append(field.get(this));
-                sb.append(",");
-            } catch (NoSuchFieldException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
+        StringBuilder sb = new StringBuilder("ComboType[");
+        for (int i = 0; i < mixedField.size(); i++) {
+            sb.append(FIELDS[i]);
+            sb.append("=");
+            sb.append(mixedField.get(i));
+            sb.append(",");
         }
-
         sb.setCharAt(sb.length() - 1, ']');
         return sb.toString();
     }
