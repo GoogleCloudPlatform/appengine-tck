@@ -20,6 +20,17 @@
 
     <defaultProtocol type="Servlet 2.5"/>
 
+    <container qualifier="capedwarf">
+        <configuration>
+            <property name="jbossHome">${capedwarf.home}</property>
+            <property name="serverConfig">standalone-capedwarf.xml</property>
+            <property name="javaVmArguments">-Xmx1024m -XX:MaxPermSize=256m
+                -Djboss.mail.host=${jboss.mail.host:localhost}
+            </property>
+            <property name="allowConnectingToRunningServer">true</property>
+        </configuration>
+    </container>
+
     <!-- engine>
         <property name="deploymentExportPath">target/deployments</property>
     </engine -->

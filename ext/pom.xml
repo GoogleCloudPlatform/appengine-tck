@@ -102,7 +102,8 @@
                                 <include>com/google/appengine/tck/**/*Test.java</include>
                             </includes>
                             <systemProperties>
-                                <appengine.test.datastore.default_high_rep_job_policy_unapplied_job_pct>20</appengine.test.datastore.default_high_rep_job_policy_unapplied_job_pct>
+                                <appengine.test.datastore.default_high_rep_job_policy_unapplied_job_pct>20
+                                </appengine.test.datastore.default_high_rep_job_policy_unapplied_job_pct>
                             </systemProperties>
                         </configuration>
                     </plugin>
@@ -184,6 +185,53 @@
                 <dependency>
                     <groupId>org.jboss.as</groupId>
                     <artifactId>jboss-as-arquillian-container-remote</artifactId>
+                    <scope>test</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.jboss.xnio</groupId>
+                    <artifactId>xnio-nio</artifactId>
+                    <scope>test</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.jboss.arquillian.protocol</groupId>
+                    <artifactId>arquillian-protocol-servlet</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>capedwarf-managed</id>
+            <activation>
+                <property>
+                    <name>capedwarf.home</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                            <includes>
+                                <include>com/google/appengine/tck/**/*Test.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.capedwarf.tck</groupId>
+                    <artifactId>gae-tck</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.jboss.as</groupId>
+                    <artifactId>jboss-as-arquillian-container-managed</artifactId>
                     <scope>test</scope>
                 </dependency>
 
