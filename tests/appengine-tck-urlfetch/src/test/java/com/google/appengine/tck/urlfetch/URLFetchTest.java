@@ -84,7 +84,7 @@ public class URLFetchTest extends URLFetchTestBase {
         URL url = getFetchUrl();
 
         HTTPRequest req = new HTTPRequest(url, HTTPMethod.POST);
-        req.setHeader(new HTTPHeader("Content-Type", "application/x-www-form-urlencoded"));
+        req.setHeader(new HTTPHeader("Content-Type", "application/octet-stream"));
         req.setPayload("Tralala".getBytes(Charsets.UTF_8));
 
         HTTPResponse response = service.fetch(req);
@@ -99,7 +99,7 @@ public class URLFetchTest extends URLFetchTestBase {
         URL url = getFetchUrl();
 
         HTTPRequest req = new HTTPRequest(url, HTTPMethod.POST);
-        req.setHeader(new HTTPHeader("Content-Type", "application/x-www-form-urlencoded"));
+        req.setHeader(new HTTPHeader("Content-Type", "application/octet-stream"));
         req.setPayload("Headers!".getBytes(Charsets.UTF_8));
 
         HTTPResponse response = service.fetch(req);
