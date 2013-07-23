@@ -62,10 +62,10 @@ public abstract class CloudSqlTestBase extends TestBase {
             user = readProperties(TCK_PROPERTIES).getProperty("tck.sql.user");
             pw = readProperties(TCK_PROPERTIES).getProperty("tck.sql.pw");
 
-            if (connectionStr == null && required("tck.sql.connection")) {
+            if (connectionStr == null && isRequired("initConnectionProperties", "tck.sql.connection")) {
                 throw new IllegalStateException("-Dtck.sql.connection is not defined.");
             }
-            if (user == null && required("tck.sql.user")) {
+            if (user == null && isRequired("initConnectionProperties", "tck.sql.user")) {
                 throw new IllegalStateException("-Dtck.sql.user is not defined.");
             }
             if (pw == null) {
@@ -80,6 +80,10 @@ public abstract class CloudSqlTestBase extends TestBase {
 
     protected boolean doIgnore(String context) {
         return (isRuntimeDev() && execute(context) == false);
+    }
+
+    protected boolean isRequired(String context, String property) {
+        return (required(property) && (doIgnore(context) == false));
     }
 
     protected void createAndAssertTable(Connection conn, String tableName) throws Exception {
