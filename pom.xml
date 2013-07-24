@@ -77,7 +77,8 @@
         <version.charts4j>1.3</version.charts4j>
         <version.commons-logging>1.1.1</version.commons-logging>
         <version.org.json>20090211</version.org.json>
-
+        <!-- Google Cloud Storage Client -->
+        <version.com.google.appengine.tools.cloudstorage>0.3</version.com.google.appengine.tools.cloudstorage>
         <!--- Sonar -->
         <sonar.language>java</sonar.language>
 
@@ -353,6 +354,12 @@
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>
                 <artifactId>mapreduce</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>gcs-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -632,6 +639,12 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${version.com.google.guava}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tools</groupId>
+                <artifactId>appengine-gcs-client</artifactId>
+                <version>${version.com.google.appengine.tools.cloudstorage}</version>
             </dependency>
 
         </dependencies>

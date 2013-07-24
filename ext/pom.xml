@@ -19,6 +19,7 @@
         <module>datanucleus</module>
         <module>example</module>
         <module>mapreduce</module>
+        <module>gcs-client</module>
     </modules>
 
     <dependencies>
