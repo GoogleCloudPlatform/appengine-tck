@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<teamcity-plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:shemas-jetbrains-com:teamcity-plugin-v1-xml">
+  <info>
+    <name>GAE_TCK</name>
+    <display-name>GAE TCK Reports</display-name>
+    <version>@Version@</version>
+    <description>Reports plugin that pushes build stats to display site</description>
+    <download-url>https://github.com/GoogleCloudPlatform/appengine-tck</download-url>
+    <email>ales.justin@gmail.com</email>
+    <vendor>
+      <name>Google</name>
+      <url>http://www.google.com</url>
+      <logo>GOOGLE</logo>
+    </vendor>
+  </info>
+  <deployment use-separate-classloader="true" />
+</teamcity-plugin>

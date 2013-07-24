@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans default-autowire="constructor">
+
+    <bean name="reporting_descriptor" class="com.google.appengine.tck.teamcity.ReportsDescriptor"/>
+
+    <bean name="reporting_bean" class="com.google.appengine.tck.teamcity.ReportsFeature" init-method="start" destroy-method="stop"/>
+
+    <bean name="reporting_controller" class="com.google.appengine.tck.teamcity.ReportsController"/>
+
+</beans>
