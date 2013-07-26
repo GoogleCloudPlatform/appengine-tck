@@ -41,5 +41,4 @@ public class LogLevelWarningTest extends LoggingConfigurationTestBase {
     public void testLogLevelWarning() {
         assertLogOnlyLogsMessagesAboveOrAtLevel(Level.WARNING);
     }
-
 }
