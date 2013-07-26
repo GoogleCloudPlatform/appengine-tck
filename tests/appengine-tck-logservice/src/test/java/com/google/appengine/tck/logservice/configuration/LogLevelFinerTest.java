@@ -41,5 +41,4 @@ public class LogLevelFinerTest extends LoggingConfigurationTestBase {
     public void testLogLevelFiner() {
         assertLogOnlyLogsMessagesAboveOrAtLevel(Level.FINER);
     }
-
 }

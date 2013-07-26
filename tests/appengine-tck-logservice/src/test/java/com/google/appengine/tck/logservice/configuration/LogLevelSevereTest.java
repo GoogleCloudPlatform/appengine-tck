@@ -41,5 +41,4 @@ public class LogLevelSevereTest extends LoggingConfigurationTestBase {
     public void testLogLevelSevere() {
         assertLogOnlyLogsMessagesAboveOrAtLevel(Level.SEVERE);
     }
-
 }

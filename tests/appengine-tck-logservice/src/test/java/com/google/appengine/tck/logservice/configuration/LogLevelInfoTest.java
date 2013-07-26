@@ -41,5 +41,4 @@ public class LogLevelInfoTest extends LoggingConfigurationTestBase {
     public void testLogLevelInfo() {
         assertLogOnlyLogsMessagesAboveOrAtLevel(Level.INFO);
     }
-
 }

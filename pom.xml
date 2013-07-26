@@ -83,15 +83,26 @@
 
         <!-- Plugins -->
         <version.compiler.plugin>3.1</version.compiler.plugin>
-        <version.surefire.plugin>2.12.4</version.surefire.plugin>
-        <version.release.plugin>2.3.2</version.release.plugin>
+        <version.surefire.plugin>2.15</version.surefire.plugin>
+        <version.release.plugin>2.4.1</version.release.plugin>
         <version.jar.plugin>2.4</version.jar.plugin>
         <version.assembly.plugin>2.4</version.assembly.plugin>
-        <version.dependency.plugin>2.5.1</version.dependency.plugin>
+        <version.dependency.plugin>2.8</version.dependency.plugin>
         <version.checkstyle.plugin>2.10</version.checkstyle.plugin>
         <!-- Compiler configuration -->
-        <maven.compiler.argument.source>1.7</maven.compiler.argument.source>
-        <maven.compiler.argument.target>1.7</maven.compiler.argument.target>
+        <!-- Cross plugins settings -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- maven-compiler-plugin -->
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
+
+        <!--
+            Options to override the compiler arguments directly on the compiler arument line to separate between what
+            the IDE understands as the source level and what the Maven compiler actually use.
+        -->
+        <maven.compiler.argument.target>${maven.compiler.target}</maven.compiler.argument.target>
+        <maven.compiler.argument.source>${maven.compiler.source}</maven.compiler.argument.source>
 
     </properties>
 

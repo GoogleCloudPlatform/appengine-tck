@@ -41,5 +41,4 @@ public class LogLevelAllTest extends LoggingConfigurationTestBase {
     public void testLogLevelAll() {
         assertLogOnlyLogsMessagesAboveOrAtLevel(Level.ALL);
     }
-
 }
