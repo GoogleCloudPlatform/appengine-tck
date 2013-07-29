@@ -16,8 +16,12 @@
 package com.google.appengine.tck.gcsclient;
 
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.util.Date;
 
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tools.cloudstorage.GcsFileOptions;
@@ -26,19 +30,14 @@ import com.google.appengine.tools.cloudstorage.GcsInputChannel;
 import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
 import com.google.appengine.tools.cloudstorage.GcsService;
 import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
-
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.util.Date;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Google Cloud Storage client test.
@@ -47,12 +46,18 @@ import java.util.Date;
  */
 @RunWith(Arquillian.class)
 public class GCSClientTest extends GCSClientTestBase {
-    GcsService gcsService = GcsServiceFactory.createGcsService();
     // use default cloud storage buckets
     private static String BUCKET = SystemProperty.applicationId.get() + ".appspot.com";
     private static String OBJECT_NAME = "tckobj" + new Date().getTime();
     private static String CONTENT = "Hello from BigStore - " + new Date();
     private static String MORE_WORDS = "And miles to go before I sleep.";
+
+    private GcsService gcsService;
+
+    @Before
+    public void setUp() {
+        gcsService = GcsServiceFactory.createGcsService();
+    }
 
     @Test
     @InSequence(1)
@@ -62,30 +67,35 @@ public class GCSClientTest extends GCSClientTestBase {
             .mimeType("text/html")
             .acl("public-read")
             .build();
-        GcsOutputChannel writeChannel = gcsService.createOrReplace(filename, option);
-        PrintWriter out = new PrintWriter(Channels.newWriter(writeChannel, "UTF8"));
-        out.println(CONTENT);
-        out.flush();
 
-        writeChannel.waitForOutstandingWrites();
-        writeChannel.write(ByteBuffer.wrap(MORE_WORDS.getBytes()));
-        writeChannel.close();
+        try (GcsOutputChannel writeChannel = gcsService.createOrReplace(filename, option)) {
+            PrintWriter out = new PrintWriter(Channels.newWriter(writeChannel, "UTF8"));
+            out.println(CONTENT);
+            out.flush();
+
+            writeChannel.waitForOutstandingWrites();
+            writeChannel.write(ByteBuffer.wrap(MORE_WORDS.getBytes()));
+        }
+
         assertEquals(BUCKET, filename.getBucketName());
         assertEquals(OBJECT_NAME, filename.getObjectName());
     }
 
     @Test
     @InSequence(2)
-    public void testReadGsObj() throws FileNotFoundException, IOException {
+    public void testReadGsObj() throws IOException {
         GcsFilename filename = new GcsFilename(BUCKET, OBJECT_NAME);
-        GcsInputChannel readChannel = gcsService.openReadChannel(filename, 0);
-        BufferedReader reader = new BufferedReader(Channels.newReader(readChannel, "UTF8"));
-        String line;
-        String objContent = "";
-        while ((line = reader.readLine()) != null) {
-            objContent = objContent + line;
+        String objContent;
+
+        try (GcsInputChannel readChannel = gcsService.openReadChannel(filename, 0)) {
+            BufferedReader reader = new BufferedReader(Channels.newReader(readChannel, "UTF8"));
+            String line;
+            objContent = "";
+            while ((line = reader.readLine()) != null) {
+                objContent += line;
+            }
         }
-        readChannel.close();
+
         assertTrue(objContent.indexOf(CONTENT) == 0);
         assertTrue(objContent.indexOf(MORE_WORDS) > 0);
     }

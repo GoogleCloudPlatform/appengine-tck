@@ -16,7 +16,6 @@
 package com.google.appengine.tck.gcsclient;
 
 import com.google.appengine.tck.base.TestBase;
-import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.lib.LibUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -29,15 +28,11 @@ public abstract class GCSClientTestBase extends TestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        TestContext context = new TestContext();
-        WebArchive war = getTckDeployment(context);
+        WebArchive war = getTckDeployment();
 
-        war.addClass(TestBase.class);
         war.addClass(GCSClientTestBase.class);
-        war.addClasses(GCSClientTest.class);
 
         LibUtils libUtils = new LibUtils();
-        libUtils.addGaeAsLibrary(war);
         libUtils.addLibrary(war, "com.google.guava", "guava");
         libUtils.addLibrary(war, "com.google.appengine.tools", "appengine-gcs-client");
 
