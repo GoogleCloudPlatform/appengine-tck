@@ -273,8 +273,9 @@ Here we try to gather any useful tests that will help make GAE API implementatio
 Current external tests:
 
 * GAE DataNucleus Plugin
-* JUnit Example
 * GAE MapReduce Library
+* Google Cloud Storage Client
+* JUnit Example
 
 Same as core tests, each custom external set of tests is under unique profile.
 
