@@ -137,7 +137,7 @@ public class ReportsFeature extends BuildFeature {
     @Nullable
     @Override
     public Map<String, String> getDefaultParameters() {
-        return Collections.singletonMap(UIConstants.URL, "http://173.255.112.175");
+        return Collections.singletonMap(UIConstants.URL, "http://www.appengine-tck.org");
     }
 
     protected void handleBuildFinished(SRunningBuild build) {

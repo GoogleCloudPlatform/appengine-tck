@@ -6,7 +6,7 @@
     <version>@Version@</version>
     <description>Reports plugin that pushes build stats to display site</description>
     <download-url>https://github.com/GoogleCloudPlatform/appengine-tck</download-url>
-    <email>ales.justin@gmail.com</email>
+    <email>ales.justin@jboss.org</email>
     <vendor>
       <name>Google</name>
       <url>http://www.google.com</url>

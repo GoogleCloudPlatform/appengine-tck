@@ -383,3 +383,12 @@ See tests/appengine-tck-[test-package]/target/site/checkstyle.html
     mvn surefire-report:report
 
 See tests/appengine-tck-[test-package]/target/site/surefire-report.html
+
+Site module
+-----------
+
+Site module is made up from two parts:
+* reporting web app
+* a TeamCity plugin that pushes the build info to the reporting web app when done.
+
+The reporting web app shows nice pie charts for all environments, with drill-down info details on failed tests.
