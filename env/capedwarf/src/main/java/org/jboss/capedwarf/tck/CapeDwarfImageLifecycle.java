@@ -16,8 +16,6 @@
 package org.jboss.capedwarf.tck;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -31,103 +29,52 @@ import com.google.appengine.tck.event.ImageLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycle;
 import org.kohsuke.MetaInfServices;
 
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
+ * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 @MetaInfServices(TestLifecycle.class)
 public class CapeDwarfImageLifecycle extends AbstractImageLifecycle {
+
+    public static final double DELTA = 15.0;
+
     protected void doBefore(ImageLifecycleEvent event) {
+        BufferedImage expected = getBufferedImage(event.getExpected());
+        BufferedImage actual = getBufferedImage(event.getTransformed());
+
+        if (expected.getWidth() != actual.getWidth() || expected.getHeight() != actual.getHeight()) {
+            event.setResult(false);
+            return;
+        }
+
+        for (int y = 0; y < expected.getHeight(); y++) {
+            for (int x = 0; x < expected.getWidth(); x++) {
+                int expectedARGB = expected.getRGB(x, y);
+                int transformedARGB = actual.getRGB(x, y);
+                double distance = distance(expectedARGB, transformedARGB);
+                if (distance > DELTA) {
+                    event.setResult(false);
+                    return;
+                }
+            }
+        }
         event.setResult(true);
     }
 
-    protected void doBeforeX(ImageLifecycleEvent event) {
-        Image expected = event.getExpected();
-        Image transformed = event.getTransformed();
-
-        Raster er = getRaster(expected);
-        Raster tr = getRaster(transformed);
-
-        Transform op = event.getOp();
-        String transformClassName = op.getClass().getName();
-        // TODO
-        if ("com.google.appengine.api.images.Resize".equals(transformClassName)) {
-        } else if ("com.google.appengine.api.images.HorizontalFlip".equals(transformClassName)) {
-            assertEquals(er.getWidth(), tr.getWidth());
-            assertEquals(er.getHeight(), tr.getHeight());
-            for (int y = 0; y < er.getHeight(); y++) {
-                for (int x = 0; x < er.getWidth(); x++) {
-                    if (assertPixelsEqual(er, x, y, tr, er.getWidth() - x - 1, y) == false) {
-                        event.setResult(false);
-                        return;
-                    }
-                }
-            }
-            event.setResult(true);
-        } else if ("com.google.appengine.api.images.VerticalFlip".equals(transformClassName)) {
-            assertEquals(er.getWidth(), tr.getWidth());
-            assertEquals(er.getHeight(), tr.getHeight());
-            for (int y = 0; y < er.getHeight(); y++) {
-                for (int x = 0; x < er.getWidth(); x++) {
-                    if (assertPixelsEqual(er, x, y, tr, er.getHeight() - x - 1, y) == false) {
-                        event.setResult(false);
-                        return;
-                    }
-                }
-            }
-            event.setResult(true);
-        } else if ("com.google.appengine.api.images.Rotate".equals(transformClassName)) {
-            int deg = getFieldValue(op, "degrees");
-            if (deg == 90) {
-                assertEquals(er.getWidth(), tr.getHeight());
-                assertEquals(er.getHeight(), tr.getWidth());
-                for (int y = 0; y < er.getHeight(); y++) {
-                    for (int x = 0; x < er.getWidth(); x++) {
-                        if (assertPixelsEqual(er, x, y, tr, tr.getWidth() - y - 1, x) == false) {
-                            event.setResult(false);
-                            return;
-                        }
-                    }
-                }
-                event.setResult(true);
-            } else if (deg == 180) {
-                assertEquals(er.getWidth(), tr.getWidth());
-                assertEquals(er.getHeight(), tr.getHeight());
-                for (int y = 0; y < er.getHeight(); y++) {
-                    for (int x = 0; x < er.getWidth(); x++) {
-                        if (assertPixelsEqual(er, x, y, tr, tr.getWidth() - x - 1, tr.getHeight() - y - 1) == false) {
-                            event.setResult(false);
-                            return;
-                        }
-                    }
-                }
-                event.setResult(true);
-            } else if (deg == 270) {
-                assertEquals(er.getWidth(), tr.getHeight());
-                assertEquals(er.getHeight(), tr.getWidth());
-                for (int y = 0; y < er.getHeight(); y++) {
-                    for (int x = 0; x < er.getWidth(); x++) {
-                        if (assertPixelsEqual(er, x, y, tr, y, tr.getHeight() - x - 1) == false) {
-                            event.setResult(false);
-                            return;
-                        }
-                    }
-                }
-                event.setResult(true);
-            }
-        } else if ("com.google.appengine.api.images.Crop".equals(transformClassName)) {
-        } else if ("com.google.appengine.api.images.ImFeelingLucky".equals(transformClassName)) {
-        } else if ("com.google.appengine.api.images.CompositeTransform".equals(transformClassName)) {
-        }
+    private double distance(int argb1, int argb2) {
+        int a1 = argb1 >> 24 & 0xff;
+        int a2 = argb2 >> 24 & 0xff;
+        int r1 = argb1 >> 16 & 0xff;
+        int r2 = argb2 >> 16 & 0xff;
+        int g1 = argb1 >> 8 & 0xff;
+        int g2 = argb2 >> 8 & 0xff;
+        int b1 = argb1 & 0xff;
+        int b2 = argb2 & 0xff;
+        return Math.sqrt((a1 - a2) ^ 2 + (r1 - r2) ^ 2 + (g1 - g2) ^ 2 + (b1 - b2) ^ 2);
     }
 
     protected void doAfter(ImageLifecycleEvent event) {
-    }
-
-    protected static WritableRaster getRaster(Image image) {
-        BufferedImage bufferedImage = getBufferedImage(image);
-        return bufferedImage.getRaster();
     }
 
     protected static BufferedImage getBufferedImage(Image image) {
@@ -140,39 +87,6 @@ public class CapeDwarfImageLifecycle extends AbstractImageLifecycle {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static boolean assertPixelsEqual(Raster raster, int x1, int y1, Raster transformedRaster, int x2, int y2) {
-        int pixel1[] = getPixel(raster, x1, y1);
-        int pixel2[] = getPixel(transformedRaster, x2, y2);
-
-        return arraysEqual(pixel1, pixel2);
-    }
-
-    public static int[] getPixel(Raster raster, int x, int y) {
-        return raster.getPixel(x, y, (int[]) null);
-    }
-
-    public static boolean arraysEqual(int[] array1, int[] array2) {
-        if (array1.length != array2.length) {
-            return false;
-        }
-
-        for (int i = 0; i < array1.length; i++) {
-            if (array1[i] != array2[i]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public static String formatPixel(int[] pixel) {
-        StringBuilder sbuf = new StringBuilder();
-        for (int p : pixel) {
-            sbuf.append(",").append(p);
-        }
-        return sbuf.substring(1);
     }
 
     @SuppressWarnings("unchecked")
