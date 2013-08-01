@@ -64,7 +64,7 @@ public class TifImageTest extends ImagesServiceTestBase {
     }
 
     @Test
-    public void testHorizonalFlip() throws IOException {
+    public void testHorizontalFlip() throws IOException {
         if (doExecute("testHorizonalFlip")) {
             Transform transform = ImagesServiceFactory.makeHorizontalFlip();
             assertTransformation(transform, "HorizontalFlip");
