@@ -14,8 +14,7 @@
   ~ limitations under the License.
   -->
 
-<datastore-indexes
-        autoGenerate="true">
+<datastore-indexes autoGenerate="false">
     <datastore-index kind="distincttest" ancestor="true" source="manual">
         <property name="stringData" direction="asc"/>
     </datastore-index>
