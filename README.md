@@ -35,7 +35,7 @@ Directory structure
 -------------------
 
 * `common`      - common test code; base tests and multisuite support
-* `core`        - core test code; black list, endpoints, SQL, ...
+* `core`        - core test code; black list, endpoints, SQL, modules, ...
 * `env`         - custom environment hooks; GAE SDK, Appspot, CapeDwarf, AppScale, ...
 * `ext`         - external (useful) tests; e.g. DataNucleus, MapReduce, Objectify, ...
 * `site`        - reporting site, exposing data from TCK TeamCity CI runs
@@ -256,6 +256,7 @@ Current core tests:
 
 * Endpoints support
 * Miscellaneous; e.g. black list usage, etc
+* Modules
 * SQL
 
 As we don't want to overload the testing, each custom core set of tests should be under unique profile.

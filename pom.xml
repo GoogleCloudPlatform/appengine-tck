@@ -48,8 +48,8 @@
         <!-- Testing -->
         <version.javax.servlet>3.0.1</version.javax.servlet>
         <version.junit>4.11</version.junit>
-        <version.arquillian>1.0.3.Final</version.arquillian>
-        <version.arquillian.gae>1.0.0.Beta1</version.arquillian.gae>
+        <version.arquillian>1.0.4.Final</version.arquillian>
+        <version.arquillian.gae>1.0.0.Beta2</version.arquillian.gae>
         <version.shrinkwrap>1.1.2</version.shrinkwrap>
         <version.shrinkwrap.resolver>2.0.0-beta-3</version.shrinkwrap.resolver>
 
@@ -496,6 +496,13 @@
                 <type>pom</type>
                 <scope>import</scope>
                 <version>${version.arquillian}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.arquillian.protocol</groupId>
+                <artifactId>arquillian-protocol-modules</artifactId>
+                <version>${version.arquillian.gae}</version>
+                <scope>test</scope>
             </dependency>
 
             <dependency>

@@ -16,12 +16,16 @@
 package com.google.appengine.tck.arquillian;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Set;
 
 import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
 import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ArchivePath;
+import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.Node;
+import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 
@@ -30,7 +34,20 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
  */
 public class GaeApplicationArchiveProcessor implements ApplicationArchiveProcessor {
     public void process(Archive<?> archive, TestClass testClass) {
-        final Node lib = archive.get("WEB-INF/lib");
+        if (archive instanceof EnterpriseArchive) {
+            final EnterpriseArchive ear = (EnterpriseArchive) archive;
+
+            Map<ArchivePath, Node> wars = ear.getContent(Filters.include(".*\\.war"));
+            for (Map.Entry<ArchivePath, Node> war : wars.entrySet()) {
+                handleWar(ear.getAsType(WebArchive.class, war.getKey()));
+            }
+        } else if (archive instanceof WebArchive) {
+            handleWar((WebArchive) archive);
+        }
+    }
+
+    protected void handleWar(WebArchive war) {
+        final Node lib = war.get("WEB-INF/lib");
         if (lib != null) {
             final Set<Node> libs = lib.getChildren();
             for (Node jar : libs) {
@@ -39,10 +56,11 @@ public class GaeApplicationArchiveProcessor implements ApplicationArchiveProcess
             }
         }
 
-        if (archive instanceof WebArchive) {
-            WebArchive war = (WebArchive) archive;
-            war.addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml").
-                resolve("com.google.appengine:appengine-api-1.0-sdk").withTransitivity().as(File.class));
-        }
+        war.addAsLibraries(Maven.resolver()
+            .loadPomFromFile("pom.xml")
+            .resolve("com.google.appengine:appengine-api-1.0-sdk")
+            .withTransitivity()
+            .as(File.class)
+        );
     }
 }

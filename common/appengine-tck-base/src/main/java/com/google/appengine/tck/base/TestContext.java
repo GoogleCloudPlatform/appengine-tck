@@ -21,6 +21,7 @@ import java.util.Properties;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class TestContext implements Cloneable {
+    private boolean subdeployment;
     private String archiveName;
 
     private String webXmlContent = "<web/>";
@@ -41,6 +42,15 @@ public class TestContext implements Cloneable {
 
     public TestContext(String archiveName) {
         this.archiveName = archiveName;
+    }
+
+    public boolean isSubdeployment() {
+        return subdeployment;
+    }
+
+    public TestContext setSubdeployment(boolean subdeployment) {
+        this.subdeployment = subdeployment;
+        return this;
     }
 
     public String getArchiveName() {

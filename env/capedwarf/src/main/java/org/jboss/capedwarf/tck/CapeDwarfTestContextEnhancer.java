@@ -35,8 +35,10 @@ public class CapeDwarfTestContextEnhancer extends AbstractTestContextLifecycle {
     }
 
     protected void enhance(TestContext context) {
-        context.setArchiveName("ROOT.war");
-        context.setContextRoot(CapeDwarfContextRoot.INSTANCE);
+        if (context.isSubdeployment() == false) {
+            context.setArchiveName("ROOT.war");
+            context.setContextRoot(CapeDwarfContextRoot.INSTANCE);
+        }
     }
 
     private static class CapeDwarfContextRoot implements ContextRoot {

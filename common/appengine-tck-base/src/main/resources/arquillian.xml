@@ -18,15 +18,16 @@
             xmlns="http://jboss.org/schema/arquillian"
             xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 
-    <defaultProtocol type="Servlet 2.5"/>
+    <defaultProtocol type="Modules Servlet Protocol 1.0">
+        <!-- Configure module hosts, ports, etc -->
+        <property name="properties">m2.port=8180</property>
+    </defaultProtocol>
 
     <container qualifier="capedwarf">
         <configuration>
             <property name="jbossHome">${capedwarf.home}</property>
             <property name="serverConfig">standalone-capedwarf.xml</property>
-            <property name="javaVmArguments">-Xmx1024m -XX:MaxPermSize=256m
-                -Djboss.mail.host=${jboss.mail.host:localhost}
-            </property>
+            <property name="javaVmArguments">-Xmx1024m -XX:MaxPermSize=256m -Djboss.mail.host=${jboss.mail.host:localhost}</property>
             <property name="allowConnectingToRunningServer">true</property>
         </configuration>
     </container>

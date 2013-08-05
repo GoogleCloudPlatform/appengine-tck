@@ -18,6 +18,7 @@
         <!-- External -->
         <module>endpoints</module>
         <module>misc</module>
+        <module>modules</module>
         <module>sql</module>
     </modules>
 
@@ -196,7 +197,7 @@
 
                 <dependency>
                     <groupId>org.jboss.arquillian.protocol</groupId>
-                    <artifactId>arquillian-protocol-servlet</artifactId>
+                    <artifactId>arquillian-protocol-modules</artifactId>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
