@@ -77,6 +77,10 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
 
     protected void assertSet(String message, Set<Entity> expected, Set<Entity> actual) {
         Assert.assertNotNull(message, actual);
+        if (expected.size() != actual.size()) {
+            log.warning("Expected Result Set:" + expected.toString());
+            log.warning("Actual Result Set:" + actual.toString());
+        }
         Assert.assertEquals(message, expected.size(), actual.size());
         Set<Entity> copy = new HashSet<Entity>(expected);
         copy.removeAll(actual);
