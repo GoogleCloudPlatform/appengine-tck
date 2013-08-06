@@ -197,14 +197,15 @@ public class QueryOptimizationsTest extends QueryTestBase {
     @Test
     public void testProjectionOfCollectionProperties() throws Exception {
         String methodName = "testProjectionOfCollectionProperties";
-        Entity parent = createTestEntityWithUniqueMethodNameKey("test", methodName);
+        String entityKind = "test-proj";
+        Entity parent = createTestEntityWithUniqueMethodNameKey(entityKind, methodName);
         Key key = parent.getKey();
 
-        Entity e = createEntity("test", key)
+        Entity e = createEntity(entityKind, key)
             .withProperty("prop", Arrays.asList("bbb", "ccc", "aaa"))
             .store();
 
-        Query query = new Query("test")
+        Query query = new Query(entityKind)
             .setAncestor(key)
             .addProjection(new PropertyProjection("prop", String.class))
             .addSort("prop");
