@@ -198,6 +198,11 @@
         <property name="stringData" direction="asc"/>
     </datastore-index>
 
+    <datastore-index kind="listData" ancestor="true" source="manual">
+        <property name="intData1" direction="asc"/>
+        <property name="intData1" direction="asc"/>
+    </datastore-index>
+
     <datastore-index kind="keyData" ancestor="true" source="manual">
         <property name="__key__" direction="desc"/>
     </datastore-index>
