@@ -26,7 +26,12 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
  */
 public abstract class ModulesTestBase extends TestBase {
     protected static TestContext toSubdeployment(int module) {
-        return new TestContext("module" + module).setSubdeployment(true);
+        TestContext context = new TestContext("module" + module).setSubdeployment(true);
+        if (module > 1) {
+            // only module #1 is default
+            context.setAppEngineWebXmlFile(String.format("m%s-appengine-web.xml", module));
+        }
+        return context;
     }
 
     protected static WebArchive getTckSubDeployment(int module) {
