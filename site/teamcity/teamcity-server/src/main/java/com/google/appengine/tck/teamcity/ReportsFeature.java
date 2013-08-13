@@ -157,7 +157,7 @@ public class ReportsFeature extends BuildFeature {
     }
 
     protected void handleBuildFinished(SRunningBuild build, SBuildFeatureDescriptor feature) {
-        String buildType = build.getBuildTypeName();
+        String buildTypeId = build.getBuildTypeId();
         long buildId = build.getBuildId();
 
         BuildStatistics statistics = build.getFullStatistics();
@@ -172,7 +172,7 @@ public class ReportsFeature extends BuildFeature {
         try {
             final URIBuilder builder = new URIBuilder(url);
             builder.setParameter("updateToken", updateToken);
-            builder.setParameter("buildType", buildType);
+            builder.setParameter("buildTypeId", buildTypeId);
             builder.setParameter("buildId", String.valueOf(buildId));
             builder.setParameter("failedTests", String.valueOf(failedTests));
             builder.setParameter("passedTests", String.valueOf(passedTests));

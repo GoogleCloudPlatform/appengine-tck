@@ -63,11 +63,11 @@ public class ReportServlet extends HttpServlet {
         }
     }
 
-    private void drawChart(PrintWriter writer, String buildType, String label) throws Exception {
-        final Report report = new DatastoreReport(buildType);
+    private void drawChart(PrintWriter writer, String buildTypeId, String label) throws Exception {
+        final Report report = new DatastoreReport(buildTypeId);
 
         if (report.hasData(ds) == false) {
-            writer.write(String.format("No data available for build type: %s</p>\n", buildType));
+            writer.write(String.format("No data available for build type id: %s</p>\n", buildTypeId));
             return;
         }
 

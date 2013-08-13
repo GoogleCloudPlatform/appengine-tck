@@ -53,7 +53,7 @@ public class UpdateServlet extends HttpServlet {
             return;
         }
 
-        String buildType = req.getParameter("buildType");
+        String buildTypeId = req.getParameter("buildTypeId");
         long buildId = Long.parseLong(req.getParameter("buildId"));
 
         int failedTests = Integer.parseInt(req.getParameter("failedTests"));
@@ -63,7 +63,7 @@ public class UpdateServlet extends HttpServlet {
         String[] tests = readFailedTests(req.getInputStream());
 
         Entity data = new Entity(DatastoreReport.class.getSimpleName());
-        data.setProperty("buildType", buildType);
+        data.setProperty("buildTypeId", buildTypeId);
         data.setProperty("buildId", buildId);
         data.setProperty("failedTests", failedTests);
         data.setProperty("passedTests", passedTests);

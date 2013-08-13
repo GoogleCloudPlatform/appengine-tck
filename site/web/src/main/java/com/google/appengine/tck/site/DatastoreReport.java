@@ -29,17 +29,17 @@ import com.google.appengine.api.datastore.QueryResultList;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class DatastoreReport implements Report {
-    private String buildType;
+    private String buildTypeId;
     private Entity data;
 
-    public DatastoreReport(String buildType) throws Exception {
-        this.buildType = buildType;
+    public DatastoreReport(String buildTypeId) throws Exception {
+        this.buildTypeId = buildTypeId;
     }
 
     public boolean hasData(DatastoreService ds) throws Exception {
         Query query = new Query(DatastoreReport.class.getSimpleName());
         query.addSort("buildId", Query.SortDirection.DESCENDING);
-        query.setFilter(new Query.FilterPredicate("buildType", Query.FilterOperator.EQUAL, buildType));
+        query.setFilter(new Query.FilterPredicate("buildTypeId", Query.FilterOperator.EQUAL, buildTypeId));
 
         PreparedQuery pq = ds.prepare(query);
         QueryResultList<Entity> list = pq.asQueryResultList(FetchOptions.Builder.withLimit(1));

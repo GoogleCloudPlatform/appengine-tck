@@ -70,8 +70,8 @@ public class RestUtils {
         return -1;
     }
 
-    protected static JSONObject getBuilds(String buildType) throws Exception {
-        String url = String.format(TCK_URL + "/guestAuth/app/rest/builds/?locator=buildType:id:%s", buildType);
+    protected static JSONObject getBuilds(String buildTypeId) throws Exception {
+        String url = String.format(TCK_URL + "/guestAuth/app/rest/builds/?locator=buildType:id:%s", buildTypeId);
         return getJSON(url);
     }
 
@@ -80,8 +80,8 @@ public class RestUtils {
         return getJSON(url);
     }
 
-    public static int getLatestBuild(String buildType) throws Exception {
-        JSONObject builds = getBuilds(buildType);
+    public static int getLatestBuild(String buildTypeId) throws Exception {
+        JSONObject builds = getBuilds(buildTypeId);
         JSONArray array = builds.getJSONArray("build");
         return (array.length() == 0) ? -1 : array.getJSONObject(0).getInt("id");
     }

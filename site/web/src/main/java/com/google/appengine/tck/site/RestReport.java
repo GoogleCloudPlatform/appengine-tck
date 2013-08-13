@@ -27,8 +27,8 @@ public class RestReport implements Report {
     private int buildId;
     private JSONObject stats;
 
-    public RestReport(String buildType) throws Exception {
-        buildId = RestUtils.getLatestBuild(buildType);
+    public RestReport(String buildTypeId) throws Exception {
+        buildId = RestUtils.getLatestBuild(buildTypeId);
     }
 
     public boolean hasData(DatastoreService ds) throws Exception {
