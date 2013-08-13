@@ -66,6 +66,22 @@
             <build>
                 <plugins>
                     <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <configuration>
+                        <webResources>
+                            <resource>
+                                <directory>${basedir}/src/main/webapp/WEB-INF</directory>
+                                <filtering>true</filtering>
+                                <targetPath>WEB-INF</targetPath>
+                                <includes>
+                                    <include>web.xml</include>
+                                </includes>
+                            </resource>
+                        </webResources>
+                    </configuration>
+                    </plugin>
+                    <plugin>
                         <groupId>com.google.appengine</groupId>
                         <artifactId>appengine-maven-plugin</artifactId>
                     </plugin>

@@ -33,15 +33,17 @@ import com.google.appengine.api.datastore.Entity;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class UpdateServlet extends HttpServlet {
-    private String updateToken;
     private DatastoreService ds;
+    private String updateToken;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
 
-        updateToken = config.getInitParameter("update-token");
         ds = DatastoreServiceFactory.getDatastoreService();
+        updateToken = config.getInitParameter("update-token");
+
+        log("Update token: " + updateToken);
     }
 
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
