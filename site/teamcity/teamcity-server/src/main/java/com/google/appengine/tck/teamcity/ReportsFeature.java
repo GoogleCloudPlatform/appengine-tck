@@ -42,6 +42,7 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.BasicClientConnectionManager;
@@ -72,6 +73,7 @@ public class ReportsFeature extends BuildFeature {
     public void start() {
         SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("http", 80, new PlainSocketFactory()));
+        registry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
         ClientConnectionManager ccm = new BasicClientConnectionManager(registry);
         client = new DefaultHttpClient(ccm);
     }
@@ -127,7 +129,10 @@ public class ReportsFeature extends BuildFeature {
                     result.add(new InvalidProperty(UIConstants.URL, "Invalid URL: " + url));
                 }
 
-                // TODO -- username/password, when needed
+                final String token = params.get(UIConstants.TOKEN);
+                if (token == null || token.trim().length() == 0) {
+                    result.add(new InvalidProperty(UIConstants.TOKEN, "Missing site token!"));
+                }
 
                 return result;
             }
@@ -160,10 +165,13 @@ public class ReportsFeature extends BuildFeature {
         int passedTests = statistics.getPassedTestCount();
         int ignoredTests = statistics.getIgnoredTestCount();
 
-        final String url = feature.getParameters().get(UIConstants.URL);
+        final Map<String, String> parameters = feature.getParameters();
+        final String url = parameters.get(UIConstants.URL);
+        final String updateToken = parameters.get(UIConstants.TOKEN);
 
         try {
             final URIBuilder builder = new URIBuilder(url);
+            builder.setParameter("updateToken", updateToken);
             builder.setParameter("buildType", buildType);
             builder.setParameter("buildId", String.valueOf(buildId));
             builder.setParameter("failedTests", String.valueOf(failedTests));

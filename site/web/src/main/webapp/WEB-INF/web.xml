@@ -20,13 +20,37 @@
          id="WebApp_ID" version="2.5">
 
     <servlet>
-        <servlet-name>Stats</servlet-name>
-        <servlet-class>com.google.appengine.tck.site.SiteServlet</servlet-class>
+        <servlet-name>Report</servlet-name>
+        <servlet-class>com.google.appengine.tck.site.ReportServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>Update</servlet-name>
+        <servlet-class>com.google.appengine.tck.site.UpdateServlet</servlet-class>
+        <init-param>
+            <param-name>update-token</param-name>
+            <param-value>${update.token}</param-value>
+        </init-param>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>Stats</servlet-name>
+        <servlet-name>Report</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Update</servlet-name>
+        <url-pattern>/update</url-pattern>
+    </servlet-mapping>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Update</web-resource-name>
+            <url-pattern>/update</url-pattern>
+        </web-resource-collection>
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
 
 </web-app>

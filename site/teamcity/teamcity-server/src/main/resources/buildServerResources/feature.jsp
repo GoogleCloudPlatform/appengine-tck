@@ -17,7 +17,7 @@
   --%>
 
 <tr>
-    <td colspan="2">Specify site url and credentials to push status updates to.</td>
+    <td colspan="2">Specify site url and token to push status updates to.</td>
 </tr>
 <l:settingsGroup title="Authentication">
     <tr>
@@ -29,19 +29,11 @@
         </td>
     </tr>
     <tr>
-        <th>Username:<l:star/></th>
+        <th>Token:<l:star/></th>
         <td>
-            <props:textProperty name="site.username" className="longField"/>
-            <span class="error" id="error_site.username"></span>
-            <span class="smallNote">Specify site username.</span>
-        </td>
-    </tr>
-    <tr>
-        <th>Password:<l:star/></th>
-        <td>
-            <props:passwordProperty name="site.password" className="longField"/>
-            <span class="error" id="error_site.password"></span>
-            <span class="smallNote">Specify site password.</span>
+            <props:textProperty name="site.token" className="longField"/>
+            <span class="error" id="error_site.token"></span>
+            <span class="smallNote">Specify site token.</span>
         </td>
     </tr>
 </l:settingsGroup>

@@ -20,6 +20,5 @@ package com.google.appengine.tck.teamcity;
  */
 public final class UIConstants {
     public static final String URL = "site.url";
-    public static final String USERNAME = "site.username";
-    public static final String PASSWORD = "site.password";
+    public static final String TOKEN = "site.token";
 }

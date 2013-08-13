@@ -16,9 +16,7 @@
 package com.google.appengine.tck.site;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,40 +25,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class SiteServlet extends HttpServlet {
+public class ReportServlet extends HttpServlet {
     private DatastoreService ds;
 
     public void init() throws ServletException {
         super.init();
         ds = DatastoreServiceFactory.getDatastoreService();
-    }
-
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String buildType = req.getParameter("buildType");
-        long buildId = Long.parseLong(req.getParameter("buildId"));
-
-        int failedTests = Integer.parseInt(req.getParameter("failedTests"));
-        int passedTests = Integer.parseInt(req.getParameter("passedTests"));
-        int ignoredTests = Integer.parseInt(req.getParameter("ignoredTests"));
-
-        String[] tests = readFailedTests(req.getInputStream());
-
-        Entity data = new Entity(DatastoreReport.class.getSimpleName());
-        data.setProperty("buildType", buildType);
-        data.setProperty("buildId", buildId);
-        data.setProperty("failedTests", failedTests);
-        data.setProperty("passedTests", passedTests);
-        data.setProperty("ignoredTests", ignoredTests);
-        data.setUnindexedProperty("failedTestsList", Arrays.asList(tests));
-
-        log("Adding new data: " + data);
-
-        ds.put(data);
     }
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -86,19 +60,6 @@ public class SiteServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private static String[] readFailedTests(InputStream is) throws IOException {
-        try {
-            StringBuilder sb = new StringBuilder();
-            int ch;
-            while ((ch = is.read()) != -1) {
-                sb.append((char) ch);
-            }
-            return sb.toString().split("\n");
-        } finally {
-            is.close();
         }
     }
 
