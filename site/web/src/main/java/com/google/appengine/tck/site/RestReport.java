@@ -17,7 +17,6 @@ package com.google.appengine.tck.site;
 
 import java.util.List;
 
-import com.google.appengine.api.datastore.DatastoreService;
 import org.json.JSONObject;
 
 /**
@@ -31,7 +30,7 @@ public class RestReport implements Report {
         buildId = RestUtils.getLatestBuild(buildTypeId);
     }
 
-    public boolean hasData(DatastoreService ds) throws Exception {
+    public boolean hasData(ReportContext context) throws Exception {
         if (buildId > 0) {
             stats = RestUtils.getStats(buildId);
         }

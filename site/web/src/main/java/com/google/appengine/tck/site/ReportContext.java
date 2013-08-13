@@ -15,21 +15,14 @@
 
 package com.google.appengine.tck.site;
 
-import java.util.List;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.memcache.MemcacheService;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public interface Report {
-    boolean hasData(ReportContext context) throws Exception;
+public interface ReportContext {
+    MemcacheService getMemcacheService();
 
-    int getFailedTests() throws Exception;
-
-    int getPassedTests() throws Exception;
-
-    int getIgnoredTests() throws Exception;
-
-    List<Test> getListOfFailedTests() throws Exception;
-
-    String getFailedTestError(Test test) throws Exception;
+    DatastoreService getDatastoreService();
 }

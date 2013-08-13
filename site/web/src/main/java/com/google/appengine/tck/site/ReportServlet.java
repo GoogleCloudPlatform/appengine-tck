@@ -25,16 +25,21 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class ReportServlet extends HttpServlet {
-    private DatastoreService ds;
+    private ReportContext context;
 
     public void init() throws ServletException {
         super.init();
-        ds = DatastoreServiceFactory.getDatastoreService();
+
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        MemcacheService cache = MemcacheServiceFactory.getMemcacheService();
+        context = new ReportContextImpl(ds, cache);
     }
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -66,7 +71,7 @@ public class ReportServlet extends HttpServlet {
     private void drawChart(PrintWriter writer, String buildTypeId, String label) throws Exception {
         final Report report = new DatastoreReport(buildTypeId);
 
-        if (report.hasData(ds) == false) {
+        if (report.hasData(context) == false) {
             writer.write(String.format("No data available for build type id: %s</p>\n", buildTypeId));
             return;
         }

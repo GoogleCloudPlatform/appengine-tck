@@ -24,6 +24,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultList;
+import com.google.appengine.api.memcache.MemcacheService;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -36,19 +37,29 @@ public class DatastoreReport implements Report {
         this.buildTypeId = buildTypeId;
     }
 
-    public boolean hasData(DatastoreService ds) throws Exception {
+    public boolean hasData(ReportContext context) throws Exception {
+        MemcacheService cache = context.getMemcacheService();
+        Entity cached = (Entity) cache.get(buildTypeId);
+        if (cached != null) {
+            data = cached;
+            return true;
+        }
+
         Query query = new Query(DatastoreReport.class.getSimpleName());
         query.addSort("buildId", Query.SortDirection.DESCENDING);
         query.setFilter(new Query.FilterPredicate("buildTypeId", Query.FilterOperator.EQUAL, buildTypeId));
 
+        DatastoreService ds = context.getDatastoreService();
         PreparedQuery pq = ds.prepare(query);
         QueryResultList<Entity> list = pq.asQueryResultList(FetchOptions.Builder.withLimit(1));
 
         if (list.size() > 0) {
             data = list.get(0);
+            cache.put(buildTypeId, data);
+            return true;
+        } else {
+            return false;
         }
-
-        return (list.size() > 0);
     }
 
     private int getInt(String property) {
@@ -71,7 +82,7 @@ public class DatastoreReport implements Report {
     @SuppressWarnings("unchecked")
     public List<Test> getListOfFailedTests() throws Exception {
         List<String> list = (List<String>) data.getProperty("failedTestsList");
-        List<Test> tests = new ArrayList<Test>();
+        List<Test> tests = new ArrayList<>();
         for (String elt : list) {
             String[] split = elt.split("_#_");
             Test test = new Test();

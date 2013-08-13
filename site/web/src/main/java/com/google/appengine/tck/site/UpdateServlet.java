@@ -28,12 +28,15 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class UpdateServlet extends HttpServlet {
     private DatastoreService ds;
+    private MemcacheService cache;
     private String updateToken;
 
     @Override
@@ -41,6 +44,7 @@ public class UpdateServlet extends HttpServlet {
         super.init(config);
 
         ds = DatastoreServiceFactory.getDatastoreService();
+        cache = MemcacheServiceFactory.getMemcacheService();
         updateToken = config.getInitParameter("update-token");
 
         log("Update token: " + updateToken);
@@ -73,6 +77,7 @@ public class UpdateServlet extends HttpServlet {
         log("Adding new data: " + data);
 
         ds.put(data);
+        cache.put(buildTypeId, data);
     }
 
     private static String[] readFailedTests(InputStream is) throws IOException {
