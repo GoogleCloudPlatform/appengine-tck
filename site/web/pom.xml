@@ -44,6 +44,35 @@
 
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>site</id>
+            <activation>
+                <property>
+                    <name>site</name>
+                </property>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.appengine</groupId>
+                        <artifactId>appengine-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
 
 

@@ -72,8 +72,8 @@ public class SiteServlet extends HttpServlet {
             writer.write("<head>\n");
             writer.write("<script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\n");
 
-            drawChart(writer, "GaeJavaSdk_182", "SDK");
-            drawChart(writer, "AppEngineTck_Capedwarf_Beta", "CapeDwarf");
+            drawChart(writer, "GaeJavaSdk", "SDK");
+            drawChart(writer, "AppEngineTck_Capedwarf", "CapeDwarf");
 
             writer.write("</head>\n");
             writer.write("<body>\n");
@@ -106,7 +106,7 @@ public class SiteServlet extends HttpServlet {
         final Report report = new DatastoreReport(buildType);
 
         if (report.hasData(ds) == false) {
-            writer.write(String.format("No data available for build type: %s\n", buildType));
+            writer.write(String.format("No data available for build type: %s</p>\n", buildType));
             return;
         }
 
