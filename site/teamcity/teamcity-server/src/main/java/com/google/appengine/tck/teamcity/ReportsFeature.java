@@ -192,7 +192,7 @@ public class ReportsFeature extends BuildFeature {
             log.info("Executing PUT: " + put);
 
             HttpResponse response = client.execute(put);
-            System.out.println("Response: " + response);
+            log.info("Response: " + response);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
