@@ -64,7 +64,8 @@ public class ReportServlet extends HttpServlet {
             writer.write("</html>\n");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log("Error generating TCK report.", e);
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
