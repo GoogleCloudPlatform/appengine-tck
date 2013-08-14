@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jetbrains.buildServer.serverSide.BuildFeature;
@@ -189,12 +190,13 @@ public class ReportsFeature extends BuildFeature {
             }
             put.setEntity(new StringEntity(sb.toString()));
 
-            log.info("Executing PUT: " + put);
+            log.info(String.format("Executing PUT [#%s]: %s", buildId, put));
 
             HttpResponse response = client.execute(put);
-            log.info("Response: " + response);
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
+            log.info(String.format("Response [#%s]: %s", buildId, response));
+        } catch (Throwable t) {
+            log.log(Level.SEVERE, String.format("Error pushing TCK report [#%s]: %s", buildId, t.getMessage()), t);
+            throw new IllegalStateException(t);
         }
     }
 }
