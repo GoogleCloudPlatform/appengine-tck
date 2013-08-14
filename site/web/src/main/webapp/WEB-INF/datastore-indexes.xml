@@ -14,9 +14,9 @@
   ~ limitations under the License.
   -->
 
-<datastore-indexes autoGenerate="true">
+<datastore-indexes autoGenerate="false">
     <datastore-index kind="DatastoreReport" ancestor="false" source="manual">
-        <property name="buildType" direction="asc"/>
+        <property name="buildTypeId" direction="asc"/>
         <property name="buildId" direction="desc"/>
     </datastore-index>
 </datastore-indexes>
