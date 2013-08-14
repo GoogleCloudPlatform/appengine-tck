@@ -46,7 +46,7 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.BasicClientConnectionManager;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -75,7 +75,7 @@ public class ReportsFeature extends BuildFeature {
         SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("http", 80, new PlainSocketFactory()));
         registry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
-        ClientConnectionManager ccm = new BasicClientConnectionManager(registry);
+        ClientConnectionManager ccm = new PoolingClientConnectionManager(registry);
         client = new DefaultHttpClient(ccm);
     }
 
