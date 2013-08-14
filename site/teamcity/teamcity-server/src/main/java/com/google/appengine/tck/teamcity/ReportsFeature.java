@@ -158,7 +158,7 @@ public class ReportsFeature extends BuildFeature {
     }
 
     protected void handleBuildFinished(SRunningBuild build, SBuildFeatureDescriptor feature) {
-        String buildTypeId = build.getBuildTypeId();
+        String buildTypeId = build.getBuildTypeExternalId();
         long buildId = build.getBuildId();
 
         BuildStatistics statistics = build.getFullStatistics();
