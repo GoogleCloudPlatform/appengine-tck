@@ -20,11 +20,9 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Properties;
 
+import com.google.appengine.tck.arquillian.AbstractApplicationArchiveProcessor;
 import com.google.appengine.tck.event.TestLifecycle;
 import com.google.appengine.tck.util.Utils;
-import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
-import org.jboss.arquillian.test.spi.TestClass;
-import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.Node;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -32,7 +30,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class CapeDwarfArchiveProcessor implements ApplicationArchiveProcessor {
+public class CapeDwarfArchiveProcessor extends AbstractApplicationArchiveProcessor {
     private static final String CAPEDWARF_WEB =
         "<capedwarf-web-app>" +
             "    <admin>admin@capedwarf.org</admin>" +
@@ -46,32 +44,19 @@ public class CapeDwarfArchiveProcessor implements ApplicationArchiveProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    public void process(Archive<?> archive, TestClass testClass) {
-        if (archive instanceof WebArchive) {
-            WebArchive war = (WebArchive) archive;
+    protected void handleWebArchive(WebArchive war) {
+        addService(war, TestLifecycle.class,
+            CapeDwarfExecutionLifecycle.class,
+            CapeDwarfImageLifecycle.class,
+            CapeDwarfMergeLifecycle.class,
+            CapeDwarfPropertyLifecycle.class,
+            CapeDwarfServicesLifecycle.class,
+            CapeDwarfTestContextEnhancer.class
+        );
 
-            addService(war, TestLifecycle.class,
-                CapeDwarfExecutionLifecycle.class,
-                CapeDwarfImageLifecycle.class,
-                CapeDwarfMergeLifecycle.class,
-                CapeDwarfPropertyLifecycle.class,
-                CapeDwarfServicesLifecycle.class,
-                CapeDwarfTestContextEnhancer.class
-            );
+        addCompatibility(war, COMPATIBILITY);
 
-            addCompatibility(war, COMPATIBILITY);
-
-            war.addAsWebInfResource(new StringAsset(CAPEDWARF_WEB), "capedwarf-web.xml");
-        }
-    }
-
-    protected <T> void addService(WebArchive archive, Class<T> serviceClass, Class<? extends T>... serviceImpls) {
-        archive.addClasses(serviceImpls);
-        StringBuilder builder = new StringBuilder();
-        for (Class<? extends T> serviceImpl : serviceImpls) {
-            builder.append(serviceImpl.getName()).append("\n");
-        }
-        archive.addAsWebInfResource(new StringAsset(builder.toString()), "classes/META-INF/services/" + serviceClass.getName());
+        war.addAsWebInfResource(new StringAsset(CAPEDWARF_WEB), "capedwarf-web.xml");
     }
 
     static void addCompatibility(WebArchive war, Properties extra) {

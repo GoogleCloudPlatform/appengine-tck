@@ -13,34 +13,18 @@
  * limitations under the License.
  */
 
-package com.google.appengine.tck.arquillian;
+package com.google.appengine.tck.env.appspot;
 
-import java.io.File;
-import java.util.Set;
-
-import org.jboss.shrinkwrap.api.Node;
+import com.google.appengine.tck.arquillian.AbstractApplicationArchiveProcessor;
+import com.google.appengine.tck.event.TestLifecycle;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class GaeApplicationArchiveProcessor extends AbstractApplicationArchiveProcessor {
+public class AppspotArchiveProcessor extends AbstractApplicationArchiveProcessor {
+    @SuppressWarnings("unchecked")
     protected void handleWebArchive(WebArchive war) {
-        final Node lib = war.get("WEB-INF/lib");
-        if (lib != null) {
-            final Set<Node> libs = lib.getChildren();
-            for (Node jar : libs) {
-                if (jar.getPath().get().contains("appengine-api"))
-                    return;
-            }
-        }
-
-        war.addAsLibraries(Maven.resolver()
-            .loadPomFromFile("pom.xml")
-            .resolve("com.google.appengine:appengine-api-1.0-sdk")
-            .withTransitivity()
-            .as(File.class)
-        );
+        addService(war, TestLifecycle.class, AppspotUrlLifecycle.class);
     }
 }

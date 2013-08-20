@@ -15,6 +15,7 @@
 
 package com.google.appengine.tck.event;
 
+import java.net.URL;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.WeakHashMap;
@@ -31,7 +32,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class TestLifecycles {
-    private static Map<ClassLoader, ServiceLoader<TestLifecycle>> cache = new WeakHashMap<ClassLoader, ServiceLoader<TestLifecycle>>();
+    private static Map<ClassLoader, ServiceLoader<TestLifecycle>> cache = new WeakHashMap<>();
 
     protected static Iterable<TestLifecycle> getServicesLifecycles() {
         return getServicesLifecycles(TestBase.class.getClassLoader());
@@ -85,5 +86,9 @@ public class TestLifecycles {
 
     public static ImageLifecycleEvent createImageLifecycleEvent(Class<?> caller, Transform op, Image expected, Image transformed) {
         return new ImageLifecycleEventImpl(caller, op, expected, transformed);
+    }
+
+    public static UrlLifecycleEvent createUrlLifecycleEvent(Class<?> caller, URL original) {
+        return new UrlLifecycleEventImpl(caller, original);
     }
 }

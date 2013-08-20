@@ -15,37 +15,35 @@
 
 package com.google.appengine.tck.endpoints;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
+import com.google.appengine.tck.endpoints.support.FooEndPoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
-
 /**
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
-public class EndPointsTest extends TestBase {
+public class EndPointsTest extends EndPointsTestBase {
 
     public static final String PARAM_VALUE = "hello";
 
     @Deployment
     public static WebArchive getDeployment() {
-        WebArchive war = getTckDeployment(new TestContext().setWebXmlFile("endpoints-web.xml"));
-        war.addClasses(FooEndPoint.class, EndPointWithoutName.class, EndPointWithoutVersion.class);
-        war.addClasses(EndPointClient.class, EndPointResponse.class);
-        war.addAsWebInfResource("someEndPoint-v1.api", FooEndPoint.NAME + "-" + FooEndPoint.VERSION + ".api");
-        war.addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml").resolve("com.google.appengine:appengine-endpoints").withoutTransitivity().asFile());
+        TestContext context = new TestContext().setWebXmlFile("endpoints-web.xml");
+        WebArchive war = getDefaultDeployment(context);
+        war.addPackage(FooEndPoint.class.getPackage());
+        war.addAsWebInfResource("zuEndPoint-v1.api");
+        war.addAsWebInfResource("endPointWithoutVersion-v1.api");
+        war.addAsWebInfResource("myapi-v1.api");
         return war;
     }
 
@@ -54,7 +52,7 @@ public class EndPointsTest extends TestBase {
     public void testMethodWithoutParams(@ArquillianResource URL url) throws Exception {
         URL endPointUrl = toHttps(new URL(url, createPath("withoutParameters")));
         String response = invokeEndpointWithGet(endPointUrl);
-        assertEquals("{\"response\":\"method withoutParameters was invoked\"}", response);
+        assertResponse("method withoutParameters was invoked", response);
     }
 
     @Test
@@ -62,7 +60,7 @@ public class EndPointsTest extends TestBase {
     public void testMethodWithParameterInQueryString(@ArquillianResource URL url) throws Exception {
         URL endPointUrl = toHttps(new URL(url, createPath("withParameterInQueryString") + "?param=" + PARAM_VALUE));
         String response = invokeEndpointWithGet(endPointUrl);
-        assertEquals("{\"response\":\"The param was " + PARAM_VALUE + "\"}", response);
+        assertResponse("The param was " + PARAM_VALUE, response);
     }
 
     @Test
@@ -70,34 +68,31 @@ public class EndPointsTest extends TestBase {
     public void testMethodWithParameterInPath(@ArquillianResource URL url) throws Exception {
         URL endPointUrl = toHttps(new URL(url, createPath("withParameterInPath") + "/" + PARAM_VALUE));
         String response = invokeEndpointWithGet(endPointUrl);
-        assertEquals("{\"response\":\"The param was " + PARAM_VALUE + "\"}", response);
+        assertResponse("The param was " + PARAM_VALUE, response);
     }
 
     @Test
     @RunAsClient
     public void testPost(@ArquillianResource URL url) throws Exception {
         URL endPointUrl = toHttps(new URL(url, createPath("post")));
-        EndPointClient client = new EndPointClient(endPointUrl);
-        String response = client.doPost();
-        assertEquals("{\"response\":\"method post was invoked\"}", response);
+        String response = client.doPost(endPointUrl);
+        assertResponse("method post was invoked", response);
     }
 
     @Test
     @RunAsClient
     public void testPut(@ArquillianResource URL url) throws Exception {
         URL endPointUrl = toHttps(new URL(url, createPath("put")));
-        EndPointClient client = new EndPointClient(endPointUrl);
-        String response = client.doPut();
-        assertEquals("{\"response\":\"method put was invoked\"}", response);
+        String response = client.doPut(endPointUrl);
+        assertResponse("method put was invoked", response);
     }
 
     @Test
     @RunAsClient
     public void testDelete(@ArquillianResource URL url) throws Exception {
         URL endPointUrl = toHttps(new URL(url, createPath("delete")));
-        EndPointClient client = new EndPointClient(endPointUrl);
-        String response = client.doDelete();
-        assertEquals("{\"response\":\"method delete was invoked\"}", response);
+        String response = client.doDelete(endPointUrl);
+        assertResponse("method delete was invoked", response);
     }
 
     @Test
@@ -105,7 +100,7 @@ public class EndPointsTest extends TestBase {
     public void testEndPointWithoutName(@ArquillianResource URL url) throws Exception {
         URL endPointUrl = toHttps(new URL(url, createPath("myApi", "v1", "withoutParameters")));
         String response = invokeEndpointWithGet(endPointUrl);
-        assertEquals("{\"response\":\"method withoutParameters was invoked\"}", response);
+        assertResponse("method withoutParameters was invoked", response);
     }
 
     @Test
@@ -113,25 +108,10 @@ public class EndPointsTest extends TestBase {
     public void testEndPointWithoutVersion(@ArquillianResource URL url) throws Exception {
         URL endPointUrl = toHttps(new URL(url, createPath("endPointWithoutVersion", "v1", "withoutParameters")));
         String response = invokeEndpointWithGet(endPointUrl);
-        assertEquals("{\"response\":\"method withoutParameters was invoked\"}", response);
+        assertResponse("method withoutParameters was invoked", response);
     }
 
-    private String invokeEndpointWithGet(URL endPointUrl) throws Exception {
-        EndPointClient client = new EndPointClient(endPointUrl);
-        return client.doGet();
-    }
-
-    private String createPath(String methodPath) {
+    protected String createPath(String methodPath) {
         return createPath(FooEndPoint.NAME, FooEndPoint.VERSION, methodPath);
     }
-
-    private String createPath(String name, String version, String methodPath) {
-        return "/_ah/api/" + name + "/" + version + "/" + methodPath;
-    }
-
-    private URL toHttps(URL url) throws MalformedURLException {
-        return url;
-//        return new URL("https", url.getHost(), url.getFile());
-    }
-
 }

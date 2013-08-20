@@ -16,6 +16,7 @@
 
     <modules>
         <!-- Diff environments -->
+        <module>appspot</module>
         <module>capedwarf</module>
     </modules>
 
