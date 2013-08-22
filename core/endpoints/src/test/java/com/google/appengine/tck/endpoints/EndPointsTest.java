@@ -98,7 +98,7 @@ public class EndPointsTest extends EndPointsTestBase {
     @Test
     @RunAsClient
     public void testEndPointWithoutName(@ArquillianResource URL url) throws Exception {
-        URL endPointUrl = toHttps(new URL(url, createPath("myApi", "v2", "withoutParameters")));
+        URL endPointUrl = toHttps(new URL(url, createPath("myapi", "v2", "withoutParameters")));
         String response = invokeEndpointWithGet(endPointUrl);
         assertResponse("method withoutParameters was invoked", response);
     }
