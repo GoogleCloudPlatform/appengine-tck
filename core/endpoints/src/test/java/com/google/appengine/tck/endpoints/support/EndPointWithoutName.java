@@ -23,7 +23,7 @@ import static com.google.api.server.spi.config.ApiMethod.HttpMethod;
 /**
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
-@Api(version = "v1")
+@Api(version = "v2")
 public class EndPointWithoutName {
 
     @ApiMethod(httpMethod = HttpMethod.GET)
