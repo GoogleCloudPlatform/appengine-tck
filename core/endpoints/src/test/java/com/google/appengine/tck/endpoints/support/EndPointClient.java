@@ -68,7 +68,10 @@ public class EndPointClient {
     }
 
     public String doPost(URL url) throws Exception {
-        return doRequest(new HttpPost(url.toURI()));
+        HttpPost post = new HttpPost(url.toURI());
+//        post.setHeader("Content-type", "application/json");
+//        post.setEntity(new StringEntity("{\"state\": \"----X----\"}"));
+        return doRequest(post);
     }
 
     public String doPut(URL url) throws Exception {

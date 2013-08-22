@@ -2,7 +2,7 @@
   "extends" : "thirdParty.api",
   "abstract" : false,
   "root" : "https://tckapp.appspot.com/_ah/api",
-  "name" : "zuEndPoint",
+  "name" : "testEndPoint",
   "version" : "v1",
   "defaultVersion" : false,
   "adapter" : {
@@ -24,13 +24,13 @@
     "maxAge" : 0
   },
   "methods" : {
-    "zuEndPoint.foo.delete" : {
+    "testEndPoint.foo.delete" : {
       "path" : "delete",
       "httpMethod" : "DELETE",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.google.appengine.tck.endpoints.support.FooEndPoint.delete",
+      "rosyMethod" : "com.google.appengine.tck.endpoints.support.TestEndPoint.delete",
       "request" : {
         "body" : "empty"
       },
@@ -38,13 +38,13 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "zuEndPoint.foo.post" : {
+    "testEndPoint.foo.post" : {
       "path" : "post",
       "httpMethod" : "POST",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.google.appengine.tck.endpoints.support.FooEndPoint.post",
+      "rosyMethod" : "com.google.appengine.tck.endpoints.support.TestEndPoint.post",
       "request" : {
         "body" : "empty"
       },
@@ -52,13 +52,13 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "zuEndPoint.foo.put" : {
+    "testEndPoint.foo.put" : {
       "path" : "put",
       "httpMethod" : "PUT",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.google.appengine.tck.endpoints.support.FooEndPoint.put",
+      "rosyMethod" : "com.google.appengine.tck.endpoints.support.TestEndPoint.put",
       "request" : {
         "body" : "empty"
       },
@@ -66,13 +66,13 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "zuEndPoint.foo.withParameterInPath" : {
+    "testEndPoint.foo.withParameterInPath" : {
       "path" : "withParameterInPath/{param}",
       "httpMethod" : "GET",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.google.appengine.tck.endpoints.support.FooEndPoint.withParameterInPath",
+      "rosyMethod" : "com.google.appengine.tck.endpoints.support.TestEndPoint.withParameterInPath",
       "request" : {
         "parameters" : {
           "param" : {
@@ -86,33 +86,33 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "zuEndPoint.foo.withParameterInQueryString" : {
-      "path" : "withParameterInQueryString/{param}",
-      "httpMethod" : "GET",
-      "scopes" : [ ],
-      "audiences" : [ ],
-      "clientIds" : [ ],
-      "rosyMethod" : "com.google.appengine.tck.endpoints.support.FooEndPoint.withParameterInQueryString",
-      "request" : {
-        "parameters" : {
-          "param" : {
-            "type" : "string",
-            "required" : true
+      "testEndPoint.foo.withParameterInQueryString": {
+          "path": "withParameterInQueryString",
+          "httpMethod": "GET",
+          "scopes": [ ],
+          "audiences": [ ],
+          "clientIds": [ ],
+          "rosyMethod": "com.google.appengine.tck.endpoints.support.TestEndPoint.withParameterInQueryString",
+          "request": {
+              "parameters": {
+                  "param": {
+                      "type": "string",
+                      "required": true
+                  }
+              },
+              "body": "empty"
+          },
+          "response": {
+              "body": "autoTemplate(backendResponse)"
           }
-        },
-        "body" : "empty"
       },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "zuEndPoint.foo.withoutParameters" : {
+      "testEndPoint.foo.withoutParameters" : {
       "path" : "withoutParameters",
       "httpMethod" : "GET",
       "scopes" : [ ],
       "audiences" : [ ],
       "clientIds" : [ ],
-      "rosyMethod" : "com.google.appengine.tck.endpoints.support.FooEndPoint.withoutParameters",
+      "rosyMethod" : "com.google.appengine.tck.endpoints.support.TestEndPoint.withoutParameters",
       "request" : {
         "body" : "empty"
       },

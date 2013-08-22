@@ -28,7 +28,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
@@ -56,8 +56,8 @@ public class EndPointsTestBase extends TestBase {
         return war;
     }
 
-    protected void assertResponse(String body, String response) {
-        assertEquals(String.format("{\"response\":\"%s\"}", body), response);
+    protected void assertResponse(String expected, String actual) {
+        assertTrue("Response was: " + actual, actual.contains(expected));
     }
 
     protected String invokeEndpointWithGet(URL endPointUrl) throws Exception {

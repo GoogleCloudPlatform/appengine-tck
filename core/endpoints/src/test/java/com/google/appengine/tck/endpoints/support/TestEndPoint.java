@@ -26,19 +26,19 @@ import static com.google.api.server.spi.config.ApiMethod.HttpMethod;
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 @Api(
-    name = FooEndPoint.NAME,
-    version = FooEndPoint.VERSION)
-public class FooEndPoint {
+    name = TestEndPoint.NAME,
+    version = TestEndPoint.VERSION)
+public class TestEndPoint {
 
-    public static final String NAME = "zuEndPoint";
-    public static final String VERSION = "v1";
+    public static final String NAME = "testEndPoint";
+    public static final String VERSION = "v2";
 
     @ApiMethod(name = "foo.withoutParameters", httpMethod = HttpMethod.GET)
     public EndPointResponse withoutParameters() {
         return new EndPointResponse("method withoutParameters was invoked");
     }
 
-    @ApiMethod(name = "foo.withParameterInQueryString", httpMethod = HttpMethod.GET)
+    @ApiMethod(name = "foo.withParameterInQueryString", path = "withParameterInQueryString", httpMethod = HttpMethod.GET)
     public EndPointResponse withParameterInQueryString(@Named("param") String param) {
         return new EndPointResponse("The param was " + param);
     }

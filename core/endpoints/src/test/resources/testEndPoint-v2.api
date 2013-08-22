@@ -1,0 +1,169 @@
+{
+    "extends" : "thirdParty.api",
+    "abstract" : false,
+    "root" : "https://tckapp.appspot.com/_ah/api",
+    "name" : "testEndPoint",
+    "version" : "v2",
+    "defaultVersion" : false,
+    "adapter" : {
+        "bns" : "https://tckapp.appspot.com/_ah/spi",
+        "deadline" : 10.0,
+        "type" : "lily"
+    },
+    "auth" : {
+        "allowCookieAuth" : false
+    },
+    "frontendLimits" : {
+        "unregisteredUserQps" : -1,
+        "unregisteredQps" : -1,
+        "unregisteredDaily" : -1,
+        "rules" : [ ]
+    },
+    "cacheControl" : {
+        "type" : "no-cache",
+        "maxAge" : 0
+    },
+    "methods" : {
+        "testEndPoint.foo.put" : {
+            "path" : "put",
+            "httpMethod" : "PUT",
+            "scopes" : [ ],
+            "audiences" : [ ],
+            "clientIds" : [ ],
+            "rosyMethod" : "com.google.appengine.tck.endpoints.support.TestEndPoint.put",
+            "request" : {
+                "body" : "empty"
+            },
+            "response" : {
+                "body" : "autoTemplate(backendResponse)"
+            }
+        },
+        "testEndPoint.foo.withParameterInPath" : {
+            "path" : "withParameterInPath/{param}",
+            "httpMethod" : "GET",
+            "scopes" : [ ],
+            "audiences" : [ ],
+            "clientIds" : [ ],
+            "rosyMethod" : "com.google.appengine.tck.endpoints.support.TestEndPoint.withParameterInPath",
+            "request" : {
+                "parameters" : {
+                    "param" : {
+                        "type" : "string",
+                        "required" : true
+                    }
+                },
+                "body" : "empty"
+            },
+            "response" : {
+                "body" : "autoTemplate(backendResponse)"
+            }
+        },
+        "testEndPoint.foo.post" : {
+            "path" : "post",
+            "httpMethod" : "POST",
+            "scopes" : [ ],
+            "audiences" : [ ],
+            "clientIds" : [ ],
+            "rosyMethod" : "com.google.appengine.tck.endpoints.support.TestEndPoint.post",
+            "request" : {
+                "body" : "empty"
+            },
+            "response" : {
+                "body" : "autoTemplate(backendResponse)"
+            }
+        },
+        "testEndPoint.foo.delete" : {
+            "path" : "delete",
+            "httpMethod" : "DELETE",
+            "scopes" : [ ],
+            "audiences" : [ ],
+            "clientIds" : [ ],
+            "rosyMethod" : "com.google.appengine.tck.endpoints.support.TestEndPoint.delete",
+            "request" : {
+                "body" : "empty"
+            },
+            "response" : {
+                "body" : "autoTemplate(backendResponse)"
+            }
+        },
+        "testEndPoint.foo.withoutParameters" : {
+            "path" : "withoutParameters",
+            "httpMethod" : "GET",
+            "scopes" : [ ],
+            "audiences" : [ ],
+            "clientIds" : [ ],
+            "rosyMethod" : "com.google.appengine.tck.endpoints.support.TestEndPoint.withoutParameters",
+            "request" : {
+                "body" : "empty"
+            },
+            "response" : {
+                "body" : "autoTemplate(backendResponse)"
+            }
+        },
+        "testEndPoint.foo.withParameterInQueryString" : {
+            "path" : "withParameterInQueryString",
+            "httpMethod" : "GET",
+            "scopes" : [ ],
+            "audiences" : [ ],
+            "clientIds" : [ ],
+            "rosyMethod" : "com.google.appengine.tck.endpoints.support.TestEndPoint.withParameterInQueryString",
+            "request" : {
+                "parameters" : {
+                    "param" : {
+                        "type" : "string",
+                        "required" : true
+                    }
+                },
+                "body" : "empty"
+            },
+            "response" : {
+                "body" : "autoTemplate(backendResponse)"
+            }
+        }
+    },
+    "descriptor" : {
+        "schemas" : {
+            "EndPointResponse" : {
+                "id" : "EndPointResponse",
+                "type" : "object",
+                "properties" : {
+                    "response" : {
+                        "type" : "string"
+                    }
+                }
+            }
+        },
+        "methods" : {
+            "com.google.appengine.tck.endpoints.support.TestEndPoint.put" : {
+                "response" : {
+                    "$ref" : "EndPointResponse"
+                }
+            },
+            "com.google.appengine.tck.endpoints.support.TestEndPoint.withParameterInPath" : {
+                "response" : {
+                    "$ref" : "EndPointResponse"
+                }
+            },
+            "com.google.appengine.tck.endpoints.support.TestEndPoint.post" : {
+                "response" : {
+                    "$ref" : "EndPointResponse"
+                }
+            },
+            "com.google.appengine.tck.endpoints.support.TestEndPoint.delete" : {
+                "response" : {
+                    "$ref" : "EndPointResponse"
+                }
+            },
+            "com.google.appengine.tck.endpoints.support.TestEndPoint.withoutParameters" : {
+                "response" : {
+                    "$ref" : "EndPointResponse"
+                }
+            },
+            "com.google.appengine.tck.endpoints.support.TestEndPoint.withParameterInQueryString" : {
+                "response" : {
+                    "$ref" : "EndPointResponse"
+                }
+            }
+        }
+    }
+}

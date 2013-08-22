@@ -1,0 +1,62 @@
+{
+    "extends" : "thirdParty.api",
+    "abstract" : false,
+    "root" : "https://tckapp.appspot.com/_ah/api",
+    "name" : "myapi",
+    "version" : "v2",
+    "defaultVersion" : false,
+    "adapter" : {
+        "bns" : "https://tckapp.appspot.com/_ah/spi",
+        "deadline" : 10.0,
+        "type" : "lily"
+    },
+    "auth" : {
+        "allowCookieAuth" : false
+    },
+    "frontendLimits" : {
+        "unregisteredUserQps" : -1,
+        "unregisteredQps" : -1,
+        "unregisteredDaily" : -1,
+        "rules" : [ ]
+    },
+    "cacheControl" : {
+        "type" : "no-cache",
+        "maxAge" : 0
+    },
+    "methods" : {
+        "myapi.endPointWithoutName.withoutParameters" : {
+            "path" : "withoutParameters",
+            "httpMethod" : "GET",
+            "scopes" : [ ],
+            "audiences" : [ ],
+            "clientIds" : [ ],
+            "rosyMethod" : "com.google.appengine.tck.endpoints.support.EndPointWithoutName.withoutParameters",
+            "request" : {
+                "body" : "empty"
+            },
+            "response" : {
+                "body" : "autoTemplate(backendResponse)"
+            }
+        }
+    },
+    "descriptor" : {
+        "schemas" : {
+            "EndPointResponse" : {
+                "id" : "EndPointResponse",
+                "type" : "object",
+                "properties" : {
+                    "response" : {
+                        "type" : "string"
+                    }
+                }
+            }
+        },
+        "methods" : {
+            "com.google.appengine.tck.endpoints.support.EndPointWithoutName.withoutParameters" : {
+                "response" : {
+                    "$ref" : "EndPointResponse"
+                }
+            }
+        }
+    }
+}
