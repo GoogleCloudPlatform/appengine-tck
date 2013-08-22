@@ -31,7 +31,8 @@ public class AppspotUrlLifecycle extends AbstractUrlLifecycle {
     protected void doBefore(UrlLifecycleEvent event) {
         try {
             URL url = event.getOriginal();
-            event.setHttps(new URL("https", url.getHost(), 443, url.getFile()));
+            URL https = new URL("https", url.getHost(), url.getFile());
+            event.setHttps(https);
         } catch (MalformedURLException e) {
             throw new IllegalStateException(e);
         }
