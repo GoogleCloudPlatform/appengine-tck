@@ -56,4 +56,4 @@ EOF
   rm -rf ${WAR_DIR}
 }
 
-runSimpleAppcfgAction
+runSimpleAppcfgAction $@
