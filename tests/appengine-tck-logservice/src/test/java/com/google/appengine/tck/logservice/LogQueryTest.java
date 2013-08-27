@@ -95,47 +95,52 @@ public class LogQueryTest extends LoggingTestBase {
     @Test
     @InSequence(20)
     public void testMinLogLevel() throws Exception {
-        log.info("info_incompleteRequest");
+        sync(5000);  // Wait for previous requests.
+        String infoLogMsg = "info_incompleteRequest-" + System.currentTimeMillis();
+        log.info(infoLogMsg);
         flush(log);
+        sync(5000);  // Yes, even after a flush we need to wait for the logs to be available.
 
         LogQuery debugLogQuery = new LogQuery().includeAppLogs(true).includeIncomplete(true).minLogLevel(DEBUG);
         assertLogQueryReturns("info_createCompleteRequest1", debugLogQuery);
         assertLogQueryReturns("warning_createCompleteRequest1", debugLogQuery);
         assertLogQueryReturns("severe_createCompleteRequest2", debugLogQuery);
         assertLogQueryReturns("info_createCompleteRequest3", debugLogQuery);
-        assertLogQueryReturns("info_incompleteRequest", debugLogQuery);
+        assertLogQueryReturns(infoLogMsg, debugLogQuery);
 
         LogQuery warnLogQuery = new LogQuery().includeAppLogs(true).includeIncomplete(true).minLogLevel(WARN);
         assertLogQueryReturns("info_createCompleteRequest1", warnLogQuery);
         assertLogQueryReturns("warning_createCompleteRequest1", warnLogQuery);
         assertLogQueryReturns("severe_createCompleteRequest2", warnLogQuery);
         assertLogQueryDoesNotReturn("info_createCompleteRequest3", warnLogQuery);
-        assertLogQueryDoesNotReturn("info_incompleteRequest", warnLogQuery);
+        assertLogQueryDoesNotReturn(infoLogMsg, warnLogQuery);
 
         LogQuery errorLogQuery = new LogQuery().includeAppLogs(true).includeIncomplete(true).minLogLevel(ERROR);
         assertLogQueryReturns("severe_createCompleteRequest2", errorLogQuery);
         assertLogQueryDoesNotReturn("info_createCompleteRequest1", errorLogQuery);
         assertLogQueryDoesNotReturn("warning_createCompleteRequest1", errorLogQuery);
         assertLogQueryDoesNotReturn("info_createCompleteRequest3", errorLogQuery);
-        assertLogQueryDoesNotReturn("info_incompleteRequest", errorLogQuery);
+        assertLogQueryDoesNotReturn(infoLogMsg, errorLogQuery);
     }
 
-//    @Test
-//    @InSequence(20)
-//    public void testIncomplete() throws Exception {
-//        // GAE dev server doesn't handle this
-//        if (isRunningInsideGaeDevServer()) {
-//            return;
-//        }
-//
-//        log.info("log message in incomplete request");
-//        flush(log);
-//
-//        assertLogQueryReturns("log message in incomplete request", new LogQuery().includeAppLogs(true).includeIncomplete(true));
-//
-//        assertLogQueryReturns("info_createCompleteRequest1", new LogQuery().includeAppLogs(true).includeIncomplete(true));
-//        assertLogQueryDoesNotReturn("log message in incomplete request", new LogQuery().includeAppLogs(true).includeIncomplete(false));
-//    }
+    @Test
+    @InSequence(20)
+    public void testIncomplete() throws Exception {
+        // GAE dev server doesn't handle this
+        if (isRuntimeDev()) {
+            return;
+        }
+        String infoLogMsg = "info_incompleteRequest-" + System.currentTimeMillis();
+        log.info(infoLogMsg);
+        flush(log);
+        sync(5000);  // Yes, even after a flush we need to wait for the logs to be available.
+
+        assertLogQueryReturns(infoLogMsg, new LogQuery().includeAppLogs(true).includeIncomplete(true));
+
+        assertLogQueryReturns("info_createCompleteRequest1", new LogQuery().includeAppLogs(true).includeIncomplete(true));
+        assertLogQueryDoesNotReturn(infoLogMsg, new LogQuery().includeAppLogs(true)
+            .includeIncomplete(false).startTimeMillis(System.currentTimeMillis() - 60000));
+    }
 
     @Test
     @InSequence(20)
@@ -201,7 +206,6 @@ public class LogQueryTest extends LoggingTestBase {
         assertEquals(true, logQuery.getIncludeAppLogs());
         assertEquals(null, logQuery.getOffset());
         assertEquals(majorVersions, logQuery.getMajorVersionIds());
-        assertEquals(new ArrayList(), logQuery.getServerVersions());
         assertEquals(new ArrayList<String>(), logQuery.getRequestIds());
     }
 
