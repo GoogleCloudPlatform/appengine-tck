@@ -17,6 +17,19 @@
 
     <dependencies>
 
+        <!-- Temp workaround - remove with Drone upgrade -->
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-phantom-binary</artifactId>
+            <!-- Use the right classifier -->
+            <classifier>macosx</classifier>
+            <!-- classifier>linux-32</classifier>
+            <classifier>linux-64</classifier>
+            <classifier>windows</classifier -->
+            <version>1.9.1</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.jboss.arquillian.extension</groupId>
             <artifactId>arquillian-drone-webdriver-depchain</artifactId>

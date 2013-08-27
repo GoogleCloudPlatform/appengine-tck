@@ -44,4 +44,8 @@
         <property name="deploymentClass">com.google.appengine.tck.multisuite.MultiDeployment</property>
     </extension>
 
+    <extension qualifier="webdriver">
+        <property name="browserCapabilities">phantomjs</property>
+    </extension>
+
 </arquillian>

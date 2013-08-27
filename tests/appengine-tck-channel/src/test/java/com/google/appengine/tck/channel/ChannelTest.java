@@ -39,11 +39,14 @@ import org.openqa.selenium.WebElement;
  * 2) Tried using WebDriver implicit wait times with the following:
  * driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
  * but made the client unable to send or receive messages, thus we use sync()/sleep().
+ *
  * FIXME Graphene2 should handle timeouts better using requests Guards and Waits
  *
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
+ * @author <a href="mailto:kpiwko@redhat.com">Karel Piwko</a>
  */
+@SuppressWarnings("UnusedDeclaration")
 @RunWith(Arquillian.class)
 public class ChannelTest extends ChannelTestBase {
 

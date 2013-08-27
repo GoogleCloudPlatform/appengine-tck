@@ -237,6 +237,20 @@
             <name>JetBrains Maven Repository</name>
             <url>http://repository.jetbrains.com/all</url>
         </repository>
+        <!-- repository>
+            <id>jboss-staging-repository-group</id>
+            <name>JBoss Staging Repository Group</name>
+            <url>https://repository.jboss.org/nexus/content/groups/staging</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository -->
     </repositories>
 
     <pluginRepositories>
@@ -254,6 +268,17 @@
                 <updatePolicy>never</updatePolicy>
             </snapshots>
         </pluginRepository>
+        <!-- pluginRepository>
+            <id>jboss-staging-repository-group</id>
+            <name>JBoss Staging Repository Group</name>
+            <url>https://repository.jboss.org/nexus/content/groups/staging</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository -->
     </pluginRepositories>
 
     <dependencyManagement>
@@ -486,9 +511,8 @@
                 <scope>test</scope>
             </dependency>
 
-            <!-- ShrinkWrap -->
+            <!-- Testing -->
 
-            <!-- This must go *BEFORE* the Arquillian BOM. -->
             <dependency>
                 <groupId>org.jboss.arquillian.extension</groupId>
                 <artifactId>arquillian-drone-bom</artifactId>
@@ -496,8 +520,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <!-- Testing -->
 
             <dependency>
                 <groupId>javax.servlet</groupId>
