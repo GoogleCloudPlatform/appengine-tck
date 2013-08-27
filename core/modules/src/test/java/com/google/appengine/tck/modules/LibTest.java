@@ -26,6 +26,7 @@ import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -41,7 +42,6 @@ public class LibTest extends ModulesTestBase {
 
         // dummy module
         WebArchive module2 = getTckSubDeployment(2);
-        module2.addClass(SmokeTest.class);
 
         final EnterpriseArchive ear = getEarDeployment(module1, module2);
 
@@ -55,6 +55,7 @@ public class LibTest extends ModulesTestBase {
     }
 
     @Test // check if module and lib/ GAE classes play nicely
+    @Ignore // Ignore for now, as SDK doesn't know how to handle lib/
     public void testLibCompatibility() throws Exception {
         final Key key = LibHelper.put(new Entity("LibTest"));
         Assert.assertNotNull(key);

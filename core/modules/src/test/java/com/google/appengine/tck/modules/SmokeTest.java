@@ -59,7 +59,6 @@ public class SmokeTest extends ModulesTestBase {
 
     @Test
     @InSequence(1)
-    @OperateOnModule("m1")
     public void testPut() throws Exception {
         Key key = ds.put(new Entity(MODULES_KIND, 1));
         Assert.assertNotNull(key);
@@ -76,7 +75,6 @@ public class SmokeTest extends ModulesTestBase {
 
     @Test
     @InSequence(3)
-    @OperateOnModule("m1")
     public void testDelete() throws Exception {
         Key key = KeyFactory.createKey(MODULES_KIND, 1);
         ds.delete(key);
