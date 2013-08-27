@@ -15,35 +15,31 @@
 
 package com.google.appengine.tck.channel;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
  * Test that messages can be sent from the browser to the server,
  * and sent from the server to the browser.
- * <p/>
- * Requires <a href="http://phantomjs.org/download.html">phantomjs</a> Specify the absolute path
- * of the binary phantomjs with -Dtck.phantomjs.path
- * <p/>
+ *
  * For reference:
  * 1) Initially tried HtmlUnit, but it could not receive messages from the server.
  * 2) Tried using WebDriver implicit wait times with the following:
  * driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
  * but made the client unable to send or receive messages, thus we use sync()/sleep().
+ * FIXME Graphene2 should handle timeouts better using requests Guards and Waits
  *
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -51,26 +47,8 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 @RunWith(Arquillian.class)
 public class ChannelTest extends ChannelTestBase {
 
+    @Drone
     private WebDriver driver;
-
-    @Before
-    public void setUp() {
-        if (driver != null) {
-            return;
-        }
-
-        String phantomjsPath = System.getProperty("tck.phantomjs.path");
-        DesiredCapabilities caps = DesiredCapabilities.phantomjs();
-        caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, phantomjsPath);
-        driver = new PhantomJSDriver(caps);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        if (driver != null) {
-            driver.quit();
-        }
-    }
 
     @Test
     @RunAsClient
@@ -78,7 +56,7 @@ public class ChannelTest extends ChannelTestBase {
     public void testSimpleMessage(@ArquillianResource URL url) throws Exception {
         // 1. Create our test with a unique channel id.
         String channelId = "" + System.currentTimeMillis();
-        driver.get(url + "channelPage.jsp?test-channel-id=" + channelId);
+        driver.get(url + "/channelPage.jsp?test-channel-id=" + channelId);
 
         // 2. Verify that the server received our channel id and is using it for this tests.
         WebElement channel = driver.findElement(By.id("channel-id"));
