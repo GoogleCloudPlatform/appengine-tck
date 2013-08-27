@@ -33,6 +33,7 @@
         <!-- APIs -->
         <module>appengine-tck-blobstore</module>
         <module>appengine-tck-capability</module>
+        <module>appengine-tck-channel</module>
         <module>appengine-tck-datastore</module>
         <module>appengine-tck-example</module>
         <module>appengine-tck-images</module>
