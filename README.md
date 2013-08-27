@@ -238,6 +238,7 @@ API tests
 Current API tests:
 
 * Blobstore
+* Channel
 * Datastore
 * Images
 * Logging

@@ -15,7 +15,7 @@
 
 package com.google.appengine.tck.channel;
 
-import static org.junit.Assert.assertEquals;
+import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -32,34 +32,29 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import java.net.URL;
-
 /**
  * Test that messages can be sent from the browser to the server,
  * and sent from the server to the browser.
- *
+ * <p/>
  * Requires <a href="http://phantomjs.org/download.html">phantomjs</a> Specify the absolute path
  * of the binary phantomjs with -Dtck.phantomjs.path
- *
+ * <p/>
  * For reference:
- *   1) Initially tried HtmlUnit, but it could not receive messages from the server.
- *   2) Tried using WebDriver implicit wait times with the following:
- *          driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
- *      but made the client unable to send or receive messages, thus we use sync()/sleep().
+ * 1) Initially tried HtmlUnit, but it could not receive messages from the server.
+ * 2) Tried using WebDriver implicit wait times with the following:
+ * driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+ * but made the client unable to send or receive messages, thus we use sync()/sleep().
  *
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
 public class ChannelTest extends ChannelTestBase {
 
-    private WebDriver driver = null;
+    private WebDriver driver;
 
     @Before
     public void setUp() {
-        initDriver();
-    }
-
-    private void initDriver() {
         if (driver != null) {
             return;
         }

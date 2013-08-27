@@ -1,4 +1,5 @@
 com.google.appengine.api.channel.ChannelMessage
 com.google.appengine.api.channel.ChannelPresence
 com.google.appengine.api.channel.ChannelService
+com.google.appengine.api.channel.ChannelServiceFactory
 com.google.appengine.api.channel.ChannelFailureException

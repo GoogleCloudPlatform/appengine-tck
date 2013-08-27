@@ -17,13 +17,13 @@ package com.google.appengine.tck.channel;
 
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 
 /**
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public abstract class ChannelTestBase extends TestBase {
 
@@ -33,16 +33,10 @@ public abstract class ChannelTestBase extends TestBase {
         context.setAppEngineWebXmlFile("channel-appengine-web.xml");
 
         WebArchive war = getTckDeployment(context);
-        war.addClass(TestBase.class);
         war.addClass(ChannelTestBase.class);
-        war.addClasses(ChannelTest.class);
-        war.addPackage("org.openqa.selenium");
 
-        war.addAsWebInfResource("channelPage.jsp");
-        war.addAsWebResource("channelPage.jsp", "channelPage.jsp");
-
-        war.addAsWebInfResource("channelEcho.jsp");
-        war.addAsWebResource("channelEcho.jsp", "channelEcho.jsp");
+        war.addAsWebResource("channelPage.jsp");
+        war.addAsWebResource("channelEcho.jsp");
 
         return war;
     }
