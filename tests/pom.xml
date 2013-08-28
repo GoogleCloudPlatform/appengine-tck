@@ -40,6 +40,7 @@
         <module>appengine-tck-logservice</module>
         <module>appengine-tck-mail</module>
         <module>appengine-tck-memcache</module>
+        <module>appengine-tck-sockets</module>
         <module>appengine-tck-taskqueue</module>
         <module>appengine-tck-urlfetch</module>
         <module>appengine-tck-users</module>
