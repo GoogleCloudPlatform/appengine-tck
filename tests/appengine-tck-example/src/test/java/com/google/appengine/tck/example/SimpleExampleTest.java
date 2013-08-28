@@ -15,7 +15,9 @@
 
 package com.google.appengine.tck.example;
 
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,11 +25,25 @@ import org.junit.runner.RunWith;
 
 /**
  * Example test case.
+ *
+ * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
 public class SimpleExampleTest extends ExampleTestBase {
 
     private static long timeStamp = 0;
+
+    /**
+     * Every test needs to define public static method
+     * with @Deployment and returning Arquillian Archive type.
+     *
+     * @return deployment archive
+     */
+    @Deployment
+    public static WebArchive getDeployment() {
+        return getDefaultDeployment();
+    }
 
     @Before
     public void setUp() {

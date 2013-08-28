@@ -15,103 +15,92 @@
 
 package com.google.appengine.tck.sockets;
 
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
 public class SocketsTest extends SocketsTestBase {
-
     private static final String WHOIS = "whois.internic.net";
+
+    protected Socket createSocket() throws IOException {
+        return new Socket(WHOIS, 43);
+    }
 
     @Test
     public void testOutboundSocket() throws Exception {
-        Socket socket = new Socket(WHOIS, 43);
-
-        try {
+        try (Socket socket = createSocket()) {
             socket.setSoTimeout(10000);
+
             assertInternicResponse(socket);
-        } finally {
-            socket.close();
         }
     }
 
     @Test
     public void testSetOptionSOLinger() throws Exception {
-        Socket socket = new Socket(WHOIS, 43);
-
-        try {
+        try (Socket socket = createSocket()) {
             socket.setSoTimeout(10000);
             int lingerBefore = socket.getSoLinger();
             socket.setSoLinger(true, 1);
+
             assertInternicResponse(socket);
 
             int lingerAfter = socket.getSoLinger();
             assertEquals(lingerBefore, lingerAfter);
-        } finally {
-            socket.close();
         }
     }
 
     @Test
     public void testOptionKeepAlive() throws Exception {
-        Socket socket = new Socket(WHOIS, 43);
-
-        try {
+        try (Socket socket = createSocket()) {
             socket.setSoTimeout(10000);
             boolean keepAliveBefore = socket.getKeepAlive();
             socket.setKeepAlive(true);
+
             assertInternicResponse(socket);
 
             boolean keepAliveAfter = socket.getKeepAlive();
             assertEquals(keepAliveBefore, keepAliveAfter);
-        } finally {
-            socket.close();
         }
     }
 
     @Test
     public void testOptionSendBufferSize() throws Exception {
-        Socket socket = new Socket(WHOIS, 43);
-
-        try {
+        try (Socket socket = createSocket()) {
             socket.setSoTimeout(10000);
             int sendBufferSizeBefore = socket.getSendBufferSize();
             socket.setSendBufferSize(42);
+
             assertInternicResponse(socket);
 
             int sendBufferSizeAfter = socket.getSendBufferSize();
             assertEquals(sendBufferSizeBefore, sendBufferSizeAfter);
-        } finally {
-            socket.close();
         }
     }
 
     @Test
     public void testOptionReceiveBufferSize() throws Exception {
-        Socket socket = new Socket(WHOIS, 43);
-
-        try {
+        try (Socket socket = createSocket()) {
             socket.setSoTimeout(10000);
             int receiveBufferSizeBefore = socket.getReceiveBufferSize();
             socket.setReceiveBufferSize(42);
+
             assertInternicResponse(socket);
 
             int receiveBufferSizeAfter = socket.getReceiveBufferSize();
             assertEquals(receiveBufferSizeBefore, receiveBufferSizeAfter);
-        } finally {
-            socket.close();
         }
     }
 
@@ -123,15 +112,12 @@ public class SocketsTest extends SocketsTestBase {
         InputStreamReader in = new InputStreamReader(socket.getInputStream(), "8859_1");
         String whoisResponse = toStream(in);
 
-        if (!whoisResponse.contains("NS1.GOOGLE.COM")) {
-            fail("Expected to find NS1.GOOGLE.COM in WHOIS response:" +
-                whoisResponse);
-        }
+        assertTrue("Expected to find NS1.GOOGLE.COM in WHOIS response:" + whoisResponse, whoisResponse.contains("NS1.GOOGLE.COM"));
     }
 
     private String toStream(InputStreamReader in) throws IOException {
         StringBuilder sb = new StringBuilder();
-        for (int c = 0; (c = in.read()) != -1; ) {
+        for (int c; (c = in.read()) != -1; ) {
             sb.append(String.valueOf((char) c));
         }
         return sb.toString();

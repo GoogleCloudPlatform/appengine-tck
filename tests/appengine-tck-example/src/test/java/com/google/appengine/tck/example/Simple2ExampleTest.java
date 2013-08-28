@@ -24,10 +24,12 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,12 +37,34 @@ import org.junit.runner.RunWith;
 
 /**
  * Example test cases that demonstrate how to run a client side test.
+ *
+ * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
 public class Simple2ExampleTest extends ExampleTestBase {
 
     private DatastoreService service;
 
+    /**
+     * Every test needs to define public static method
+     * with @Deployment and returning Arquillian Archive type.
+     * <p/>
+     * You can add or override some of the default deployment resources.
+     * e.g. here we add jsp page which is only used in this test
+     *
+     * @return deployment archive
+     */
+    @Deployment
+    public static WebArchive getDeployment() {
+        WebArchive war = getDefaultDeployment();
+        war.addAsWebResource("examplePage.jsp");
+        return war;
+    }
+
+    /**
+     * Set any services in @Before, *not* as fields in the class!
+     */
     @Before
     public void setUp() {
         service = DatastoreServiceFactory.getDatastoreService();
@@ -73,7 +97,6 @@ public class Simple2ExampleTest extends ExampleTestBase {
 
         // Verify result in client.
         Assert.assertEquals("Timestamp should be echoed back.", clientTimeStamp, response);
-
     }
 
     /**

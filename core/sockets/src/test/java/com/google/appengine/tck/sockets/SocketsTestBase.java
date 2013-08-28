@@ -16,7 +16,6 @@
 package com.google.appengine.tck.sockets;
 
 import com.google.appengine.tck.base.TestBase;
-import com.google.appengine.tck.base.TestContext;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
@@ -24,16 +23,10 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
  */
 public abstract class SocketsTestBase extends TestBase {
-
     @Deployment
     public static WebArchive getDeployment() {
-        TestContext context = new TestContext();
-
-        WebArchive war = getTckDeployment(context);
-
-        war.addClass(TestBase.class);
-        war.addClasses(SocketsTestBase.class, SocketsTest.class);
-
+        WebArchive war = getTckDeployment();
+        war.addClass(SocketsTestBase.class);
         return war;
     }
 }
