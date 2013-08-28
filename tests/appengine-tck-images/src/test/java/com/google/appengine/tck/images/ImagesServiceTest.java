@@ -37,9 +37,8 @@ import static org.junit.Assert.assertTrue;
 public class ImagesServiceTest extends ImagesServiceTestBase {
     private static String[] FNAMES = {"jpgAttach.jpg", "pngAttach.png", "bmpAttach.bmp"};
 
-    // ROTATE, NORMAL for Rotate; HMINUS for VerticalFlip; WMINUS for HorizontalFlip.
     private enum ChkType {
-        NORMAL, ROTATE, WMINUS, HMINUS, CROP
+        FLIP, ROTATE, CROP
     }
 
     private static int[] DEGREES = {90, 180, 270, 360};
@@ -54,7 +53,7 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
             Transform transform = ImagesServiceFactory.makeImFeelingLucky();
             for (String sfile : FNAMES) {
                 for (OutputEncoding encoding : ENCODES) {
-                    applyAndVerify(sfile, transform, ChkType.NORMAL, encoding);
+                    applyAndVerify(sfile, transform, ChkType.FLIP, encoding);
                 }
             }
         }
@@ -62,11 +61,7 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
 
     @Test
     public void testHorizontalFlip() throws IOException {
-        ChkType chkType = ChkType.NORMAL;
-//        TODO -- fix this for GAE!?
-//        if (isRuntimeDev()) {
-//            chkType = ChkType.WMINUS;
-//        }
+        ChkType chkType = ChkType.FLIP;
         Transform transform = ImagesServiceFactory.makeHorizontalFlip();
         for (String sfile : FNAMES) {
             for (OutputEncoding encoding : ENCODES) {
@@ -77,11 +72,7 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
 
     @Test
     public void testVerticalFlip() throws IOException {
-        ChkType chkType = ChkType.NORMAL;
-//        TODO -- fix this for GAE!?
-//        if (isRuntimeProduction()) {
-//            chkType = ChkType.HMINUS;
-//        }
+        ChkType chkType = ChkType.FLIP;
         Transform transform = ImagesServiceFactory.makeVerticalFlip();
         for (String sfile : FNAMES) {
             for (OutputEncoding encoding : ENCODES) {
@@ -111,7 +102,7 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
             if ((dg == 90) || (dg == 270)) {
                 chkType = ChkType.ROTATE;
             } else {
-                chkType = ChkType.NORMAL;
+                chkType = ChkType.FLIP;
             }
             for (String sfile : FNAMES) {
                 for (OutputEncoding encoding : ENCODES) {
@@ -150,26 +141,22 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
     }
 
     private void applyAndVerify(String fname, Transform transform, ChkType chkType, OutputEncoding outType) throws IOException {
-        int[] exptSize = new int[2];
+        int expectedWidth = -1;
+        int expectedHeight = -1;
+
         Image image = readImage(fname);
-        if (chkType == ChkType.NORMAL) {
-            exptSize[0] = image.getWidth();
-            exptSize[1] = image.getHeight();
+        if (chkType == ChkType.FLIP) {
+            expectedWidth = image.getWidth();
+            expectedHeight = image.getHeight();
         } else if (chkType == ChkType.ROTATE) {
-            exptSize[0] = image.getHeight();
-            exptSize[1] = image.getWidth();
-        } else if (chkType == ChkType.WMINUS) {
-            exptSize[0] = image.getWidth() - 1;
-            exptSize[1] = image.getHeight();
-        } else if (chkType == ChkType.HMINUS) {
-            exptSize[0] = image.getWidth();
-            exptSize[1] = image.getHeight() - 1;
+            expectedWidth = image.getHeight();
+            expectedHeight = image.getWidth();
         } else if (chkType == ChkType.CROP) {
-            exptSize[0] = image.getWidth() / 2;
-            exptSize[1] = image.getHeight() / 2;
+            expectedWidth = image.getWidth() / 2;
+            expectedHeight = image.getHeight() / 2;
         }
         Image transImg = imagesService.applyTransform(transform, image, outType);
-        assertEquals(exptSize[0], transImg.getWidth());
-        assertEquals(exptSize[1], transImg.getHeight());
+        assertEquals(expectedWidth, transImg.getWidth());
+        assertEquals(expectedHeight, transImg.getHeight());
     }
 }
