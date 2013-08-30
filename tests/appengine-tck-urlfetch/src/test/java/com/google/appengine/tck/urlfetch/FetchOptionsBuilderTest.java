@@ -15,8 +15,6 @@
 
 package com.google.appengine.tck.urlfetch;
 
-import static junit.framework.Assert.assertEquals;
-
 import java.net.URL;
 
 import com.google.appengine.api.urlfetch.FetchOptions;
@@ -25,11 +23,12 @@ import com.google.appengine.api.urlfetch.HTTPRequest;
 import com.google.appengine.api.urlfetch.HTTPResponse;
 import com.google.appengine.api.urlfetch.URLFetchService;
 import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
-
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static junit.framework.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -58,7 +57,7 @@ public class FetchOptionsBuilderTest extends FetchOptionsTestBase {
     @Test
     public void testFollowRedirectsExternal() throws Exception {
         final URL redirectUrl = new URL("http://google.com/");
-        final String expectedDestinationURL = "http://www.google.com/";
+        final String expectedDestinationURLPrefix = "http://www.google.";
 
         FetchOptions options = FetchOptions.Builder.followRedirects();
 
@@ -66,7 +65,7 @@ public class FetchOptionsBuilderTest extends FetchOptionsTestBase {
         URLFetchService service = URLFetchServiceFactory.getURLFetchService();
         HTTPResponse response = service.fetch(request);
         String destinationUrl = response.getFinalUrl().toString();
-        assertEquals("Did not get redirected.", expectedDestinationURL, destinationUrl);
+        assertTrue("Did not get redirected.", destinationUrl.startsWith(expectedDestinationURLPrefix));
     }
 
     @Test
