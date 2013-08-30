@@ -50,7 +50,7 @@
         <version.junit>4.11</version.junit>
         <version.arquillian>1.1.1.Final</version.arquillian>
         <version.arquillian.gae>1.0.0.Beta7</version.arquillian.gae>
-        <version.arquillian.drone>1.2.0.Alpha3</version.arquillian.drone>
+        <version.arquillian.drone>1.2.0.Beta1</version.arquillian.drone>
 
         <!-- Utils -->
         <version.org.javassist>3.15.0-GA</version.org.javassist>
