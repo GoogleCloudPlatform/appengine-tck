@@ -1,0 +1,3 @@
+com.google.appengine.api.search.Index
+com.google.appengine.api.search.SearchService
+com.google.appengine.api.search.SearchServiceFactory
