@@ -20,27 +20,24 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import com.google.appengine.api.search.Document;
+import com.google.appengine.api.search.Document.Builder;
+import com.google.appengine.api.search.Field;
+import com.google.appengine.api.search.Field.FieldType;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
-import com.google.appengine.api.search.Document.Builder;
-import com.google.appengine.api.search.Field;
-import com.google.appengine.api.search.Field.FieldType;
 import org.jboss.arquillian.junit.Arquillian;
-import static org.junit.Assert.assertEquals;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author <a href="mailto:hchen@google.com">Hannah Chen</a>
  */
 @RunWith(Arquillian.class)
 public class DocumentTest extends SearchTestBase {
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testCreateDocument() throws Exception {
@@ -83,19 +80,17 @@ public class DocumentTest extends SearchTestBase {
         assertEquals(FieldType.NUMBER, field.getType());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testMultipleNumField() {
         Builder docBuilder = Document.newBuilder();
         docBuilder.addField(Field.newBuilder().setName("numfield").setNumber(123));
-        thrown.expect(IllegalArgumentException.class);
         docBuilder.addField(Field.newBuilder().setName("numfield").setNumber(789));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testMultipleDateField() {
         Builder docBuilder = Document.newBuilder();
         docBuilder.addField(Field.newBuilder().setName("datefield").setDate(new Date()));
-        thrown.expect(IllegalArgumentException.class);
         docBuilder.addField(Field.newBuilder().setName("datefield").setDate(new Date()));
     }
 }

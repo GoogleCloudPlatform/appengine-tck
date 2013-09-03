@@ -22,22 +22,20 @@ import java.util.Locale;
 import com.google.appengine.api.search.Field;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
-import com.google.appengine.api.search.SortExpression;
-import com.google.appengine.api.search.SortOptions;
 import com.google.appengine.api.search.Query;
 import com.google.appengine.api.search.QueryOptions;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
-
+import com.google.appengine.api.search.SortExpression;
+import com.google.appengine.api.search.SortOptions;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 
 /**
  * @author <a href="mailto:hchen@google.com">Hannah Chen</a>
@@ -45,9 +43,6 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class SearchServiceTest extends SearchTestBase {
     private Index index;
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void addData() throws ParseException, InterruptedException {
@@ -88,12 +83,12 @@ public class SearchServiceTest extends SearchTestBase {
         assertEquals(0, result.getNumberFound());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void  testMaxQueryLimit() {
         String q = "";
         for (int i = 0; i < 57; i++) {
             String one = "(searchproperty" + i + ":" + "1234567890" + i + ")";
-            if (q == "") {
+            if (q.length() == 0) {
                 q = one;
             } else {
                 q += " AND " + one;
@@ -102,7 +97,6 @@ public class SearchServiceTest extends SearchTestBase {
                 break;
             }
         }
-        thrown.expect(IllegalArgumentException.class);
         searchDocs(index, q, 0);
     }
 
@@ -121,7 +115,7 @@ public class SearchServiceTest extends SearchTestBase {
             }
 
             for (String name : doc.getFieldNames()) {
-                assertTrue(namelist.indexOf(name) > -1);
+                assertTrue(namelist.contains(name));
             }
 
             Iterator<Field> fields = doc.getFields().iterator();
@@ -133,11 +127,11 @@ public class SearchServiceTest extends SearchTestBase {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void  testGetOnlyField() {
         Results<ScoredDocument> result = searchDocs(index, "text with num 0", 0);
         for (ScoredDocument doc : result) {
-            thrown.expect(IllegalArgumentException.class);
+            @SuppressWarnings("UnusedDeclaration")
             Field field = doc.getOnlyField("textfield");
         }
     }

@@ -21,33 +21,28 @@ import java.util.List;
 
 import com.google.appengine.api.NamespaceManager;
 import com.google.appengine.api.search.Document;
+import com.google.appengine.api.search.Field;
 import com.google.appengine.api.search.GetIndexesRequest;
 import com.google.appengine.api.search.GetRequest;
 import com.google.appengine.api.search.GetResponse;
-import com.google.appengine.api.search.Field;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.Schema;
 import com.google.appengine.api.search.SearchService;
 import com.google.appengine.api.search.SearchServiceFactory;
-
 import org.jboss.arquillian.junit.Arquillian;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:hchen@google.com">Hannah Chen</a>
  */
 @RunWith(Arquillian.class)
 public class IndexTest extends SearchTestBase {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testGetIndexes() throws InterruptedException, ParseException {
@@ -162,7 +157,7 @@ public class IndexTest extends SearchTestBase {
     public void testPutDeleteDocs() throws InterruptedException {
         String indexName = "put-index";
         String docId = "testPutDocs";
-        List<String> docIdList = new ArrayList<String>();
+        List<String> docIdList = new ArrayList<>();
         Index index = searchService.getIndex(IndexSpec.newBuilder()
             .setName(indexName)
             .build());

@@ -35,7 +35,6 @@ import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchService;
 import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.tck.base.TestBase;
-import com.google.appengine.tck.base.TestContext;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
@@ -54,21 +53,13 @@ public abstract class SearchTestBase extends TestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        TestContext context = new TestContext();
-
-        WebArchive war = getTckDeployment(context);
-
+        WebArchive war = getTckDeployment();
         war.addClass(SearchTestBase.class);
-        war.addClass(DocumentTest.class);
-        war.addClass(FieldTest.class);
-        war.addClass(IndexTest.class);
-        war.addClass(SearchServiceTest.class);
-
         return war;
     }
 
     protected void delDocs(Index index) throws InterruptedException {
-        List<String> dList = new ArrayList<String>();
+        List<String> dList = new ArrayList<>();
         Results<ScoredDocument> found = searchDocs(index, "", 0);
         for (ScoredDocument document : found) {
             dList.add(document.getId());
@@ -79,15 +70,14 @@ public abstract class SearchTestBase extends TestBase {
 
     protected void addDocs(Index index, int docCount) throws ParseException, InterruptedException {
         if (searchDocs(index, "", 0).getNumberFound() == 0) {
-            List<Document> documents = new ArrayList<Document>();
+            List<Document> documents = new ArrayList<>();
             Calendar cal = Calendar.getInstance();
             DateFormat dfDate = new SimpleDateFormat("yyyy,M,d");
             for (int i = 0; i < docCount; i++) {
                 Builder docBuilder = Document.newBuilder();
                 // two text field with different locale
                 docBuilder.addField(Field.newBuilder().setName("textfield").setText("text with num " + i));
-                Field field = Field.newBuilder().setName("textfield").setText("C'est la vie " + i)
-                                   .setLocale(Locale.FRENCH).build();
+                Field field = Field.newBuilder().setName("textfield").setText("C'est la vie " + i).setLocale(Locale.FRENCH).build();
                 docBuilder.addField(field);
                 docBuilder.addField(Field.newBuilder().setName("numfield").setNumber(i));
                 String dateVal = "" + cal.get(Calendar.YEAR) + ",";
@@ -97,7 +87,7 @@ public abstract class SearchTestBase extends TestBase {
                 docBuilder.addField(Field.newBuilder().setName("datefield").setDate(dfDate.parse(dateVal)));
                 docBuilder.addField(Field.newBuilder().setName("htmlfield").setHTML("<B>html</B> " + i));
                 docBuilder.addField(Field.newBuilder().setName("atomfield").setAtom("atom" + i + ".com"));
-                GeoPoint geoPoint = new GeoPoint(new Double(i), new Double(100 + i));
+                GeoPoint geoPoint = new GeoPoint((double) i, (double) (100 + i));
                 docBuilder.addField(Field.newBuilder().setName("geofield").setGeoPoint(geoPoint));
                 // two field in same name and with different field type
                 docBuilder.addField(Field.newBuilder().setName("mixfield").setText("text and number mix field"));

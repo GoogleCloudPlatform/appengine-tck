@@ -28,25 +28,23 @@ import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.users.User;
 import org.jboss.arquillian.junit.Arquillian;
-import static org.junit.Assert.assertEquals;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author <a href="mailto:hchen@google.com">Hannah Chen</a>
  */
 @RunWith(Arquillian.class)
 public class FieldTest extends SearchTestBase {
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testDocFields() throws Exception {
         String indexName = "test-doc-fields";
         Index index = searchService.getIndex(IndexSpec.newBuilder().setName(indexName));
         delDocs(index);
+
         Builder docBuilder = Document.newBuilder();
         Field field = Field.newBuilder().setName("textfield").setText("text field").build();
         docBuilder.addField(field);
@@ -60,7 +58,7 @@ public class FieldTest extends SearchTestBase {
         User currentUser = new User("prometheus-qa@appenginetest.com", "appenginetest.com");
         field = Field.newBuilder().setName("atomfield").setAtom(currentUser.getAuthDomain()).build();
         docBuilder.addField(field);
-        GeoPoint geoPoint = new GeoPoint(new Double(-10), new Double(10.000001));
+        GeoPoint geoPoint = new GeoPoint((double) -10, 10.000001);
         field = Field.newBuilder().setName("geofield").setGeoPoint(geoPoint).build();
         docBuilder.addField(field);
         index.put(docBuilder);
@@ -108,15 +106,13 @@ public class FieldTest extends SearchTestBase {
         assertEquals(null, field.getAtom());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testInvalidDateNull() {
-        thrown.expect(IllegalArgumentException.class);
         Field.newBuilder().setName("datefield").setDate(null);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testInvalidGeoNull() {
-        thrown.expect(IllegalArgumentException.class);
         Field.newBuilder().setName("geofield").setGeoPoint(null);
     }
 }
