@@ -110,7 +110,7 @@ public class BlobstoreTest extends BlobstoreTestBase {
     private void assertServletReturnsResponseCode(int responseCode, URL pageUrl) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) pageUrl.openConnection();
         try {
-            assertEquals(responseCode, connection.getResponseCode());
+            assertEquals(pageUrl.toString(), responseCode, connection.getResponseCode());
         } finally {
             connection.disconnect();
         }
