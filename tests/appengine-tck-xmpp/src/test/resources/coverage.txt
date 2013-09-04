@@ -1,0 +1,7 @@
+#com.google.appengine.api.xmpp.JID;
+#com.google.appengine.api.xmpp.Message;
+#com.google.appengine.api.xmpp.MessageBuilder;
+#com.google.appengine.api.xmpp.MessageType;
+#com.google.appengine.api.xmpp.SendResponse;
+#com.google.appengine.api.xmpp.XMPPService;
+#com.google.appengine.api.xmpp.XMPPServiceFactory;
