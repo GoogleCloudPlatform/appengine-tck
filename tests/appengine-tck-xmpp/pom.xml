@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <!-- Parent -->
+    <parent>
+        <groupId>com.google.appengine.tck</groupId>
+        <artifactId>appengine-tck-tests</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>appengine-tck-xmpp</artifactId>
+    <packaging>jar</packaging>
+    <name>GAE TCK XMPP Test</name>
+    <url>https://developers.google.com/appengine/</url>
+    <description>GAE TCK XMPP Tests</description>
+
+    <!-- These dependencies are required for all TCK tests. -->
+    <dependencies>
+
+        <!-- Add any test specific dependencies here. -->
+
+        <dependency>
+            <!--
+                 This one is only needed if you use the servlet api directly.
+                 It also needs to be added to the top level ../../pom.xml as
+                 a dependency with a version specified.
+            -->
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>
