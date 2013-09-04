@@ -244,6 +244,7 @@ Current API tests:
 * Logging
 * Mail
 * Memcache
+* Search
 * TaskQueue
 * UrlFetch
 * Users

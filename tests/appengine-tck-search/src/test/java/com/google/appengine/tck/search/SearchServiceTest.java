@@ -168,7 +168,7 @@ public class SearchServiceTest extends SearchTestBase {
     }
 
     @Test
-    public void tetSortOptions() {
+    public void testSortOptions() {
         for (SortExpression.SortDirection direction : SortExpression.SortDirection.values()) {
             SortExpression sortExpression = SortExpression.newBuilder()
                 .setExpression("numfield")
