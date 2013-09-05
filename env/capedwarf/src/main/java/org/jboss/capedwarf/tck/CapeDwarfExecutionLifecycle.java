@@ -15,6 +15,9 @@
 
 package org.jboss.capedwarf.tck;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.google.appengine.tck.event.AbstractExecutionLifecycle;
 import com.google.appengine.tck.event.ExecutionLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycle;
@@ -25,11 +28,23 @@ import org.kohsuke.MetaInfServices;
  */
 @MetaInfServices(TestLifecycle.class)
 public class CapeDwarfExecutionLifecycle extends AbstractExecutionLifecycle {
+    private static final Set<String> EXECUTABLES;
+
+    static {
+        EXECUTABLES = new HashSet<>();
+        EXECUTABLES.add(".images.");
+        EXECUTABLES.add(".sql.");
+        EXECUTABLES.add(".taskqueue.");
+    }
+
     protected void doBefore(ExecutionLifecycleEvent event) {
         Class<?> caller = event.getCallerClass();
-        String name = caller.getName();
-        if (name.contains(".images.") || name.contains(".sql.")) {
-            event.setExecute(true);
+        final String name = caller.getName();
+        for (String exe : EXECUTABLES) {
+            if (name.contains(exe)) {
+                event.setExecute(true);
+                break;
+            }
         }
     }
 

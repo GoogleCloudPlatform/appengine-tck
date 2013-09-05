@@ -34,7 +34,6 @@ import org.junit.runner.RunWith;
  * @author terryok@google.com (Terry Okamoto)
  *
  * Taskqueue statistics are random for the dev_appserver/SDK so we don't bother asserting for that case.
- *
  */
 @RunWith(Arquillian.class)
 public class TxTaskQueueTest extends QueueTestBase {
@@ -42,19 +41,24 @@ public class TxTaskQueueTest extends QueueTestBase {
         return QueueFactory.getDefaultQueue();
     }
 
+    protected boolean doIgnore(String context) {
+        return isRuntimeDev() && execute(context) == false;
+    }
+
     @Test
     public void testNoTaskSingle() {
         Transaction tx = DatastoreServiceFactory.getDatastoreService().beginTransaction();
-        int beforeNumTasks = getDefaultQueue().fetchStatistics().getNumTasks();
+        final int beforeNumTasks = getDefaultQueue().fetchStatistics().getNumTasks();
         try {
             getDefaultQueue().add(tx, TaskOptions.Builder.withDefaults());
         } finally {
             tx.rollback();
         }
 
-        if (isRuntimeDev()) {
+        if (doIgnore("testNoTaskSingle")) {
             return;
         }
+
         sync(10000);  // Wait for statistics servers to refresh.
         Assert.assertEquals(beforeNumTasks, getDefaultQueue().fetchStatistics().getNumTasks());
     }
@@ -62,16 +66,17 @@ public class TxTaskQueueTest extends QueueTestBase {
     @Test
     public void testNoTaskIterable() {
         Transaction tx = DatastoreServiceFactory.getDatastoreService().beginTransaction();
-        int beforeNumTasks = getDefaultQueue().fetchStatistics().getNumTasks();
+        final int beforeNumTasks = getDefaultQueue().fetchStatistics().getNumTasks();
         try {
             getDefaultQueue().add(tx, Collections.singleton(TaskOptions.Builder.withDefaults()));
         } finally {
             tx.rollback();
         }
 
-        if (isRuntimeDev()) {
+        if (doIgnore("testNoTaskIterable")) {
             return;
         }
+
         sync(10000);  // Wait for statistics servers to refresh.
         Assert.assertEquals(beforeNumTasks, getDefaultQueue().fetchStatistics().getNumTasks());
     }
@@ -79,16 +84,17 @@ public class TxTaskQueueTest extends QueueTestBase {
     @Test
     public void testNoTaskSingleAsync() {
         Transaction tx = DatastoreServiceFactory.getDatastoreService().beginTransaction();
-        int beforeNumTasks = getDefaultQueue().fetchStatistics().getNumTasks();
+        final int beforeNumTasks = getDefaultQueue().fetchStatistics().getNumTasks();
         try {
             waitOnFuture(getDefaultQueue().addAsync(tx, TaskOptions.Builder.withDefaults()));
         } finally {
             tx.rollback();
         }
 
-        if (isRuntimeDev()) {
+        if (doIgnore("testNoTaskSingleAsync")) {
             return;
         }
+
         sync(10000);
         Assert.assertEquals(beforeNumTasks, waitOnFuture(getDefaultQueue().fetchStatisticsAsync(2013.0)).getNumTasks());
     }
@@ -96,16 +102,17 @@ public class TxTaskQueueTest extends QueueTestBase {
     @Test
     public void testNoTaskIterableAsync() {
         Transaction tx = DatastoreServiceFactory.getDatastoreService().beginTransaction();
-        int beforeNumTasks = getDefaultQueue().fetchStatistics().getNumTasks();
+        final int beforeNumTasks = getDefaultQueue().fetchStatistics().getNumTasks();
         try {
             waitOnFuture(getDefaultQueue().addAsync(tx, Collections.singleton(TaskOptions.Builder.withDefaults())));
         } finally {
             tx.rollback();
         }
 
-        if (isRuntimeDev()) {
+        if (doIgnore("testNoTaskIterableAsync")) {
             return;
         }
+
         sync(10000);
         Assert.assertEquals(beforeNumTasks, waitOnFuture(getDefaultQueue().fetchStatisticsAsync(2013.0)).getNumTasks());
     }
