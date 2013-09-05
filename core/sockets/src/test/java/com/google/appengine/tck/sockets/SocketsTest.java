@@ -86,7 +86,8 @@ public class SocketsTest extends SocketsTestBase {
             assertInternicResponse(socket);
 
             int sendBufferSizeAfter = socket.getSendBufferSize();
-            assertEquals(sendBufferSizeBefore, sendBufferSizeAfter);
+            // either it's the same - as it's been completely ignored, or at least the "set" was ignored
+            assertTrue(sendBufferSizeBefore == sendBufferSizeAfter || sendBufferSizeAfter != 42);
         }
     }
 
@@ -100,7 +101,8 @@ public class SocketsTest extends SocketsTestBase {
             assertInternicResponse(socket);
 
             int receiveBufferSizeAfter = socket.getReceiveBufferSize();
-            assertEquals(receiveBufferSizeBefore, receiveBufferSizeAfter);
+            // either it's the same - as it's been completely ignored, or at least the "set" was ignored
+            assertTrue(receiveBufferSizeBefore == receiveBufferSizeAfter || receiveBufferSizeAfter != 42);
         }
     }
 
