@@ -4,7 +4,7 @@
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
         <init-param>
             <param-name>services</param-name>
-            <param-value>com.google.appengine.tck.endpoints.support.TestEndPoint,com.google.appengine.tck.endpoints.support.EndPointWithoutName,com.google.appengine.tck.endpoints.support.EndPointWithoutVersion</param-value>
+            <param-value>com.google.appengine.tck.endpoints.support.TestEndPoint,com.google.appengine.tck.endpoints.support.EndPointWithoutName,com.google.appengine.tck.endpoints.support.EndPointWithoutVersion,com.google.appengine.tck.endpoints.support.SerializationEndPoint</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

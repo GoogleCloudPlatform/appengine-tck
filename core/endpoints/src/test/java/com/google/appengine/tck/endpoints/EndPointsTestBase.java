@@ -57,11 +57,15 @@ public class EndPointsTestBase extends TestBase {
     }
 
     protected void assertResponse(String expected, String actual) {
-        assertTrue("Response was: " + actual, actual.contains(expected));
+        assertTrue("Response was: " + actual + ", where we expected: " + expected, actual.contains(expected));
     }
 
     protected String invokeEndpointWithGet(URL endPointUrl) throws Exception {
         return client.doGet(endPointUrl);
+    }
+
+    protected String invokeEndpointWithPost(URL endPointUrl) throws Exception {
+        return client.doPost(endPointUrl);
     }
 
     protected String createPath(String name, String version, String methodPath) {
