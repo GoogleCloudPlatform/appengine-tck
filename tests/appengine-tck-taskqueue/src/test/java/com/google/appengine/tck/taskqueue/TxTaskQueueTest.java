@@ -49,14 +49,12 @@ public class TxTaskQueueTest extends QueueTestBase {
 
     @Before
     public void setUp() {
-        QueueFactory.getDefaultQueue().purge();
-        sync(3000);
+        purgeAndPause(QueueFactory.getDefaultQueue());
     }
 
     @After
     public void tearDown() {
-        QueueFactory.getDefaultQueue().purge();
-        sync(3000);
+        purgeAndPause(QueueFactory.getDefaultQueue());
     }
 
     @Test
