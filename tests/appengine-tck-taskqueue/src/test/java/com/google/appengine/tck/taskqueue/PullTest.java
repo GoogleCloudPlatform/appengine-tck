@@ -22,6 +22,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,13 +41,19 @@ public class PullTest extends QueueTestBase {
 
     @Before
     public void setUp() {
-        Queue queue = QueueFactory.getQueue("pull-queue");
+        purgeAndPause(QueueFactory.getQueue("pull-queue"));
+    }
+
+    @After
+    public void tearDown() {
+        purgeAndPause(QueueFactory.getQueue("pull-queue"));
     }
 
     @Test
     public void testPullParams() throws Exception {
         final Queue queue = QueueFactory.getQueue("pull-queue");
         TaskHandle th = queue.add(withMethod(PULL).param("foo", "bar").etaMillis(15000));
+        sync();
         try {
             List<TaskHandle> handles = queue.leaseTasks(30, TimeUnit.MINUTES, 100);
             assertFalse(handles.isEmpty());
@@ -61,6 +68,7 @@ public class PullTest extends QueueTestBase {
     public void testPullPayload() throws Exception {
         final Queue queue = QueueFactory.getQueue("pull-queue");
         TaskHandle th = queue.add(withMethod(PULL).payload("foobar".getBytes()).etaMillis(15000));
+        sync();
         try {
             List<TaskHandle> handles = queue.leaseTasks(30, TimeUnit.MINUTES, 100);
             assertFalse(handles.isEmpty());
@@ -76,6 +84,7 @@ public class PullTest extends QueueTestBase {
         Queue queue = QueueFactory.getQueue("pull-queue");
         TaskHandle th1 = queue.add(withMethod(PULL));
         TaskHandle th2 = queue.add(withMethod(PULL));
+        sync();
         try {
             int countLimit = 1;
             List<TaskHandle> handles = queue.leaseTasks(10, TimeUnit.SECONDS, countLimit);

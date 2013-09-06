@@ -62,11 +62,14 @@ public class AsyncTasksTest extends QueueTestBase {
         DefaultQueueServlet.reset();
         TestQueueServlet.reset();
         RetryTestServlet.reset();
+
+        purgeAndPause(QueueFactory.getDefaultQueue(), QueueFactory.getQueue("tasks-queue"));
     }
 
     @After
     public void tearDown() throws Exception {
         PrintServlet.reset();
+        purgeAndPause(QueueFactory.getDefaultQueue(), QueueFactory.getQueue("tasks-queue"));
     }
 
     @Test

@@ -26,6 +26,7 @@ import com.google.appengine.api.taskqueue.QueueConstants;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.RetryOptions;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +49,12 @@ public class PullQueueBadArgumentsTest extends QueueTestBase {
     @Before
     public void setUp() {
         queue = QueueFactory.getQueue(E2E_TESTING_PULL);
+        purgeAndPause(queue);
+    }
+
+    @After
+    public void tearDown() {
+        purgeAndPause(queue);
     }
 
     @Test(expected = IllegalArgumentException.class)

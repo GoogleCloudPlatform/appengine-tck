@@ -69,11 +69,17 @@ public class TasksTest extends QueueTestBase {
         DefaultQueueServlet.reset();
         TestQueueServlet.reset();
         RetryTestServlet.reset();
+
+        purgeAndPause(QueueFactory.getQueue("pull-queue"), QueueFactory.getQueue("tasks-queue"),
+                QueueFactory.getQueue("test"), QueueFactory.getDefaultQueue());
     }
 
     @After
     public void tearDown() throws Exception {
         PrintServlet.reset();
+
+        purgeAndPause(QueueFactory.getQueue("pull-queue"), QueueFactory.getQueue("tasks-queue"),
+                QueueFactory.getQueue("test"), QueueFactory.getDefaultQueue());
     }
 
     @Test
