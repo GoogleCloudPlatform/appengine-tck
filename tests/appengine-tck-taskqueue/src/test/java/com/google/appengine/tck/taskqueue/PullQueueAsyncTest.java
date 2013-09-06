@@ -65,8 +65,7 @@ public class PullQueueAsyncTest extends QueueTestBase {
     @Before
     public void setUp() {
         queue = QueueFactory.getQueue(E2E_TESTING_PULL);
-        queue.purge();
-        sleep(2000);  // Give tasks a chance to become available.
+        purgeAndPause(queue);
 
         timeStamp = Long.toString(System.currentTimeMillis());
         payload = "mypayload";
@@ -79,6 +78,7 @@ public class PullQueueAsyncTest extends QueueTestBase {
             tasks = leaseTasksByTag60Secs(taskGroupTag, MAX_LEASE_COUNT, false);
             deleteMultipleTasks(tasks);
         }
+        purgeAndPause(queue);
     }
 
     @Test

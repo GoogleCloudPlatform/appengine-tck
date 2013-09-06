@@ -22,6 +22,7 @@ import java.util.Set;
 
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.TaskHandle;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
@@ -142,5 +143,21 @@ public abstract class QueueTestBase extends TestBase {
         }
 
         return currentValue;
+    }
+
+    /**
+     * Purge queues, then wait so purge call doesn't overlap with tests.
+     * @param queues to be purged.
+     */
+    protected void purgeAndPause(Queue... queues) {
+        for (Queue queue : queues) {
+            queue.purge();
+        }
+
+        if (isRuntimeDev()) {
+            sync(1000);
+        } else {
+            sync(3000);
+        }
     }
 }

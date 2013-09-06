@@ -24,6 +24,8 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -38,6 +40,17 @@ import static org.junit.Assert.assertFalse;
  */
 @RunWith(Arquillian.class)
 public class PullAsyncTest extends QueueTestBase {
+
+    @Before
+    public void setUp() {
+        purgeAndPause(QueueFactory.getQueue("pull-queue"));
+    }
+
+    @After
+    public void tearDown() {
+        purgeAndPause(QueueFactory.getQueue("pull-queue"));
+    }
+
     @Test
     public void testPullParams() throws Exception {
         final Queue queue = QueueFactory.getQueue("pull-queue");

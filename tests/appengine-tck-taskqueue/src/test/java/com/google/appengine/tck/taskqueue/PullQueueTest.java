@@ -69,6 +69,7 @@ public class PullQueueTest extends QueueTestBase {
     @Before
     public void setUp() {
         queue = QueueFactory.getQueue(E2E_TESTING_PULL);
+        purgeAndPause(queue);
 
         timeStamp = Long.toString(System.currentTimeMillis());
         payload = "mypayload";
@@ -81,6 +82,7 @@ public class PullQueueTest extends QueueTestBase {
             tasks = leaseTasksByTag60Secs(taskGroupTag, MAX_LEASE_COUNT, false);
             deleteMultipleTasks(tasks);
         }
+        purgeAndPause(queue);
     }
 
     @Test
@@ -250,7 +252,7 @@ public class PullQueueTest extends QueueTestBase {
         TaskHandle th2 = queue.add(withMethod(PULL).tag(taskBaseName + "other").payload("foofoo"));
         TaskHandle th3 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foofoo"));
 
-        sync(); // Give some time for the tasks to be available for lease.
+        sync(5000); // Give some time for the tasks to be available for lease.
 
         try {
             // If options specifies no tag, but does specify groupByTag,
@@ -303,6 +305,7 @@ public class PullQueueTest extends QueueTestBase {
         String taskBaseName = groupTag + "_" + getTimeStampRandom();
         TaskHandle th1 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foobar"));
         TaskHandle th2 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foofoo"));
+        sync();
         try {
             int numTasksToLease = 100;
             List<TaskHandle> handles = queue.leaseTasksByTag(30, TimeUnit.MINUTES, numTasksToLease, taskBaseName);
@@ -331,6 +334,7 @@ public class PullQueueTest extends QueueTestBase {
         TaskHandle th1 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foobar"));
         TaskHandle th2 = queue.add(withMethod(PULL).tag(taskBaseName + "other").payload("foofoo"));
         TaskHandle th3 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foofoo"));
+        sync();
         try {
             List<TaskHandle> handles = queue.leaseTasksByTag(30, TimeUnit.MINUTES, 100, taskBaseName);
             assertEquals(2, handles.size());
@@ -352,6 +356,7 @@ public class PullQueueTest extends QueueTestBase {
 
         TaskHandle th1 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foobar"));
         TaskHandle th2 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foofoo"));
+        sync();
         try {
             LeaseOptions lo = LeaseOptions.Builder
                 .withLeasePeriod(30, TimeUnit.MINUTES).countLimit(100).tag(taskBaseName);
@@ -380,6 +385,7 @@ public class PullQueueTest extends QueueTestBase {
 
         TaskHandle th1 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foobar"));
         TaskHandle th2 = queue.add(withMethod(PULL).tag(taskBaseName).payload("foofoo"));
+        sync();
         try {
             LeaseOptions lo = LeaseOptions.Builder
                 .withLeasePeriod(30, TimeUnit.MINUTES).countLimit(100).tag(taskBaseName.getBytes());
