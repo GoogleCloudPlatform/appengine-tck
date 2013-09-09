@@ -67,13 +67,13 @@ public class TaskQueueTest extends QueueTestBase {
         waitInterval = 4;
         retryMax = 52 / waitInterval;  // 60 sec limit, leave buffer time.
 
-        purgeAndPause(QueueFactory.getQueue(E2E_TESTING),  QueueFactory.getQueue(E2E_TESTING_EXEC));
+        purgeAndPauseByName(E2E_TESTING,  E2E_TESTING_EXEC);
     }
 
     @After
     public void tearDown() {
         dsUtil.purgeTestRunRecords();
-        purgeAndPause(QueueFactory.getQueue(E2E_TESTING),  QueueFactory.getQueue(E2E_TESTING_EXEC));
+        purgeAndPauseByName(E2E_TESTING,  E2E_TESTING_EXEC);
     }
 
     @Test

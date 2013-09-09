@@ -53,13 +53,13 @@ public class DeferredTest extends QueueTestBase {
         waitInterval = 4;
         retryMax = 52 / waitInterval;  // Must finish in 60 sec, leave buffer time.
 
-        purgeAndPause(QueueFactory.getQueue(E2E_TESTING_DEFERRED));
+        purgeAndPauseByName(E2E_TESTING_DEFERRED);
     }
 
     @After
     public void tearDown() {
         dsUtil.purgeTestRunRecords();
-        purgeAndPause(QueueFactory.getQueue(E2E_TESTING_DEFERRED));
+        purgeAndPauseByName(E2E_TESTING_DEFERRED);
     }
 
     @Test

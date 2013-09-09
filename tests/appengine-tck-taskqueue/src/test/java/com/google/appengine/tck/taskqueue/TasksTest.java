@@ -237,8 +237,8 @@ public class TasksTest extends QueueTestBase {
 
         assertNotNull(handler.paramValues);
         assertEquals(
-            new HashSet<String>(Arrays.asList("param_value1", "param_value2")),
-            new HashSet<String>(Arrays.asList(handler.paramValues)));
+            new HashSet<>(Arrays.asList("param_value1", "param_value2")),
+            new HashSet<>(Arrays.asList(handler.paramValues)));
     }
 
     @Test
@@ -253,8 +253,8 @@ public class TasksTest extends QueueTestBase {
             .retryOptions(RetryOptions.Builder.withTaskRetryLimit(5)));
 
         String countKey = RetryTestServlet.getInvocationCountKey(key);
-        Long expectedAttempts = (long) (numTimesToFail + 1);
-        Long actualAttempts = waitForTestData(countKey, expectedAttempts);
+        long expectedAttempts = (numTimesToFail + 1);
+        long actualAttempts = waitForTestData(countKey, expectedAttempts);
         assertEquals(expectedAttempts, actualAttempts);
 
         String requestKey1 = RetryTestServlet.getRequestDataKey(key, 1);
@@ -280,7 +280,7 @@ public class TasksTest extends QueueTestBase {
             .param("times-to-fail", String.valueOf(numTimesToFail))
             .retryOptions(RetryOptions.Builder.withTaskRetryLimit(retryLimit)));
 
-        Long expectedAttempts = (long) (retryLimit + 1);
+        long expectedAttempts = (long) (retryLimit + 1);
         String countKey = RetryTestServlet.getInvocationCountKey(key);
         Long actualAttempts = waitForTestData(countKey, expectedAttempts);
 

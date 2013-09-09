@@ -41,12 +41,12 @@ public class PullTest extends QueueTestBase {
 
     @Before
     public void setUp() {
-        purgeAndPause(QueueFactory.getQueue("pull-queue"));
+        purgeAndPauseByName("pull-queue");
     }
 
     @After
     public void tearDown() {
-        purgeAndPause(QueueFactory.getQueue("pull-queue"));
+        purgeAndPauseByName("pull-queue");
     }
 
     @Test
