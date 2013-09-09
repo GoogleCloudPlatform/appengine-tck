@@ -23,7 +23,9 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -32,6 +34,17 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 public class SmokeTest extends QueueTestBase {
+
+    @Before
+    public void setUp() {
+        purgeAndPause(QueueFactory.getQueue("pull-queue"));
+    }
+
+    @After
+    public void tearDown() {
+        purgeAndPause(QueueFactory.getQueue("pull-queue"));
+    }
+
     @Test
     public void testBasics() throws Exception {
         final Queue queue = QueueFactory.getQueue("pull-queue");

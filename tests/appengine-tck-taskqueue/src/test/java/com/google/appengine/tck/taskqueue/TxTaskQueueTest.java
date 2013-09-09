@@ -23,7 +23,9 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -43,6 +45,16 @@ public class TxTaskQueueTest extends QueueTestBase {
 
     protected boolean doIgnore(String context) {
         return isRuntimeDev() && execute(context) == false;
+    }
+
+    @Before
+    public void setUp() {
+        purgeAndPause(QueueFactory.getDefaultQueue());
+    }
+
+    @After
+    public void tearDown() {
+        purgeAndPause(QueueFactory.getDefaultQueue());
     }
 
     @Test
