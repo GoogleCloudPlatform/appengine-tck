@@ -15,38 +15,21 @@
 
 package com.google.appengine.tck.endpoints.support;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-
-import static com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.api.server.spi.config.Serializer;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-@Api(
-    name = SerializationEndPoint.NAME,
-    version = SerializationEndPoint.VERSION,
-    serializers = { BazSerializer.class })
-public class SerializationEndPoint {
+public class BazSerializer implements Serializer<Baz, String> {
+    public static final String BZZZ = "Bzzz_";
 
-    public static final String NAME = "serializationEndPoint";
-    public static final String VERSION = "v1";
-
-    @ApiMethod(name = "s.bar", httpMethod = HttpMethod.GET)
-    public Bar bar() {
-        return new Bar(1, 2);
+    public String serialize(Baz in) {
+        return BZZZ + in.getS();
     }
 
-    @ApiMethod(name = "s.baz", httpMethod = HttpMethod.GET)
-    public Baz baz() {
+    public Baz deserialize(String in) {
         Baz baz = new Baz();
-        baz.setS("TCK");
+        baz.setS(in.substring(BZZZ.length()));
         return baz;
     }
-
-    @ApiMethod(name = "s.foo", httpMethod = HttpMethod.POST)
-    public Foo foo() {
-        return new Foo(1, 2, 3);
-    }
-
 }

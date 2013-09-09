@@ -18,6 +18,7 @@ package com.google.appengine.tck.endpoints;
 import java.net.URL;
 
 import com.google.appengine.tck.base.TestContext;
+import com.google.appengine.tck.endpoints.support.BazSerializer;
 import com.google.appengine.tck.endpoints.support.SerializationEndPoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -49,6 +50,14 @@ public class SerializationTest extends EndPointsTestBase {
         URL endPointUrl = toHttps(new URL(url, createPath("bar")));
         String response = invokeEndpointWithGet(endPointUrl);
         assertResponse("1,2", response);
+    }
+
+    @Test
+    @RunAsClient
+    public void testApiSerializerInApi(@ArquillianResource URL url) throws Exception {
+        URL endPointUrl = toHttps(new URL(url, createPath("baz")));
+        String response = invokeEndpointWithGet(endPointUrl);
+        assertResponse(BazSerializer.BZZZ + "TCK", response);
     }
 
     @Test
