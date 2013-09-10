@@ -139,6 +139,12 @@ public class MemcacheTest extends CacheTestBase {
     }
 
     @Test
+    public void testGetNoIdentifiable() {
+        MemcacheService.IdentifiableValue identifiable = memcache.getIdentifiable("no_such_key1");
+        assertNull(identifiable);
+    }
+
+    @Test
     public void testGetIdentifiables() {
         memcache.put("key1", "value1");
         memcache.put("key2", "value2");
@@ -151,6 +157,17 @@ public class MemcacheTest extends CacheTestBase {
 
         assertNotNull(identifiables.get("key2"));
         assertEquals("value2", identifiables.get("key2").getValue());
+    }
+
+    @Test
+    public void testGetSomeIdentifiables() {
+        memcache.put("key1", "value1");
+        Map<String, MemcacheService.IdentifiableValue> identifiables = memcache.getIdentifiables(Arrays.asList("key1", "no_such_key2"));
+
+        assertEquals(1, identifiables.size());
+
+        assertNotNull(identifiables.get("key1"));
+        assertEquals("value1", identifiables.get("key1").getValue());
     }
 
     @Test
