@@ -23,33 +23,27 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
-import org.jboss.arquillian.protocol.modules.OperateOnModule;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
-public class SmokeTest extends ModulesTestBase {
+public class DatastoreTest extends CrudTestBase {
     protected static final String MODULES_KIND = "Modules";
 
     private DatastoreService ds;
 
     @Deployment
     public static EnterpriseArchive getDeployment() {
-        WebArchive module1 = getTckSubDeployment(1);
-        module1.addClass(SmokeTest.class);
+        return getCrudDeployment(DatastoreTest.class);
+    }
 
-        WebArchive module2 = getTckSubDeployment(2);
-        module2.addClass(SmokeTest.class);
-
-        return getEarDeployment(module1, module2);
+    private static Key getKey() {
+        return KeyFactory.createKey(MODULES_KIND, 1);
     }
 
     @Before
@@ -57,33 +51,47 @@ public class SmokeTest extends ModulesTestBase {
         ds = DatastoreServiceFactory.getDatastoreService();
     }
 
-    @Test
-    @InSequence(1)
-    public void testPut() throws Exception {
-        Key key = ds.put(new Entity(MODULES_KIND, 1));
+    @Override
+    protected void doTestCreate() {
+        Entity entity = new Entity(MODULES_KIND, 1);
+        entity.setProperty("x", "y");
+
+        Key key = ds.put(entity);
         Assert.assertNotNull(key);
     }
 
-    @Test
-    @InSequence(2)
-    @OperateOnModule("m2")
-    public void testGet() throws Exception {
-        Key key = KeyFactory.createKey(MODULES_KIND, 1);
+    @Override
+    protected void doTestRead() throws Exception {
+        Key key = getKey();
         Entity e = ds.get(key);
         Assert.assertNotNull(e);
     }
 
-    @Test
-    @InSequence(3)
-    public void testDelete() throws Exception {
-        Key key = KeyFactory.createKey(MODULES_KIND, 1);
+    @Override
+    protected void doTestUpdate() throws Exception {
+        Key key = getKey();
+        Entity e = ds.get(key);
+        Assert.assertNotNull(e);
+        e.setProperty("x", "z");
+        ds.put(e);
+    }
+
+    @Override
+    protected void doTestReRead() throws Exception {
+        Key key = getKey();
+        Entity e = ds.get(key);
+        Assert.assertNotNull(e);
+        Assert.assertEquals("z", e.getProperty("x"));
+    }
+
+    @Override
+    protected void doTestDelete() {
+        Key key = getKey();
         ds.delete(key);
     }
 
-    @Test
-    @InSequence(4)
-    @OperateOnModule("m2")
-    public void testQuery() throws Exception {
+    @Override
+    protected void doTestCheck() {
         Query query = new Query(MODULES_KIND).setKeysOnly();
         for (Entity e : ds.prepare(query).asIterable()) {
             Assert.fail("Should not be here: " + e);
