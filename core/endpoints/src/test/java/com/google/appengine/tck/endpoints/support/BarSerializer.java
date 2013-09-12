@@ -21,13 +21,14 @@ import com.google.api.server.spi.config.Serializer;
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class BarSerializer implements Serializer<Bar, String> {
-    public String serialize(Bar in) {
-        return in.getX() + "," + in.getY();
+public class BarSerializer implements Serializer<Bar, StringWrapper> {
+    public StringWrapper serialize(Bar in) {
+
+        return new StringWrapper(in.getX() + "," + in.getY());
     }
 
-    public Bar deserialize(String in) {
-        String[] xy = in.split(",");
+    public Bar deserialize(StringWrapper wrapper) {
+        String[] xy = wrapper.getStr().split(",");
         return new Bar(Integer.parseInt(xy[0]), Integer.parseInt(xy[1]));
     }
 }

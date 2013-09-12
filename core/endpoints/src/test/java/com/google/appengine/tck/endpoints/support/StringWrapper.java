@@ -15,26 +15,16 @@
 
 package com.google.appengine.tck.endpoints.support;
 
-import com.google.api.server.spi.config.Serializer;
-
 /**
- * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
- * @author <a href="mailto:terryok@google.com">Ales Justin</a>
  */
-public class BazSerializer implements Serializer<Baz, StringWrapper> {
+public class StringWrapper {
+    private String str;
 
-    public static final String BZZZ = "Bzzz_";
-
-    @Override
-    public StringWrapper serialize(Baz in) {
-        return new StringWrapper(BZZZ + in.getS());
+    public StringWrapper(String s) {
+        str = s;
     }
 
-    @Override
-    public Baz deserialize(StringWrapper wrapper) {
-        Baz baz = new Baz();
-        String original = wrapper.getStr().substring(BZZZ.length());
-        baz.setS(original);
-        return baz;
+    public String getStr() {
+        return str;
     }
 }
