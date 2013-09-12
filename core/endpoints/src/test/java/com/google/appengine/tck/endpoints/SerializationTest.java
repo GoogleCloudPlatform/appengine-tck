@@ -65,7 +65,8 @@ public class SerializationTest extends EndPointsTestBase {
     public void testApiSerializationProperty(@ArquillianResource URL url) throws Exception {
         URL endPointUrl = toHttps(new URL(url, createPath("foo")));
         String response = invokeEndpointWithPost(endPointUrl);
-        assertResponse("{\"x\":1,\"qwerty\":3}", response);
+        String responseNoWs = response.replaceAll("\\s+", "");
+        assertResponse("{\"x\":1,\"qwerty\":3", responseNoWs);
     }
 
     protected String createPath(String methodPath) {
