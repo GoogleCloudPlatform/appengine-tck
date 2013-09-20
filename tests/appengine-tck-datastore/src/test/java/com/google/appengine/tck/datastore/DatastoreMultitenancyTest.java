@@ -39,6 +39,7 @@ import static org.junit.Assert.fail;
 
 /**
  * @author <a href="mailto:marko.luksa@gmail.com">Marko Luksa</a>
+ * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
  */
 @RunWith(Arquillian.class)
 public class DatastoreMultitenancyTest extends SimpleTestBase {
@@ -129,15 +130,34 @@ public class DatastoreMultitenancyTest extends SimpleTestBase {
         service.put(fooTwo);
         sync();
 
-        List<Entity> listTwo = service.prepare(new Query("foo")).asList(withDefaults());
+        List<Entity> listTwo = service.prepare(new Query("foo").setAncestor(fooTwo.getKey())).asList(withDefaults());
         assertEquals(Collections.singletonList(fooTwo), listTwo);
 
         NamespaceManager.set("one");
-        List<Entity> listOne = service.prepare(new Query("foo")).asList(withDefaults());
+        List<Entity> listOne = service.prepare(new Query("foo").setAncestor(fooOne.getKey())).asList(withDefaults());
         assertEquals(Collections.singletonList(fooOne), listOne);
 
         service.delete(fooOne.getKey());
         service.delete(fooTwo.getKey());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testQueriesByAncestorInOtherNamespaceThrowsIllegalArgumentException() {
+        deleteNsKinds("one", "foo");
+        deleteNsKinds("two", "foo");
+        sync();
+
+        NamespaceManager.set("one");
+        Entity fooOne = new Entity("foo");
+        service.put(fooOne);
+
+        NamespaceManager.set("two");
+        Entity fooTwo = new Entity("foo");
+        service.put(fooTwo);
+        sync();
+
+        // java.lang.IllegalArgumentException: Namespace of ancestor key and query must match.
+        service.prepare(new Query("foo").setAncestor(fooOne.getKey())).asList(withDefaults());
     }
 
     @Test
@@ -155,7 +175,7 @@ public class DatastoreMultitenancyTest extends SimpleTestBase {
         service.put(fooTwo);
         sync();
 
-        Query query = new Query("foo"); // query created in namespace "two"
+        Query query = new Query("foo").setAncestor(fooTwo.getKey()); // query created in namespace "two"
 
         NamespaceManager.set("one");
         PreparedQuery preparedQuery = service.prepare(query);
