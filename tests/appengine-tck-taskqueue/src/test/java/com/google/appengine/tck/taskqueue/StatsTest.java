@@ -15,8 +15,6 @@
 
 package com.google.appengine.tck.taskqueue;
 
-import static junit.framework.Assert.assertEquals;
-
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.QueueStatistics;
@@ -28,12 +26,14 @@ import org.junit.runner.RunWith;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
+ * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
  */
 @RunWith(Arquillian.class)
 public class StatsTest extends QueueTestBase {
 
     /**
      * Because the stats processing is approximate, this test only verifies the basics.
+     * The dev_appserver generates random statistics.
      */
     @Test
     public void testStatsApiBasic() throws Exception {
@@ -41,7 +41,7 @@ public class StatsTest extends QueueTestBase {
         QueueStatistics stats = queue.fetchStatistics();
         Assert.assertNotNull(stats);
         Assert.assertEquals("pull-queue", stats.getQueueName());
-        assertEquals(1.0, stats.getEnforcedRate());
+        Assert.assertTrue(stats.getEnforcedRate() >= 0);
 
         Assert.assertTrue(stats.getNumTasks() >= 0);
         Assert.assertTrue(stats.getExecutedLastMinute() >= 0);
