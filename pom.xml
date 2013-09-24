@@ -465,6 +465,12 @@
                 <version>${version.com.google.gae.api}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.google.appengine</groupId>
+                <artifactId>appengine-api-labs</artifactId>
+                <version>${version.com.google.gae.api}</version>
+            </dependency>
+
             <!-- Site -->
 
             <dependency>
