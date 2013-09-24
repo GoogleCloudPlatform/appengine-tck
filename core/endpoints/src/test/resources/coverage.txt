@@ -1,0 +1,7 @@
+com.google.api.server.spi.config.Api
+com.google.api.server.spi.config.ApiAuth
+com.google.api.server.spi.config.ApiSerializer
+com.google.api.server.spi.config.ApiSerializationProperty
+com.google.api.server.spi.config.AnnotationBoolean
+com.google.api.server.spi.config.ApiMethod
+com.google.api.server.spi.config.ApiMethod$HttpMethod
