@@ -19,7 +19,6 @@
         <dependency>
             <groupId>com.google.appengine</groupId>
             <artifactId>appengine-mapper</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
