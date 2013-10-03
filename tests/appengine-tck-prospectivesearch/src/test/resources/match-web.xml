@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+
+    <servlet>
+        <servlet-name>matches</servlet-name>
+        <servlet-class>com.google.appengine.tck.prospectivesearch.support.MatchResponseServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>matches</servlet-name>
+        <url-pattern>/_ah/prospective_search</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>special</servlet-name>
+        <servlet-class>com.google.appengine.tck.prospectivesearch.support.SpecialMatchResponseServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>special</servlet-name>
+        <url-pattern>/_ah/prospective_search_special</url-pattern>
+    </servlet-mapping>
+
+</web-app>
