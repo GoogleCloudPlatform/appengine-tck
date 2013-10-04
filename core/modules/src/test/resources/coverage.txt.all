@@ -1,0 +1,8 @@
+com.google.appengine.api.labs.modules.ModulesService
+com.google.appengine.api.labs.modules.ModulesServiceFactory
+com.google.appengine.api.labs.modules.InvalidInstanceException
+com.google.appengine.api.labs.modules.InvalidModuleException
+com.google.appengine.api.labs.modules.InvalidVersionException
+com.google.appengine.api.labs.modules.ModuleAlreadyStartedException
+com.google.appengine.api.labs.modules.ModuleAlreadyStoppedException
+com.google.appengine.api.labs.modules.ModulesException

@@ -67,6 +67,7 @@
                                 </goals>
                                 <phase>process-test-classes</phase>
                                 <configuration>
+                                    <module>ext</module>
                                 </configuration>
                             </execution>
                         </executions>

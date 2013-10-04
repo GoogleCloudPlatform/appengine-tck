@@ -48,6 +48,13 @@ public class CoverageMojo extends AbstractMojo {
     protected MavenProject project;
 
     /**
+     * Module.
+     *
+     * @parameter
+     */
+    protected String module;
+
+    /**
      * Tests.
      *
      * @parameter
@@ -81,14 +88,14 @@ public class CoverageMojo extends AbstractMojo {
         Build build = project.getBuild();
         File classesToScan = tests ? new File(build.getTestOutputDirectory()) : new File(build.getOutputDirectory());
         getLog().info("Classes to scan: " + classesToScan);
-        List<String> classes = new ArrayList<String>();
+        List<String> classes = new ArrayList<>();
         if (interfaces != null) {
             classes.addAll(interfaces);
         }
         try {
             readInterfaces(classesToScan, classes);
             MethodExclusion me = createExclusion(cl, classesToScan);
-            CodeCoverage.report(cl, project.getBasedir(), classesToScan, me, classes.toArray(new String[classes.size()]));
+            CodeCoverage.report(module, cl, project.getBasedir(), classesToScan, me, classes.toArray(new String[classes.size()]));
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to execute coverage report.", e);
         }
@@ -102,7 +109,7 @@ public class CoverageMojo extends AbstractMojo {
      * @throws MojoExecutionException Indicates an issue processing one of the classpath elements
      */
     private List<URL> getClassPathUrls(boolean isTest) throws MojoExecutionException {
-        List<URL> classPathUrls = new ArrayList<URL>();
+        List<URL> classPathUrls = new ArrayList<>();
         for (String path : projectCompileClasspathElements(isTest)) {
             try {
                 getLog().debug("Adding project compile classpath element : " + path);
@@ -149,16 +156,13 @@ public class CoverageMojo extends AbstractMojo {
         File coverage = new File(root, cf);
         if (coverage.exists()) {
             getLog().info("Reading interfaces from " + coverage);
-            BufferedReader reader = new BufferedReader(new FileReader(coverage));
-            try {
+            try (BufferedReader reader = new BufferedReader(new FileReader(coverage))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     if (line.length() > 0 && line.startsWith("#") == false) {
                         classes.add(line);
                     }
                 }
-            } finally {
-                reader.close();
             }
         }
     }

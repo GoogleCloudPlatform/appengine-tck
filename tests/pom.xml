@@ -96,6 +96,7 @@
                                 </goals>
                                 <phase>process-test-classes</phase>
                                 <configuration>
+                                    <module>tests</module>
                                 </configuration>
                             </execution>
                         </executions>

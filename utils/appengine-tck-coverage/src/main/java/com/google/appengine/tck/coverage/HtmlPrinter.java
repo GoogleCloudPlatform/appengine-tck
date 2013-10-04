@@ -32,10 +32,12 @@ class HtmlPrinter implements Printer {
 
     private File baseDir;
     private File index;
+    private String module;
 
-    HtmlPrinter(File baseDir, File index) {
+    HtmlPrinter(File baseDir, File index, String module) {
         this.baseDir = baseDir;
         this.index = index;
+        this.module = module;
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -133,7 +135,7 @@ class HtmlPrinter implements Printer {
     }
 
     private String getPath(CodeLine cl) {
-        return "/tests/" + baseDir.getName() + "/src/test/java/" + cl.getClassName().replace('.', '/') + ".java";
+        return "/" + module + "/" + baseDir.getName() + "/src/test/java/" + cl.getClassName().replace('.', '/') + ".java";
     }
 
     private static String createGitHubUrl(String user, String project, String branch, String path, int lineNumber) {
