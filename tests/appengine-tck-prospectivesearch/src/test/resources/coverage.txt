@@ -1,0 +1,12 @@
+# List the appengine classes that require test coverage information.
+# To run coverage go to the base tck directory with the parent pom,
+# and run $ mvn clean install  A coverage report will be located in the
+# relative test directory as index.html.
+#
+# For example, if we wanted to see which appengine methods were called
+# in the taskqueue DeferredTask class and DeferredTaskCreationException class,
+# you would specify the following (without the comment marker '#')
+#
+com.google.appengine.api.prospectivesearch.ProspectiveSearchService
+com.google.appengine.api.prospectivesearch.ProspectiveSearchServiceFactory
+com.google.appengine.api.prospectivesearch.Subscription

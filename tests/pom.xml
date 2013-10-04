@@ -40,10 +40,11 @@
         <module>appengine-tck-logservice</module>
         <module>appengine-tck-mail</module>
         <module>appengine-tck-memcache</module>
+        <module>appengine-tck-prospectivesearch</module>
+        <module>appengine-tck-search</module>
         <module>appengine-tck-taskqueue</module>
         <module>appengine-tck-urlfetch</module>
         <module>appengine-tck-users</module>
-        <module>appengine-tck-search</module>
     </modules>
 
     <dependencies>
