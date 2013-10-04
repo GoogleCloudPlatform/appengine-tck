@@ -34,7 +34,7 @@ import static junit.framework.Assert.assertTrue;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
-public class FetchOptionsBuilderTest extends FetchOptionsTestBase {
+public class FetchOptionsBuilderTest extends URLFetchTestBase {
 
     @Test
     public void testWithDefaults() throws Exception {

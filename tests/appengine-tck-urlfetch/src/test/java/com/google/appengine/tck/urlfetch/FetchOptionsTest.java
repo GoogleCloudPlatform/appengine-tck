@@ -28,7 +28,7 @@ import org.junit.runner.RunWith;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
-public class FetchOptionsTest extends FetchOptionsTestBase {
+public class FetchOptionsTest extends URLFetchTestBase {
     protected FetchOptions buildFetchOptions() {
         return FetchOptions.Builder.withDefaults();
     }
