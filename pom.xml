@@ -81,7 +81,7 @@
         <version.commons-logging>1.1.1</version.commons-logging>
         <version.org.json>20090211</version.org.json>
         <!-- Google Cloud Storage Client -->
-        <version.com.google.appengine.tools.cloudstorage>0.3</version.com.google.appengine.tools.cloudstorage>
+        <version.com.google.appengine.tools.cloudstorage>0.3.1</version.com.google.appengine.tools.cloudstorage>
         <!--- Sonar -->
         <sonar.language>java</sonar.language>
 
@@ -462,6 +462,12 @@
             <dependency>
                 <groupId>com.google.appengine</groupId>
                 <artifactId>appengine-endpoints</artifactId>
+                <version>${version.com.google.gae.api}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine</groupId>
+                <artifactId>appengine-api-labs</artifactId>
                 <version>${version.com.google.gae.api}</version>
             </dependency>
 
