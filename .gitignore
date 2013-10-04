@@ -2,6 +2,10 @@
 *.ipr
 *.iws
 .idea/
+core/**/coverage-results.csv
+core/**/index.html
+ext/**/coverage-results.csv
+ext/**/index.html
 tests/**/coverage-results.csv
 tests/**/index.html
 target/
