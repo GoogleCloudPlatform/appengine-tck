@@ -33,7 +33,7 @@ import com.google.appengine.api.prospectivesearch.ProspectiveSearchServiceFactor
  */
 public class MatchResponseServlet extends HttpServlet {
 
-    private static List<InvocationData> invocations = new ArrayList<InvocationData>();
+    private static List<InvocationData> invocations = new ArrayList<>();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -75,7 +75,7 @@ public class MatchResponseServlet extends HttpServlet {
     }
 
     public static List<String> getAllSubIds() {
-        List<String> receivedSubIds = new ArrayList<String>();
+        List<String> receivedSubIds = new ArrayList<>();
         for (MatchResponseServlet.InvocationData invocationData : getInvocations()) {
             receivedSubIds.addAll(Arrays.asList(invocationData.getSubIds()));
         }

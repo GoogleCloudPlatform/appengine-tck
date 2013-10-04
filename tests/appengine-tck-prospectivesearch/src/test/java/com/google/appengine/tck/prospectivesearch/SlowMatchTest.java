@@ -52,8 +52,4 @@ public class SlowMatchTest extends MatchTestBase {
         }
     }
 
-    protected void waitForJMSToKickIn() throws InterruptedException {
-        sync(10000);
-    }
-
 }

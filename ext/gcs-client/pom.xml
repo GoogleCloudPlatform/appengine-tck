@@ -19,7 +19,6 @@
         <dependency>
             <groupId>com.google.appengine.tools</groupId>
             <artifactId>appengine-gcs-client</artifactId>
-            <scope>test-jar</scope>
         </dependency>
     </dependencies>
 

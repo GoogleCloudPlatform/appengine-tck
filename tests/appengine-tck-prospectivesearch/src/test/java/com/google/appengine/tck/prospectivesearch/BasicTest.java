@@ -26,7 +26,9 @@ import com.google.appengine.api.prospectivesearch.ProspectiveSearchService;
 import com.google.appengine.api.prospectivesearch.ProspectiveSearchServiceFactory;
 import com.google.appengine.api.prospectivesearch.QuerySyntaxException;
 import com.google.appengine.api.prospectivesearch.Subscription;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -40,6 +42,10 @@ import static org.junit.Assert.fail;
  */
 @RunWith(Arquillian.class)
 public class BasicTest extends ProspectiveTestBase {
+    @Deployment
+    public static WebArchive getDeployemnt() {
+        return getBaseDeployment();
+    }
 
     @Test
     public void testTopicIsCreatedWhenFirstSubscriptionForTopicIsCreated() {
@@ -117,9 +123,7 @@ public class BasicTest extends ProspectiveTestBase {
         Subscription subscription = service.getSubscription(TOPIC, "mySubscription");
         long expirationTime = subscription.getExpirationTime();
 
-        if (isRuntimeDev()) {
-            assertEquals(0L, expirationTime);
-        } else {
+        if (isRuntimeProduction() || execute("testSubscriptionWithoutLeaseTimeSecondsPracticallyNeverExpires")) {
             long expected = todayPlusHundredYears().getTime() / 1000;
             assertTrue("subscription should not expire at least 100 years", expirationTime > expected);
         }

@@ -22,6 +22,8 @@ import java.util.Set;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.tck.prospectivesearch.support.MatchResponseServlet;
 import com.google.appengine.tck.prospectivesearch.support.SpecialMatchResponseServlet;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 
 import static org.junit.Assert.assertEquals;
@@ -33,8 +35,12 @@ import static org.junit.Assert.fail;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public abstract class MatchTestBase extends ProspectiveTestBase {
-
     protected static final String SPECIAL_RESULT_RELATIVE_URI = "/_ah/prospective_search_special";
+
+    @Deployment
+    public static WebArchive getDeployemnt() {
+        return getBaseDeployment().addClass(MatchTestBase.class);
+    }
 
     @After
     public void tearDown() throws Exception {
@@ -63,7 +69,7 @@ public abstract class MatchTestBase extends ProspectiveTestBase {
     }
 
     protected void assertServletWasInvokedWith(Entity entity) throws Exception {
-        waitForJMSToKickIn();
+        waitForSync();
 
         assertServletWasInvoked();
 
@@ -77,19 +83,20 @@ public abstract class MatchTestBase extends ProspectiveTestBase {
     }
 
     protected void assertServletReceivedSubIds(String... subIds) throws Exception {
-        waitForJMSToKickIn();
+        waitForSync();
 
         assertServletWasInvoked();
 
-        Set<String> expectedSubIds = new HashSet<String>(Arrays.asList(subIds));
-        Set<String> receivedSubIds = new HashSet<String>(MatchResponseServlet.getAllSubIds());
+        Set<String> expectedSubIds = new HashSet<>(Arrays.asList(subIds));
+        Set<String> receivedSubIds = new HashSet<>(MatchResponseServlet.getAllSubIds());
         assertEquals("servlet was invoked with wrong subIds", expectedSubIds, receivedSubIds);
     }
 
+    @SuppressWarnings("UnusedParameters")
     protected void assertSpecialServletWasInvokedWith(Entity entity) throws Exception {
-        waitForJMSToKickIn();
+        waitForSync();
 
-        if (!SpecialMatchResponseServlet.isInvoked()) {
+        if (SpecialMatchResponseServlet.isInvoked() == false) {
             fail("servlet was not invoked");
         }
 
@@ -100,7 +107,7 @@ public abstract class MatchTestBase extends ProspectiveTestBase {
     }
 
     protected void assertServletWasNotInvoked() throws Exception {
-        waitForJMSToKickIn();
+        waitForSync();
 
         if (MatchResponseServlet.isInvoked()) {
             Entity lastReceivedDocument = MatchResponseServlet.getLastInvocationData().getDocument();
@@ -108,7 +115,7 @@ public abstract class MatchTestBase extends ProspectiveTestBase {
         }
     }
 
-    protected void waitForJMSToKickIn() throws InterruptedException {
+    protected void waitForSync() throws InterruptedException {
         sync(3000);
     }
 

@@ -112,7 +112,7 @@ public class MatchTest extends MatchTestBase {
         String expectedKey = "myResultKey";
         service.match(articleWithTitle("Foo foo"), TOPIC, expectedKey);
 
-        waitForJMSToKickIn();
+        waitForSync();
         assertServletWasInvoked();
 
         String receivedKey = MatchResponseServlet.getLastInvocationData().getKey();
@@ -124,7 +124,7 @@ public class MatchTest extends MatchTestBase {
         service.subscribe(TOPIC, "foo1", 0, "title:foo", createSchema("title", FieldType.STRING));
         service.match(articleWithTitle("Foo foo"), TOPIC);
 
-        waitForJMSToKickIn();
+        waitForSync();
         assertServletWasInvoked();
 
         String receivedTopic = MatchResponseServlet.getLastInvocationData().getTopic();
@@ -138,7 +138,7 @@ public class MatchTest extends MatchTestBase {
         boolean resultReturnDocument = false;
         service.match(articleWithTitle("Foo foo"), TOPIC, "", DEFAULT_RESULT_RELATIVE_URL, DEFAULT_RESULT_TASK_QUEUE_NAME, DEFAULT_RESULT_BATCH_SIZE, resultReturnDocument);
 
-        waitForJMSToKickIn();
+        waitForSync();
         assertServletWasInvoked();
         assertNull("servlet should not have received document", MatchResponseServlet.getLastInvocationData().getDocument());
     }
@@ -211,10 +211,10 @@ public class MatchTest extends MatchTestBase {
     }
 
     @Test
-    public void testSearchOperatorORWithoutMatch() throws Exception {
+    public void testSearchOperatorOrWithoutMatch() throws Exception {
         service.subscribe(TOPIC, "foo", 0, "manager OR developer", createSchema("title", FieldType.STRING, "company", FieldType.STRING));
 
-        Entity entity = createEntity("tech");
+        Entity entity = createCompanyEntity("tech");
         service.match(entity, TOPIC);
 
         assertServletWasNotInvoked();
@@ -224,7 +224,15 @@ public class MatchTest extends MatchTestBase {
     public void testSearchOperatorORWithMatch() throws Exception {
         service.subscribe(TOPIC, "foo", 0, "tester OR developer", createSchema("title", FieldType.STRING));
 
-        Entity entity = createEntity(null);
+        Entity entity = createCompanyEntity(null);
+        assertServletWasInvokedWith(entity);
+    }
+
+    @Test
+    public void testSearchOperatorORWithMatchPrefixed() throws Exception {
+        service.subscribe(TOPIC, "foo", 0, "title:tester OR title:developer", createSchema("title", FieldType.STRING));
+
+        Entity entity = createCompanyEntity(null);
         assertServletWasInvokedWith(entity);
     }
 
@@ -232,7 +240,8 @@ public class MatchTest extends MatchTestBase {
     public void testSearchOperatorANDWithoutMatch() throws Exception {
         service.subscribe(TOPIC, "foo", 0, "title:tester AND company:Google", createSchema("title", FieldType.STRING, "company", FieldType.STRING));
 
-        Entity entity = createEntity("tech");
+        @SuppressWarnings("UnusedDeclaration")
+        Entity entity = createCompanyEntity("tech");
         assertServletWasNotInvoked();
     }
 
@@ -240,7 +249,7 @@ public class MatchTest extends MatchTestBase {
     public void testSearchOperatorANDWithMatch() throws Exception {
         service.subscribe(TOPIC, "foo", 0, "title:tester AND company:Google", createSchema("title", FieldType.STRING, "company", FieldType.STRING));
 
-        Entity entity = createEntity("google");
+        Entity entity = createCompanyEntity("google");
         assertServletWasInvokedWith(entity);
     }
 
@@ -248,7 +257,8 @@ public class MatchTest extends MatchTestBase {
     public void testSearchOperatorNOTWithoutMatch() throws Exception {
         service.subscribe(TOPIC, "foo", 0, "title:tester NOT company:Google", createSchema("title", FieldType.STRING, "company", FieldType.STRING));
 
-        Entity entity = createEntity("google");
+        @SuppressWarnings("UnusedDeclaration")
+        Entity entity = createCompanyEntity("google");
         assertServletWasNotInvoked();
     }
 
@@ -256,11 +266,11 @@ public class MatchTest extends MatchTestBase {
     public void testSearchOperatorNOTWithMatch() throws Exception {
         service.subscribe(TOPIC, "foo", 0, "title:tester NOT company:Google", createSchema("title", FieldType.STRING, "company", FieldType.STRING));
 
-        Entity entity = createEntity("apple");
+        Entity entity = createCompanyEntity("RedHat");
         assertServletWasInvokedWith(entity);
     }
 
-    private Entity createEntity(String fieldVal) {
+    private Entity createCompanyEntity(String fieldVal) {
         Entity entity = new Entity("article");
         entity.setProperty("title", "tester");
         if (fieldVal != null) {
@@ -274,7 +284,8 @@ public class MatchTest extends MatchTestBase {
     public void testNumericOperatorWithoutMatch() throws Exception {
         service.subscribe(TOPIC, "foo", 0, "title:tester distance < 16.20", createSchema("title", FieldType.STRING, "distance", FieldType.DOUBLE));
 
-        Entity entity = createEntity(22.22);
+        @SuppressWarnings("UnusedDeclaration")
+        Entity entity = createDistanceEntity(22.22);
         assertServletWasNotInvoked();
     }
 
@@ -282,11 +293,11 @@ public class MatchTest extends MatchTestBase {
     public void testNumericOperatorWithMatch() throws Exception {
         service.subscribe(TOPIC, "foo", 0, "title:tester distance > 16.20", createSchema("title", FieldType.STRING, "distance", FieldType.DOUBLE));
 
-        Entity entity = createEntity(22.22);
+        Entity entity = createDistanceEntity(22.22);
         assertServletWasInvokedWith(entity);
     }
 
-    private Entity createEntity(double fieldVal) {
+    private Entity createDistanceEntity(double fieldVal) {
         Entity entity = new Entity("article");
         entity.setProperty("title", "tester");
         entity.setProperty("distance", fieldVal);

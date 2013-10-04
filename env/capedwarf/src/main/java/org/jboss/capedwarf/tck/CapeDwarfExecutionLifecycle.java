@@ -33,6 +33,7 @@ public class CapeDwarfExecutionLifecycle extends AbstractExecutionLifecycle {
     static {
         EXECUTABLES = new HashSet<>();
         EXECUTABLES.add(".images.");
+        EXECUTABLES.add(".prospectivesearch.");
         EXECUTABLES.add(".sql.");
         EXECUTABLES.add(".taskqueue.");
     }
