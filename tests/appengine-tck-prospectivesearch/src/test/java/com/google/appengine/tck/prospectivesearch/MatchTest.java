@@ -22,7 +22,6 @@ import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.prospectivesearch.FieldType;
 import com.google.appengine.tck.prospectivesearch.support.MatchResponseServlet;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -176,13 +175,12 @@ public class MatchTest extends MatchTestBase {
         assertServletWasInvokedWith(entity);
     }
 
-    @Ignore("TODO - use proper analyzer")
     @Test
     public void testMatchOnIntegerField() throws Exception {
         service.subscribe(TOPIC, "foo", 0, "length=500", createSchema("length", FieldType.INT32));
 
         Entity entity = new Entity("article");
-        entity.setProperty("length", 500);
+        entity.setProperty("length", 500L);
         service.match(entity, TOPIC);
 
         assertServletWasInvokedWith(entity);
