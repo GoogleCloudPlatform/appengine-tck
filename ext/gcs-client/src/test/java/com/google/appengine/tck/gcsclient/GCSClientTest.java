@@ -24,6 +24,7 @@ import java.nio.channels.Channels;
 import java.util.Date;
 
 import com.google.appengine.api.utils.SystemProperty;
+import com.google.appengine.tools.cloudstorage.GcsFileMetadata;
 import com.google.appengine.tools.cloudstorage.GcsFileOptions;
 import com.google.appengine.tools.cloudstorage.GcsFilename;
 import com.google.appengine.tools.cloudstorage.GcsInputChannel;
@@ -46,23 +47,30 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(Arquillian.class)
 public class GCSClientTest extends GCSClientTestBase {
-    // use default cloud storage buckets
-    private static String BUCKET = SystemProperty.applicationId.get() + ".appspot.com";
     private static String OBJECT_NAME = "tckobj" + new Date().getTime();
     private static String CONTENT = "Hello from BigStore - " + new Date();
     private static String MORE_WORDS = "And miles to go before I sleep.";
 
+    private String bucket;
     private GcsService gcsService;
 
     @Before
     public void setUp() {
+        try {
+            bucket = readProperties(TCK_PROPERTIES).getProperty("tck.gcs.bucket");
+            if (bucket == null) {
+                bucket = SystemProperty.applicationId.get() + ".appspot.com";
+            }
+        } catch (IOException ioe) {
+            throw new IllegalStateException(ioe);
+        }
         gcsService = GcsServiceFactory.createGcsService();
     }
 
     @Test
     @InSequence(1)
     public void testCreateGsObj() throws IOException {
-        GcsFilename filename = new GcsFilename(BUCKET, OBJECT_NAME);
+        GcsFilename filename = new GcsFilename(bucket, OBJECT_NAME);
         GcsFileOptions option = new GcsFileOptions.Builder()
             .mimeType("text/html")
             .acl("public-read")
@@ -75,16 +83,18 @@ public class GCSClientTest extends GCSClientTestBase {
 
             writeChannel.waitForOutstandingWrites();
             writeChannel.write(ByteBuffer.wrap(MORE_WORDS.getBytes()));
+            assertEquals(filename, writeChannel.getFilename());
         }
 
-        assertEquals(BUCKET, filename.getBucketName());
+        assertEquals(bucket, filename.getBucketName());
         assertEquals(OBJECT_NAME, filename.getObjectName());
+        assertEquals(null, gcsService.getMetadata(filename).getEtag());
     }
 
     @Test
     @InSequence(2)
     public void testReadGsObj() throws IOException {
-        GcsFilename filename = new GcsFilename(BUCKET, OBJECT_NAME);
+        GcsFilename filename = new GcsFilename(bucket, OBJECT_NAME);
         String objContent;
 
         try (GcsInputChannel readChannel = gcsService.openReadChannel(filename, 0)) {
@@ -103,7 +113,35 @@ public class GCSClientTest extends GCSClientTestBase {
     @Test
     @InSequence(3)
     public void testDelGsObj() throws IOException {
-        GcsFilename filename = new GcsFilename(BUCKET, OBJECT_NAME);
+        GcsFilename filename = new GcsFilename(bucket, OBJECT_NAME);
         assertTrue(gcsService.delete(filename));
+    }
+
+    @Test
+    @InSequence(4)
+    public void testOptionsAndMetadata() throws IOException {
+        GcsFilename filename = new GcsFilename(bucket, OBJECT_NAME);
+        GcsFileOptions option = new GcsFileOptions.Builder()
+            .acl("check-option")
+            .cacheControl("Cache-Control: public, max-age=6000")
+            .contentDisposition("Content-Disposition: attachment")
+            .contentEncoding("Content-Encoding: gzip")
+            .mimeType("application/zip")
+            .addUserMetadata("userKey", "UserMetadata")
+            .build();
+
+        GcsFileMetadata metaData = new GcsFileMetadata(filename, option, "etag", 100);
+        assertEquals("etag", metaData.getEtag());
+        assertEquals(filename, metaData.getFilename());
+        assertEquals(100, metaData.getLength());
+        GcsFileOptions option2 = metaData.getOptions();
+
+        assertEquals("check-option", option2.getAcl());
+        assertEquals("Cache-Control: public, max-age=6000", option2.getCacheControl());
+        assertEquals("Content-Disposition: attachment", option2.getContentDisposition());
+        assertEquals("Content-Encoding: gzip", option2.getContentEncoding());
+        assertEquals("application/zip", option2.getMimeType());
+        assertEquals(1, option2.getUserMetadata().size());
+        assertEquals("UserMetadata", option2.getUserMetadata().get("userKey"));
     }
 }
