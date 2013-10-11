@@ -1,3 +1,6 @@
+com.google.appengine.tools.cloudstorage.GcsFileMetadata
+com.google.appengine.tools.cloudstorage.GcsFilename
+com.google.appengine.tools.cloudstorage.GcsFileOptions
 com.google.appengine.tools.cloudstorage.GcsInputChannel
 com.google.appengine.tools.cloudstorage.GcsOutputChannel
 com.google.appengine.tools.cloudstorage.GcsService
