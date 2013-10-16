@@ -58,6 +58,7 @@
 
         <!-- TestUtils -->
         <version.org.apache.httpcomponents>4.2.5</version.org.apache.httpcomponents>
+        <version.org.apache.commons.validator>1.4.0</version.org.apache.commons.validator>
 
         <!-- Maven -->
         <version.maven>3.0.4</version.maven>
@@ -314,6 +315,12 @@
             </dependency>
 
             <!-- The TCK tests -->
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-appidentity</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
 
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>
@@ -621,6 +628,12 @@
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpmime</artifactId>
                 <version>${version.org.apache.httpcomponents}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>${version.org.apache.commons.validator}</version>
             </dependency>
 
             <!-- Maven -->
