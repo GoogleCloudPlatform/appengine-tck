@@ -33,6 +33,8 @@ import static com.google.appengine.api.datastore.Query.CompositeFilterOperator.a
 import static com.google.appengine.api.datastore.Query.FilterOperator.EQUAL;
 import static com.google.appengine.api.datastore.Query.FilterOperator.GREATER_THAN;
 import static com.google.appengine.api.datastore.Query.FilterOperator.LESS_THAN;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests that check if certain queries throw DatastoreNeedIndexException when an explicit index is required for the query,
@@ -42,6 +44,8 @@ import static com.google.appengine.api.datastore.Query.FilterOperator.LESS_THAN;
  */
 @RunWith(Arquillian.class)
 public class RequiredIndexesTest extends QueryTestBase {
+
+    private static final String EXPECTED_DS_INDEX_MSG = "Expected DatastoreNeedIndexException.";
 
     @Test
     public void testKindlessQueryUsingOnlyAncestorAndKeyFiltersDoesNotRequireConfiguredIndex() throws Exception {
@@ -150,23 +154,43 @@ public class RequiredIndexesTest extends QueryTestBase {
 
     @Test
     public void testQueryWithEqualityAndInequalityFiltersAndSortOnASinglePropertyDoesNotRequireConfiguredIndex() throws Exception {
-        executeQuery(
-            new Query("Unindexed")
-                .setFilter(
-                    and(new Query.FilterPredicate("someProperty", GREATER_THAN, "a"),
-                        new Query.FilterPredicate("someProperty", EQUAL, "b")))
-                .addSort("someProperty"));
+        if (doExecute("testQueryWithEqualityAndInequalityFiltersAndSortOnASinglePropertyDoesNotRequireConfiguredIndex") == false) {
+            log.info("Not running in development server, skipping test.");
+            return;
+        }
+        try {
+            executeQuery(
+                new Query("Unindexed")
+                    .setFilter(
+                        and(new Query.FilterPredicate("someProperty", GREATER_THAN, "a"),
+                            new Query.FilterPredicate("someProperty", EQUAL, "b")))
+                    .addSort("someProperty"));
+        } catch (Exception e) {
+            assertTrue(EXPECTED_DS_INDEX_MSG + " instead got " + e.toString(), e instanceof DatastoreNeedIndexException);
+            return;
+        }
+        fail(EXPECTED_DS_INDEX_MSG);
     }
 
     @Test
     public void testAncestorQueryWithEqualityAndInequalityFiltersAndSortOnASinglePropertyDoesNotRequireConfiguredIndex() throws Exception {
-        executeQuery(
-            new Query("Unindexed")
-                .setAncestor(KeyFactory.createKey("Ancestor", 1))
-                .setFilter(
-                    and(new Query.FilterPredicate("someProperty", GREATER_THAN, "a"),
-                        new Query.FilterPredicate("someProperty", EQUAL, "b")))
-                .addSort("someProperty"));
+        if (doExecute("testAncestorQueryWithEqualityAndInequalityFiltersAndSortOnASinglePropertyDoesNotRequireConfiguredIndex") == false) {
+            log.info("Not running in development server, skipping test.");
+            return;
+        }
+        try {
+            executeQuery(
+                new Query("Unindexed")
+                    .setAncestor(KeyFactory.createKey("Ancestor", 1))
+                    .setFilter(
+                        and(new Query.FilterPredicate("someProperty", GREATER_THAN, "a"),
+                            new Query.FilterPredicate("someProperty", EQUAL, "b")))
+                    .addSort("someProperty"));
+        } catch (Exception e) {
+            assertTrue(EXPECTED_DS_INDEX_MSG + " instead got " + e.toString(), e instanceof DatastoreNeedIndexException);
+            return;
+        }
+        fail(EXPECTED_DS_INDEX_MSG);
     }
 
     @Test
