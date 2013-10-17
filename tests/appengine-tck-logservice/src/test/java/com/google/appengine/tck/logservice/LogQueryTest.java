@@ -127,7 +127,7 @@ public class LogQueryTest extends LoggingTestBase {
     @InSequence(20)
     public void testIncomplete() throws Exception {
         // GAE dev server doesn't handle this
-        if (isRuntimeDev()) {
+        if (execute("testIncomplete") == false) {
             return;
         }
         String infoLogMsg = "info_incompleteRequest-" + System.currentTimeMillis();

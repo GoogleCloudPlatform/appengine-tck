@@ -31,6 +31,7 @@ public class CapeDwarfPropertyLifecycle extends AbstractPropertyLifecycle {
     private static final Set<String> REQUIRED_PROPERTIES = Collections.emptySet(); // empty atm
 
     protected void doBefore(PropertyLifecycleEvent event) {
+        event.setPropertyValue(getContextValue(event));
         event.setRequired(REQUIRED_PROPERTIES.contains(event.getPropertyName()));
     }
 

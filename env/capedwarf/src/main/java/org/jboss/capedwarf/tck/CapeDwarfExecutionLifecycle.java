@@ -39,6 +39,13 @@ public class CapeDwarfExecutionLifecycle extends AbstractExecutionLifecycle {
     }
 
     protected void doBefore(ExecutionLifecycleEvent event) {
+        Boolean raw = getContextValueAsBoolean(event);
+        if (raw != null) {
+            log(event, raw);
+            event.setExecute(raw);
+            return;
+        }
+
         Class<?> caller = event.getCallerClass();
         final String name = caller.getName();
         for (String exe : EXECUTABLES) {

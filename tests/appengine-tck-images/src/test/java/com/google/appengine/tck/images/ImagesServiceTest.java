@@ -49,7 +49,7 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
     @Test
     public void testFeelLucky() throws IOException {
         // I'm Feeling Lucky is not available in dev_appserver
-        if (isRuntimeProduction()) {
+        if (execute("testFeelLucky")) {
             Transform transform = ImagesServiceFactory.makeImFeelingLucky();
             for (String sfile : FNAMES) {
                 for (OutputEncoding encoding : ENCODES) {

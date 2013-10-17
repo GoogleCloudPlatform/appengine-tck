@@ -79,7 +79,7 @@ public abstract class CloudSqlTestBase extends TestBase {
     }
 
     protected boolean doIgnore(String context) {
-        return (isRuntimeDev() && execute(context) == false);
+        return (execute(context) == false);
     }
 
     protected boolean isRequired(String context, String property) {

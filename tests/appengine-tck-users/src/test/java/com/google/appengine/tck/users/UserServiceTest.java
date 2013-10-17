@@ -213,7 +213,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLoginUrlProd() throws Exception {
-        if (!isRuntimeProduction()) {
+        if (!execute("testCreateLoginUrlProd")) {
             return;
         }
 
@@ -229,7 +229,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLoginUrlDev() throws Exception {
-        if (!isRuntimeDev()) {
+        if (!execute("testCreateLoginUrlDev")) {
             return;
         }
 
@@ -240,7 +240,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLoginUrlDomainProd() throws Exception {
-        if (!isRuntimeProduction()) {
+        if (!execute("testCreateLoginUrlDomainProd")) {
             return;
         }
 
@@ -260,7 +260,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLoginUrlDomainDev() throws Exception {
-        if (!isRuntimeDev()) {
+        if (!execute("testCreateLoginUrlDomainDev")) {
             return;
         }
 
@@ -273,7 +273,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLoginUrlFederatedNotSetProd() throws Exception {
-        if (!isRuntimeProduction()) {
+        if (!execute("testCreateLoginUrlFederatedNotSetProd")) {
             return;
         }
 
@@ -301,7 +301,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLoginUrlFederatedNotSetDev() throws Exception {
-        if (!isRuntimeDev()) {
+        if (!execute("testCreateLoginUrlFederatedNotSetDev")) {
             return;
         }
 
@@ -314,7 +314,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLogoutUrlProd() throws Exception {
-        if (!isRuntimeProduction()) {
+        if (!execute("testCreateLogoutUrlProd")) {
             return;
         }
 
@@ -330,7 +330,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLogoutUrlDev() throws Exception {
-        if (!isRuntimeDev()) {
+        if (!execute("testCreateLogoutUrlDev")) {
             return;
         }
 

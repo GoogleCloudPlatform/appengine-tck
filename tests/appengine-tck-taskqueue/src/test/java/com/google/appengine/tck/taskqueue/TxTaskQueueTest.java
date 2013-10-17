@@ -44,7 +44,7 @@ public class TxTaskQueueTest extends QueueTestBase {
     }
 
     protected boolean doIgnore(String context) {
-        return isRuntimeDev() && execute(context) == false;
+        return execute(context) == false;
     }
 
     @Before

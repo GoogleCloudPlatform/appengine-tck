@@ -19,6 +19,10 @@ package com.google.appengine.tck.event;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public abstract class AbstractExecutionLifecycle extends AbstractTypedTestLifecycle<ExecutionLifecycleEvent> {
+    protected void log(ExecutionLifecycleEvent event, Boolean raw) {
+        log.info(String.format("Explicit execution for %s#%s -> %s", event.getClass().getName(), event.getCurrentExecutionContext(), raw));
+    }
+
     protected Class<ExecutionLifecycleEvent> getExactEventType() {
         return ExecutionLifecycleEvent.class;
     }

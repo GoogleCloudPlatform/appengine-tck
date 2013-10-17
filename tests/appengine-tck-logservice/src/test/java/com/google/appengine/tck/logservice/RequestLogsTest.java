@@ -34,6 +34,7 @@ import com.google.appengine.api.log.LogService;
 import com.google.appengine.api.log.LogServiceFactory;
 import com.google.appengine.api.log.RequestLogs;
 import com.google.appengine.api.utils.SystemProperty;
+import com.google.appengine.tck.event.Property;
 import com.google.apphosting.api.ApiProxy;
 import org.apache.commons.codec.binary.Base64;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -213,8 +214,9 @@ public class RequestLogsTest extends LoggingTestBase {
     public void testClientIp() throws Exception {
         RequestLogs requestLogs1 = getRequestLogs1();
 
-        if (isRuntimeDev()) {
-            assertEquals("127.0.0.1", requestLogs1.getIp());
+        Property ip = property("testClientIp");
+        if (ip != null) {
+            assertEquals(ip.getPropertyValue(), requestLogs1.getIp());
         } else {
             assertRegexpMatches(REGEX_IP4, requestLogs1.getIp());
         }

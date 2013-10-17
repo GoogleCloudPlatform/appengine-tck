@@ -123,7 +123,7 @@ public class BasicTest extends ProspectiveTestBase {
         Subscription subscription = service.getSubscription(TOPIC, "mySubscription");
         long expirationTime = subscription.getExpirationTime();
 
-        if (isRuntimeProduction() || execute("testSubscriptionWithoutLeaseTimeSecondsPracticallyNeverExpires")) {
+        if (execute("testSubscriptionWithoutLeaseTimeSecondsPracticallyNeverExpires")) {
             long expected = todayPlusHundredYears().getTime() / 1000;
             assertTrue("subscription should not expire at least 100 years", expirationTime > expected);
         }

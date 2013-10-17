@@ -20,6 +20,7 @@ package com.google.appengine.tck.event;
  */
 class PropertyLifecycleEventImpl extends AbstractTestLifecycleEventImpl<String> implements PropertyLifecycleEvent {
     private Boolean required;
+    private String value;
 
     PropertyLifecycleEventImpl(Class<?> caller, String propertyName) {
         super(caller, propertyName);
@@ -35,5 +36,13 @@ class PropertyLifecycleEventImpl extends AbstractTestLifecycleEventImpl<String> 
 
     public Boolean required() {
         return required;
+    }
+
+    public void setPropertyValue(String value) {
+        this.value = value;
+    }
+
+    public String getPropertyValue() {
+        return value;
     }
 }

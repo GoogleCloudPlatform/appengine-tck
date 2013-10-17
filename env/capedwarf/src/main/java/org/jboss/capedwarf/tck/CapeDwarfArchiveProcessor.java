@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Properties;
 
-import com.google.appengine.tck.arquillian.AbstractApplicationArchiveProcessor;
+import com.google.appengine.tck.arquillian.EnvApplicationArchiveProcessor;
 import com.google.appengine.tck.event.TestLifecycle;
 import com.google.appengine.tck.util.Utils;
 import org.jboss.shrinkwrap.api.Node;
@@ -30,7 +30,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class CapeDwarfArchiveProcessor extends AbstractApplicationArchiveProcessor {
+public class CapeDwarfArchiveProcessor extends EnvApplicationArchiveProcessor {
     private static final String CAPEDWARF_WEB =
         "<capedwarf-web-app>" +
             "    <admin>admin@capedwarf.org</admin>" +
@@ -44,7 +44,7 @@ public class CapeDwarfArchiveProcessor extends AbstractApplicationArchiveProcess
     }
 
     @SuppressWarnings("unchecked")
-    protected void handleWebArchive(WebArchive war) {
+    protected void handleWebArchiveInternal(WebArchive war) {
         addService(war, TestLifecycle.class,
             CapeDwarfExecutionLifecycle.class,
             CapeDwarfImageLifecycle.class,

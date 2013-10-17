@@ -18,7 +18,7 @@ package com.google.appengine.tck.event;
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public interface PropertyLifecycleEvent extends TestLifecycleEvent {
+public interface PropertyLifecycleEvent extends ContextualTestLifecycleEvent, Property {
     /**
      * Get property name
      *
@@ -34,9 +34,9 @@ public interface PropertyLifecycleEvent extends TestLifecycleEvent {
     void setRequired(boolean required);
 
     /**
-     * Is the property required
+     * Set property value.
      *
-     * @return true if yes, false if no, null if undetermined
+     * @param value current context's property value
      */
-    Boolean required();
+    void setPropertyValue(String value);
 }

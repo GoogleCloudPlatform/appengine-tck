@@ -114,6 +114,10 @@
 
             <dependencies>
                 <dependency>
+                    <groupId>com.google.appengine.tck</groupId>
+                    <artifactId>sdk-env</artifactId>
+                </dependency>
+                <dependency>
                     <groupId>org.jboss.arquillian.container</groupId>
                     <artifactId>arquillian-gae-local</artifactId>
                     <scope>test</scope>
@@ -145,6 +149,10 @@
                 </plugins>
             </build>
             <dependencies>
+                <dependency>
+                    <groupId>com.google.appengine.tck</groupId>
+                    <artifactId>appspot-env</artifactId>
+                </dependency>
                 <dependency>
                     <groupId>org.jboss.arquillian.container</groupId>
                     <artifactId>arquillian-gae-tools</artifactId>

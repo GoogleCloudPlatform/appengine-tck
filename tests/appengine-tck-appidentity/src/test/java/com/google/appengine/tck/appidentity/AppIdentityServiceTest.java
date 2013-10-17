@@ -30,6 +30,7 @@ import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
 import com.google.appengine.api.appidentity.AppIdentityServiceFailureException;
 import com.google.appengine.api.appidentity.PublicCertificate;
+import com.google.appengine.tck.event.Property;
 import com.google.apphosting.api.ApiProxy;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -107,8 +108,9 @@ public class AppIdentityServiceTest extends AppIdentityTestBase {
     public void testGetDefaultGcsBucketName() {
         ApiProxy.Environment env = ApiProxy.getCurrentEnvironment();
         String expectedBucketName;
-        if (isRuntimeDev()) {
-            expectedBucketName = "app_default_bucket";
+        Property property = property("testGetDefaultGcsBucketName");
+        if (property != null) {
+            expectedBucketName = property.getPropertyValue();
         } else {
             expectedBucketName = (String) env.getAttributes().get("com.google.appengine.runtime.default_version_hostname");
         }
@@ -125,7 +127,7 @@ public class AppIdentityServiceTest extends AppIdentityTestBase {
     public void testGetServiceAccountName() {
         String serviceAccountName = appIdentity.getServiceAccountName();
         String errMsg = serviceAccountName + " is not valid.";
-        if (isRuntimeProduction()) {
+        if (execute("testGetServiceAccountName")) {
             Assert.assertTrue(errMsg, EmailValidator.getInstance().isValid(serviceAccountName));
         } else {
             Assert.assertTrue(!serviceAccountName.isEmpty());

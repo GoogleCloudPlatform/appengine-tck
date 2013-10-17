@@ -26,9 +26,9 @@ import java.util.logging.Logger;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Transaction;
-import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tck.category.IgnoreMultisuite;
 import com.google.appengine.tck.event.ExecutionLifecycleEvent;
+import com.google.appengine.tck.event.Property;
 import com.google.appengine.tck.event.PropertyLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycles;
@@ -146,14 +146,6 @@ public class TestBase {
         Assert.assertTrue("Expected to match regexp " + regexp + " but was: " + str, str != null && str.matches(regexp));
     }
 
-    protected boolean isRuntimeProduction() {
-        return SystemProperty.environment.value() == SystemProperty.Environment.Value.Production;
-    }
-
-    protected boolean isRuntimeDev() {
-        return SystemProperty.environment.value() == SystemProperty.Environment.Value.Development;
-    }
-
     protected boolean execute(String context) {
         Boolean result = executeRaw(context);
         return (result != null && result);
@@ -166,14 +158,15 @@ public class TestBase {
     }
 
     protected boolean required(String propertyName) {
-        Boolean result = requiredRaw(propertyName);
-        return (result == null || result); // by default null means it's required
+        Property result = property(propertyName);
+        Boolean requred = result.required();
+        return (requred == null || requred); // by default null means it's required
     }
 
-    protected Boolean requiredRaw(String propertyName) {
+    protected Property property(String propertyName) {
         PropertyLifecycleEvent event = TestLifecycles.createPropertyLifecycleEvent(getClass(), propertyName);
         TestLifecycles.before(event);
-        return event.required();
+        return event;
     }
 
     protected static void sync() {

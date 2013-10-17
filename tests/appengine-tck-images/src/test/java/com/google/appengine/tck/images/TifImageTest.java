@@ -41,7 +41,7 @@ public class TifImageTest extends ImagesServiceTestBase {
     private static final OutputEncoding[] OUTPUT_ENCODE = {OutputEncoding.JPEG, OutputEncoding.PNG};
 
     protected boolean doExecute(String context) {
-        return isRuntimeProduction() || execute(context);
+        return execute(context);
     }
 
     @Test

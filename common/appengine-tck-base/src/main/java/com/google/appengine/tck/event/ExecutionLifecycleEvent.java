@@ -18,7 +18,7 @@ package com.google.appengine.tck.event;
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public interface ExecutionLifecycleEvent extends TestLifecycleEvent {
+public interface ExecutionLifecycleEvent extends ContextualTestLifecycleEvent {
     /**
      * Get runtime execution decision.
      *

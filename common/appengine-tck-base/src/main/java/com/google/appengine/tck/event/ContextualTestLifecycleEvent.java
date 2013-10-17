@@ -13,18 +13,17 @@
  * limitations under the License.
  */
 
-package com.google.appengine.tck.env.appspot;
-
-import com.google.appengine.tck.arquillian.EnvApplicationArchiveProcessor;
-import com.google.appengine.tck.event.TestLifecycle;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
+package com.google.appengine.tck.event;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class AppspotArchiveProcessor extends EnvApplicationArchiveProcessor {
-    @SuppressWarnings("unchecked")
-    protected void handleWebArchiveInternal(WebArchive war) {
-        addService(war, TestLifecycle.class, AppspotUrlLifecycle.class);
-    }
+public interface ContextualTestLifecycleEvent extends TestLifecycleEvent {
+    /**
+     * Get current context.
+     * e.g. execution context or property name
+     *
+     * @return context
+     */
+    String getContext();
 }

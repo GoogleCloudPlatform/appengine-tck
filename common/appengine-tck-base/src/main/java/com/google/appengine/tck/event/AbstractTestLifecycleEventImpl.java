@@ -26,7 +26,7 @@ public abstract class AbstractTestLifecycleEventImpl<T> extends TestLifecycleEve
         this.context = context;
     }
 
-    protected T getContext() {
+    public T getContext() {
         return context;
     }
 }

@@ -314,6 +314,12 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>sdk-env</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- The TCK tests -->
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>

@@ -13,18 +13,23 @@
  * limitations under the License.
  */
 
-package com.google.appengine.tck.env.appspot;
+package com.google.appengine.tck.env.sdk;
 
-import com.google.appengine.tck.arquillian.EnvApplicationArchiveProcessor;
+import com.google.appengine.tck.event.AbstractPropertyLifecycle;
+import com.google.appengine.tck.event.PropertyLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycle;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.kohsuke.MetaInfServices;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class AppspotArchiveProcessor extends EnvApplicationArchiveProcessor {
-    @SuppressWarnings("unchecked")
-    protected void handleWebArchiveInternal(WebArchive war) {
-        addService(war, TestLifecycle.class, AppspotUrlLifecycle.class);
+@MetaInfServices(TestLifecycle.class)
+public class SdkPropertyLifecycle extends AbstractPropertyLifecycle {
+    protected void doBefore(PropertyLifecycleEvent event) {
+        String value = getContextValue(event);
+        event.setPropertyValue(value);
+    }
+
+    protected void doAfter(PropertyLifecycleEvent event) {
     }
 }

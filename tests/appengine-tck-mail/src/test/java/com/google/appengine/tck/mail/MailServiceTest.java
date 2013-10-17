@@ -71,7 +71,7 @@ public class MailServiceTest extends MailTestBase {
     }
 
     protected boolean doExecute(String context) {
-        return (isRuntimeProduction() || execute(context));
+        return execute(context);
     }
 
     @Test

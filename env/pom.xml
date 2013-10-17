@@ -18,6 +18,7 @@
         <!-- Diff environments -->
         <module>appspot</module>
         <module>capedwarf</module>
+        <module>sdk</module>
     </modules>
 
 </project>

@@ -15,10 +15,40 @@
 
 package com.google.appengine.tck.event;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.logging.Logger;
+
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public abstract class AbstractTestLifecycle implements TestLifecycle {
+    protected final Logger log = Logger.getLogger(getClass().getName());
+    private Properties contexts;
+
+    protected synchronized Properties getContexts() {
+        if (contexts == null) {
+            contexts = new Properties();
+            try (InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("test-contexts.properties")) {
+                contexts.load(resourceAsStream);
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return contexts;
+    }
+
+    protected String getContextValue(ContextualTestLifecycleEvent event) {
+        String fqn = String.format("%s#%s", event.getCallerClass().getName(), event.getContext());
+        return getContexts().getProperty(fqn);
+    }
+
+    protected Boolean getContextValueAsBoolean(ContextualTestLifecycleEvent event) {
+        String value = getContextValue(event);
+        return (value == null) ? null : Boolean.parseBoolean(value);
+    }
+
     public void before(TestLifecycleEvent event) {
     }
 

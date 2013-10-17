@@ -105,7 +105,7 @@ public class ImageServingUrlTest extends ImagesServiceTestBase {
         url = imagesService.getServingUrl(servingUrlOptions.imageSize(32).crop(false).secureUrl(false));
         assertStartsWith("http://", url);
 
-        if (isRuntimeProduction() || execute("servingUrlWithSecureFlag")) {
+        if (execute("servingUrlWithSecureFlag")) {
             url = imagesService.getServingUrl(servingUrlOptions.secureUrl(true));
             assertStartsWith("https://", url);
 
@@ -130,7 +130,7 @@ public class ImageServingUrlTest extends ImagesServiceTestBase {
 
     @Test
     public void servingUrlWithOptionsWithSecureFlag() throws Exception {
-        if (isRuntimeProduction() || execute("servingUrlWithOptionsWithSecureFlag")) {
+        if (execute("servingUrlWithOptionsWithSecureFlag")) {
             ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
 
             String url = imagesService.getServingUrl(options);

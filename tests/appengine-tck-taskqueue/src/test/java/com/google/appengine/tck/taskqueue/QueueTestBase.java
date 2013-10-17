@@ -172,10 +172,6 @@ public abstract class QueueTestBase extends TestBase {
             queue.purge();
         }
 
-        if (isRuntimeDev()) {
-            sync(1000);
-        } else {
-            sync(3000);
-        }
+        sync(3000);
     }
 }
