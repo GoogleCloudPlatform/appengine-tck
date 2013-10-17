@@ -39,9 +39,13 @@ public abstract class AbstractTestLifecycle implements TestLifecycle {
         return contexts;
     }
 
-    protected String getContextValue(ContextualTestLifecycleEvent event) {
-        String fqn = String.format("%s#%s", event.getCallerClass().getName(), event.getContext());
+    protected String getContextValue(Class<?> caller, String context) {
+        String fqn = String.format("%s#%s", caller.getName(), context);
         return getContexts().getProperty(fqn);
+    }
+
+    protected String getContextValue(ContextualTestLifecycleEvent event) {
+        return getContextValue(event.getCallerClass(), event.getContext());
     }
 
     protected Boolean getContextValueAsBoolean(ContextualTestLifecycleEvent event) {

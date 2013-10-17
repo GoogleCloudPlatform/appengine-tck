@@ -53,6 +53,7 @@ public class TransformationsTest extends ImagesServiceTestBase {
         originalImage = readImage(CAPEDWARF_PNG);
         resizedImage = imagesService.applyTransform(ImagesServiceFactory.makeResize(300, 286), originalImage, inputSettings, outputSettings);
         assertEquals(300, resizedImage.getWidth());
+        assertEquals(215, resizedImage.getHeight());
 
         originalImage = readImage(CAPEDWARF_PNG);
         resizedImage = imagesService.applyTransform(ImagesServiceFactory.makeResize(400, 200), originalImage, outputSettings);

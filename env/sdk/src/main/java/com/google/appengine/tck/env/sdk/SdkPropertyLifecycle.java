@@ -26,8 +26,7 @@ import org.kohsuke.MetaInfServices;
 @MetaInfServices(TestLifecycle.class)
 public class SdkPropertyLifecycle extends AbstractPropertyLifecycle {
     protected void doBefore(PropertyLifecycleEvent event) {
-        String value = getContextValue(event);
-        event.setPropertyValue(value);
+        event.setPropertyValue(getContextValue(event));
     }
 
     protected void doAfter(PropertyLifecycleEvent event) {

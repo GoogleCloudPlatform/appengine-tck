@@ -30,8 +30,6 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.log.LogQuery;
-import com.google.appengine.api.log.LogService;
-import com.google.appengine.api.log.LogServiceFactory;
 import com.google.appengine.api.log.RequestLogs;
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tck.event.Property;
@@ -44,7 +42,6 @@ import org.jboss.arquillian.junit.InSequence;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,8 +74,6 @@ public class RequestLogsTest extends LoggingTestBase {
     public static final String REGEX_TIMESTAMP = "[0-9]{1,2}/[A-Za-z]{3}/[0-9]{4}:[0-9]{2}:[0-9]{2}:[0-9]{2} [+\\-][0-9]{4}";
     public static final String REGEX_REQUEST_LOG_ID = "([0-9]|[a-f])+";
 
-    private LogService service;
-
     @Deployment
     public static WebArchive getDeployment() {
         WebArchive war = getDefaultDeployment(newTestContext());
@@ -92,13 +87,6 @@ public class RequestLogsTest extends LoggingTestBase {
 
     public RequestLogsTest() {
         super(false);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        if (isInContainer()) {
-            service = LogServiceFactory.getLogService();
-        }
     }
 
     @AfterClass
@@ -165,11 +153,9 @@ public class RequestLogsTest extends LoggingTestBase {
         try {
             connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            PrintWriter out = new PrintWriter(connection.getOutputStream());
-            try {
+
+            try (PrintWriter out = new PrintWriter(connection.getOutputStream())) {
                 out.println("foo=bar");
-            } finally {
-                out.close();
             }
 
             return readFullyAndClose(connection.getInputStream()).trim();
@@ -215,7 +201,7 @@ public class RequestLogsTest extends LoggingTestBase {
         RequestLogs requestLogs1 = getRequestLogs1();
 
         Property ip = property("testClientIp");
-        if (ip != null) {
+        if (ip.exists()) {
             assertEquals(ip.getPropertyValue(), requestLogs1.getIp());
         } else {
             assertRegexpMatches(REGEX_IP4, requestLogs1.getIp());

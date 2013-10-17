@@ -30,6 +30,10 @@ class PropertyLifecycleEventImpl extends AbstractTestLifecycleEventImpl<String> 
         return getContext();
     }
 
+    public boolean exists() {
+        return (value != null || required != null);
+    }
+
     public void setRequired(boolean required) {
         this.required = required;
     }

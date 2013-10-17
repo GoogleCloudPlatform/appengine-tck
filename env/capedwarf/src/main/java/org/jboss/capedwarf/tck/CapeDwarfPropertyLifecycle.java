@@ -15,9 +15,6 @@
 
 package org.jboss.capedwarf.tck;
 
-import java.util.Collections;
-import java.util.Set;
-
 import com.google.appengine.tck.event.AbstractPropertyLifecycle;
 import com.google.appengine.tck.event.PropertyLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycle;
@@ -28,11 +25,12 @@ import org.kohsuke.MetaInfServices;
  */
 @MetaInfServices(TestLifecycle.class)
 public class CapeDwarfPropertyLifecycle extends AbstractPropertyLifecycle {
-    private static final Set<String> REQUIRED_PROPERTIES = Collections.emptySet(); // empty atm
-
     protected void doBefore(PropertyLifecycleEvent event) {
         event.setPropertyValue(getContextValue(event));
-        event.setRequired(REQUIRED_PROPERTIES.contains(event.getPropertyName()));
+        String requiredValue = getContextValue(event.getCallerClass(), event.getPropertyName() + ".required");
+        if (requiredValue != null) {
+            event.setRequired(Boolean.parseBoolean(requiredValue));
+        }
     }
 
     protected void doAfter(PropertyLifecycleEvent event) {

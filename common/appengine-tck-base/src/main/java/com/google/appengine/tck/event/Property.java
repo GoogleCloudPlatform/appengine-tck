@@ -20,6 +20,13 @@ package com.google.appengine.tck.event;
  */
 public interface Property {
     /**
+     * Does property exist.
+     *
+     * @return true if exists, false otherwise
+     */
+    boolean exists();
+
+    /**
      * Is the property required
      *
      * @return true if yes, false if no, null if undetermined

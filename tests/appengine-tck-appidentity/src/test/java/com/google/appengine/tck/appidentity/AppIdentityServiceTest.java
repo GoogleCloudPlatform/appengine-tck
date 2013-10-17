@@ -109,7 +109,7 @@ public class AppIdentityServiceTest extends AppIdentityTestBase {
         ApiProxy.Environment env = ApiProxy.getCurrentEnvironment();
         String expectedBucketName;
         Property property = property("testGetDefaultGcsBucketName");
-        if (property != null) {
+        if (property.exists()) {
             expectedBucketName = property.getPropertyValue();
         } else {
             expectedBucketName = (String) env.getAttributes().get("com.google.appengine.runtime.default_version_hostname");
