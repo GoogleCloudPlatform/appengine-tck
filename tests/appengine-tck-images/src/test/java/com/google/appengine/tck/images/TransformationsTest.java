@@ -15,18 +15,17 @@
 
 package com.google.appengine.tck.images;
 
-import java.io.IOException;
-
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService.OutputEncoding;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.InputSettings;
 import com.google.appengine.api.images.OutputSettings;
 import com.google.appengine.api.images.Transform;
-import com.google.appengine.tck.event.Property;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -54,12 +53,6 @@ public class TransformationsTest extends ImagesServiceTestBase {
         originalImage = readImage(CAPEDWARF_PNG);
         resizedImage = imagesService.applyTransform(ImagesServiceFactory.makeResize(300, 286), originalImage, inputSettings, outputSettings);
         assertEquals(300, resizedImage.getWidth());
-        Property property = property("testResize");
-        if (property != null) {
-            assertEquals(property.getPropertyValue(), String.valueOf(resizedImage.getHeight()));
-        } else {
-            assertEquals(215, resizedImage.getHeight());
-        }
 
         originalImage = readImage(CAPEDWARF_PNG);
         resizedImage = imagesService.applyTransform(ImagesServiceFactory.makeResize(400, 200), originalImage, outputSettings);
