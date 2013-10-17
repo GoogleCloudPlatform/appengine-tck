@@ -131,15 +131,18 @@ public class GCSClientTest extends GCSClientTestBase {
             .build();
 
         GcsOutputChannel writeChannel = gcsService.createOrReplace(filename, option);
-        PrintWriter out = new PrintWriter(Channels.newWriter(writeChannel, "UTF8"));
-        out.println(CONTENT);
-        out.flush();
-        out.close();
+        try (PrintWriter out = new PrintWriter(Channels.newWriter(writeChannel, "UTF8"))) {
+            out.println(CONTENT);
+            out.flush();
+        }
 
         GcsFileMetadata metaData = gcsService.getMetadata(filename);
-        assertEquals(filename, metaData.getFilename());
         GcsFileOptions option2 = metaData.getOptions();
-        gcsService.delete(filename);
+        try {
+            assertEquals(filename, metaData.getFilename());
+        } finally {
+            gcsService.delete(filename);
+        }
 
         assertEquals("Cache-Control: public, max-age=3600", option2.getCacheControl());
         assertEquals("Content-Encoding: gzip", option2.getContentEncoding());
