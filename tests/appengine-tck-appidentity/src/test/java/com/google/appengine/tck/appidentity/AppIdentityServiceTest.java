@@ -15,6 +15,17 @@
 
 package com.google.appengine.tck.appidentity;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
 import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
 import com.google.appengine.api.appidentity.AppIdentityServiceFailureException;
@@ -28,17 +39,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateFactory;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
@@ -235,7 +235,7 @@ public class AppIdentityServiceTest extends AppIdentityTestBase {
                 log.info(e.toString());
             }
         }
-        String summary ="totalCerts:" + certsForApp.size() + ": totalValid:" + totalValid +
+        String summary = "totalCerts:" + certsForApp.size() + ": totalValid:" + totalValid +
                 " totalInvalid:" + totalInvalid + " totalExceptions:" + allExceptions.size();
         log.info(summary);
 
@@ -245,11 +245,7 @@ public class AppIdentityServiceTest extends AppIdentityTestBase {
         }
 
         // At least one signature was valid and no exceptions thrown.
-        if (totalValid > 0) {
-            return true;
-        }
-
-        return false;
+        return (totalValid > 0);
     }
 
     private String exceptionListToString(List<Exception> exceptionList) {
