@@ -25,6 +25,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 public class AppspotArchiveProcessor extends EnvApplicationArchiveProcessor {
     @SuppressWarnings("unchecked")
     protected void handleWebArchiveInternal(WebArchive war) {
-        addService(war, TestLifecycle.class, AppspotUrlLifecycle.class);
+        addService(war, TestLifecycle.class, AppspotUrlLifecycle.class, AppspotExecutionLifecycle.class);
     }
 }

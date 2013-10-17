@@ -25,6 +25,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 public class SdkArchiveProcessor extends EnvApplicationArchiveProcessor {
     @SuppressWarnings("unchecked")
     protected void handleWebArchiveInternal(WebArchive war) {
-        addService(war, TestLifecycle.class, SdkExecutionLifecycle.class);
+        addService(war, TestLifecycle.class, SdkExecutionLifecycle.class, SdkPropertyLifecycle.class);
     }
 }
