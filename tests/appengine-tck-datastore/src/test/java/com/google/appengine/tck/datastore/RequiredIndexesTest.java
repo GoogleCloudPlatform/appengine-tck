@@ -155,7 +155,7 @@ public class RequiredIndexesTest extends QueryTestBase {
     @Test
     public void testQueryWithEqualityAndInequalityFiltersAndSortOnASinglePropertyDoesNotRequireConfiguredIndex() throws Exception {
         if (doExecute("testQueryWithEqualityAndInequalityFiltersAndSortOnASinglePropertyDoesNotRequireConfiguredIndex") == false) {
-            log.info("Not running in development server, skipping test.");
+            log.info("Skipping test.");
             return;
         }
         try {
@@ -175,7 +175,7 @@ public class RequiredIndexesTest extends QueryTestBase {
     @Test
     public void testAncestorQueryWithEqualityAndInequalityFiltersAndSortOnASinglePropertyDoesNotRequireConfiguredIndex() throws Exception {
         if (doExecute("testAncestorQueryWithEqualityAndInequalityFiltersAndSortOnASinglePropertyDoesNotRequireConfiguredIndex") == false) {
-            log.info("Not running in development server, skipping test.");
+            log.info("Skipping test.");
             return;
         }
         try {

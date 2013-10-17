@@ -56,7 +56,7 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
     }
 
     protected boolean doExecute(String context) {
-        return (isRuntimeDev() || execute(context));
+        return execute(context);
     }
 
     protected static Date createDate(int year, int month, int day) {
@@ -86,7 +86,7 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
             log.warning("Actual Result Set:" + actual.toString());
         }
         Assert.assertEquals(message, expected.size(), actual.size());
-        Set<Entity> copy = new HashSet<Entity>(expected);
+        Set<Entity> copy = new HashSet<>(expected);
         copy.removeAll(actual);
         Assert.assertTrue(message, copy.size() == 0);
     }
