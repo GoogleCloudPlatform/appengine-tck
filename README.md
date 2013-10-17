@@ -237,6 +237,7 @@ API tests
 
 Current API tests:
 
+* AppIdentity
 * Blobstore
 * Channel
 * Datastore
@@ -245,6 +246,7 @@ Current API tests:
 * Mail
 * Memcache
 * Search
+* Prospective Search
 * TaskQueue
 * UrlFetch
 * Users
