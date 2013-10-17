@@ -1,0 +1,5 @@
+# Cover Endpoints annotations
+com.google.api.server.spi.config.Api
+com.google.api.server.spi.config.ApiMethod
+# javax
+javax.inject.Named

@@ -33,10 +33,15 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import javassist.bytecode.AccessFlag;
+import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
+import javassist.bytecode.ParameterAnnotationsAttribute;
+import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.MemberValue;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -45,18 +50,20 @@ import javassist.bytecode.MethodInfo;
 @SuppressWarnings("unchecked")
 public class CodeCoverage {
     private static final Logger log = Logger.getLogger(CodeCoverage.class.getName());
+    private static final Tuple DUMMY = new Tuple("<init>", "");
 
-    private final Map<String, List<Tuple>> descriptors = new TreeMap<String, List<Tuple>>();
-    private final Map<String, List<String>> supers = new HashMap<String, List<String>>();
-    private final Map<String, Map<Tuple, Set<CodeLine>>> report = new TreeMap<String, Map<Tuple, Set<CodeLine>>>();
+    private final Map<String, Boolean> annotations = new HashMap<>();
+    private final Map<String, List<Tuple>> descriptors = new TreeMap<>();
+    private final Map<String, List<String>> supers = new HashMap<>();
+    private final Map<String, Map<Tuple, Set<CodeLine>>> report = new TreeMap<>();
 
     private static ClassLoader toClassLoader(File classesToScan) throws MalformedURLException {
         return new URLClassLoader(new URL[]{classesToScan.toURI().toURL()}, CodeCoverage.class.getClassLoader());
     }
 
-    public static void report(String module, ClassLoader classLoader, File baseDir, File classesToScan, MethodExclusion exclusion, String... interfaces) throws Exception {
-        if (interfaces == null || interfaces.length == 0) {
-            log.warning("No interfaces defined!");
+    public static void report(String module, ClassLoader classLoader, File baseDir, File classesToScan, MethodExclusion exclusion, String... classes) throws Exception {
+        if (classes == null || classes.length == 0) {
+            log.warning("No classes to check!");
             return;
         }
 
@@ -64,7 +71,7 @@ public class CodeCoverage {
             classLoader = toClassLoader(classesToScan);
         }
 
-        CodeCoverage cc = new CodeCoverage(classLoader, exclusion, interfaces);
+        CodeCoverage cc = new CodeCoverage(classLoader, exclusion, classes);
         cc.scan(classesToScan, "");
         cc.print(
             SoutPrinter.INSTANCE,
@@ -73,36 +80,49 @@ public class CodeCoverage {
         );
     }
 
-    private CodeCoverage(ClassLoader classLoader, MethodExclusion exclusion, String... interfaces) throws Exception {
-        for (String iface : interfaces) {
-            Map<Tuple, Set<CodeLine>> map = new TreeMap<Tuple, Set<CodeLine>>();
-            report.put(iface, map);
+    private CodeCoverage(ClassLoader classLoader, MethodExclusion exclusion, String... classes) throws Exception {
+        for (String clazz : classes) {
+            Map<Tuple, Set<CodeLine>> map = new TreeMap<>();
+            report.put(clazz, map);
 
-            List<Tuple> mds = new ArrayList<Tuple>();
-            descriptors.put(iface, mds);
+            List<Tuple> mds = new ArrayList<>();
+            descriptors.put(clazz, mds);
 
-            InputStream is = classLoader.getResourceAsStream(iface.replace(".", "/") + ".class");
-            ClassFile clazz = getClassFile(iface, is);
+            InputStream is = classLoader.getResourceAsStream(clazz.replace(".", "/") + ".class");
+            ClassFile classFile = getClassFile(clazz, is);
 
-            fillSupers(clazz);
-
-            List<MethodInfo> methods = clazz.getMethods();
+            List<MethodInfo> methods = classFile.getMethods();
             for (MethodInfo m : methods) {
-                if (exclusion.exclude(clazz, m) == false) {
+                if (exclusion.exclude(classFile, m) == false) {
                     String descriptor = m.getDescriptor();
                     Tuple tuple = new Tuple(m.getName(), descriptor);
                     map.put(tuple, new TreeSet<CodeLine>());
                     mds.add(tuple);
                 }
             }
+
+            if (isAccessFlagSet(classFile.getAccessFlags(), AccessFlag.ANNOTATION)) {
+                boolean hasAttributes = methods.size() > 0;
+                annotations.put(clazz, hasAttributes);
+                if (hasAttributes == false) {
+                    map.put(DUMMY, new TreeSet<CodeLine>());
+                    mds.add(DUMMY);
+                }
+            } else {
+                fillSupers(classFile);
+            }
         }
+    }
+
+    protected static boolean isAccessFlagSet(int accessFlags, int constant) {
+        return ((accessFlags & constant) == constant);
     }
 
     protected void fillSupers(ClassFile clazz) {
         String name = clazz.getName();
         List<String> list = supers.get(name);
         if (list == null) {
-            list = new ArrayList<String>();
+            list = new ArrayList<>();
             supers.put(name, list);
         }
         if (clazz.isInterface()) {
@@ -120,7 +140,7 @@ public class CodeCoverage {
             if (fqn.endsWith(".class")) {
                 FileInputStream fis = new FileInputStream(current);
                 ClassFile cf = getClassFile(fqn, fis);
-                checkClass(cf);
+                checkClassFile(cf);
             }
         } else {
             File[] files = current.listFiles();
@@ -144,8 +164,8 @@ public class CodeCoverage {
         return cf;
     }
 
-    protected void checkClass(ClassFile file) throws Exception {
-        Map<Integer, Triple> calls = new HashMap<Integer, Triple>();
+    protected void checkClassFile(ClassFile file) throws Exception {
+        Map<Integer, Triple> calls = new HashMap<>();
 
         ConstPool pool = file.getConstPool();
         for (int i = 1; i < pool.getSize(); ++i) {
@@ -159,8 +179,14 @@ public class CodeCoverage {
             }
         }
 
-        if (calls.isEmpty())
+        if (calls.isEmpty() && annotations.isEmpty()) {
             return;
+        }
+
+        String className = file.getName();
+
+        AnnotationsAttribute faa = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.visibleTag);
+        checkAnnotations(className, DUMMY.getMethodName(), faa, -1);
 
         List<MethodInfo> methods = file.getMethods();
         for (MethodInfo m : methods) {
@@ -169,10 +195,23 @@ public class CodeCoverage {
                 if (m.getCodeAttribute() == null) {
                     continue;
                 }
+
+                AnnotationsAttribute maa = (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag);
+                boolean annotationsChecked = false;
+                int firstLine = -1;
+
                 CodeIterator it = m.getCodeAttribute().iterator();
                 while (it.hasNext()) {
                     // loop through the bytecode
-                    int index = it.next();
+                    final int index = it.next();
+                    final int line = m.getLineNumber(index);
+
+                    if (annotationsChecked == false) {
+                        annotationsChecked = true;
+                        firstLine = line;
+                        checkAnnotations(className, m.getName(), maa, line - 2); // -2 to get the line above the method
+                    }
+
                     int op = it.byteAt(index);
                     // if the bytecode is a method invocation
                     if (op == CodeIterator.INVOKEVIRTUAL || op == CodeIterator.INVOKESTATIC || op == CodeIterator.INVOKEINTERFACE || op == CodeIterator.INVOKESPECIAL) {
@@ -181,15 +220,62 @@ public class CodeCoverage {
                         if (triple != null) {
                             Map<Tuple, Set<CodeLine>> map = report.get(triple.className);
                             Set<CodeLine> set = map.get(triple.tuple);
-                            CodeLine cl = new CodeLine(file.getName(), m.getName(), m.getLineNumber(index));
+                            CodeLine cl = new CodeLine(className, m.getName(), line);
                             set.add(cl);
                         }
                     }
                 }
+
+                ParameterAnnotationsAttribute paa = (ParameterAnnotationsAttribute) m.getAttribute(ParameterAnnotationsAttribute.visibleTag);
+                if (paa != null) {
+                    Annotation[][] paas = paa.getAnnotations();
+                    if (paas != null) {
+                        for (Annotation[] params : paas) {
+                            for (Annotation a : params) {
+                                for (Map.Entry<String, Boolean> entry : annotations.entrySet()) {
+                                    if (entry.getKey().equals(a.getTypeName())) {
+                                        checkAnnotation(className, m.getName(), firstLine - 1, entry.getValue(), entry.getKey(), a);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 m.getCodeAttribute().computeMaxStack();
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    protected void checkAnnotations(String clazz, String member, AnnotationsAttribute aa, int line) {
+        if (aa != null) {
+            for (Map.Entry<String, Boolean> entry : annotations.entrySet()) {
+                String annotation = entry.getKey();
+                Annotation ann = aa.getAnnotation(annotation);
+                if (ann != null) {
+                    checkAnnotation(clazz, member, line, entry.getValue(), annotation, ann);
+                }
+            }
+        }
+    }
+
+    protected void checkAnnotation(String clazz, String member, int line, boolean hasMembers, String annotation, Annotation ann) {
+        Map<Tuple, Set<CodeLine>> map = report.get(annotation);
+        if (hasMembers) {
+            List<Tuple> tuples = descriptors.get(annotation);
+            for (Tuple tuple : tuples) {
+                Set<CodeLine> set = map.get(tuple);
+                String name = tuple.getMethodName();
+                MemberValue mv = ann.getMemberValue(name);
+                if (mv != null) {
+                    set.add(new CodeLine(clazz, member, line));
+                }
+            }
+        } else {
+            Set<CodeLine> set = map.get(DUMMY);
+            set.add(new CodeLine(clazz, member, line));
         }
     }
 

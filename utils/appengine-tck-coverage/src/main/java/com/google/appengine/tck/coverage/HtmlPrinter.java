@@ -44,8 +44,7 @@ class HtmlPrinter implements Printer {
     public void print(Map<String, Map<Tuple, Set<CodeLine>>> report) throws Exception {
         if (index.exists()) index.delete();
 
-        BufferedWriter writer = new BufferedWriter(new FileWriter(index));
-        try {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(index))) {
             writer.write("<html>\n" +
                 "<head>" +
                 "<title>GAE API Code Coverage</title>" +
@@ -123,14 +122,20 @@ class HtmlPrinter implements Printer {
                 writer.write("</div>");
             }
             writer.write("</body></html>");
-        } finally {
-            writer.close();
         }
     }
 
     protected String toLink(CodeLine cl) {
         String url = createGitHubUrl(GITHUB_USER, GITHUB_PROJECT, GITHUB_BRANCH, getPath(cl), cl.getLine());
-        String text = esc(cl.getSimpleClassName() + ".java" + ":" + cl.getLine());
+
+        StringBuilder sb = new StringBuilder(cl.getSimpleClassName());
+        sb.append(".java");
+        if (cl.getLine() > 0) {
+            sb.append(":");
+            sb.append(cl.getLine());
+        }
+        String text = esc(sb.toString());
+
         return esc(cl.getClassName() + "." + cl.getMethodName()) + " (<a href=\"" + url + "\" target=\"_top\">" + esc(text) + "</a>)";
     }
 
@@ -139,7 +144,11 @@ class HtmlPrinter implements Printer {
     }
 
     private static String createGitHubUrl(String user, String project, String branch, String path, int lineNumber) {
-        return "http://github.com/" + user + "/" + project + "/blob/" + branch + path + "#L" + lineNumber;
+        StringBuilder link = new StringBuilder("http://github.com/" + user + "/" + project + "/blob/" + branch + path);
+        if (lineNumber > 0) {
+            link.append("#L").append(lineNumber);
+        }
+        return link.toString();
     }
 
     static String esc(String token) {
