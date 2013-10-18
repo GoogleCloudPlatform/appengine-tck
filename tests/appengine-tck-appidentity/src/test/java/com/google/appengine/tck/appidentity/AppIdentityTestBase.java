@@ -35,16 +35,9 @@ public abstract class AppIdentityTestBase extends TestBase {
     protected static WebArchive getDefaultDeployment() {
         TestContext context = new TestContext().setUseSystemProperties(true).setCompatibilityProperties(TCK_PROPERTIES);
 
-        // Add a custom web.xml.  These resource files are located:
-        // in tests/appengine-tck-the-test/src/test/resource
-        // context.setWebXmlFile("web-taskqueue.xml");
-
         WebArchive war = getTckDeployment(context);
         war.addClass(AppIdentityTestBase.class);
         war.addPackage(EmailValidator.class.getPackage());
-
-        // Add a taskqueue configuration.
-        // war.addAsWebInfResource("queue.xml");
 
         return war;
     }
@@ -53,11 +46,7 @@ public abstract class AppIdentityTestBase extends TestBase {
     public void initSystemProperties() {
         try {
             appIdproperty = readProperties(TCK_PROPERTIES).getProperty("appengine.appId");
-
             appEngineServer = readProperties(TCK_PROPERTIES).getProperty("appengine.server");
-            if (appEngineServer == null) {
-                appEngineServer = "appspot.com";
-            }
         } catch (IOException ioe) {
             throw new IllegalStateException(ioe);
         }
