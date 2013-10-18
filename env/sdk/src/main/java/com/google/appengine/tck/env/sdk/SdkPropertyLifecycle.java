@@ -16,7 +16,6 @@
 package com.google.appengine.tck.env.sdk;
 
 import com.google.appengine.tck.event.AbstractPropertyLifecycle;
-import com.google.appengine.tck.event.PropertyLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycle;
 import org.kohsuke.MetaInfServices;
 
@@ -25,11 +24,4 @@ import org.kohsuke.MetaInfServices;
  */
 @MetaInfServices(TestLifecycle.class)
 public class SdkPropertyLifecycle extends AbstractPropertyLifecycle {
-    protected void doBefore(PropertyLifecycleEvent event) {
-        String value = getContextValue(event);
-        event.setPropertyValue(value);
-    }
-
-    protected void doAfter(PropertyLifecycleEvent event) {
-    }
 }

@@ -22,4 +22,17 @@ public abstract class AbstractPropertyLifecycle extends AbstractTypedTestLifecyc
     protected Class<PropertyLifecycleEvent> getExactEventType() {
         return PropertyLifecycleEvent.class;
     }
+
+    protected void doBefore(PropertyLifecycleEvent event) {
+        String value = getContextValue(event);
+        event.setPropertyValue(value);
+
+        String requiredValue = getContextValue(event.getCallerClass(), event.getPropertyName() + ".required");
+        if (requiredValue != null) {
+            event.setRequired(Boolean.parseBoolean(requiredValue));
+        }
+    }
+
+    protected void doAfter(PropertyLifecycleEvent event) {
+    }
 }

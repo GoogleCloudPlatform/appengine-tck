@@ -16,7 +16,6 @@
 package org.jboss.capedwarf.tck;
 
 import com.google.appengine.tck.event.AbstractPropertyLifecycle;
-import com.google.appengine.tck.event.PropertyLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycle;
 import org.kohsuke.MetaInfServices;
 
@@ -25,14 +24,4 @@ import org.kohsuke.MetaInfServices;
  */
 @MetaInfServices(TestLifecycle.class)
 public class CapeDwarfPropertyLifecycle extends AbstractPropertyLifecycle {
-    protected void doBefore(PropertyLifecycleEvent event) {
-        event.setPropertyValue(getContextValue(event));
-        String requiredValue = getContextValue(event.getCallerClass(), event.getPropertyName() + ".required");
-        if (requiredValue != null) {
-            event.setRequired(Boolean.parseBoolean(requiredValue));
-        }
-    }
-
-    protected void doAfter(PropertyLifecycleEvent event) {
-    }
 }

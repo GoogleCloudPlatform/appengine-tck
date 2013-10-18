@@ -16,17 +16,9 @@
 package com.google.appengine.tck.env.appspot;
 
 import com.google.appengine.tck.event.AbstractPropertyLifecycle;
-import com.google.appengine.tck.event.PropertyLifecycleEvent;
 
 /**
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
  */
 public class AppspotPropertyLifecycle extends AbstractPropertyLifecycle {
-    protected void doBefore(PropertyLifecycleEvent event) {
-        String value = getContextValue(event);
-        event.setPropertyValue(value);
-    }
-
-    protected void doAfter(PropertyLifecycleEvent event) {
-    }
 }
