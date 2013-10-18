@@ -15,20 +15,18 @@
 
 package com.google.appengine.tck.env.appspot;
 
-import com.google.appengine.tck.arquillian.EnvApplicationArchiveProcessor;
-import com.google.appengine.tck.event.TestLifecycle;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
+import com.google.appengine.tck.event.AbstractPropertyLifecycle;
+import com.google.appengine.tck.event.PropertyLifecycleEvent;
 
 /**
- * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
+ * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
  */
-public class AppspotArchiveProcessor extends EnvApplicationArchiveProcessor {
-    @SuppressWarnings("unchecked")
-    protected void handleWebArchiveInternal(WebArchive war) {
-        addService(war, TestLifecycle.class,
-            AppspotExecutionLifecycle.class,
-            AppspotPropertyLifecycle.class,
-            AppspotUrlLifecycle.class
-        );
+public class AppspotPropertyLifecycle extends AbstractPropertyLifecycle {
+    protected void doBefore(PropertyLifecycleEvent event) {
+        String value = getContextValue(event);
+        event.setPropertyValue(value);
+    }
+
+    protected void doAfter(PropertyLifecycleEvent event) {
     }
 }
