@@ -15,13 +15,14 @@
 
 package com.google.appengine.tck.appidentity;
 
+import java.io.IOException;
+
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
+import com.google.appengine.tck.event.Property;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
-
-import java.io.IOException;
 
 
 /**
@@ -50,5 +51,33 @@ public abstract class AppIdentityTestBase extends TestBase {
         } catch (IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    protected String getExpectedAppId(String context) {
+        String expectedAppId = appIdproperty;
+        if (expectedAppId == null) {
+            Property property = property(context);
+            if (property.exists()) {
+                expectedAppId = property.getPropertyValue();
+            } else {
+                String nullIdMsg = "Either -Dappengine.appId= or test-contexts.properties must set the app id.";
+                throw new IllegalStateException(nullIdMsg);
+            }
+        }
+        return expectedAppId;
+    }
+
+    protected String getExpectedAppHostname(String context) {
+        String expectedHostname = appEngineServer;
+        if (expectedHostname == null) {
+            Property property = property(context);
+            if (property.exists()) {
+                expectedHostname = property.getPropertyValue();
+            } else {
+                String nullHostnameMsg = "Either -Dappengine.server= or test-contexts.properties must set the server name.";
+                throw new IllegalStateException(nullHostnameMsg);
+            }
+        }
+        return expectedHostname;
     }
 }

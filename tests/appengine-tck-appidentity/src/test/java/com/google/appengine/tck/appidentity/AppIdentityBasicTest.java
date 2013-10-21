@@ -15,7 +15,6 @@
 
 package com.google.appengine.tck.appidentity;
 
-import com.google.appengine.tck.event.Property;
 import com.google.apphosting.api.ApiProxy;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -37,17 +36,7 @@ public class AppIdentityBasicTest extends AppIdentityTestBase {
 
     @Test
     public void testGetAppId() {
-        String expectedAppId = appIdproperty;
-        if (expectedAppId == null) {
-            Property property = property("testGetAppId");
-            if (property.exists()) {
-                expectedAppId = property.getPropertyValue();
-            } else {
-                String nullIdMsg = "Either -Dappengine.appId= or test-contexts.properties must set the app id.";
-                throw new IllegalStateException(nullIdMsg);
-            }
-        }
-
+        String expectedAppId = getExpectedAppId("testGetAppId");
         String appId = ApiProxy.getCurrentEnvironment().getAppId();
         // AppIds in the US are prefixed with s~ and in Europe e~ so just match the end.
         String errMsg = "The appId should end with " + expectedAppId + ", but was " + appId;
@@ -56,17 +45,7 @@ public class AppIdentityBasicTest extends AppIdentityTestBase {
 
     @Test
     public void testGetVersionedHostname() {
-        String expectedHostname = appEngineServer;
-        if (expectedHostname == null) {
-            Property property = property("testGetVersionedHostname");
-            if (property.exists()) {
-                expectedHostname = property.getPropertyValue();
-            } else {
-                String nullHostnameMsg = "Either -Dappengine.server= or test-contexts.properties must set the server name.";
-                throw new IllegalStateException(nullHostnameMsg);
-            }
-        }
-
+        String expectedHostname = getExpectedAppHostname("testGetVersionedHostname");
         ApiProxy.Environment env = ApiProxy.getCurrentEnvironment();
         String hostname = (String) env.getAttributes().get("com.google.appengine.runtime.default_version_hostname");
         String errMsg = "The versioned hostname should end with " + expectedHostname + ", but was " + hostname;

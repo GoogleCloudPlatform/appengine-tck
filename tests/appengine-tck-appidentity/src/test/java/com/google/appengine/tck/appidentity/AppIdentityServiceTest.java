@@ -141,9 +141,10 @@ public class AppIdentityServiceTest extends AppIdentityTestBase {
         String hostname = (String) env.getAttributes().get("com.google.appengine.runtime.default_version_hostname");
         AppIdentityService.ParsedAppId parsed = appIdentity.parseFullAppId(hostname);
 
-        Assert.assertEquals(createParsed(parsed), appEngineServer, parsed.getDomain());
-        Assert.assertEquals(appIdproperty, parsed.getId());
-        Assert.assertTrue(parsed.getPartition().equals("s~") || parsed.getPartition().equals("e~"));
+        String message = createParsed(parsed);
+        Assert.assertEquals(message, property("testParseFullAppId_partition").getPropertyValue(), parsed.getPartition());
+        Assert.assertEquals(message, getExpectedAppHostname("testParseFullAppId_domain"), parsed.getDomain());
+        Assert.assertEquals(message, getExpectedAppId("testParseFullAppId_id"), parsed.getId());
     }
 
     @Test
