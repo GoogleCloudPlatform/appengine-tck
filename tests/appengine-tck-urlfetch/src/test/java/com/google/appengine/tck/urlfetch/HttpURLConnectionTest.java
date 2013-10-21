@@ -25,9 +25,7 @@ import java.net.URLConnection;
 
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
@@ -37,24 +35,21 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(Arquillian.class)
 public class HttpURLConnectionTest extends URLFetchTestBase {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    private static final int OK = 200;
 
     @Test
     public void fetchExistingPage() throws Exception {
-        String content = fetchUrl("http://www.google.org/", 200);
+        fetchUrl("http://www.google.org/", OK);
     }
 
     @Test
     public void fetchNonExistentPage() throws Exception {
-        String content = fetchUrl("http://www.google.com/404", 404);
+        fetchUrl("http://www.google.com/404", 404);
     }
 
-    @Test
+    @Test(expected = IOException.class)
     public void fetchNonExistentSite() throws Exception {
-        thrown.expect(IOException.class);
-        String content = fetchUrl("http://i.do.not.exist/", 503);
+        fetchUrl("http://i.do.not.exist/", 503);
     }
 
     protected String fetchUrl(String url, int expectedResponseCode) throws IOException {
@@ -65,7 +60,7 @@ public class HttpURLConnectionTest extends URLFetchTestBase {
         try {
             int responseCode = connection.getResponseCode();
             assertEquals(url, expectedResponseCode, responseCode);
-            return getContent(conn);
+            return (responseCode == OK) ? getContent(conn) : null;
         } finally {
             connection.disconnect();
         }
@@ -73,16 +68,13 @@ public class HttpURLConnectionTest extends URLFetchTestBase {
 
     private String getContent(URLConnection connection) throws IOException {
         InputStream stream = connection.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        try {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String content = "";
             String line;
             while ((line = reader.readLine()) != null) {
                 content += line;
             }
             return content;
-        } finally {
-            reader.close();
         }
     }
 }
