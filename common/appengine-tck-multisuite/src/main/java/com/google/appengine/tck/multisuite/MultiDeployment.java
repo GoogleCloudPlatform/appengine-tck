@@ -38,11 +38,8 @@ public class MultiDeployment {
         }
 
         Properties overrides = new Properties();
-        InputStream is = arqXml.openStream();
-        try {
+        try (InputStream is = arqXml.openStream()) {
             overrides.load(is);
-        } finally {
-            is.close();
         }
 
         String name = overrides.getProperty("deployment.name", "gae-multisuite-tck.war");

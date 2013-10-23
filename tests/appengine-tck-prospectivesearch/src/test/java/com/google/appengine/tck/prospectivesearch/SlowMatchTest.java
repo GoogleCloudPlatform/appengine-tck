@@ -16,6 +16,7 @@
 package com.google.appengine.tck.prospectivesearch;
 
 import com.google.appengine.api.prospectivesearch.FieldType;
+import com.google.appengine.tck.prospectivesearch.support.InvocationData;
 import com.google.appengine.tck.prospectivesearch.support.MatchResponseServlet;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -47,8 +48,8 @@ public class SlowMatchTest extends MatchTestBase {
         int expectedInvocationCount = 2; // Math.ceil(3 / 2) = 2
         assertEquals("incorrect servlet invocation count", expectedInvocationCount, MatchResponseServlet.getInvocationCount());
 
-        for (MatchResponseServlet.InvocationData invocationData : MatchResponseServlet.getInvocations()) {
-            assertTrue("batch was too large", invocationData.getSubIds().length <= resultBatchSize);
+        for (InvocationData invocationData : MatchResponseServlet.getInvocations()) {
+            assertTrue("batch was too large", invocationData.getSubIds().size() <= resultBatchSize);
         }
     }
 

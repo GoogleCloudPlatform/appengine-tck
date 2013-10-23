@@ -15,9 +15,15 @@
 
 package com.google.appengine.tck.base;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -25,6 +31,10 @@ import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.tck.category.IgnoreMultisuite;
 import com.google.appengine.tck.event.ExecutionLifecycleEvent;
@@ -32,6 +42,7 @@ import com.google.appengine.tck.event.Property;
 import com.google.appengine.tck.event.PropertyLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycles;
+import com.google.appengine.tck.temp.TempData;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -45,8 +56,11 @@ import org.junit.Assert;
 public class TestBase {
     protected static final long DEFAULT_SLEEP = 3000L;
     protected static final String TCK_PROPERTIES = "tck.properties";
+    protected static final String TIMESTAMP_TXT = "timestamp.txt";
 
     protected final Logger log = Logger.getLogger(getClass().getName());
+
+    private Object timestamp;
 
     protected static void enhanceTestContext(TestContext context) {
         TestLifecycleEvent event = TestLifecycles.createTestContextLifecycleEvent(null, context);
@@ -76,6 +90,8 @@ public class TestBase {
         war.addPackage(IgnoreMultisuite.class.getPackage());
         // events
         war.addPackage(TestLifecycles.class.getPackage());
+        // temp data
+        war.addPackage(TempData.class.getPackage());
 
         // web.xml
         if (context.getWebXmlFile() != null) {
@@ -117,6 +133,10 @@ public class TestBase {
 
             final StringAsset asset = new StringAsset(writer.toString());
             war.addAsWebInfResource(asset, "classes/" + context.getCompatibilityProperties());
+        }
+
+        if (context.isIgnoreTimestamp() == false) {
+            war.addAsWebInfResource(new StringAsset(String.valueOf(context.getTimestamp())), "classes/" + TIMESTAMP_TXT);
         }
 
         return war;
@@ -218,6 +238,131 @@ public class TestBase {
             try {
                 is.close();
             } catch (IOException ignored) {
+            }
+        }
+    }
+
+    public static Key putTempData(TempData data) {
+        try {
+            DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+            Class<? extends TempData> type = data.getClass();
+            String kind = getKind(type);
+            Entity entity = new Entity(kind);
+            for (Map.Entry<String, Object> entry : data.toProperties(ds).entrySet()) {
+                entity.setProperty(entry.getKey(), entry.getValue());
+            }
+            data.prePut(ds);
+            Key key = ds.put(entity);
+            data.postPut(ds);
+            return key;
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static <T extends TempData> List<T> getAllTempData(Class<T> type) {
+        try {
+            DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+            String kind = getKind(type);
+            PreparedQuery pq = ds.prepare(new Query(kind).addSort("timestamp", Query.SortDirection.ASCENDING));
+            Iterator<Entity> iter = pq.asIterator();
+            List<T> result = new ArrayList<>();
+            while (iter.hasNext()) {
+                Entity entity = iter.next();
+                T data = type.newInstance();
+                data.preGet(ds);
+                data.fromProperties(entity.getProperties());
+                data.postGet(ds);
+                result.add(data);
+            }
+            return result;
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static <T extends TempData> T getLastTempData(Class<T> type) {
+        try {
+            DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+            String kind = getKind(type);
+            PreparedQuery pq = ds.prepare(new Query(kind).addSort("timestamp", Query.SortDirection.DESCENDING));
+            Iterator<Entity> iter = pq.asIterator();
+            if (iter.hasNext()) {
+                Entity entity = iter.next();
+                T data = type.newInstance();
+                data.preGet(ds);
+                data.fromProperties(entity.getProperties());
+                data.postGet(ds);
+                return data;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static void deleteTempData(Class<? extends TempData> type) {
+        // check if in-container
+        if (isInContainer() == false) {
+            return;
+        }
+
+        try {
+            DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+            String kind = getKind(type);
+            PreparedQuery pq = ds.prepare(new Query(kind));
+            for (Entity e : pq.asIterable()) {
+                TempData data = type.newInstance();
+                data.fromProperties(e.getProperties());
+                data.preDelete(ds);
+                ds.delete(e.getKey());
+                data.postDelete(ds);
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    protected static <T extends TempData> String getKind(Class<T> type) {
+        return type.getSimpleName() + readTimestamp(type);
+    }
+
+    protected synchronized Long readTimestamp() {
+        return readTimestampInternal();
+    }
+
+    private Long readTimestampInternal() {
+        if (timestamp != null) {
+            return (timestamp instanceof Long) ? (Long) timestamp : null;
+        }
+
+        timestamp = readTimestampInternal(getClass());
+
+        return readTimestampInternal();
+    }
+
+    protected static Long readTimestamp(Class<?> clazz) {
+        Object ts = readTimestampInternal(clazz);
+        return (ts instanceof Long) ? (Long) ts : null;
+    }
+
+    private static Object readTimestampInternal(Class<?> clazz) {
+        final InputStream is = clazz.getClassLoader().getResourceAsStream(TIMESTAMP_TXT);
+        if (is == null) {
+            return new Object(); // marker
+        } else {
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                String line = reader.readLine();
+                return Long.parseLong(line);
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            } finally {
+                try {
+                    is.close();
+                } catch (IOException ignored) {
+                }
             }
         }
     }
