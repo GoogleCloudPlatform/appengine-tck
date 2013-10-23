@@ -19,6 +19,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import com.google.appengine.tck.util.Utils;
@@ -32,6 +34,14 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public abstract class NotificationFilter implements Filter<ArchivePath> {
+    protected static final Set<String> ALLOWED_DUPLICATES;
+
+    static {
+        ALLOWED_DUPLICATES = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        ALLOWED_DUPLICATES.add("/WEB-INF/classes/test-contexts.properties");
+        ALLOWED_DUPLICATES.add("/WEB-INF/classes/timestamp.txt");
+    }
+
     protected final Logger log = Logger.getLogger(getClass().getName());
 
     protected final WebArchive uber;
@@ -44,9 +54,13 @@ public abstract class NotificationFilter implements Filter<ArchivePath> {
 
     protected abstract void validate(ArchivePath path, boolean equal);
 
+    protected boolean isAllowedDuplicate(Node node) {
+        return ALLOWED_DUPLICATES.contains(node.getPath().get());
+    }
+
     public boolean include(ArchivePath path) {
         Node node = uber.get(path);
-        if (node != null) {
+        if (node != null && isAllowedDuplicate(node) == false) {
             Asset asset = node.getAsset();
             if (asset != null) {
                 Asset other = archive.get(path).getAsset();

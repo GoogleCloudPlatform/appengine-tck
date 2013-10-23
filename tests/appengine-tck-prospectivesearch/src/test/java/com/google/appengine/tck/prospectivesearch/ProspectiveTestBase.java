@@ -27,10 +27,13 @@ import com.google.appengine.api.prospectivesearch.ProspectiveSearchServiceFactor
 import com.google.appengine.api.prospectivesearch.Subscription;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
+import com.google.appengine.tck.prospectivesearch.support.InvocationData;
 import com.google.appengine.tck.prospectivesearch.support.MatchResponseServlet;
+import com.google.appengine.tck.prospectivesearch.support.Ping;
 import com.google.appengine.tck.prospectivesearch.support.SpecialMatchResponseServlet;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 
 /**
@@ -54,12 +57,19 @@ public abstract class ProspectiveTestBase extends TestBase {
         WebArchive war = getTckDeployment(context);
         war.addClasses(ProspectiveTestBase.class);
         war.addClasses(MatchResponseServlet.class, SpecialMatchResponseServlet.class);
+        war.addClasses(InvocationData.class, Ping.class);
         return war;
     }
 
     @After
     public void tearDown() throws Exception {
         removeAllSubscriptions();
+    }
+
+    @AfterClass
+    public static void cleanTempData() {
+        deleteTempData(InvocationData.class);
+        deleteTempData(Ping.class);
     }
 
     protected void removeAllSubscriptions() {

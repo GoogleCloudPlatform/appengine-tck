@@ -24,33 +24,34 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.prospectivesearch.ProspectiveSearchServiceFactory;
+import com.google.appengine.tck.base.TestBase;
 
 /**
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 public class SpecialMatchResponseServlet extends HttpServlet {
 
-    private static boolean invoked;
-    private static Entity lastReceivedDocument;
-
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        invoked = true;
-        lastReceivedDocument = ProspectiveSearchServiceFactory.getProspectiveSearchService().getDocument(request);
+        Ping ping = new Ping();
+        ping.invoked = true;
+        ping.lastReceivedDocument = ProspectiveSearchServiceFactory.getProspectiveSearchService().getDocument(request);
+        TestBase.putTempData(ping);
     }
 
     public static boolean isInvoked() {
-        return invoked;
+        Ping ping = TestBase.getLastTempData(Ping.class);
+        return (ping != null) && ping.invoked;
     }
 
     public static Entity getLastReceivedDocument() {
-        return lastReceivedDocument;
+        Ping ping = TestBase.getLastTempData(Ping.class);
+        return (ping != null) ? ping.getLastReceivedDocument() : null;
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     }
 
     public static void clear() {
-        invoked = false;
-        lastReceivedDocument = null;
+        TestBase.deleteTempData(Ping.class);
     }
 }
