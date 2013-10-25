@@ -12,20 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.google.appengine.tck.endpoints.support;
+
+import com.google.api.server.spi.config.ApiTransformer;
 
 /**
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
  *
- * Used to test @Api(transformers=...)
- * This class does not declare @ApiTransformer(BazTransformer.class)
+ * Used to test the BarTransformer class.
  */
-public class Baz {
+@ApiTransformer(BarTransformer.class)
+public class Bar {
     private final int x;
     private final int y;
 
-    public Baz(int x, int y) {
+    public Bar(int x, int y) {
         this.x = x;
         this.y = y;
     }

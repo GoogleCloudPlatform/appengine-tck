@@ -41,9 +41,6 @@ public class EndPointsTest extends EndPointsTestBase {
         TestContext context = new TestContext().setWebXmlFile("endpoints-web.xml");
         WebArchive war = getDefaultDeployment(context);
         war.addPackage(TestEndPoint.class.getPackage());
-        war.addAsWebInfResource("testEndPoint-v2.api");
-        war.addAsWebInfResource("endPointWithoutVersion-v1.api");
-        war.addAsWebInfResource("myapi-v2.api");
         return war;
     }
 
