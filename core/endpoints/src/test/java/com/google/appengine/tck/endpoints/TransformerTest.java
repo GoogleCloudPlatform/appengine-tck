@@ -16,6 +16,9 @@
 package com.google.appengine.tck.endpoints;
 
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.endpoints.support.TransformerEndPoint;
@@ -47,7 +50,7 @@ public class TransformerTest extends EndPointsTestBase {
     public void testApiTransformer(@ArquillianResource URL url) throws Exception {
         URL endPointUrl = toHttps(new URL(url, createPath("bar")));
         String response = invokeEndpointWithGet(endPointUrl);
-        assertResponse("\"bar\": \"1,2\"", response);
+        assertResponse(Collections.<String, String>singletonMap("bar", "1,2"), response);
     }
 
     @Test
@@ -55,7 +58,7 @@ public class TransformerTest extends EndPointsTestBase {
     public void testApiTransformerDeclaredInApiAnnotation(@ArquillianResource URL url) throws Exception {
         URL endPointUrl = toHttps(new URL(url, createPath("baz")));
         String response = invokeEndpointWithGet(endPointUrl);
-        assertResponse("\"baz\": \"3,4\"", response);
+        assertResponse(Collections.<String, String>singletonMap("baz", "3,4"), response);
     }
 
     @Test
@@ -63,10 +66,10 @@ public class TransformerTest extends EndPointsTestBase {
     public void testApiResourceProperty(@ArquillianResource URL url) throws Exception {
         URL endPointUrl = toHttps(new URL(url, createPath("foo")));
         String response = invokeEndpointWithPost(endPointUrl);
-        assertResponse("\"x\": 1,", response);   // not annotated
-        assertNotResponse("\"y\": 2", response); // annotated w/ignored=true
-        assertResponse("qwerty\": 3", response); // annotated w/name="querty"
-
+        Map<String, String> actual = new HashMap<>();
+        actual.put("x", "1");
+        actual.put("qwerty", "3");
+        assertResponse(actual, response); // x is OK, y is ignored, qwerty is renamed
     }
 
     protected String createPath(String methodPath) {

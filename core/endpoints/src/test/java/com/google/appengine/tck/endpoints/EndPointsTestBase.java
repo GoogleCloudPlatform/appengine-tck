@@ -17,7 +17,10 @@ package com.google.appengine.tck.endpoints;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
+import com.google.appengine.repackaged.org.codehaus.jackson.JsonNode;
+import com.google.appengine.repackaged.org.codehaus.jackson.map.ObjectMapper;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.endpoints.support.EndPointClient;
@@ -26,6 +29,7 @@ import com.google.appengine.tck.event.UrlLifecycleEvent;
 import com.google.appengine.tck.lib.LibUtils;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 
 import static org.junit.Assert.assertTrue;
@@ -54,6 +58,14 @@ public class EndPointsTestBase extends TestBase {
         war.addClass(EndPointsTestBase.class);
         new LibUtils().addLibrary(war, "com.google.appengine:appengine-endpoints");
         return war;
+    }
+
+    protected void assertResponse(Map<String, String> expected, String actual) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(actual);
+        for (Map.Entry<String, String> entry : expected.entrySet()) {
+            Assert.assertEquals(entry.getValue(), root.get(entry.getKey()).asText());
+        }
     }
 
     protected void assertResponse(String expected, String actual) {
