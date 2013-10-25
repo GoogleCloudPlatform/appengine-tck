@@ -60,6 +60,10 @@ public class EndPointsTestBase extends TestBase {
         assertTrue("Response was: " + actual + ", where we expected: " + expected, actual.contains(expected));
     }
 
+    protected void assertNotResponse(String notExpected, String actual) {
+        assertTrue("Response was: " + actual + ", where actual should not exist: " + notExpected, !actual.contains(notExpected));
+    }
+
     protected String invokeEndpointWithGet(URL endPointUrl) throws Exception {
         return client.doGet(endPointUrl);
     }

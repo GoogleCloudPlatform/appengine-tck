@@ -15,27 +15,19 @@
 
 package com.google.appengine.tck.endpoints.support;
 
+import com.google.api.server.spi.config.Transformer;
+
 /**
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
- *
- * Used to test @Api(transformers=...)
- * This class does not declare @ApiTransformer(BazTransformer.class)
  */
-public class Baz {
-    private final int x;
-    private final int y;
-
-    public Baz(int x, int y) {
-        this.x = x;
-        this.y = y;
+public class BarTransformer implements Transformer<Bar, String> {
+    public String transformTo(Bar in) {
+        return in.getX() + "," + in.getY();
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
+    public Bar transformFrom(String in) {
+        String[] xy = in.split(",");
+        return new Bar(Integer.parseInt(xy[0]), Integer.parseInt(xy[1]));
     }
 }
 

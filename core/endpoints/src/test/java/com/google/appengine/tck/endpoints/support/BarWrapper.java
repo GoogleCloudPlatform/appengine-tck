@@ -16,26 +16,16 @@
 package com.google.appengine.tck.endpoints.support;
 
 /**
- * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
- *
- * Used to test @Api(transformers=...)
- * This class does not declare @ApiTransformer(BazTransformer.class)
  */
-public class Baz {
-    private final int x;
-    private final int y;
+public class BarWrapper {
 
-    public Baz(int x, int y) {
-        this.x = x;
-        this.y = y;
+    private final Bar bar;
+
+    public BarWrapper(Bar bar) {
+        this.bar = bar;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
+    public Bar getBar() {
+        return this.bar;
     }
 }
-

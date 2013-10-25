@@ -15,27 +15,35 @@
 
 package com.google.appengine.tck.endpoints.support;
 
+import com.google.api.server.spi.config.AnnotationBoolean;
+import com.google.api.server.spi.config.ApiResourceProperty;
+
 /**
- * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
- *
- * Used to test @Api(transformers=...)
- * This class does not declare @ApiTransformer(BazTransformer.class)
+ * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class Baz {
+public class Foo {
     private final int x;
     private final int y;
+    private final int z;
 
-    public Baz(int x, int y) {
+    public Foo(int x, int y, int z) {
         this.x = x;
         this.y = y;
+        this.z = z;
     }
 
     public int getX() {
         return x;
     }
 
+    @ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
     public int getY() {
         return y;
     }
-}
 
+    @ApiResourceProperty(name = "qwerty")
+    public int getZ() {
+        return z;
+    }
+}
