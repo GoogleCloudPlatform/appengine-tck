@@ -46,7 +46,7 @@
         <version.org.jboss.xnio>3.0.7.GA</version.org.jboss.xnio>
 
         <!-- Testing -->
-        <version.javax.servlet>3.0.1</version.javax.servlet>
+        <version.javax.servlet>2.5</version.javax.servlet>
         <version.junit>4.11</version.junit>
         <version.arquillian>1.1.1.Final</version.arquillian>
         <version.arquillian.gae>1.0.0.Beta7</version.arquillian.gae>
@@ -556,7 +556,7 @@
 
             <dependency>
                 <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
+                <artifactId>servlet-api</artifactId>
                 <version>${version.javax.servlet}</version>
             </dependency>
 
