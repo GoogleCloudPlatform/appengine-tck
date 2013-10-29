@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.endpoints.support.TransformerEndPoint;
@@ -66,10 +67,13 @@ public class TransformerTest extends EndPointsTestBase {
     public void testApiResourceProperty(@ArquillianResource URL url) throws Exception {
         URL endPointUrl = toHttps(new URL(url, createPath("foo")));
         String response = invokeEndpointWithPost(endPointUrl);
+        // x is OK, y is ignored, qwerty is renamed
         Map<String, String> actual = new HashMap<>();
         actual.put("x", "1");
         actual.put("qwerty", "3");
-        assertResponse(actual, response); // x is OK, y is ignored, qwerty is renamed
+        assertResponse(actual, response);
+        Set<String> excluded = Collections.singleton("y");
+        assertExcluded(excluded, response);
     }
 
     protected String createPath(String methodPath) {

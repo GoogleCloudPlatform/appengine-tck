@@ -18,6 +18,7 @@ package com.google.appengine.tck.endpoints;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.appengine.repackaged.org.codehaus.jackson.JsonNode;
 import com.google.appengine.repackaged.org.codehaus.jackson.map.ObjectMapper;
@@ -65,6 +66,14 @@ public class EndPointsTestBase extends TestBase {
         JsonNode root = mapper.readTree(actual);
         for (Map.Entry<String, String> entry : expected.entrySet()) {
             Assert.assertEquals(entry.getValue(), root.get(entry.getKey()).asText());
+        }
+    }
+
+    protected void assertExcluded(Set<String> excluded, String actual) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(actual);
+        for (String name : excluded) {
+            Assert.assertNull(root.get(name));
         }
     }
 

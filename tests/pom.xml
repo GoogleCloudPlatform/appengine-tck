@@ -134,8 +134,7 @@
                                 <include>com/google/appengine/tck/**/*Test.java</include>
                             </includes>
                             <systemProperties>
-                                <appengine.test.datastore.default_high_rep_job_policy_unapplied_job_pct>20
-                                </appengine.test.datastore.default_high_rep_job_policy_unapplied_job_pct>
+                                <appengine.test.datastore.default_high_rep_job_policy_unapplied_job_pct>20</appengine.test.datastore.default_high_rep_job_policy_unapplied_job_pct>
                             </systemProperties>
                         </configuration>
                     </plugin>
