@@ -17,40 +17,9 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://java.sun.com/xml/ns/javaee"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         id="WebApp_ID" version="2.5">
+         id="cloud-test-compatibility-kit" version="2.5">
 
-    <servlet>
-        <servlet-name>Report</servlet-name>
-        <servlet-class>com.google.appengine.tck.site.ReportServlet</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>Update</servlet-name>
-        <servlet-class>com.google.appengine.tck.site.UpdateServlet</servlet-class>
-        <init-param>
-            <param-name>update-token</param-name>
-            <param-value>${update.token}</param-value>
-        </init-param>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>Report</servlet-name>
-        <url-pattern>/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>Update</servlet-name>
-        <url-pattern>/update</url-pattern>
-    </servlet-mapping>
-
-    <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>Update</web-resource-name>
-            <url-pattern>/update</url-pattern>
-        </web-resource-collection>
-        <user-data-constraint>
-            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-        </user-data-constraint>
-    </security-constraint>
-
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
 </web-app>

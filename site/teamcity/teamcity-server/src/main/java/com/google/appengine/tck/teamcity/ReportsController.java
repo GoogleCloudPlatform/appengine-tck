@@ -15,17 +15,18 @@
 
 package com.google.appengine.tck.teamcity;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
+ * @author <a href="mailto:kevin.pollet@serli.com.org">Kevin Pollet</a>
  */
 public class ReportsController extends BaseController {
     @NotNull
@@ -38,7 +39,7 @@ public class ReportsController extends BaseController {
 
     @Nullable
     @Override
-    protected ModelAndView doHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
+    protected ModelAndView doHandle(@NotNull final HttpServletRequest request, @NotNull final HttpServletResponse response) throws Exception {
         return new ModelAndView(viewPath);
     }
 }

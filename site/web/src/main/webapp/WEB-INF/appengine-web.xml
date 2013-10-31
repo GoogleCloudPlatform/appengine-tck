@@ -21,5 +21,4 @@
     <threadsafe>true</threadsafe>
     <precompilation-enabled>true</precompilation-enabled>
     <warmup-requests-enabled>true</warmup-requests-enabled>
-
 </appengine-web-app>
