@@ -16,24 +16,48 @@
   ~ limitations under the License.
   --%>
 
-<tr>
-    <td colspan="2">Specify site url and token to push status updates to.</td>
-</tr>
-<l:settingsGroup title="Authentication">
+
+<jsp:useBean id="constants" class="com.google.appengine.tck.teamcity.ReportsConstants" />
+
+<l:settingsGroup title="Google Cloud Endpoint Client Credentials">
     <tr>
-        <th>URL:<l:star/></th>
+        <th>Client ID:<l:star/></th>
         <td>
-            <props:textProperty name="site.url" className="longField"/>
-            <span class="error" id="error_site.url"></span>
-            <span class="smallNote">Specify site URL.</span>
+            <props:textProperty id="${constants.applicationClientId}" name="${constants.applicationClientId}" className="longField"/>
+            <span class="error" id="error_${constants.applicationClientId}"></span>
+            <span class="smallNote">Specify the application client id</span>
         </td>
     </tr>
     <tr>
-        <th>Token:<l:star/></th>
+        <th>Client secret:<l:star/></th>
         <td>
-            <props:textProperty name="site.token" className="longField"/>
-            <span class="error" id="error_site.token"></span>
-            <span class="smallNote">Specify site token.</span>
+            <props:textProperty name="${constants.applicationClientSecret}" className="longField"/>
+            <span class="error" id="error_${constants.applicationClientSecret}"></span>
+            <span class="smallNote">Specify the application client secret</span>
+        </td>
+    </tr>
+    <tr>
+        <th>OAuth code:<l:star/></th>
+        <td>
+            <props:textProperty name="${constants.applicationOauthCode}" className="longField"/>
+            <span class="error" id="error_${constants.applicationOauthCode}"></span>
+            <input type="button" id="get-oauth-code" class="btn btn-primary" value="Get OAuth code" />
         </td>
     </tr>
 </l:settingsGroup>
+
+<script type="text/javascript">
+    (function($) {
+        const authorizationUrlPrefix = '${constants.authorizationUrlPrefix}';
+        const applicationClientIdSelector = '#${constants.applicationClientId}'.replace( /(:|\.|\[|\])/g, '\\\$1' );
+
+        $('#get-oauth-code').click(function() {
+            window.open(
+                authorizationUrlPrefix + $(applicationClientIdSelector).val(),
+                'Get OAuth code',
+                'width=600,height=600'
+            );
+        });
+    })(jQuery);
+</script>
+

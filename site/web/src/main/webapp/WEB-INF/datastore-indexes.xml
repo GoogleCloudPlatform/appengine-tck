@@ -15,7 +15,7 @@
   -->
 
 <datastore-indexes autoGenerate="false">
-    <datastore-index kind="DatastoreReport" ancestor="false" source="manual">
+    <datastore-index kind="TestReport" ancestor="false" source="manual">
         <property name="buildTypeId" direction="asc"/>
         <property name="buildId" direction="desc"/>
     </datastore-index>

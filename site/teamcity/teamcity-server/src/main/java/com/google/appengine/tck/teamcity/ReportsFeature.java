@@ -15,13 +15,19 @@
 
 package com.google.appengine.tck.teamcity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.appspot.cloud_test_compatibility_kit.reports.Reports;
+import com.appspot.cloud_test_compatibility_kit.reports.model.Test;
+import com.appspot.cloud_test_compatibility_kit.reports.model.TestReport;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
 import jetbrains.buildServer.serverSide.BuildFeature;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
 import jetbrains.buildServer.serverSide.BuildServerListener;
@@ -35,61 +41,62 @@ import jetbrains.buildServer.serverSide.STest;
 import jetbrains.buildServer.serverSide.STestRun;
 import jetbrains.buildServer.tests.TestName;
 import jetbrains.buildServer.util.EventDispatcher;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 /**
- * @author Ales Justin
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
+ * @author <a href="mailto:kevin.pollet@serli.com">Kevin Pollet</a>
  */
 public class ReportsFeature extends BuildFeature {
-    private static final Logger log = Logger.getLogger(ReportsFeature.class.getName());
-
-    private static final String TYPE = "appengine.tck.reports";
-
+    @NotNull
     private final String editParametersUrl;
-    private HttpClient client;
 
-    public ReportsFeature(EventDispatcher<BuildServerListener> dispatcher, ReportsDescriptor descriptor) {
+    @NotNull
+    private final JsonFactory jsonFactory;
+
+    @NotNull
+    private final NetHttpTransport httpTransport;
+
+    @NotNull
+    private final ReportsConstants constants;
+
+    public ReportsFeature(@NotNull EventDispatcher<BuildServerListener> dispatcher, @NotNull ReportsDescriptor descriptor, @NotNull ReportsConstants constants) {
+        this.editParametersUrl = descriptor.getFeaturePath();
+        this.constants = constants;
+        this.jsonFactory = JacksonFactory.getDefaultInstance();
+
+        try {
+            this.httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+        } catch (GeneralSecurityException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
         dispatcher.addListener(new BuildServerAdapter() {
             @Override
             public void buildFinished(SRunningBuild build) {
                 handleBuildFinished(build);
             }
         });
-        editParametersUrl = descriptor.getFeaturePath();
     }
 
-    public void start() {
-        SchemeRegistry registry = new SchemeRegistry();
-        registry.register(new Scheme("http", 80, new PlainSocketFactory()));
-        registry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
-        ClientConnectionManager ccm = new PoolingClientConnectionManager(registry);
-        client = new DefaultHttpClient(ccm);
-    }
-
-    public void stop() {
-        if (client != null) {
-            client.getConnectionManager().shutdown();
-            client = null;
-        }
+    @Override
+    public boolean isMultipleFeaturesPerBuildTypeAllowed() {
+        return false;
     }
 
     @NotNull
     @Override
     public String getType() {
-        return TYPE;
+        return "appengine.tck.reports";
     }
 
     @NotNull
@@ -98,7 +105,7 @@ public class ReportsFeature extends BuildFeature {
         return "Google App Engine TCK Reports";
     }
 
-    @Nullable
+    @NotNull
     @Override
     public String getEditParametersUrl() {
         return editParametersUrl;
@@ -107,9 +114,11 @@ public class ReportsFeature extends BuildFeature {
     @NotNull
     @Override
     public String describeParameters(@NotNull Map<String, String> params) {
-        return "Update site parameters";
+        return "Google Cloud Endpoint Client Credentials";
     }
 
+    //TODO errors
+    //TODO OAuth here??
     @Nullable
     @Override
     public PropertiesProcessor getParametersProcessor() {
@@ -117,22 +126,50 @@ public class ReportsFeature extends BuildFeature {
             @NotNull
             public Collection<InvalidProperty> process(@Nullable final Map<String, String> params) {
                 final Collection<InvalidProperty> result = new ArrayList<>();
-
                 if (params == null) {
                     return result;
                 }
 
-                final String url = params.get(UIConstants.URL);
-                if (url == null) {
-                    result.add(new InvalidProperty(UIConstants.URL, "Missing site URL!"));
-                }
-                if (url.startsWith("http") == false) {
-                    result.add(new InvalidProperty(UIConstants.URL, "Invalid URL: " + url));
+                // check parameters
+                final String clientId = params.get(constants.getApplicationClientId());
+                if (clientId == null) {
+                    result.add(new InvalidProperty(constants.getApplicationClientId(), "Missing the application client id"));
                 }
 
-                final String token = params.get(UIConstants.TOKEN);
-                if (token == null || token.trim().length() == 0) {
-                    result.add(new InvalidProperty(UIConstants.TOKEN, "Missing site token!"));
+                final String clientSecret = params.get(constants.getApplicationClientSecret());
+                if (clientSecret == null) {
+                    result.add(new InvalidProperty(constants.getApplicationClientSecret(), "Missing the application client secret"));
+                }
+
+                final String applicationOAuthCode = params.get(constants.getApplicationOauthCode());
+                if (applicationOAuthCode == null) {
+                    result.add(new InvalidProperty(constants.getApplicationOauthCode(), "Missing the application oauth code"));
+                }
+
+                // get the refresh and access token
+                if (result.isEmpty()) {
+                    final GoogleClientSecrets secrets = new GoogleClientSecrets().setInstalled(
+                            new GoogleClientSecrets.Details().
+                                    setClientId(params.get(constants.getApplicationClientId())).
+                                    setClientSecret(params.get(constants.getApplicationClientSecret()))
+                    );
+
+                    try {
+                        final GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
+                                ReportsFeature.this.httpTransport,
+                                ReportsFeature.this.jsonFactory,
+                                secrets.getDetails().getClientId(),
+                                secrets.getDetails().getClientSecret(),
+                                params.get(constants.getApplicationOauthCode()),
+                                constants.getRedirectUri()
+                        ).execute();
+
+                        params.put(constants.getApplicationRefreshToken(), tokenResponse.getRefreshToken());
+                        params.put(constants.getApplicationAccessToken(), tokenResponse.getAccessToken());
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
 
                 return result;
@@ -143,60 +180,82 @@ public class ReportsFeature extends BuildFeature {
     @Nullable
     @Override
     public Map<String, String> getDefaultParameters() {
-        return Collections.singletonMap(UIConstants.URL, "http://www.appengine-tck.org");
+        return Collections.emptyMap();
     }
 
     protected void handleBuildFinished(SRunningBuild build) {
-        SBuildType bt = build.getBuildType();
-        if (bt == null) return;
+        final SBuildType bt = build.getBuildType();
+        if (bt == null) {
+            return;
+        }
 
         for (SBuildFeatureDescriptor feature : bt.getBuildFeatures()) {
-            if (feature.getType().equals(TYPE) == false) continue;
-
-            handleBuildFinished(build, feature);
+            if (getType().equalsIgnoreCase(feature.getType())) {
+                handleBuildFinished(build, feature);
+                break;
+            }
         }
     }
 
     protected void handleBuildFinished(SRunningBuild build, SBuildFeatureDescriptor feature) {
-        String buildTypeId = build.getBuildTypeExternalId();
-        long buildId = build.getBuildId();
-
-        BuildStatistics statistics = build.getFullStatistics();
-        int failedTests = statistics.getFailedTestCount();
-        int passedTests = statistics.getPassedTestCount();
-        int ignoredTests = statistics.getIgnoredTestCount();
-
         final Map<String, String> parameters = feature.getParameters();
-        final String url = parameters.get(UIConstants.URL);
-        final String updateToken = parameters.get(UIConstants.TOKEN);
+        final BuildStatistics fullBuildStatistics = build.getFullStatistics();
 
+        // prepare the endpoint authentication
+        final GoogleClientSecrets secrets = new GoogleClientSecrets().setInstalled(
+                new GoogleClientSecrets.Details().
+                        setClientId(parameters.get(constants.getApplicationClientId())).
+                        setClientSecret(parameters.get(constants.getApplicationClientSecret()))
+        );
+
+        final Credential credential = new GoogleCredential.Builder().
+                setJsonFactory(jsonFactory).
+                setClientSecrets(secrets).
+                setTransport(httpTransport).
+                build();
+
+        credential.setAccessToken(parameters.get(constants.getApplicationAccessToken()));
+        credential.setRefreshToken(parameters.get(constants.getApplicationRefreshToken()));
+
+        // build the test report
+        final Reports reports = new Reports.Builder(httpTransport, jsonFactory, credential).
+                setApplicationName(constants.getApplicationName()).
+                build();
+
+        final TestReport testReport = new TestReport().
+                setBuildTypeId(build.getBuildTypeExternalId()).
+                setBuildId(Integer.valueOf(build.getBuildNumber())).
+                setBuildDate(new DateTime(build.getStartDate())).
+                setBuildDuration(build.getDuration()).
+                setNumberOfFailedTests(fullBuildStatistics.getFailedTestCount()).
+                setNumberOfIgnoredTests(fullBuildStatistics.getIgnoredTestCount()).
+                setNumberOfPassedTests(fullBuildStatistics.getPassedTestCount());
+
+        final List<Test> failedTests = new ArrayList<>();
+        for (STestRun oneTestRun : fullBuildStatistics.getFailedTests()) {
+            final STest failedTest = oneTestRun.getTest();
+            final TestName failedTestName = failedTest.getName();
+
+            failedTests.add(
+                    new Test().
+                            setPackageName(failedTestName.getPackageName()).
+                            setClassName(failedTestName.getClassName()).
+                            setMethodName(failedTestName.getTestMethodName()).
+                            setError(oneTestRun.getFailureInfo().getStacktraceMessage())
+            );
+        }
+
+        testReport.setFailedTests(failedTests);
+
+        // publish results to appspot application
         try {
-            final URIBuilder builder = new URIBuilder(url);
-            builder.setParameter("updateToken", updateToken);
-            builder.setParameter("buildTypeId", buildTypeId);
-            builder.setParameter("buildId", String.valueOf(buildId));
-            builder.setParameter("failedTests", String.valueOf(failedTests));
-            builder.setParameter("passedTests", String.valueOf(passedTests));
-            builder.setParameter("ignoredTests", String.valueOf(ignoredTests));
+            reports.
+                    tests().
+                    insert(testReport).
+                    execute();
 
-            HttpPut put = new HttpPut(builder.build());
-
-            StringBuilder sb = new StringBuilder();
-            for (STestRun tr : statistics.getFailedTests()) {
-                STest test = tr.getTest();
-                TestName name = test.getName();
-                // com.acme.foo.SomeTest_#_testBar_#_this is err msg
-                sb.append(name.getTestClass()).append("_#_").append(name.getTestMethodName()).append("_#_").append(tr.getFailureInfo().getStacktraceMessage()).append("\n");
-            }
-            put.setEntity(new StringEntity(sb.toString()));
-
-            log.info(String.format("Executing PUT [#%s]: %s", buildId, put));
-
-            HttpResponse response = client.execute(put);
-            log.info(String.format("Response [#%s]: %s", buildId, response));
-        } catch (Throwable t) {
-            log.log(Level.SEVERE, String.format("Error pushing TCK report [#%s]: %s", buildId, t.getMessage()), t);
-            throw new IllegalStateException(t);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

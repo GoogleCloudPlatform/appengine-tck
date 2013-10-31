@@ -65,6 +65,11 @@
 
         <!-- Site -->
         <version.org.jetbrains.teamcity>8.0-SNAPSHOT</version.org.jetbrains.teamcity>
+        <version.com.google.api-client>1.17.0-rc</version.com.google.api-client>
+        <version.com.google.http-client>1.17.0-rc</version.com.google.http-client>
+        <version.com.google.oauth-client>1.16.0-rc</version.com.google.oauth-client>
+        <version.com.appspot.cloud_test_compatibility_kit.reports>v1-1.17.0-rc-SNAPSHOT</version.com.appspot.cloud_test_compatibility_kit.reports>
+        <version.javax.inject>1</version.javax.inject>
 
         <!-- Ext -->
 
@@ -526,6 +531,36 @@
                 <groupId>com.google.appengine.tck</groupId>
                 <artifactId>teamcity-server</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>${version.javax.inject}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.api-client</groupId>
+                <artifactId>google-api-client</artifactId>
+                <version>${version.com.google.api-client}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.http-client</groupId>
+                <artifactId>google-http-client-jackson2</artifactId>
+                <version>${version.com.google.http-client}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.oauth-client</groupId>
+                <artifactId>google-oauth-client-java7</artifactId>
+                <version>${version.com.google.oauth-client}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.appspot.cloud_test_compatibility_kit</groupId>
+                <artifactId>reports</artifactId>
+                <version>${version.com.appspot.cloud_test_compatibility_kit.reports}</version>
             </dependency>
 
             <!-- Ext -->

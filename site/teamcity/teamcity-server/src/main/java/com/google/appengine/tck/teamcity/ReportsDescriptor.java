@@ -20,19 +20,23 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
+ * @author <a href="mailto:kevin.pollet@serli.com.org">Kevin Pollet</a>
  */
 public class ReportsDescriptor {
-    PluginDescriptor descriptor;
+    @NotNull
+    private final PluginDescriptor descriptor;
 
-    public ReportsDescriptor(@NotNull PluginDescriptor descriptor) {
+    public ReportsDescriptor(@NotNull final PluginDescriptor descriptor) {
         this.descriptor = descriptor;
     }
 
-    String getFeaturePath() {
+    @NotNull
+    public String getFeaturePath() {
         return descriptor.getPluginResourcesPath("feature.html");
     }
 
-    String getViewPath() {
+    @NotNull
+    public String getViewPath() {
         return descriptor.getPluginResourcesPath("feature.jsp");
     }
 }
