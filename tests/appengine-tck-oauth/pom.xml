@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <!-- Parent -->
+    <parent>
+        <groupId>com.google.appengine.tck</groupId>
+        <artifactId>appengine-tck-tests</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>appengine-tck-oauth</artifactId>
+    <packaging>jar</packaging>
+    <name>GAE TCK OAuth Test</name>
+    <url>https://developers.google.com/appengine/</url>
+    <description>GAE TCK OAuth Tests</description>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+
+        <!-- Temp workaround - remove with Drone upgrade -->
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-phantom-binary</artifactId>
+            <!-- Use the right classifier -->
+            <classifier>macosx</classifier>
+            <!-- classifier>linux-32</classifier>
+            <classifier>linux-64</classifier>
+            <classifier>windows</classifier -->
+            <version>1.9.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-drone-webdriver-depchain</artifactId>
+            <scope>test</scope>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client-jackson</artifactId>
+            <version>1.15.0-rc</version>
+        </dependency>
+
+    </dependencies>
+
+</project>

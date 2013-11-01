@@ -159,8 +159,12 @@ public class TestBase {
 
     protected boolean required(String propertyName) {
         Property result = property(propertyName);
-        Boolean requred = result.required();
-        return (requred == null || requred); // by default null means it's required
+        Boolean required = result.required();
+        return (required == null || required); // by default null means it's required
+    }
+
+    protected boolean doIgnore(String context) {
+        return execute(context) == false;
     }
 
     protected Property property(String propertyName) {

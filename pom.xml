@@ -373,6 +373,13 @@
 
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-oauth</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
                 <artifactId>appengine-tck-prospectivesearch</artifactId>
                 <version>${project.version}</version>
                 <type>test-jar</type>
