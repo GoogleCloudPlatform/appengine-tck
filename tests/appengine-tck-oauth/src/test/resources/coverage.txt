@@ -1,0 +1,5 @@
+com.google.appengine.api.oauth.OAuthService
+com.google.appengine.api.oauth.InvalidOAuthParametersException
+com.google.appengine.api.oauth.InvalidOAuthTokenException
+com.google.appengine.api.oauth.OAuthRequestException
+com.google.appengine.api.oauth.OAuthServiceFailureException
