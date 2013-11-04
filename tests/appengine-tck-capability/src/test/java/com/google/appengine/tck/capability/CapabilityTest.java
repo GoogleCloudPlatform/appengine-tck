@@ -26,6 +26,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -38,8 +39,13 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(Arquillian.class)
 public class CapabilityTest extends TestBase {
-    private CapabilitiesService capabilitiesService = CapabilitiesServiceFactory.getCapabilitiesService();
+    private CapabilitiesService capabilitiesService;
     private String[] TEST_DATA = {"blobstore", "datastore_v3", "datastore_v3,write", "images", "mail", "memcache", "taskqueue", "urlfetch", "xmpp"};
+
+    @Before
+    public void setUp() {
+        capabilitiesService = CapabilitiesServiceFactory.getCapabilitiesService();
+    }
 
     @Deployment
     public static WebArchive getDeployment() {
