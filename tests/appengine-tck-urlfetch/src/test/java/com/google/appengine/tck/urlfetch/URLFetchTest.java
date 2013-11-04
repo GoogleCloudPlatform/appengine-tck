@@ -134,11 +134,14 @@ public class URLFetchTest extends URLFetchTestBase {
         Assert.assertTrue(conn instanceof HttpURLConnection);
         HttpURLConnection huc = (HttpURLConnection) conn;
         conn.setDoOutput(true);
-        conn.addRequestProperty("key", "value");
+        conn.setDoInput(true);
+        conn.addRequestProperty("Content-Type", "application/octet-stream");
         huc.connect();
         try {
             OutputStream out = conn.getOutputStream();
             out.write("Juhuhu".getBytes());
+            out.flush();
+
             String content = new String(FetchServlet.toBytes(conn.getInputStream()));
             Assert.assertEquals("Bruhuhu", content);
             Assert.assertEquals(200, huc.getResponseCode());
