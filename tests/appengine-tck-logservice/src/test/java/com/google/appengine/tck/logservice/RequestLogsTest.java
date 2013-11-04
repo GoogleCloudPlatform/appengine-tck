@@ -277,7 +277,8 @@ public class RequestLogsTest extends LoggingTestBase {
     @InSequence(20)
     public void testApplicationInfo() throws Exception {
         RequestLogs requestLogs1 = getRequestLogs1();
-        assertEquals("1", requestLogs1.getVersionId());
+        String versionId = requestLogs1.getVersionId();
+        assertTrue("1".equals(versionId) || versionId.startsWith("1."));
     }
 
     @Test
