@@ -44,7 +44,9 @@ public abstract class MapReduceTestBase extends TestBase {
 
         LibUtils libUtils = new LibUtils();
         libUtils.addGaeAsLibrary(war);
-        libUtils.addLibrary(war, "com.google.appengine", "appengine-mapper");
+        libUtils.addLibrary(war, "com.google.appengine.tools", "appengine-mapreduce");
+        libUtils.addLibrary(war, "com.google.appengine.tools", "appengine-pipeline");
+        libUtils.addLibrary(war, "com.google.appengine.tools", "appengine-gcs-client");
         libUtils.addLibrary(war, "com.google.guava", "guava");
         libUtils.addLibrary(war, "com.googlecode.charts4j", "charts4j");
         libUtils.addLibrary(war, "commons-logging", "commons-logging");

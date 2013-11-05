@@ -76,7 +76,8 @@
         <version.org.log4j>1.2.16</version.org.log4j>
         <version.org.easymock>2.4</version.org.easymock>
         <!-- MapReduce -->
-        <version.com.google.gae.mapper>r452</version.com.google.gae.mapper>
+        <version.com.google.gae.mapper>0.2</version.com.google.gae.mapper>
+        <version.com.google.gae.pipeline>0.2</version.com.google.gae.pipeline>
         <version.com.google.guava>14.0.1</version.com.google.guava>
         <version.charts4j>1.3</version.charts4j>
         <version.commons-logging>1.1.1</version.commons-logging>
@@ -732,9 +733,15 @@
             </dependency>
 
             <dependency>
-                <groupId>com.google.appengine</groupId>
-                <artifactId>appengine-mapper</artifactId>
+                <groupId>com.google.appengine.tools</groupId>
+                <artifactId>appengine-mapreduce</artifactId>
                 <version>${version.com.google.gae.mapper}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tools</groupId>
+                <artifactId>appengine-pipeline</artifactId>
+                <version>${version.com.google.gae.pipeline}</version>
             </dependency>
 
             <dependency>
