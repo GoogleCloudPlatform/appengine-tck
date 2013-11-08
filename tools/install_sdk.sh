@@ -12,8 +12,8 @@ fi
 
 # ARTIFACT_IDS pair with the JAR pattern
 
-ARTIFACT_IDS=(appengine-api-1.0-sdk appengine-tools-sdk appengine-endpoints appengine-testing appengine-api-stubs)
-JAR_PATTERN=(appengine-api-1.0-sdk-*.jar appengine-tools-api*.jar appengine-endpoints.jar appengine-testing.jar appengine-api-stubs.jar)
+ARTIFACT_IDS=(appengine-api-1.0-sdk appengine-tools-sdk appengine-endpoints appengine-testing appengine-api-stubs appengine-api-labs)
+JAR_PATTERN=(appengine-api-1.0-sdk-*.jar appengine-tools-api*.jar appengine-endpoints.jar appengine-testing.jar appengine-api-stubs.jar appengine-api-labs-*.jar)
 GROUP_ID=com.google.appengine
 ARTIFACT_COUNT=${#ARTIFACT_IDS[@]}
 
