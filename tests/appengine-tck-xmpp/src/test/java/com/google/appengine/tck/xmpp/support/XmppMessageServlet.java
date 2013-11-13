@@ -15,6 +15,14 @@
 
 package com.google.appengine.tck.xmpp.support;
 
+import java.io.IOException;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -22,26 +30,26 @@ import com.google.appengine.api.xmpp.Message;
 import com.google.appengine.api.xmpp.XMPPService;
 import com.google.appengine.api.xmpp.XMPPServiceFactory;
 
-import java.io.IOException;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 /**
  * Handle incoming Xmpp requests.
+ *
+ * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
  */
 public class XmppMessageServlet extends HttpServlet {
-
     private static final Logger log = Logger.getLogger(XmppMessageServlet.class.getName());
+    private DatastoreService datastoreService;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        datastoreService = DatastoreServiceFactory.getDatastoreService();
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         throws IOException {
         XMPPService xmppService = XMPPServiceFactory.getXMPPService();
         Message message = xmppService.parseMessage(req);
-        DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 
         log.info("Chat received: " + message.getStanza());
 

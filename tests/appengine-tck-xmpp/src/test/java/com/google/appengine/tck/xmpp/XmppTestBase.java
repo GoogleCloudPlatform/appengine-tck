@@ -18,7 +18,6 @@ package com.google.appengine.tck.xmpp;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.xmpp.support.XmppMessageServlet;
-
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 
@@ -26,18 +25,14 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
  */
 public abstract class XmppTestBase extends TestBase {
-
     protected static WebArchive getDefaultDeployment() {
-        TestContext context = new TestContext().setUseSystemProperties(true)
-                .setCompatibilityProperties(TCK_PROPERTIES);
+        TestContext context = new TestContext().setUseSystemProperties(true).setCompatibilityProperties(TCK_PROPERTIES);
 
         context.setWebXmlFile("xmpp-web.xml");
         context.setAppEngineWebXmlFile("xmpp-appengine-web.xml");
 
         WebArchive war = getTckDeployment(context);
-
         war.addClasses(XmppTestBase.class, XmppMessageServlet.class);
-
         return war;
     }
 }

@@ -250,6 +250,7 @@ Current API tests:
 * TaskQueue
 * UrlFetch
 * Users
+* XMPP
 
 Core tests
 ----------

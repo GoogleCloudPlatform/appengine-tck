@@ -36,6 +36,7 @@ public class CapeDwarfExecutionLifecycle extends AbstractExecutionLifecycle {
         EXECUTABLES.add(".prospectivesearch.");
         EXECUTABLES.add(".sql.");
         EXECUTABLES.add(".taskqueue.");
+        // EXECUTABLES.add(".xmpp."); // no XMPP yet
     }
 
     protected void doBefore(ExecutionLifecycleEvent event) {

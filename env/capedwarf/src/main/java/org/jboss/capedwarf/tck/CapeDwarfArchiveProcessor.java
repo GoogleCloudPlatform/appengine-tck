@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import com.google.appengine.tck.arquillian.EnvApplicationArchiveProcessor;
 import com.google.appengine.tck.event.TestLifecycle;
@@ -31,9 +32,17 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class CapeDwarfArchiveProcessor extends EnvApplicationArchiveProcessor {
+    private static final Logger log = Logger.getLogger(CapeDwarfArchiveProcessor.class.getName());
+
     private static final String CAPEDWARF_WEB =
         "<capedwarf-web-app>" +
             "    <admin>admin@capedwarf.org</admin>" +
+            "    <xmpp>" +
+            "        <host>talk.l.google.com</host>" +
+            "        <port>5222</port>" +
+            "        <username>%s</username>" +
+            "        <password>%s</password>" +
+            "    </xmpp>" +
             "</capedwarf-web-app>";
 
     private static final String COMPATIBILITY_PROPERTIES = "capedwarf-compatibility.properties";
@@ -56,7 +65,13 @@ public class CapeDwarfArchiveProcessor extends EnvApplicationArchiveProcessor {
 
         addCompatibility(war, COMPATIBILITY);
 
-        war.addAsWebInfResource(new StringAsset(CAPEDWARF_WEB), "capedwarf-web.xml");
+        String username = System.getProperty("capedwarf.xmpp.username", "capedwarftest@gmail.com");
+        String password = System.getProperty("capedwarf.xmpp.password", "MISSING_PASSWORD");
+
+        log.info(String.format("XMPP: %s / %s", username, password));
+
+        String cdw = String.format(CAPEDWARF_WEB, username, password);
+        war.addAsWebInfResource(new StringAsset(cdw), "capedwarf-web.xml");
     }
 
     static void addCompatibility(WebArchive war, Properties extra) {

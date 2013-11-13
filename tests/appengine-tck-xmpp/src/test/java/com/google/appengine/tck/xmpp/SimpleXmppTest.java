@@ -15,9 +15,9 @@
 
 package com.google.appengine.tck.xmpp;
 
-import static junit.framework.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -33,7 +33,6 @@ import com.google.appengine.api.xmpp.MessageType;
 import com.google.appengine.api.xmpp.SendResponse;
 import com.google.appengine.api.xmpp.XMPPService;
 import com.google.appengine.api.xmpp.XMPPServiceFactory;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -41,9 +40,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * XMPP Tests.
@@ -52,13 +51,13 @@ import java.util.List;
  */
 @RunWith(Arquillian.class)
 public class SimpleXmppTest extends XmppTestBase {
-
-    static final int TIMEOUT_IN_SECONDS = 30;
+    private static final int TIMEOUT_IN_SECONDS = 30;
     private static final String TEST_BODY = "Hello from SimpleXmppTest!";
-    String appId;
-    String xmppServer;
-    XMPPService xmppService;
-    DatastoreService datastoreService;
+
+    private String appId;
+    private String xmppServer;
+    private XMPPService xmppService;
+    private DatastoreService datastoreService;
 
     @Deployment
     public static WebArchive getDeployment() {
@@ -75,12 +74,13 @@ public class SimpleXmppTest extends XmppTestBase {
 
     @Test
     public void testXmppSendMessageAndReceiveDefaultJid() {
-        if (isRuntimeDev()) {
+        if (execute("testXmppSendMessageAndReceiveDefaultJid") == false) {
             return;
         }
 
         JID fromJID = new JID(appId + "@" + xmppServer);
         // We're sending messages to ourselves, so toJID and fromJID are the same.
+        @SuppressWarnings("UnnecessaryLocalVariable")
         JID toJID = fromJID;
 
         MessageBuilder builder = new MessageBuilder();
@@ -112,7 +112,7 @@ public class SimpleXmppTest extends XmppTestBase {
         try {
             appId = readProperties(TCK_PROPERTIES).getProperty("appengine.appId");
             if (appId == null) {
-                appId = "";
+                appId = "tckapp";
             }
             xmppServer = readProperties(TCK_PROPERTIES).getProperty("tck.xmpp.server");
             if (xmppServer == null) {
@@ -126,7 +126,7 @@ public class SimpleXmppTest extends XmppTestBase {
     private void clearTestData() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         Query query = new Query("XmppMsg");
-        List<Key> msgs = new ArrayList<Key>();
+        List<Key> msgs = new ArrayList<>();
         for (Entity e : ds.prepare(query).asIterable()) {
             msgs.add(e.getKey());
         }
