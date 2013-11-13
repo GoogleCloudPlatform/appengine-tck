@@ -15,20 +15,20 @@
 
 package com.google.appengine.tck.sockets;
 
-import com.google.appengine.tck.base.TestBase;
-import com.google.appengine.tck.base.TestContext;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
+
+import com.google.appengine.tck.base.TestBase;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 
 import static org.junit.Assert.assertTrue;
 
@@ -36,21 +36,23 @@ import static org.junit.Assert.assertTrue;
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
  */
 public abstract class SocketsTestBase extends TestBase {
-
     protected static final String WHOIS = "whois.internic.net";
     protected static final String GOOGLE_DNS = "google-public-dns-a.google.com";
-    private static final Set<String> googleDns = new HashSet<>();
 
-    public static WebArchive getDefaultDeployment() {
-        TestContext context = new TestContext();
-        WebArchive war = getTckDeployment(context);
+    private final Set<String> googleDns = new HashSet<>();
 
+    protected static WebArchive getDefaultDeployment() {
+        WebArchive war = getTckDeployment();
         war.addClass(SocketsTestBase.class);
-
         return war;
     }
 
-    protected void assertInternicResponse(Socket socket) throws Exception {
+    @Before
+    public void setUp() {
+        initGoogleDnsSet();
+    }
+
+    protected static void assertInternicResponse(Socket socket) throws Exception {
         OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream(), "8859_1");
         out.write("=google.com\r\n");
         out.flush();
@@ -61,7 +63,7 @@ public abstract class SocketsTestBase extends TestBase {
         assertTrue("Expected to find NS1.GOOGLE.COM in WHOIS response:" + whoisResponse, whoisResponse.contains("NS1.GOOGLE.COM"));
     }
 
-    String toStream(InputStreamReader in) throws IOException {
+    protected static String toStream(InputStreamReader in) throws IOException {
         StringBuilder sb = new StringBuilder();
         for (int c; (c = in.read()) != -1; ) {
             sb.append(String.valueOf((char) c));
@@ -77,12 +79,13 @@ public abstract class SocketsTestBase extends TestBase {
         googleDns.add("2001:4860:4860::8844");
     }
 
-    protected Set<String> getLocalHostAddressFromNetworkInterface() throws Exception {
-        Set<String> hostAddresses = new HashSet<>();
+    protected static Set<String> getLocalHostAddressFromNetworkInterface() throws Exception {
         Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
         if (interfaces == null) {
-            return hostAddresses;
+            return Collections.emptySet();
         }
+
+        Set<String> hostAddresses = new HashSet<>();
 
         while (interfaces.hasMoreElements()) {
             NetworkInterface current = interfaces.nextElement();
@@ -97,17 +100,7 @@ public abstract class SocketsTestBase extends TestBase {
     }
 
     protected void assertGoogleIpAddress(String ipStr) {
-        String errMsg = String.format("%s should be one of: %s", ipStr,
-            convertSetToString(googleDns));
+        String errMsg = String.format("%s should be one of: %s", ipStr, googleDns);
         assertTrue(errMsg, googleDns.contains(ipStr));
-    }
-
-    protected String convertSetToString(Set<String> stringSet) {
-        StringBuilder sb = new StringBuilder();
-        Iterator iter = stringSet.iterator();
-        while (iter.hasNext()) {
-            sb.append(iter.next() + ", ");
-        }
-        return sb.toString();
     }
 }

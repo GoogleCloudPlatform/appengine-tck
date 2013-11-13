@@ -15,13 +15,6 @@
 
 package com.google.appengine.tck.sockets;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -30,9 +23,17 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.Set;
 
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
@@ -44,11 +45,6 @@ public class SocketsTest extends SocketsTestBase {
     @Deployment
     protected static WebArchive getDeployment() {
         return getDefaultDeployment();
-    }
-
-    @Before
-    public void setUp() {
-        initGoogleDnsSet();
     }
 
     @Test
@@ -120,8 +116,8 @@ public class SocketsTest extends SocketsTestBase {
 
     @Test
     public void testOptionReuseAddress() throws Exception {
-        try (Socket socket = new Socket();
-             Socket socket2 = new Socket()) {
+        try (Socket socket = createDefaultSocket();
+             Socket socket2 = createDefaultSocket()) {
 
             socket.setReuseAddress(true);
             socket.connect(new InetSocketAddress(WHOIS, 43));
@@ -137,7 +133,7 @@ public class SocketsTest extends SocketsTestBase {
 
     @Test
     public void testOptionTcpNoDelay() throws Exception {
-        try (Socket socket = new Socket()) {
+        try (Socket socket = createDefaultSocket()) {
             boolean noDelayBefore = socket.getTcpNoDelay();
             socket.connect(new InetSocketAddress(WHOIS, 43));
 
@@ -164,26 +160,21 @@ public class SocketsTest extends SocketsTestBase {
         }
     }
 
-    @Test
+    @Test(expected = SocketException.class) // GAE does not support setTrafficClass()
     public void testOptionTosTrafficClass() throws Exception {
-        Socket socket = new Socket();
-        socket.setSoTimeout(10000);
-        try {
+        try (Socket socket = createDefaultSocket()) {
+            socket.setSoTimeout(10000);
             socket.setTrafficClass(255);
             socket.connect(new InetSocketAddress(WHOIS, 43));
             assertInternicResponse(socket);
             assertEquals(255, socket.getTrafficClass());
-        } catch (SocketException se) {
-            // GAE does not support setTrafficClass()
-        } finally {
-            socket.close();
+            fail("Should not be here -- setTrafficClass is not supported atm!");
         }
-
     }
 
     @Test
     public void testOptionSetPerformancePreferences() throws Exception {
-        try (Socket socket = new Socket()) {
+        try (Socket socket = createDefaultSocket()) {
             socket.setPerformancePreferences(2, 1, 3);  // GAE ignores this.
             socket.connect(new InetSocketAddress(WHOIS, 43));
             assertInternicResponse(socket);
@@ -201,31 +192,34 @@ public class SocketsTest extends SocketsTestBase {
             if (addresses.isEmpty()) {  // GAE returns null for queries to NetworkInterface.getNetworkInterfaces()
                 assertEquals("127.0.0.1", localInet.getHostAddress());
                 assertEquals("localhost", localInet.getHostName());
-                assertEquals(false, localInet.isSiteLocalAddress());
-                assertEquals(true, localInet.isLoopbackAddress());
+                assertFalse(localInet.isSiteLocalAddress());
+                assertTrue(localInet.isLoopbackAddress());
             } else {
-                String errMsg = String.format("%s not contained in %s", localInet.getHostAddress(),
-                    convertSetToString(addresses));
+                String errMsg = String.format("%s not contained in %s", localInet.getHostAddress(), addresses);
                 assertTrue(errMsg, addresses.contains(localInet.getHostAddress()));
-                assertEquals(true, localInet.isSiteLocalAddress());
+                assertTrue(localInet.isSiteLocalAddress());
             }
 
             // assertTrue(localInet.is*())  returns null pointer when value is true. Something with
             // java.net.Socket package since get null pointer outside of this framework.
-            assertEquals(false, localInet.isAnyLocalAddress());
-            assertEquals(false, localInet.isLinkLocalAddress());
-            assertEquals(false, localInet.isMCGlobal());
-            assertEquals(false, localInet.isMCNodeLocal());
-            assertEquals(false, localInet.isMCOrgLocal());
-            assertEquals(false, localInet.isMulticastAddress());
+            assertFalse(localInet.isAnyLocalAddress());
+            assertFalse(localInet.isLinkLocalAddress());
+            assertFalse(localInet.isMCGlobal());
+            assertFalse(localInet.isMCNodeLocal());
+            assertFalse(localInet.isMCOrgLocal());
+            assertFalse(localInet.isMulticastAddress());
         }
     }
 
     @Test
+    @Ignore // what exactly are we testing here? as this is random ...
     public void testIsReachable() throws Exception {
+        final int timeout = 3000;
+        final boolean reachable = InetAddress.getByName(WHOIS).isReachable(timeout);
+
         try (Socket socket = createSocket()) {
             InetAddress inet = socket.getInetAddress();
-            assertEquals(true, inet.isReachable(5000));
+            assertEquals(reachable, inet.isReachable(timeout));
         }
     }
 
@@ -239,20 +233,28 @@ public class SocketsTest extends SocketsTestBase {
 
     @Test
     public void testConnect() throws Exception {
-        Socket socket = new Socket();
-        socket.connect(new InetSocketAddress(WHOIS, 43));
-        assertInternicResponse(socket);
+        try (Socket socket = createDefaultSocket()) {
+            socket.connect(new InetSocketAddress(WHOIS, 43));
+
+            assertInternicResponse(socket);
+        }
     }
 
     @Test
     public void testGetInetAddress() throws Exception {
-        Socket socket = new Socket();
-        socket.connect(new InetSocketAddress(GOOGLE_DNS, 53));
-        InetAddress inet = socket.getInetAddress();
-        assertGoogleIpAddress(inet.getCanonicalHostName());
-        assertGoogleIpAddress(inet.getHostAddress());
-        assertFalse(inet.isReachable(3000));
-        assertEquals(GOOGLE_DNS, inet.getHostName());
+        try (Socket socket = createDefaultSocket()) {
+            socket.connect(new InetSocketAddress(GOOGLE_DNS, 53));
+
+            InetAddress inet = socket.getInetAddress();
+            assertGoogleIpAddress(inet.getCanonicalHostName());
+            assertGoogleIpAddress(inet.getHostAddress());
+            assertFalse(inet.isReachable(3000));
+            assertEquals(GOOGLE_DNS, inet.getHostName());
+        }
+    }
+
+    protected Socket createDefaultSocket() throws IOException {
+        return new Socket();
     }
 
     protected Socket createSocket() throws IOException {

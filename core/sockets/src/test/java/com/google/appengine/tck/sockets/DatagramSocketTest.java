@@ -15,17 +15,17 @@
 
 package com.google.appengine.tck.sockets;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -40,14 +40,9 @@ public class DatagramSocketTest extends SocketsTestBase {
         return getDefaultDeployment();
     }
 
-    @Before
-    public void setUp() {
-        initGoogleDnsSet();
-    }
-
     @Test
     public void testSendDatagramPacket() throws Exception {
-        try (DatagramSocket socket = new DatagramSocket()) {
+        try (DatagramSocket socket = createDatagramSocket()) {
 
             DatagramPacket packet = createHelloDatagramPacket(GOOGLE_DNS, 53);
             socket.send(packet);
@@ -197,11 +192,13 @@ public class DatagramSocketTest extends SocketsTestBase {
 //        assertEquals(GOOGLE_DNS, inet.getHostName());
 //    }
 
-    private DatagramPacket createHelloDatagramPacket(String hostName, int port) throws UnknownHostException {
+    protected DatagramPacket createHelloDatagramPacket(String hostName, int port) throws UnknownHostException {
         byte[] buf = "Hello".getBytes();
         InetAddress address = InetAddress.getByName(hostName);
         return new DatagramPacket(buf, buf.length, address, port);
     }
 
-
+    protected DatagramSocket createDatagramSocket() throws IOException {
+        return new DatagramSocket();
+    }
 }
