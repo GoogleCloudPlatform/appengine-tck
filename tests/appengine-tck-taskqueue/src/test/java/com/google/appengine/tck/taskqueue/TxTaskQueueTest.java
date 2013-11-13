@@ -43,10 +43,6 @@ public class TxTaskQueueTest extends QueueTestBase {
         return QueueFactory.getDefaultQueue();
     }
 
-    protected boolean doIgnore(String context) {
-        return execute(context) == false;
-    }
-
     @Before
     public void setUp() {
         purgeAndPause(QueueFactory.getDefaultQueue());
