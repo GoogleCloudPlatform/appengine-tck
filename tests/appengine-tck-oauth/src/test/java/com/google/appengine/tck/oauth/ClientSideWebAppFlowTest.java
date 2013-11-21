@@ -41,6 +41,7 @@ import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -52,6 +53,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * This uses the Client-Side Web Applications Flow.
@@ -67,6 +69,7 @@ import static org.junit.Assert.assertTrue;
  *   -Dappengine.nonAdminTestingAccount.pw=
  *
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
+ * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 
 @SuppressWarnings("UnusedDeclaration")
@@ -234,13 +237,22 @@ public class ClientSideWebAppFlowTest extends OAuthTestBase {
             throw new NoSuchElementException(nsee.toString() + " ----- " + errMsg);
         }
 
+        try {
+            WebElement button = driver.findElement(By.id("submit_approve_access"));
+            waitUntilEnabled(button);
+            button.click();
+        } catch (NoSuchElementException e) {
+            // Apparently access has already been approved and the user is not being asked to approve access.
+            // The approval page will only be displayed again after access is revoked through Google Accounts.
+        }
+
         // The redirect looks like:
         // https://[YOUR_TEST_APP.appspot.com/your_redirect_path#access_token=ee29.AHES6ZQPPOue4vgQhacbi__AN8Y0wLLt60sEchFaw&token_type=Bearer&expires_in=3600
 
         // URLEncodedUtils unable to parse parameters after #
         String redirectUrlWithToken = driver.getCurrentUrl().replace("#access_token=", "?access_token=");
 
-        List<NameValuePair> params = null;
+        List<NameValuePair> params;
         try {
             params = URLEncodedUtils.parse(new URI(redirectUrlWithToken), "UTF-8");
         } catch (URISyntaxException urise) {
@@ -257,6 +269,20 @@ public class ClientSideWebAppFlowTest extends OAuthTestBase {
 
         tokenCache.put(cacheKey, accessToken);
         return accessToken;
+    }
+
+    private void waitUntilEnabled(WebElement button) {
+        int tries = 30;
+        int wait = 100;
+        for (int i = 0; i < tries; i++) {
+            if (button.isEnabled()) {
+                return;
+            }
+            sync(wait);
+        }
+        if (!button.isEnabled()) {
+            fail("Button not enabled in " + (tries * wait) + "ms");
+        }
     }
 
     private String invokeMethodOnServer(URL baseUrl, String methodName, String accessToken, String scope) {
