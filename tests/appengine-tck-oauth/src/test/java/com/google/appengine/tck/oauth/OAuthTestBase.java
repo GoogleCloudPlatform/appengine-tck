@@ -62,13 +62,8 @@ public abstract class OAuthTestBase extends TestBase {
             nonAdminTestingAccountPw = "boguspw";
         }
 
-        boolean testingAccountRequired;
         Property accountRequired = property("testingAccountRequired");
-        if (!accountRequired.exists()) {
-            testingAccountRequired = true;
-        } else {
-            testingAccountRequired = accountRequired.getPropertyValue().equalsIgnoreCase("true");
-        }
+        boolean testingAccountRequired = !accountRequired.exists() || accountRequired.getPropertyValue().equalsIgnoreCase("true");
 
         if (nonAdminTestingAccountEmail == null && testingAccountRequired) {
             throw new IllegalStateException("-Dappengine.nonAdminTestingAccount.email is not defined.");
