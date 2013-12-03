@@ -67,7 +67,10 @@ public class Simple2ExampleTest extends ExampleTestBase {
      */
     @Before
     public void setUp() {
-        service = DatastoreServiceFactory.getDatastoreService();
+        if (isInContainer()) {
+            // should not create one for the client side
+            service = DatastoreServiceFactory.getDatastoreService();
+        }
     }
 
     /**

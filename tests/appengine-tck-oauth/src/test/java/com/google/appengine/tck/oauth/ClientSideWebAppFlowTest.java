@@ -15,6 +15,13 @@
 
 package com.google.appengine.tck.oauth;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.google.appengine.api.oauth.InvalidOAuthParametersException;
 import com.google.appengine.api.oauth.InvalidOAuthTokenException;
 import com.google.appengine.api.oauth.OAuthService;
@@ -42,13 +49,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -100,7 +100,11 @@ public class ClientSideWebAppFlowTest extends OAuthTestBase {
     @Before
     public void setUp() {
         initProperties();
-        oAuthService = OAuthServiceFactory.getOAuthService();
+
+        if (isInContainer()) {
+            oAuthService = OAuthServiceFactory.getOAuthService();
+        }
+
         client = new DefaultHttpClient();
     }
 

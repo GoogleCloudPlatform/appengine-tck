@@ -76,7 +76,11 @@ public class UserServiceTest extends UserTestBase {
 
     @Before
     public void setUp() {
-        userService = UserServiceFactory.getUserService();
+        if (isInContainer()) {
+            // should not create one for client side
+            userService = UserServiceFactory.getUserService();
+        }
+
         userId = System.getProperty("appengine.userId");
         pw = System.getProperty("appengine.password");
     }
