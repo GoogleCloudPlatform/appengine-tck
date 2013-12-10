@@ -16,6 +16,8 @@
 package com.google.appengine.tck.coverage;
 
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
+import java.util.Set;
 
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
@@ -26,6 +28,15 @@ import javassist.bytecode.annotation.Annotation;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class BaseMethodExclusion implements MethodExclusion {
+    private static final Set<String> EXCLUDES;
+
+    static {
+        EXCLUDES = new HashSet<>();
+        EXCLUDES.add("equals@(Ljava/lang/Object;)Z");
+        EXCLUDES.add("hashCode@()I");
+        EXCLUDES.add("toString@()Ljava/lang/String;");
+    }
+
     public boolean exclude(ClassFile clazz, MethodInfo mi) {
         if (Modifier.isPublic(mi.getAccessFlags()) == false) {
             return true;
@@ -39,6 +50,8 @@ public class BaseMethodExclusion implements MethodExclusion {
             }
         }
 
-        return false;
+        String methodName = mi.getName();
+        String descriptor = mi.getDescriptor();
+        return EXCLUDES.contains(methodName + "@" + descriptor);
     }
 }

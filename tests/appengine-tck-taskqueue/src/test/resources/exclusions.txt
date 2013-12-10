@@ -1,17 +1,2 @@
-# LeaseOptions
-com.google.appengine.api.taskqueue.LeaseOptions@equals@(Ljava/lang/Object;)Z
-com.google.appengine.api.taskqueue.LeaseOptions@hashCode@()I
-com.google.appengine.api.taskqueue.LeaseOptions@toString@()Ljava/lang/String;
-# RetryOptions
-com.google.appengine.api.taskqueue.RetryOptions@equals@(Ljava/lang/Object;)Z
-com.google.appengine.api.taskqueue.RetryOptions@hashCode@()I
-com.google.appengine.api.taskqueue.RetryOptions@toString@()Ljava/lang/String;
-# TaskOptions
-com.google.appengine.api.taskqueue.TaskOptions@equals@(Ljava/lang/Object;)Z
-com.google.appengine.api.taskqueue.TaskOptions@hashCode@()I
-com.google.appengine.api.taskqueue.TaskOptions@toString@()Ljava/lang/String;
 # TaskHandle
 com.google.appengine.api.taskqueue.TaskHandle@<init>@(Lcom/google/appengine/api/taskqueue/TaskOptions;Ljava/lang/String;)V
-com.google.appengine.api.taskqueue.TaskHandle@equals@(Ljava/lang/Object;)Z
-com.google.appengine.api.taskqueue.TaskHandle@hashCode@()I
-com.google.appengine.api.taskqueue.TaskHandle@toString@()Ljava/lang/String;
