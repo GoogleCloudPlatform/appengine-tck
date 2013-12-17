@@ -50,6 +50,10 @@
         <module>appengine-tck-xmpp</module>
     </modules>
 
+    <properties>
+        <ignore.gae.jar>false</ignore.gae.jar>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.google.appengine</groupId>
@@ -214,6 +218,9 @@
                             <includes>
                                 <include>com/google/appengine/tck/**/*Test.java</include>
                             </includes>
+                            <systemProperties>
+                                <ignore.gae.jar>${ignore.gae.jar}</ignore.gae.jar>
+                            </systemProperties>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -261,6 +268,9 @@
                             <includes>
                                 <include>com/google/appengine/tck/**/*Test.java</include>
                             </includes>
+                            <systemProperties>
+                                <ignore.gae.jar>${ignore.gae.jar}</ignore.gae.jar>
+                            </systemProperties>
                         </configuration>
                     </plugin>
                 </plugins>

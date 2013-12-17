@@ -36,11 +36,15 @@ public class GaeApplicationArchiveProcessor extends AbstractApplicationArchivePr
             }
         }
 
-        war.addAsLibraries(Maven.resolver()
-            .loadPomFromFile("pom.xml")
-            .resolve("com.google.appengine:appengine-api-1.0-sdk")
-            .withTransitivity()
-            .as(File.class)
-        );
+        // do not add GAE jar; e.g. CapeDwarf can work off GAE module
+        boolean ignoreGaeJar = Boolean.getBoolean("ignore.gae.jar");
+        if (ignoreGaeJar == false) {
+            war.addAsLibraries(Maven.resolver()
+                .loadPomFromFile("pom.xml")
+                .resolve("com.google.appengine:appengine-api-1.0-sdk")
+                .withTransitivity()
+                .as(File.class)
+            );
+        }
     }
 }
