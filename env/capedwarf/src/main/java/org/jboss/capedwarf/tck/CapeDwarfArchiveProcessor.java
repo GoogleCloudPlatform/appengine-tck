@@ -50,6 +50,8 @@ public class CapeDwarfArchiveProcessor extends EnvApplicationArchiveProcessor {
 
     static {
         COMPATIBILITY = new Properties();
+        // Ignore WebSockets until PhantomJS supports it properly
+        COMPATIBILITY.setProperty("disable.websockets.channel", "true");
     }
 
     @SuppressWarnings("unchecked")
