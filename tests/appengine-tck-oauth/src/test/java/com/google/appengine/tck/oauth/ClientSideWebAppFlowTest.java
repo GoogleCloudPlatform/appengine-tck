@@ -41,6 +41,7 @@ import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -106,6 +107,13 @@ public class ClientSideWebAppFlowTest extends OAuthTestBase {
         }
 
         client = new DefaultHttpClient();
+    }
+
+    @After
+    public void tearDown() {
+        if (client != null) {
+            client.getConnectionManager().shutdown();
+        }
     }
 
     @Test

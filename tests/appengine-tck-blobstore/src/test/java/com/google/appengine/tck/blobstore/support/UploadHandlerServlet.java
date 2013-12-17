@@ -47,6 +47,11 @@ public class UploadHandlerServlet extends HttpServlet {
         lastUploadedBlobKey = getFirst(blobstore.getUploads(request));
         lastUploadedBlobInfo = getFirst(blobstore.getBlobInfos(request));
         lastUploadedFileInfo = getFirst(blobstore.getFileInfos(request));
+
+        BlobKey tmp = lastUploadedBlobKey;
+        if (tmp != null) {
+            response.getWriter().write(tmp.getKeyString());
+        }
     }
 
     private <E> E getFirst(Map<String, List<E>> map) {

@@ -23,6 +23,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -33,26 +34,50 @@ import org.apache.http.util.EntityUtils;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class FileUploader {
+    public static enum Method {
+        GET,
+        POST
+    }
 
     public String getUploadUrl(URL url) throws URISyntaxException, IOException {
-        HttpClient httpClient = new DefaultHttpClient();
+        return getUploadUrl(url, Method.GET);
+    }
 
-        HttpGet get = new HttpGet(url.toURI());
-        HttpResponse response = httpClient.execute(get);
-        return EntityUtils.toString(response.getEntity()).trim();
+    public String getUploadUrl(URL url, Method method) throws URISyntaxException, IOException {
+        HttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpUriRequest request;
+            switch (method) {
+                case GET:
+                    request = new HttpGet(url.toURI());
+                    break;
+                case POST:
+                    request = new HttpPost(url.toURI());
+                    break;
+                default:
+                    throw new IllegalArgumentException(String.format("No such method: %s", method));
+            }
+            HttpResponse response = httpClient.execute(request);
+            return EntityUtils.toString(response.getEntity()).trim();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
     }
 
     public String uploadFile(String uri, String partName, String filename, String mimeType, byte[] contents) throws URISyntaxException, IOException {
         HttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpPost post = new HttpPost(uri);
+            MultipartEntity entity = new MultipartEntity();
+            ByteArrayBody contentBody = new ByteArrayBody(contents, mimeType, filename);
+            entity.addPart(partName, contentBody);
+            post.setEntity(entity);
 
-        HttpPost post = new HttpPost(uri);
-        MultipartEntity entity = new MultipartEntity();
-        ByteArrayBody contentBody = new ByteArrayBody(contents, mimeType, filename);
-        entity.addPart(partName, contentBody);
-        post.setEntity(entity);
-
-        HttpResponse response = httpClient.execute(post);
-        return EntityUtils.toString(response.getEntity());
+            HttpResponse response = httpClient.execute(post);
+            return EntityUtils.toString(response.getEntity());
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
     }
 
     /**

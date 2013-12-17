@@ -21,6 +21,11 @@
         <servlet-class>com.google.appengine.tck.blobstore.support.UploadHandlerServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>serveHandler</servlet-name>
+        <servlet-class>com.google.appengine.tck.blobstore.support.BlobserviceServeServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>uploadUrl</servlet-name>
         <url-pattern>/getUploadUrl</url-pattern>
@@ -34,6 +39,11 @@
     <servlet-mapping>
         <servlet-name>serveblob</servlet-name>
         <url-pattern>/serveblob</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>serveHandler</servlet-name>
+        <url-pattern>/blobserviceserve</url-pattern>
     </servlet-mapping>
 
 </web-app>

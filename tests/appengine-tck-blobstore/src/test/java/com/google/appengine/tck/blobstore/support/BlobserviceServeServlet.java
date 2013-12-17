@@ -22,26 +22,34 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-import com.google.appengine.api.blobstore.UploadOptions;
+import com.google.appengine.api.blobstore.ByteRange;
 
 /**
- * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class UploadUrlServerServlet extends HttpServlet {
+public class BlobserviceServeServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        BlobstoreService blobstore = BlobstoreServiceFactory.getBlobstoreService();
-        response.getWriter().println(blobstore.createUploadUrl("/uploadHandler"));
-    }
+        BlobstoreService service = BlobstoreServiceFactory.getBlobstoreService();
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        BlobstoreService blobstore = BlobstoreServiceFactory.getBlobstoreService();
-        response.getWriter().println(blobstore.createUploadUrl("/uploadHandler", UploadOptions.Builder.withMaxUploadSizeBytes(Long.MAX_VALUE - 1)));
-    }
+        String blobKey = request.getParameter("blobKey");
+        ByteRange range = service.getByteRange(request);
+        String blobRange = request.getParameter("blobRange");
+        String blobRangeString = request.getParameter("blobRangeString");
 
+        BlobKey key = new BlobKey(blobKey);
+        if (range != null) {
+            service.serve(key, range, response);
+        } else if (blobRange != null) {
+            service.serve(key, new ByteRange(Long.parseLong(blobRange)), response);
+        } else if (blobRangeString != null) {
+            service.serve(key, blobRangeString, response);
+        } else {
+            service.serve(key, response);
+        }
+    }
 }

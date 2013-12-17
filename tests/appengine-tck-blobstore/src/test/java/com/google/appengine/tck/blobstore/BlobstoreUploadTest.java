@@ -18,7 +18,6 @@ package com.google.appengine.tck.blobstore;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.security.MessageDigest;
 
 import com.google.appengine.api.blobstore.BlobInfo;
 import com.google.appengine.api.blobstore.BlobKey;
@@ -46,32 +45,6 @@ import static org.junit.Assert.assertNull;
  */
 @RunWith(Arquillian.class)
 public class BlobstoreUploadTest extends BlobstoreTestBase {
-
-    private static final char[] Hexadecimal = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-
-    public static final String FILENAME = "uploadedFile.txt";
-    public static final String CONTENT_TYPE = "text/plain";
-    public static final byte[] UPLOADED_CONTENT = "uploaded content".getBytes();
-    public static final String MD5_HASH;
-
-    static String toHexString(byte[] bytes) {
-        final char[] chars = new char[bytes.length * 2];
-        for (int b = 0, c = 0; b < bytes.length; b++) {
-            int v = (int) bytes[b] & 0xFF;
-            chars[c++] = Hexadecimal[v / 16];
-            chars[c++] = Hexadecimal[v % 16];
-        }
-        return new String(chars);
-    }
-
-    static {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            MD5_HASH = toHexString(md.digest(UPLOADED_CONTENT));
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
 
     @Test
     @RunAsClient
@@ -118,7 +91,7 @@ public class BlobstoreUploadTest extends BlobstoreTestBase {
     @InSequence(40)
     public void testSubmitMultipartFormWithoutFile_upload(@ArquillianResource URL url) throws Exception {
         FileUploader fileUploader = new FileUploader();
-        String uploadUrl = fileUploader.getUploadUrl(new URL(url, "getUploadUrl"));
+        String uploadUrl = fileUploader.getUploadUrl(new URL(url, "getUploadUrl"), FileUploader.Method.POST);
         fileUploader.uploadWithoutFile(uploadUrl, "file");
     }
 

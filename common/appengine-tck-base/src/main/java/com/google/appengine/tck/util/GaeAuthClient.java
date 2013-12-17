@@ -54,6 +54,10 @@ public class GaeAuthClient {
         return client;
     }
 
+    public void shutdown() {
+        client.getConnectionManager().shutdown();
+    }
+
     public HttpResponse getUrl(String url) throws IOException {
         HttpGet get = new HttpGet(url);
         return client.execute(get);
@@ -137,7 +141,7 @@ public class GaeAuthClient {
 
     // The body of the response is lines of key-value pairs
     protected Map<String, String> parseClientLoginBody(String body) {
-        Map<String, String> responseMap = new HashMap<String, String>();
+        Map<String, String> responseMap = new HashMap<>();
         for (String line : body.split("\n")) {
             int idx = line.indexOf("=");
             if (idx > 0) {

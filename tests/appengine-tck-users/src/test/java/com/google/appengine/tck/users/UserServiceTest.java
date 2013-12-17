@@ -107,6 +107,7 @@ public class UserServiceTest extends UserTestBase {
 
     @After
     public void tearDown() {
+        shutdownAuthClient();
     }
 
     private ServletAnswer getUnAuthServletAnswer(URL url, String method) throws IOException {
@@ -136,6 +137,15 @@ public class UserServiceTest extends UserTestBase {
             } catch (AuthClientException ae) {
                 throw new IllegalStateException(ae.toString());
             }
+        }
+    }
+
+    private void shutdownAuthClient() {
+        if (authClient != null) {
+            GaeAuthClient tmp = authClient;
+            authClient = null;
+
+            tmp.shutdown();
         }
     }
 
