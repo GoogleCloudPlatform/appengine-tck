@@ -15,20 +15,6 @@
 
 package com.google.appengine.tck.base;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.logging.Logger;
-
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -47,6 +33,20 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 /**
  * Base test class for all GAE TCK tests.
@@ -243,8 +243,9 @@ public class TestBase {
     }
 
     public static Key putTempData(TempData data) {
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        Transaction txn = ds.beginTransaction();
         try {
-            DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
             Class<? extends TempData> type = data.getClass();
             String kind = getKind(type);
             Entity entity = new Entity(kind);
@@ -254,9 +255,14 @@ public class TestBase {
             data.prePut(ds);
             Key key = ds.put(entity);
             data.postPut(ds);
+            txn.commit();
             return key;
         } catch (Exception e) {
             throw new IllegalStateException(e);
+        } finally {
+            if (txn.isActive()) {
+                txn.rollback();
+            }
         }
     }
 
@@ -308,8 +314,9 @@ public class TestBase {
             return;
         }
 
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        Transaction txn = ds.beginTransaction();
         try {
-            DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
             String kind = getKind(type);
             PreparedQuery pq = ds.prepare(new Query(kind));
             for (Entity e : pq.asIterable()) {
@@ -319,8 +326,13 @@ public class TestBase {
                 ds.delete(e.getKey());
                 data.postDelete(ds);
             }
+            txn.commit();
         } catch (Exception e) {
             throw new IllegalStateException(e);
+        } finally {
+            if (txn.isActive()) {
+                txn.rollback();
+            }
         }
     }
 
