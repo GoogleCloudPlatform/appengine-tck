@@ -42,6 +42,7 @@ public class MatchResponseServlet extends HttpServlet {
         invocationData.resultsCount = Integer.parseInt(request.getParameter("results_count"));
         String[] ids = request.getParameterValues("id");
         invocationData.subIds = (ids != null) ? Arrays.asList(ids) : new ArrayList<String>();
+
         if (request.getParameter("document") != null) {
             invocationData.lastReceivedDocument = ProspectiveSearchServiceFactory.getProspectiveSearchService().getDocument(request);
         }
