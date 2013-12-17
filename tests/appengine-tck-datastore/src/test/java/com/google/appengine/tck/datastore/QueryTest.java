@@ -58,8 +58,8 @@ public class QueryTest extends DatastoreTestBase {
     @Before
     public void createData() throws InterruptedException {
         clearData(kindName);
-        List<Entity> elist = new ArrayList<Entity>();
-        elist.clear();
+
+        List<Entity> elist = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             Entity newRec = new Entity(kindName, rootKey);
             newRec.setProperty("stringData", "string data" + i);
@@ -67,7 +67,7 @@ public class QueryTest extends DatastoreTestBase {
             newRec.setProperty("shortBlobData", new ShortBlob(("shortBlobData" + i).getBytes()));
             newRec.setProperty("intData", 20 * i);
             newRec.setProperty("textData", new Text("textData" + i));
-            newRec.setProperty("floatData", new Double(1234 + 0.1 * i));
+            newRec.setProperty("floatData", 1234 + 0.1 * i);
             newRec.setProperty("booleanData", true);
             newRec.setProperty("urlData", new Link("http://www.google.com"));
             newRec.setProperty("emailData", new Email("somebody123" + i + "@google.com"));
@@ -79,8 +79,8 @@ public class QueryTest extends DatastoreTestBase {
             newRec.setProperty("intList", Arrays.asList(i, 50 + i, 90 + i));
             elist.add(newRec);
         }
-
         service.put(elist);
+
         sync(1000);
     }
 
@@ -97,10 +97,8 @@ public class QueryTest extends DatastoreTestBase {
     @Test
     public void testSetFilterShortBlob() {
         Query query = new Query(kindName, rootKey);
-        Filter filter1 = Query.FilterOperator.EQUAL.of("shortBlobData",
-            new ShortBlob("shortBlobData0".getBytes()));
-        Filter filter2 = Query.FilterOperator.LESS_THAN_OR_EQUAL.of("shortBlobData",
-            new ShortBlob("shortBlobData1".getBytes()));
+        Filter filter1 = Query.FilterOperator.EQUAL.of("shortBlobData", new ShortBlob("shortBlobData0".getBytes()));
+        Filter filter2 = Query.FilterOperator.LESS_THAN_OR_EQUAL.of("shortBlobData", new ShortBlob("shortBlobData1".getBytes()));
         query.setFilter(Query.CompositeFilterOperator.or(filter1, filter2));
         assertEquals(2, service.prepare(query).countEntities(fo));
     }
@@ -108,7 +106,7 @@ public class QueryTest extends DatastoreTestBase {
     @Test
     public void testSetFilterInt() {
         Query query = new Query(kindName, rootKey);
-        List<Filter> filterList = new ArrayList<Filter>();
+        List<Filter> filterList = new ArrayList<>();
         filterList.add(Query.FilterOperator.EQUAL.of("intData", 20));
         filterList.add(Query.FilterOperator.GREATER_THAN.of("intData", 0));
         Filter filter = Query.CompositeFilterOperator.and(filterList);
@@ -119,7 +117,7 @@ public class QueryTest extends DatastoreTestBase {
     @Test
     public void testSetFilterRating() {
         Query query = new Query(kindName, rootKey);
-        List<Filter> filterList = new ArrayList<Filter>();
+        List<Filter> filterList = new ArrayList<>();
         filterList.add(Query.FilterOperator.LESS_THAN.of("ratingData", new Rating(30)));
         filterList.add(Query.FilterOperator.GREATER_THAN.of("ratingData", new Rating(0)));
         Filter filter1 = Query.CompositeFilterOperator.or(filterList);
@@ -132,7 +130,7 @@ public class QueryTest extends DatastoreTestBase {
     public void testSetFilterList() {
         // [0,50,90], [1,51,91], [2,52,92]
         Query query = new Query(kindName, rootKey);
-        List<Filter> filterList = new ArrayList<Filter>();
+        List<Filter> filterList = new ArrayList<>();
         filterList.add(Query.FilterOperator.LESS_THAN.of("intList", 5));
         filterList.add(Query.FilterOperator.GREATER_THAN.of("intList", 90));
         Filter filter1 = Query.CompositeFilterOperator.OR.of(filterList);
@@ -174,10 +172,8 @@ public class QueryTest extends DatastoreTestBase {
         assertEquals("check query ancesor", rootKey, query.getAncestor());
         Query.FilterPredicate fp = (Query.FilterPredicate) query.getFilter();
         assertEquals("check FilterPredicate name", "intData", fp.getPropertyName());
-        assertEquals("check FilterPredicate operator", Query.FilterOperator.EQUAL,
-            fp.getOperator());
-        assertEquals("check FilterPredicate value", e.getProperty("intData").toString(),
-            fp.getValue().toString());
+        assertEquals("check FilterPredicate operator", Query.FilterOperator.EQUAL, fp.getOperator());
+        assertEquals("check FilterPredicate value", e.getProperty("intData").toString(), fp.getValue().toString());
     }
 
     @Test
@@ -206,7 +202,46 @@ public class QueryTest extends DatastoreTestBase {
         assertEquals((long) 40, es.get(0).getProperty("intData"));
         List<Query.SortPredicate> qsp = query.getSortPredicates();
         assertEquals("check SortPredicate name", "intData", qsp.get(0).getPropertyName());
-        assertEquals("check SortPredicate direction", Query.SortDirection.DESCENDING,
-            qsp.get(0).getDirection());
+        assertEquals("check SortPredicate direction", Query.SortDirection.DESCENDING, qsp.get(0).getDirection());
+    }
+
+    @SuppressWarnings("LoopStatementThatDoesntLoop")
+    @Test
+    public void testKeysOnly() throws Exception {
+        final Query query = new Query(kindName, rootKey);
+        query.setKeysOnly();
+
+        for (Entity e : service.prepare(query).asIterable()) {
+            Assert.assertNull(e.getProperty("intData"));
+            break;
+        }
+
+        for (Entity e : service.prepare(query.clearKeysOnly()).asIterable()) {
+            Assert.assertNotNull(e.getProperty("intData"));
+            break;
+        }
+    }
+
+    @Test
+    public void testReverse() throws Exception {
+        final Query query = new Query(kindName, rootKey);
+        query.addSort(Entity.KEY_RESERVED_PROPERTY);
+        query.addSort("intData");
+
+        List<Entity> list1 = service.prepare(query).asList(FetchOptions.Builder.withDefaults());
+        List<Entity> list2 = service.prepare(query.reverse()).asList(FetchOptions.Builder.withDefaults());
+
+        int size = list1.size();
+        Assert.assertEquals(size, list2.size());
+        for (int i = 0; i < size; i++) {
+            Assert.assertEquals(list1.get(i), list2.get(size - i - 1));
+        }
+    }
+
+    @Test
+    public void testMiscOps() throws Exception {
+        final Query query = new Query(kindName, rootKey);
+        Assert.assertNotNull(query.getAppId());
+        Assert.assertNotNull(query.getNamespace());
     }
 }

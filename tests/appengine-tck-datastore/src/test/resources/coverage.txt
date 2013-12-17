@@ -1,10 +1,14 @@
 com.google.appengine.api.datastore.AsyncDatastoreService
 com.google.appengine.api.datastore.BaseDatastoreService
+com.google.appengine.api.datastore.Cursor
 com.google.appengine.api.datastore.DatastoreService
 com.google.appengine.api.datastore.DatastoreServiceConfig
 com.google.appengine.api.datastore.DatastoreServiceConfig$Builder
 com.google.appengine.api.datastore.DatastoreServiceFactory
+#com.google.appengine.api.datastore.FetchOptions
+com.google.appengine.api.datastore.FetchOptions$Builder
 com.google.appengine.api.datastore.PreparedQuery
-#com.google.appengine.api.datastore.Query
-#com.google.appengine.api.datastore.QueryResultIterator
+com.google.appengine.api.datastore.Query
+com.google.appengine.api.datastore.QueryResultIterator
+com.google.appengine.api.datastore.QueryResultList
 com.google.appengine.api.datastore.Transaction

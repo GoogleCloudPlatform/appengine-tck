@@ -28,13 +28,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.google.appengine.api.datastore.FetchOptions.Builder.withChunkSize;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withEndCursor;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withOffset;
+import static com.google.appengine.api.datastore.FetchOptions.Builder.withPrefetchSize;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withStartCursor;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:marko.luksa@gmail.com">Marko Luksa</a>
@@ -161,7 +163,7 @@ public class QueryFetchOptionsTest extends QueryTestBase {
         Cursor cursor = results.getCursor();    // points to foo2
 
         results = executeQuery(withEndCursor(cursor).offset(3));
-        assertEquals(emptyList(), results);
+        assertTrue(results.isEmpty());
     }
 
     @Test
@@ -186,6 +188,18 @@ public class QueryFetchOptionsTest extends QueryTestBase {
 
         results = executeQuery(withEndCursor(cursor).offset(1).limit(5));
         assertEquals(asList(foo2, foo3), results);
+    }
+
+    @Test
+    public void testChunkSize() {
+        List<Entity> results = executeQuery(withChunkSize(2));
+        assertEquals(5, results.size());
+    }
+
+    @Test
+    public void testPreFetchSize() {
+        List<Entity> results = executeQuery(withPrefetchSize(2));
+        assertEquals(5, results.size());
     }
 
     private QueryResultList<Entity> executeQuery(FetchOptions fetchOptions) {

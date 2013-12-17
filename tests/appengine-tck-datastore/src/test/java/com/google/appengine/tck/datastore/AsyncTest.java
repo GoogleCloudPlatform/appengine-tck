@@ -16,14 +16,11 @@
 package com.google.appengine.tck.datastore;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.concurrent.Future;
 
 import com.google.appengine.api.datastore.AsyncDatastoreService;
-import com.google.appengine.api.datastore.DatastoreAttributes;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Index;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
@@ -144,8 +141,7 @@ public class AsyncTest extends AsyncTestBase {
     @Test
     public void testCommitTx() throws Exception {
         AsyncDatastoreService service = DatastoreServiceFactory.getAsyncDatastoreService();
-        Future<Transaction> fTX = service.beginTransaction(TransactionOptions.Builder.withDefaults());
-        Transaction tx = waitOnFuture(fTX);
+        Transaction tx = waitOnFuture(service.beginTransaction(TransactionOptions.Builder.withDefaults()));
         Key key;
         try {
             Future<Key> fKey = service.put(tx, new Entity("AsyncTx"));
@@ -164,8 +160,7 @@ public class AsyncTest extends AsyncTestBase {
     @Test
     public void testRollbackTx() throws Exception {
         AsyncDatastoreService service = DatastoreServiceFactory.getAsyncDatastoreService();
-        Future<Transaction> fTX = service.beginTransaction(TransactionOptions.Builder.withDefaults());
-        Transaction tx = waitOnFuture(fTX);
+        Transaction tx = waitOnFuture(service.beginTransaction(TransactionOptions.Builder.withDefaults()));
         Key key = null;
         try {
             Future<Key> fKey = service.put(tx, new Entity("AsyncTx"));
@@ -176,42 +171,6 @@ public class AsyncTest extends AsyncTestBase {
 
         if (key != null) {
             Assert.assertNull(getSingleEntity(service, key));
-        }
-    }
-
-    @Test
-    public void testTxIsActive() throws Exception {
-        AsyncDatastoreService service = DatastoreServiceFactory.getAsyncDatastoreService();
-        Transaction tx = waitOnFuture(service.beginTransaction());
-        try {
-            Assert.assertTrue(tx.isActive());
-        } finally {
-            tx.rollback();
-        }
-    }
-
-    @Test
-    public void testMiscOps() throws Exception {
-        AsyncDatastoreService service = DatastoreServiceFactory.getAsyncDatastoreService();
-
-        DatastoreAttributes attributes = waitOnFuture(service.getDatastoreAttributes());
-        Assert.assertNotNull(attributes);
-        Assert.assertNotNull(attributes.getDatastoreType());
-
-        Map<Index, Index.IndexState> indexes = waitOnFuture(service.getIndexes());
-        Assert.assertNotNull(indexes);
-
-        Transaction tx = waitOnFuture(service.beginTransaction());
-        try {
-            String txId = tx.getId();
-            Assert.assertNotNull(txId);
-            Assert.assertEquals(txId, tx.getId());
-
-            String appId = tx.getApp();
-            Assert.assertNotNull(appId);
-            Assert.assertEquals(appId, tx.getApp());
-        } finally {
-            tx.rollback();
         }
     }
 }

@@ -44,7 +44,6 @@ import static org.junit.Assert.assertNull;
  * @author <a href="mailto:marko.luksa@gmail.com">Marko Luksa</a>
  */
 @RunWith(Arquillian.class)
-
 public class QueryOptimizationsTest extends QueryTestBase {
 
     @Test

@@ -20,12 +20,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 
+import com.google.appengine.api.datastore.AsyncDatastoreService;
+import com.google.appengine.api.datastore.DatastoreAttributes;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Index;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -346,7 +351,7 @@ public class TransactionsTest extends DatastoreTestBase {
 
         final int N = 5; // max XG entity groups
 
-        List<Key> keys = new ArrayList<Key>();
+        List<Key> keys = new ArrayList<>();
         for (int i = 0; i < N + 1; i++) {
             keys.add(service.put(new Entity("XG")));
         }
@@ -479,6 +484,42 @@ public class TransactionsTest extends DatastoreTestBase {
         Assert.assertSame(dummy, service.getCurrentTransaction(dummy));
     }
 
+    @Test
+    public void testTxIsActive() throws Exception {
+        Transaction tx = service.beginTransaction();
+        try {
+            Assert.assertTrue(tx.isActive());
+        } finally {
+            tx.rollback();
+            Assert.assertFalse(tx.isActive());
+        }
+    }
+
+    @Test
+    public void testMiscOps() throws Exception {
+        AsyncDatastoreService service = DatastoreServiceFactory.getAsyncDatastoreService();
+
+        DatastoreAttributes attributes = waitOnFuture(service.getDatastoreAttributes());
+        Assert.assertNotNull(attributes);
+        Assert.assertNotNull(attributes.getDatastoreType());
+
+        Map<Index, Index.IndexState> indexes = waitOnFuture(service.getIndexes());
+        Assert.assertNotNull(indexes);
+
+        Transaction tx = waitOnFuture(service.beginTransaction());
+        try {
+            String txId = tx.getId();
+            Assert.assertNotNull(txId);
+            Assert.assertEquals(txId, tx.getId());
+
+            String appId = tx.getApp();
+            Assert.assertNotNull(appId);
+            Assert.assertEquals(appId, tx.getApp());
+        } finally {
+            tx.rollback();
+        }
+    }
+
     private PreparedQuery prepareQueryWithAncestor(Transaction tx, Key someAncestor) {
         return service.prepare(tx, new Query("foo").setAncestor(someAncestor));
     }
@@ -490,8 +531,8 @@ public class TransactionsTest extends DatastoreTestBase {
     protected void assertActiveTransactions(Transaction... txs) {
         Collection<Transaction> transactions = service.getActiveTransactions();
         assertNotNull(txs);
-        Set<Transaction> expected = new HashSet<Transaction>(transactions);
-        Set<Transaction> existing = new HashSet<Transaction>(Arrays.asList(txs));
+        Set<Transaction> expected = new HashSet<>(transactions);
+        Set<Transaction> existing = new HashSet<>(Arrays.asList(txs));
         assertEquals(expected, existing);
 
         for (Transaction tx : txs) {

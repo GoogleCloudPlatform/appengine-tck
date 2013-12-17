@@ -347,4 +347,8 @@
         <property name="long" direction="asc"/>
     </datastore-index>
 
+    <datastore-index kind="querytest" ancestor="true" source="manual">
+        <property name="__key__" direction="asc"/>
+        <property name="intData" direction="asc"/>
+    </datastore-index>
 </datastore-indexes>
