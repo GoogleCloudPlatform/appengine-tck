@@ -3,4 +3,4 @@ com.google.appengine.api.appidentity.AppIdentityService$GetAccessTokenResult
 com.google.appengine.api.appidentity.AppIdentityService$ParsedAppId
 com.google.appengine.api.appidentity.AppIdentityService$SigningResult
 com.google.appengine.api.appidentity.PublicCertificate
-com.google.appengine.api.appidentity.AppIdentityServiceFailureException
+#com.google.appengine.api.appidentity.AppIdentityServiceFailureException
