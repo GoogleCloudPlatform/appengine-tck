@@ -18,9 +18,12 @@ package com.google.appengine.tck.datastore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -94,7 +97,7 @@ public abstract class DatastoreHelperTestBase extends TestBase {
     }
 
     protected void clearData(String kind, Key parentKey, int waitMilliSec) {
-        List<Key> eList = new ArrayList<Key>();
+        List<Key> eList = new ArrayList<>();
         Query query = new Query(kind, parentKey);
         for (Entity readRec : service.prepare(query).asIterable()) {
             eList.add(readRec.getKey());
@@ -283,6 +286,16 @@ public abstract class DatastoreHelperTestBase extends TestBase {
             query.addSort(pName);
         }
         return service.prepare(query).asList(fo);
+    }
+
+    protected Entity getSingleEntity(DatastoreService ds, Key key) {
+        Map<Key, Entity> map = ds.get(Collections.singleton(key));
+        return (map.isEmpty() ? null : map.values().iterator().next());
+    }
+
+    protected Entity getSingleEntity(AsyncDatastoreService ds, Key key) {
+        Map<Key, Entity> map = waitOnFuture(ds.get(Collections.singleton(key)));
+        return (map.isEmpty() ? null : map.values().iterator().next());
     }
 
     private void assertIAEWhenAccessingList(PreparedQuery preparedQuery) {
