@@ -15,25 +15,6 @@
 
 package com.google.appengine.tck.base;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Transaction;
-import com.google.appengine.tck.category.IgnoreMultisuite;
-import com.google.appengine.tck.event.ExecutionLifecycleEvent;
-import com.google.appengine.tck.event.Property;
-import com.google.appengine.tck.event.PropertyLifecycleEvent;
-import com.google.appengine.tck.event.TestLifecycleEvent;
-import com.google.appengine.tck.event.TestLifecycles;
-import com.google.appengine.tck.temp.TempData;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +28,26 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
+
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.TransactionOptions;
+import com.google.appengine.tck.category.IgnoreMultisuite;
+import com.google.appengine.tck.event.ExecutionLifecycleEvent;
+import com.google.appengine.tck.event.Property;
+import com.google.appengine.tck.event.PropertyLifecycleEvent;
+import com.google.appengine.tck.event.TestLifecycleEvent;
+import com.google.appengine.tck.event.TestLifecycles;
+import com.google.appengine.tck.temp.TempData;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
 
 /**
  * Base test class for all GAE TCK tests.
@@ -244,7 +245,7 @@ public class TestBase {
 
     public static Key putTempData(TempData data) {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Transaction txn = ds.beginTransaction();
+        Transaction txn = ds.beginTransaction(TransactionOptions.Builder.withXG(true));
         try {
             Class<? extends TempData> type = data.getClass();
             String kind = getKind(type);
@@ -315,7 +316,7 @@ public class TestBase {
         }
 
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Transaction txn = ds.beginTransaction();
+        Transaction txn = ds.beginTransaction(TransactionOptions.Builder.withXG(true));
         try {
             String kind = getKind(type);
             PreparedQuery pq = ds.prepare(new Query(kind));
