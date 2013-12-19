@@ -27,16 +27,10 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
+ * Terry Okamoto
  */
 public class PresenceServlet extends HttpServlet {
-
     Logger log = Logger.getLogger(PresenceServlet.class.getName());
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        super.doGet(req, resp);
-    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
