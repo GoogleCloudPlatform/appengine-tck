@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -48,9 +49,7 @@ import static org.junit.Assert.fail;
  * @author <a href="mailto:marko.luksa@gmail.com">Marko Luksa</a>
  */
 @RunWith(Arquillian.class)
-
 public class QueryBasicsTest extends QueryTestBase {
-
     private static final String QUERY_BASICS_ENTITY = "QueryBasicsTestEntity";
 
     private Key createQueryBasicsTestParent(String methodName) {
@@ -330,8 +329,8 @@ public class QueryBasicsTest extends QueryTestBase {
         assertSingleResult(johnDoe, query);
     }
 
-    private HashSet<Entity> asSet(List<Entity> collection) {
-        return new HashSet<Entity>(collection);
+    private Set<Entity> asSet(List<Entity> collection) {
+        return new HashSet<>(collection);
     }
 
 }
