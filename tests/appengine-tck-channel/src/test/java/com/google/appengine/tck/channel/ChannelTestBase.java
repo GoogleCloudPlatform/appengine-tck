@@ -17,6 +17,7 @@ package com.google.appengine.tck.channel;
 
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
+import com.google.appengine.tck.channel.support.PresenceServlet;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
@@ -31,9 +32,10 @@ public abstract class ChannelTestBase extends TestBase {
     public static WebArchive getDeployment() {
         TestContext context = new TestContext();
         context.setAppEngineWebXmlFile("channel-appengine-web.xml");
+        context.setWebXmlFile("channel-web.xml");
 
         WebArchive war = getTckDeployment(context);
-        war.addClass(ChannelTestBase.class);
+        war.addClasses(ChannelTestBase.class, PresenceServlet.class);
 
         war.addAsWebResource("channelPage.jsp");
         war.addAsWebResource("channelEcho.jsp");

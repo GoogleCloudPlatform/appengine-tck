@@ -85,4 +85,28 @@ public class ChannelTest extends ChannelTestBase {
         String expectedMsg = "echo-from-server:msg:" + channelId;
         assertEquals(expectedMsg, lastReceived.getText());
     }
+
+    @Test
+    @RunAsClient
+    @InSequence(20)
+    public void testTimeout(@ArquillianResource URL url) throws Exception {
+        // 1. Create our test with a unique channel id.
+        String channelId = "" + System.currentTimeMillis();
+
+        // Set timeout for 1 minute.
+        String params = String.format("/channelPage.jsp?test-channel-id=%s&timeout-minutes=%d", channelId, 1);
+        driver.get(url + params);
+
+        // 2. Verify that the server received our channel id and is using it for this tests.
+        WebElement channel = driver.findElement(By.id("channel-id"));
+        assertEquals(channelId, channel.getText());
+
+        // 3. Verify that the channel gets closed after the 1 minute timeout.
+        WebElement stat = driver.findElement(By.id("status"));
+        assertEquals("opened", stat.getText());
+        // This should put us over the 1 minute timeout.
+        sync(70000L);
+        stat = driver.findElement(By.id("status"));
+        assertEquals("closed", stat.getText());
+    }
 }
