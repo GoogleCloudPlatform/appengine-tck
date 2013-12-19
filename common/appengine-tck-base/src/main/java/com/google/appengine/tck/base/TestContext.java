@@ -21,6 +21,9 @@ import java.util.Properties;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class TestContext implements Cloneable {
+    private final long timestamp;
+    private boolean ignoreTimestamp; // by default we write timestamp into test's assets
+
     private boolean subdeployment;
     private String archiveName;
 
@@ -38,10 +41,24 @@ public class TestContext implements Cloneable {
     private boolean callbacks;
 
     public TestContext() {
+        timestamp = System.currentTimeMillis();
     }
 
     public TestContext(String archiveName) {
+        this();
         this.archiveName = archiveName;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public boolean isIgnoreTimestamp() {
+        return ignoreTimestamp;
+    }
+
+    public void setIgnoreTimestamp(boolean ignoreTimestamp) {
+        this.ignoreTimestamp = ignoreTimestamp;
     }
 
     public boolean isSubdeployment() {

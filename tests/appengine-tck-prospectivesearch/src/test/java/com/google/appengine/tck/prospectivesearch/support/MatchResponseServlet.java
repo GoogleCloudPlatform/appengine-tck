@@ -25,29 +25,28 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.prospectivesearch.ProspectiveSearchServiceFactory;
+import com.google.appengine.tck.base.TestBase;
 
 /**
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 public class MatchResponseServlet extends HttpServlet {
 
-    private static List<InvocationData> invocations = new ArrayList<>();
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         InvocationData invocationData = new InvocationData();
-        invocations.add(invocationData);
-
         invocationData.key = request.getParameter("key");
         invocationData.topic = request.getParameter("topic");
         invocationData.resultsOffset = Integer.parseInt(request.getParameter("results_offset"));
         invocationData.resultsCount = Integer.parseInt(request.getParameter("results_count"));
-        invocationData.subIds = request.getParameterValues("id");
+        String[] ids = request.getParameterValues("id");
+        invocationData.subIds = (ids != null) ? Arrays.asList(ids) : new ArrayList<String>();
+
         if (request.getParameter("document") != null) {
             invocationData.lastReceivedDocument = ProspectiveSearchServiceFactory.getProspectiveSearchService().getDocument(request);
         }
+        TestBase.putTempData(invocationData);
     }
 
     @Override
@@ -55,7 +54,7 @@ public class MatchResponseServlet extends HttpServlet {
     }
 
     public static int getInvocationCount() {
-        return invocations.size();
+        return getInvocations().size();
     }
 
     public static boolean isInvoked() {
@@ -63,55 +62,22 @@ public class MatchResponseServlet extends HttpServlet {
     }
 
     public static List<InvocationData> getInvocations() {
-        return invocations;
+        return TestBase.getAllTempData(InvocationData.class);
     }
 
     public static InvocationData getLastInvocationData() {
-        return invocations.get(invocations.size() - 1);
+        return TestBase.getLastTempData(InvocationData.class);
     }
 
     public static void clear() {
-        invocations.clear();
+        TestBase.deleteTempData(InvocationData.class);
     }
 
     public static List<String> getAllSubIds() {
         List<String> receivedSubIds = new ArrayList<>();
-        for (MatchResponseServlet.InvocationData invocationData : getInvocations()) {
-            receivedSubIds.addAll(Arrays.asList(invocationData.getSubIds()));
+        for (InvocationData invocationData : getInvocations()) {
+            receivedSubIds.addAll(invocationData.getSubIds());
         }
         return receivedSubIds;
-    }
-
-    public static class InvocationData {
-        private Entity lastReceivedDocument;
-        private int resultsOffset;
-        private int resultsCount;
-        private String[] subIds;
-        private String key;
-        private String topic;
-
-        public Entity getDocument() {
-            return lastReceivedDocument;
-        }
-
-        public int getResultsOffset() {
-            return resultsOffset;
-        }
-
-        public int getResultsCount() {
-            return resultsCount;
-        }
-
-        public String[] getSubIds() {
-            return subIds;
-        }
-
-        public String getKey() {
-            return key;
-        }
-
-        public String getTopic() {
-            return topic;
-        }
     }
 }

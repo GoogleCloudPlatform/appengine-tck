@@ -89,7 +89,7 @@
 
         <!-- Plugins -->
         <version.compiler.plugin>3.1</version.compiler.plugin>
-        <version.surefire.plugin>2.15</version.surefire.plugin>
+        <version.surefire.plugin>2.12.4</version.surefire.plugin>
         <version.release.plugin>2.4.1</version.release.plugin>
         <version.jar.plugin>2.4</version.jar.plugin>
         <version.war.plugin>2.4</version.war.plugin>
