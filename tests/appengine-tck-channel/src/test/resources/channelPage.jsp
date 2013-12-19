@@ -17,7 +17,15 @@
 <%
     ChannelService channelService = ChannelServiceFactory.getChannelService();
     String channelId = request.getParameter("test-channel-id");
-    String token = channelService.createChannel(channelId);
+    String timeoutMinutes = request.getParameter("timeout-minutes");
+
+    String token;
+    if (timeoutMinutes == null) {
+        token = channelService.createChannel(channelId);
+    } else {
+        token = channelService.createChannel(channelId, Integer.parseInt(timeoutMinutes));
+    }
+
 %>
 <html>
 <head>
