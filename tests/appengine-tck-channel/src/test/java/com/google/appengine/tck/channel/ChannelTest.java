@@ -15,8 +15,6 @@
 
 package com.google.appengine.tck.channel;
 
-import static org.junit.Assert.assertEquals;
-
 import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -29,6 +27,8 @@ import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test that messages can be sent from the browser to the server,
@@ -68,6 +68,7 @@ public class ChannelTest extends ChannelTestBase {
         // 3. The browser waits for the channel to be opened.  There is an implicit timeout of 30 seconds
         //    if it is not found.
         sync(5000L);
+
         WebElement status = driver.findElement(By.id("opened-" + channelId));
 
         // 4. Send a message via channel to the server.
@@ -80,6 +81,7 @@ public class ChannelTest extends ChannelTestBase {
 
         // 5. Now verify that the browser got the ACK from the server.
         sync(10000L);
+
         String receivedMsgId = "last-received-message-" + channelId;
         WebElement lastReceived = driver.findElement(By.id(receivedMsgId));
         String expectedMsg = "echo-from-server:msg:" + channelId;
@@ -101,11 +103,15 @@ public class ChannelTest extends ChannelTestBase {
         WebElement channel = driver.findElement(By.id("channel-id"));
         assertEquals(channelId, channel.getText());
 
+        sync(5000L);
+
         // 3. Verify that the channel gets closed after the 1 minute timeout.
         WebElement stat = driver.findElement(By.id("status"));
         assertEquals("opened", stat.getText());
+
         // This should put us over the 1 minute timeout.
         sync(70000L);
+
         stat = driver.findElement(By.id("status"));
         assertEquals("closed", stat.getText());
     }
