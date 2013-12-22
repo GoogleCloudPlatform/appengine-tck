@@ -88,6 +88,10 @@ public class TestLifecycles {
         return new ImageLifecycleEventImpl(caller, op, expected, transformed);
     }
 
+    public static <T> InstanceLifecycleEvent<T> createInstanceLifecycleEvent(Class<?> caller, Class<T> instanceType) {
+        return new InstanceLifecycleEventImpl<>(caller, instanceType);
+    }
+
     public static UrlLifecycleEvent createUrlLifecycleEvent(Class<?> caller, URL original) {
         return new UrlLifecycleEventImpl(caller, original);
     }

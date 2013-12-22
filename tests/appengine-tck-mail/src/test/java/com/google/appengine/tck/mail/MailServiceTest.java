@@ -108,7 +108,7 @@ public class MailServiceTest extends MailTestBase {
         msg.setTextBody(BODY);
 
         // https://developers.google.com/appengine/docs/java/mail/#Sending_Mail_with_Headers
-        Set<MailService.Header> headers = new HashSet<MailService.Header>();
+        Set<MailService.Header> headers = new HashSet<>();
         Map<String, String> headersMap = createExpectedHeaders();
 
         for (Map.Entry entry : headersMap.entrySet()) {
@@ -127,7 +127,10 @@ public class MailServiceTest extends MailTestBase {
 
     @Test
     public void testJavaxTransportSendAndReceiveBasicMessage() throws Exception {
-        Session session = Session.getDefaultInstance(new Properties(), null);
+        Session session = instance(Session.class);
+        if (session == null) {
+            session = Session.getDefaultInstance(new Properties(), null);
+        }
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(getFrom()));
         msg.setRecipient(Message.RecipientType.TO, new InternetAddress(getTo()));
@@ -173,7 +176,7 @@ public class MailServiceTest extends MailTestBase {
     }
 
     private void assertHeadersExist(Map<String, String> expected, Map<String, String> actual) {
-        List<String> errors = new ArrayList<String>();
+        List<String> errors = new ArrayList<>();
         for (Map.Entry entry : expected.entrySet()) {
             String expectedHeader = (String) entry.getKey();
             String expectedValue = (String) entry.getValue();
@@ -192,7 +195,7 @@ public class MailServiceTest extends MailTestBase {
     }
 
     private Map<String, String> createExpectedMimePropertiesMap(String subjectKey) {
-        Map<String, String> mimeProps = new HashMap<String, String>();
+        Map<String, String> mimeProps = new HashMap<>();
 
         mimeProps.put("subject", subjectKey);
         mimeProps.put("from", getFrom());
@@ -206,7 +209,7 @@ public class MailServiceTest extends MailTestBase {
      * @return map of headers to be set and verified.
      */
     private Map<String, String> createExpectedHeaders() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
 
         headers.put("In-Reply-To", "123abc");
         headers.put("List-Id", "123abc");

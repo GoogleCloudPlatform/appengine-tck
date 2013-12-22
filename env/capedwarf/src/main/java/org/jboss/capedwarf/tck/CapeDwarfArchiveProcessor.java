@@ -59,6 +59,7 @@ public class CapeDwarfArchiveProcessor extends EnvApplicationArchiveProcessor {
         addService(war, TestLifecycle.class,
             CapeDwarfExecutionLifecycle.class,
             CapeDwarfImageLifecycle.class,
+            CapeDwarfInstanceLifecycle.class,
             CapeDwarfMergeLifecycle.class,
             CapeDwarfPropertyLifecycle.class,
             CapeDwarfServicesLifecycle.class,

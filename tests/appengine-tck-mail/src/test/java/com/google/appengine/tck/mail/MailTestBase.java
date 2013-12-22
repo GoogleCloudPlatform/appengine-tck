@@ -17,6 +17,7 @@ package com.google.appengine.tck.mail;
 
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
+import com.google.appengine.tck.mail.support.MailHandlerServlet;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 

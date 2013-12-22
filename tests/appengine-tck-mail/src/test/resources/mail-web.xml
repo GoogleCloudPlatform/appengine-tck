@@ -6,7 +6,7 @@
 
   <servlet>
     <servlet-name>mailHandler</servlet-name>
-    <servlet-class>com.google.appengine.tck.mail.MailHandlerServlet</servlet-class>
+    <servlet-class>com.google.appengine.tck.mail.support.MailHandlerServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>

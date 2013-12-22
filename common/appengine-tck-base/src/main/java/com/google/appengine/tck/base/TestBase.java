@@ -39,6 +39,7 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.appengine.tck.category.IgnoreMultisuite;
 import com.google.appengine.tck.event.ExecutionLifecycleEvent;
+import com.google.appengine.tck.event.InstanceLifecycleEvent;
 import com.google.appengine.tck.event.Property;
 import com.google.appengine.tck.event.PropertyLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycleEvent;
@@ -192,6 +193,12 @@ public class TestBase {
         PropertyLifecycleEvent event = TestLifecycles.createPropertyLifecycleEvent(getClass(), propertyName);
         TestLifecycles.before(event);
         return event;
+    }
+
+    protected <T> T instance(Class<T> instanceType) {
+        InstanceLifecycleEvent<T> event = TestLifecycles.createInstanceLifecycleEvent(getClass(), instanceType);
+        TestLifecycles.before(event);
+        return event.getInstance();
     }
 
     protected static void sync() {
