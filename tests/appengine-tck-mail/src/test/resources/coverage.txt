@@ -5,9 +5,9 @@
 #
 #com.google.appengine.api.mail.IMailServiceFactory
 com.google.appengine.api.mail.MailService
-#com.google.appengine.api.mail.BounceNotification
-#com.google.appengine.api.mail.BounceNotification$Details
-#com.google.appengine.api.mail.BounceNotificationParser
+com.google.appengine.api.mail.BounceNotification
+com.google.appengine.api.mail.BounceNotification$Details
+com.google.appengine.api.mail.BounceNotificationParser
 #com.google.appengine.api.mail.IMailServiceFactoryProvider
 com.google.appengine.api.mail.MailService$Attachment
 com.google.appengine.api.mail.MailService$Header

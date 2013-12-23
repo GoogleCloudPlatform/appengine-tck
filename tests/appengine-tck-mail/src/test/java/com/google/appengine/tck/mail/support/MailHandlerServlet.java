@@ -14,12 +14,7 @@
  */
 package com.google.appengine.tck.mail.support;
 
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Logger;
+import com.google.appengine.tck.base.TestBase;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -27,10 +22,12 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * Handle incoming mail.
@@ -49,36 +46,27 @@ public class MailHandlerServlet extends HttpServlet {
         throws IOException {
 
         Session session = Session.getDefaultInstance(new Properties(), null);
-        MemcacheService memcache = MemcacheServiceFactory.getMemcacheService();
-        Map<String, String> mimeProps = new HashMap<String, String>();
-        Map<String, String> headers = new HashMap<String, String>();
-
         MimeMessage message = null;
+        MimeProperties mp = null;
         try {
             message = new MimeMessage(session, req.getInputStream());
-            mimeProps.put("subject", message.getSubject());
-            mimeProps.put("from", message.getFrom()[0].toString());
+            mp = new MimeProperties(message);
 
+            List<String> headers = new ArrayList<>();
             StringBuilder sb = new StringBuilder();
             Enumeration e = message.getAllHeaderLines();
             while (e.hasMoreElements()) {
-                String line = (String) e.nextElement();
-                int delimiterIdx = line.indexOf(":");
-                String header = line.substring(0, delimiterIdx);
-                String value = line.substring(delimiterIdx + 2); // 2 = colon + space
-                headers.put(header, value);
-
-                sb.append("\n" + line);
+                String headerLine = (String) e.nextElement();
+                headers.add(headerLine);
+                sb.append("\n" + headerLine);
             }
             log.info("HEADERS: " + sb.toString());
 
+            mp.headers = headers.toString();
+            TestBase.putTempData(mp);
+
         } catch (MessagingException me) {
-            mimeProps.put("error", me.toString());
             log.severe("Error while processing email: " + me.toString());
         }
-
-        String testDataKey = mimeProps.get("subject");
-        memcache.put(testDataKey, mimeProps);
-        memcache.put(testDataKey + "-HEADERS", headers);
     }
 }

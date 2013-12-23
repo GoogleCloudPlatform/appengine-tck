@@ -4,24 +4,40 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
 
-  <servlet>
-    <servlet-name>mailHandler</servlet-name>
-    <servlet-class>com.google.appengine.tck.mail.support.MailHandlerServlet</servlet-class>
-  </servlet>
+    <servlet>
+        <servlet-name>mailHandler</servlet-name>
+        <servlet-class>com.google.appengine.tck.mail.support.MailHandlerServlet</servlet-class>
+    </servlet>
 
-  <servlet-mapping>
-    <servlet-name>mailHandler</servlet-name>
-    <url-pattern>/_ah/mail/*</url-pattern>
-  </servlet-mapping>
+    <servlet>
+        <servlet-name>bounceHandler</servlet-name>
+        <servlet-class>com.google.appengine.tck.mail.support.BounceHandlerServlet</servlet-class>
+    </servlet>
 
-  <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>mail constraints</web-resource-name>
-      <url-pattern>/_ah/mail/*</url-pattern>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>admin</role-name>
-    </auth-constraint>
-  </security-constraint>
+    <servlet-mapping>
+        <servlet-name>mailHandler</servlet-name>
+        <url-pattern>/_ah/mail/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>bounceHandler</servlet-name>
+        <url-pattern>/_ah/bounce</url-pattern>
+    </servlet-mapping>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>mail constraints</web-resource-name>
+            <url-pattern>/_ah/mail/*</url-pattern>
+        </web-resource-collection>
+
+        <web-resource-collection>
+            <web-resource-name>bounce</web-resource-name>
+            <url-pattern>/_ah/bounce</url-pattern>
+        </web-resource-collection>
+
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
 
 </web-app>
