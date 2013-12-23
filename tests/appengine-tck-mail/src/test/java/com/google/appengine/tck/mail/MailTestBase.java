@@ -17,9 +17,13 @@ package com.google.appengine.tck.mail;
 
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
+import com.google.appengine.tck.mail.support.BounceHandlerServlet;
 import com.google.appengine.tck.mail.support.MailHandlerServlet;
+import com.google.appengine.tck.mail.support.MimeProperties;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+
+import java.util.List;
 
 
 /**
@@ -40,10 +44,20 @@ public abstract class MailTestBase extends TestBase {
         context.setWebXmlFile("mail-web.xml");
 
         WebArchive war = getTckDeployment(context);
-        war.addClass(TestBase.class);
-        war.addClass(MailTestBase.class);
-        war.addClasses(MailServiceTest.class, MailHandlerServlet.class);
+        war.addClasses(MailHandlerServlet.class, BounceHandlerServlet.class, MimeProperties.class);
 
         return war;
+    }
+
+    public static MimeProperties getLastMimeProperties() {
+        return TestBase.getLastTempData(MimeProperties.class);
+    }
+
+    public static List<MimeProperties> getAllMimeProperties() {
+        return TestBase.getAllTempData(MimeProperties.class);
+    }
+
+    public static void clear() {
+        TestBase.deleteTempData(MimeProperties.class);
     }
 }

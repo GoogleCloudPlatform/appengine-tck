@@ -14,30 +14,30 @@
  */
 package com.google.appengine.tck.mail;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import com.google.appengine.api.mail.MailService;
+import com.google.appengine.api.mail.MailServiceFactory;
+import com.google.appengine.api.utils.SystemProperty;
+import com.google.appengine.tck.mail.support.MimeProperties;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
-import com.google.appengine.api.mail.MailService;
-import com.google.appengine.api.mail.MailServiceFactory;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
-import com.google.appengine.api.utils.SystemProperty;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -57,17 +57,21 @@ import static org.junit.Assert.fail;
 @RunWith(Arquillian.class)
 public class MailServiceTest extends MailTestBase {
 
-    private static final String BODY = "from GAE TCK Mail Test.\n";
+    private static final String BODY = "Simple message.";
 
-    private static final int TIMEOUT_MAX = 30;
+    private static final int TIMEOUT_MAX = 45;
 
     private MailService mailService;
-    private MemcacheService memcache;
 
     @Before
     public void setUp() {
         mailService = MailServiceFactory.getMailService();
-        memcache = MemcacheServiceFactory.getMemcacheService();
+        clear();
+    }
+
+    @After
+    public void tearDown() {
+        clear();
     }
 
     protected boolean doExecute(String context) {
@@ -76,35 +80,180 @@ public class MailServiceTest extends MailTestBase {
 
     @Test
     public void testSendAndReceiveBasicMessage() throws Exception {
+        MimeProperties mp = new MimeProperties();
+        mp.subject = "Basic-Message-Test-" + System.currentTimeMillis();
+        mp.from = getEmail("from-basic-test");
+        mp.to = getEmail("to-basic-test");
+        mp.body = BODY;
+
         MailService.Message msg = new MailService.Message();
-        msg.setSender(getFrom());
-        msg.setTo(getTo());
+        msg.setSubject(mp.subject);
+        msg.setSender(mp.from);
+        msg.setTo(mp.to);
+        msg.setTextBody(BODY);
 
         // Send email to self for debugging.
         // msg.setCc("you@yourdomain.com");
-        String subjectTag = "Basic-Message-Test-" + System.currentTimeMillis();
-        msg.setSubject(subjectTag);
-        msg.setTextBody(BODY);
 
         mailService.send(msg);
 
         if (doExecute("testSendAndReceiveBasicMessage") == false) {
             log.info("Not running on production, skipping assert.");
         } else {
-            assertMessageReceived(subjectTag);
+            assertMessageReceived(mp);
         }
     }
 
     @Test
-    public void testAllowedHeaders() throws Exception {
-        MailService.Message msg = new MailService.Message();
-        msg.setSender(getFrom());
-        msg.setTo(getTo());
+    public void testSendAndReceiveFullMessage() throws Exception {
+        final String htmlBody = "<html><body><b>I am bold.</b></body></html>";
 
-        // Send email to self for debugging.
-        // msg.setCc("you@yourdomain.com");
-        String subjectTag = "Allowed-Headers-Test-" + System.currentTimeMillis();
-        msg.setSubject(subjectTag);
+        MimeProperties mp = new MimeProperties();
+        mp.subject = "Full-Message-Test-" + System.currentTimeMillis();
+        mp.from = getEmail("from-test-full");
+        mp.to = getEmail("to-test-full");
+        mp.cc = getEmail("cc-test-full");
+        mp.bcc = getEmail("bcc-test-full");
+        mp.replyTo = getEmail("replyto-test-full");
+
+        mp.multiPartsList.add("I am bold.");
+        mp.multiPartsList.add(htmlBody);
+
+        MailService.Message msg = new MailService.Message();
+        msg.setSubject(mp.subject);
+        msg.setSender(mp.from);
+        msg.setTo(mp.to);
+        msg.setCc(mp.cc);
+        msg.setBcc(mp.bcc);
+        msg.setReplyTo(mp.replyTo);
+        msg.setHtmlBody(htmlBody);
+
+        mailService.send(msg);
+
+        // Verify that send() did not modify msg.
+        assertEquals(mp.subject, msg.getSubject());
+        assertEquals(mp.to, msg.getTo().iterator().next());
+        assertEquals(mp.from, msg.getSender());
+        assertEquals(mp.cc, msg.getCc().iterator().next());
+        assertEquals(mp.bcc, msg.getBcc().iterator().next());
+        assertEquals(mp.replyTo, msg.getReplyTo());
+        assertEquals(htmlBody, msg.getHtmlBody());
+
+        if (doExecute("testSendAndReceiveFullMessage") == false) {
+            log.info("Not running on production, skipping assert.");
+        } else {
+            assertMessageReceived(mp);
+        }
+    }
+
+    @Test
+    public void testValidAttachment() throws Exception {
+        MimeProperties mp = new MimeProperties();
+        mp.subject = "Valid-Attachment-Test-" + System.currentTimeMillis();
+        mp.from = getEmail("from-test-valid-attachment");
+        mp.to = getEmail("to-test-valid-attachment");
+
+        MailService.Attachment attachment = createValidAttachment();
+        mp.multiPartsList.add(BODY);
+        mp.multiPartsList.add(new String(attachment.getData()));
+
+        MailService.Message msg = new MailService.Message();
+        msg.setSubject(mp.subject);
+        msg.setSender(mp.from);
+        msg.setTo(mp.to);
+        msg.setTextBody(BODY);
+        msg.setAttachments(attachment);
+
+        mailService.send(msg);
+
+        if (doExecute("testValidAttachment") == false) {
+            log.info("Not running on production, skipping assert.");
+        } else {
+            assertMessageReceived(mp);
+        }
+    }
+
+    @Test
+    public void testInvalidAttachment() throws Exception {
+
+        for (String extension : getInvalidAttachmentFileTypes()) {
+            MimeProperties mp = new MimeProperties();
+            mp.subject = "Invalid-Attachment-Test-" + extension + System.currentTimeMillis();
+            mp.from = getEmail("from-test-invalid-attachment");
+            mp.to = getEmail("to-test-invalid-attachment");
+
+            MailService.Attachment attachment = createInvalidAttachment(extension);
+            mp.multiPartsList.add(BODY);
+            mp.multiPartsList.add(attachment.getData().toString());
+
+
+            MailService.Message msg = new MailService.Message();
+            msg.setSubject(mp.subject);
+            msg.setSender(mp.from);
+            msg.setTo(mp.to);
+            msg.setTextBody(BODY);
+            msg.setAttachments(attachment);
+
+            try {
+                mailService.send(msg);
+                throw new IllegalStateException("IllegalArgumentException not thrown for invalid attachment type. " + extension);
+            } catch (IllegalArgumentException iae) {
+                // as expected
+            }
+        }
+    }
+
+    private List<String> getInvalidAttachmentFileTypes() {
+        String[] extensions = {"ade", "adp", "bat", "chm", "cmd", "com", "cpl", "exe",
+            "hta", "ins", "isp", "jse", "lib", "mde", "msc", "msp", "mst", "pif", "scr",
+            "sct", "shb", "sys", "vb", "vbe", "vbs", "vxd", "wsc", "wsf", "wsh"};
+        return Arrays.asList(extensions);
+    }
+
+    private MailService.Attachment createValidAttachment() {
+        byte[] bytes = "I'm attached to these valid bytes.".getBytes();
+        return new MailService.Attachment("test-attach.txt", bytes);
+    }
+
+    private MailService.Attachment createInvalidAttachment(String extension) {
+        byte[] bytes = "I've got an invalid file type.".getBytes();
+        return new MailService.Attachment("test-attach." + extension, bytes);
+    }
+
+    @Test
+    public void testBounceNotification() throws Exception {
+        MimeProperties mp = new MimeProperties();
+        mp.subject = "Bounce-Notification-Test-" + System.currentTimeMillis();
+        mp.from = getEmail("from-test-bounce");
+        mp.to = getEmail("to-test-bounce") + "bogus";
+        mp.body = BODY;
+
+        MailService.Message msg = new MailService.Message();
+        msg.setSubject(mp.subject);
+        msg.setSender(mp.from);
+        msg.setTo(mp.to);
+        msg.setTextBody(BODY);
+
+        mailService.send(msg);
+
+        mp.subject = "BOUNCED:" + mp.subject;  // BounceHandlerServelt also prepends this
+
+        // Assert is not called for this test, see logs to verify BounceHandlerServlet was called.
+        // assertMessageReceived(mp);
+    }
+
+    @Test
+    public void testAllowedHeaders() throws Exception {
+        MimeProperties mp = new MimeProperties();
+        mp.subject = "Allowed-Headers-Test-" + System.currentTimeMillis();
+        mp.from = getEmail("from-test-header");
+        mp.to = getEmail("to-test-header");
+        mp.body = BODY;
+
+        MailService.Message msg = new MailService.Message();
+        msg.setSubject(mp.subject);
+        msg.setSender(mp.from);
+        msg.setTo(mp.to);
         msg.setTextBody(BODY);
 
         // https://developers.google.com/appengine/docs/java/mail/#Sending_Mail_with_Headers
@@ -120,8 +269,8 @@ public class MailServiceTest extends MailTestBase {
         if (doExecute("testAllowedHeaders") == false) {
             log.info("Not running on production, skipping assert.");
         } else {
-            assertMessageReceived(subjectTag);
-            assertHeadersExist(headersMap, getMessageHeaders(subjectTag));
+            assertMessageReceived(mp);
+            assertHeadersExist(createExpectedHeadersVerifyList(headersMap));
         }
     }
 
@@ -131,28 +280,33 @@ public class MailServiceTest extends MailTestBase {
         if (session == null) {
             session = Session.getDefaultInstance(new Properties(), null);
         }
-        MimeMessage msg = new MimeMessage(session);
-        msg.setFrom(new InternetAddress(getFrom()));
-        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(getTo()));
+        MimeProperties mp = new MimeProperties();
+        mp.subject = "Javax-Transport-Test-" + System.currentTimeMillis();
+        mp.from = getEmail("from-test-x");
+        mp.to = getEmail("to-test-x");
+        mp.body = BODY;
 
+        MimeMessage msg = new MimeMessage(session);
+        msg.setSubject(mp.subject);
+        msg.setFrom(new InternetAddress(mp.from));
+        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(mp.to));
+        msg.setText(BODY);
         // Send email to self for debugging.
         // msg.setRecipient(Message.RecipientType.CC, new InternetAddress("you@yourdomain.com"));
-        String subjectTag = "Javax-Transport-Test-" + System.currentTimeMillis();
-        msg.setSubject(subjectTag);
-        msg.setText(BODY);
+
         Transport.send(msg);
 
         if (doExecute("testJavaxTransportSendAndReceiveBasicMessage") == false) {
             log.info("Not running on production, skipping assert.");
         } else {
-            assertMessageReceived(subjectTag);
+            assertMessageReceived(mp);
         }
     }
 
     @Test
     public void testSendToAdmin() throws Exception {
         MailService.Message msg = new MailService.Message();
-        msg.setSender(getFrom());
+        msg.setSender(getEmail("from-admin-test"));
         String subjectTag = "Send-to-admin-" + System.currentTimeMillis();
         msg.setSubject(subjectTag);
         msg.setTextBody(BODY);
@@ -161,46 +315,55 @@ public class MailServiceTest extends MailTestBase {
         // Assuming success if no exception was thrown without calling sendToAdmins();
     }
 
-    private void assertMessageReceived(String subjectTag) {
-        Map<String, String> mimeProps = pollForMail(subjectTag);
-        if (mimeProps == null) {
-            fail(subjectTag + " not found after " + TIMEOUT_MAX + " seconds.");
+    private void assertMessageReceived(MimeProperties expectedMimeProps) {
+        MimeProperties mp = pollForMail();
+        if (mp == null) {
+            fail("No MimeProperties found in temp data after " + TIMEOUT_MAX + " seconds.");
         }
-        Map<String, String> expectedMimeProps = createExpectedMimePropertiesMap(subjectTag);
 
-        assertEquals(expectedMimeProps, mimeProps);
+        assertEquals("subject:", expectedMimeProps.subject, mp.subject);
+        assertEquals("from:", expectedMimeProps.from, mp.from);
+        assertEquals("to:", expectedMimeProps.to, mp.to);
+        assertEquals("cc:", expectedMimeProps.cc, mp.cc);
+
+        // also, the to: and cc: would fail if bcc: was added to them.
+        assertEquals("bcc:", MimeProperties.BLANK, mp.bcc);
+
+        if (expectedMimeProps.replyTo.equals(MimeProperties.BLANK)) {
+            assertEquals("replyTo:", expectedMimeProps.from, mp.replyTo);
+        } else {
+            assertEquals("replyTo:", expectedMimeProps.replyTo, mp.replyTo);
+        }
+
+        if (expectedMimeProps.body.equals(MimeProperties.BLANK)) {
+            for (int i = 0; i < expectedMimeProps.multiPartsList.size(); i++) {
+                String expectedPart = expectedMimeProps.multiPartsList.get(i).trim();
+                String actualPart = mp.multiPartsList.get(i).trim();
+                assertEquals(expectedPart, actualPart);
+            }
+        } else {
+            assertEquals("body:", expectedMimeProps.body, mp.body);
+        }
     }
 
-    private Map<String, String> getMessageHeaders(String subjectTag) {
-        return pollForMail(subjectTag + "-HEADERS");
-    }
+    private void assertHeadersExist(List<String> expectedHeaderLines) {
+        MimeProperties mp = pollForMail();
+        if (mp == null) {
+            fail("No MimeProperties found in temp data after " + TIMEOUT_MAX + " seconds.");
+        }
 
-    private void assertHeadersExist(Map<String, String> expected, Map<String, String> actual) {
         List<String> errors = new ArrayList<>();
-        for (Map.Entry entry : expected.entrySet()) {
-            String expectedHeader = (String) entry.getKey();
-            String expectedValue = (String) entry.getValue();
 
-            if (!actual.containsKey(expectedHeader)) {
-                errors.add(expectedHeader + ": was not found.");
-                continue;
+        for (String headerLine : expectedHeaderLines) {
+            if (!mp.headers.contains(headerLine)) {
+                errors.add(headerLine + ": was not found.");
             }
+        }
 
-            String actualValue = actual.get(expectedHeader);
-            if (!expectedValue.equals(actualValue)) {
-                errors.add(expectedHeader + ": " + expectedHeader + " != " + actual.get(expectedHeader));
-            }
+        if (!errors.isEmpty()) {
+            errors.add("Actual: " + mp.headers);
         }
         assertTrue(errors.toString(), errors.isEmpty());
-    }
-
-    private Map<String, String> createExpectedMimePropertiesMap(String subjectKey) {
-        Map<String, String> mimeProps = new HashMap<>();
-
-        mimeProps.put("subject", subjectKey);
-        mimeProps.put("from", getFrom());
-
-        return mimeProps;
     }
 
     /**
@@ -208,6 +371,15 @@ public class MailServiceTest extends MailTestBase {
      *
      * @return map of headers to be set and verified.
      */
+    private List<String> createExpectedHeadersVerifyList(Map<String, String> map) {
+        List<String> headers = new ArrayList<>();
+
+        for (Map.Entry entry : map.entrySet()) {
+            headers.add(entry.getKey() + ": " + entry.getValue());
+        }
+        return headers;
+    }
+
     private Map<String, String> createExpectedHeaders() {
         Map<String, String> headers = new HashMap<>();
 
@@ -223,13 +395,8 @@ public class MailServiceTest extends MailTestBase {
         return headers;
     }
 
-
-    private String getTo() {
-        return "to@" + appId() + "." + mailGateway();
-    }
-
-    private String getFrom() {
-        return "from@" + appId() + "." + mailGateway();
+    private String getEmail(String user) {
+        return String.format("%s@%s.%s", user, appId(), mailGateway());
     }
 
     private String appId() {
@@ -250,18 +417,19 @@ public class MailServiceTest extends MailTestBase {
         return gateway;
     }
 
-    private Map<String, String> pollForMail(String subjectTag) {
+    private MimeProperties pollForMail() {
         int secondsElapsed = 0;
 
-        Map<String, String> testData = null;
-        while (secondsElapsed++ <= TIMEOUT_MAX) {
+        MimeProperties mp = null;
+        while (secondsElapsed <= TIMEOUT_MAX) {
             //noinspection unchecked
-            testData = (Map<String, String>) memcache.get(subjectTag);
-            if (testData != null) {
-                return testData;
+            mp = getLastMimeProperties();
+            if (mp != null) {
+                return mp;
             }
-            sync();
+            sync(2000);
+            secondsElapsed += 2;
         }
-        return testData;
+        return mp;
     }
 }
