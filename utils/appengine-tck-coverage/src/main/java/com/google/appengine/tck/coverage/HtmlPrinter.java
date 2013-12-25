@@ -129,7 +129,7 @@ class HtmlPrinter implements Printer {
         String url = createGitHubUrl(GITHUB_USER, GITHUB_PROJECT, GITHUB_BRANCH, getPath(cl), cl.getLine());
 
         StringBuilder sb = new StringBuilder(cl.getSimpleClassName());
-        sb.append(".java");
+        sb.append(cl.getExt());
         if (cl.getLine() > 0) {
             sb.append(":");
             sb.append(cl.getLine());
@@ -140,7 +140,7 @@ class HtmlPrinter implements Printer {
     }
 
     private String getPath(CodeLine cl) {
-        return "/" + module + "/" + baseDir.getName() + "/src/test/java/" + cl.getClassName().replace('.', '/') + ".java";
+        return "/" + module + "/" + baseDir.getName() + "/src/test/" + cl.getType() + "/" + cl.getClassName().replace('.', '/') + cl.getExt();
     }
 
     private static String createGitHubUrl(String user, String project, String branch, String path, int lineNumber) {

@@ -15,6 +15,25 @@
     <url>https://developers.google.com/appengine/</url>
     <description>GAE TCK Channel Tests</description>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-jsp</artifactId>
+                <version>${project.version}</version>
+                <executions>
+                    <execution>
+                        <id>jsp-compile</id>
+                        <goals>
+                            <goal>jsp</goal>
+                        </goals>
+                        <phase>test-compile</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
 
         <!-- Temp workaround - remove with Drone upgrade -->

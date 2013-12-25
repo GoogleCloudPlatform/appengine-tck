@@ -221,7 +221,7 @@ public class CodeCoverage {
                             Map<Tuple, Set<CodeLine>> map = report.get(triple.className);
                             Set<CodeLine> set = map.get(triple.tuple);
                             CodeLine cl = new CodeLine(className, m.getName(), line);
-                            set.add(cl);
+                            set.add(cl.modify()); // check for .jsp, etc
                         }
                     }
                 }

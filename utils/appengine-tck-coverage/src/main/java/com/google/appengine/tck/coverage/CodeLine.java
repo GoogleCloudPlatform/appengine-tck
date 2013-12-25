@@ -20,7 +20,13 @@ package com.google.appengine.tck.coverage;
  */
 @SuppressWarnings("unchecked")
 public class CodeLine implements Comparable<CodeLine> {
+    static String JSP = ".jsp";
+    static String JSP_PREFIX = "org.apache" + JSP + ".";
+    static String JSP_SUFFIX = "_jsp";
+
+    private String type = "java";
     private String className;
+    private String ext = ".java";
     private String methodName;
     private int line;
 
@@ -28,6 +34,16 @@ public class CodeLine implements Comparable<CodeLine> {
         this.className = className;
         this.methodName = methodName;
         this.line = line;
+    }
+
+    public CodeLine modify() {
+        if (className.startsWith(JSP_PREFIX) && className.endsWith(JSP_SUFFIX)) {
+            className = className.substring(JSP_PREFIX.length(), className.length() - JSP_SUFFIX.length());
+            type = "resources";
+            ext = JSP;
+            line = 0;
+        }
+        return this;
     }
 
     public int compareTo(CodeLine cl) {
@@ -46,8 +62,16 @@ public class CodeLine implements Comparable<CodeLine> {
         return 0;
     }
 
+    public String getType() {
+        return type;
+    }
+
     public String getClassName() {
         return className;
+    }
+
+    public String getExt() {
+        return ext;
     }
 
     public String getMethodName() {
