@@ -14,21 +14,6 @@
  */
 package com.google.appengine.tck.mail;
 
-import com.google.appengine.api.mail.MailService;
-import com.google.appengine.api.mail.MailServiceFactory;
-import com.google.appengine.api.utils.SystemProperty;
-import com.google.appengine.tck.mail.support.MimeProperties;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +23,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import com.google.appengine.api.mail.MailService;
+import com.google.appengine.api.mail.MailServiceFactory;
+import com.google.appengine.api.utils.SystemProperty;
+import com.google.appengine.tck.mail.support.MimeProperties;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -175,7 +176,6 @@ public class MailServiceTest extends MailTestBase {
 
     @Test
     public void testInvalidAttachment() throws Exception {
-
         for (String extension : getInvalidAttachmentFileTypes()) {
             MimeProperties mp = new MimeProperties();
             mp.subject = "Invalid-Attachment-Test-" + extension + System.currentTimeMillis();
@@ -184,8 +184,7 @@ public class MailServiceTest extends MailTestBase {
 
             MailService.Attachment attachment = createInvalidAttachment(extension);
             mp.multiPartsList.add(BODY);
-            mp.multiPartsList.add(attachment.getData().toString());
-
+            mp.multiPartsList.add(new String(attachment.getData()));
 
             MailService.Message msg = new MailService.Message();
             msg.setSubject(mp.subject);
