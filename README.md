@@ -216,6 +216,17 @@ To run a specific test method.
 
     mvn clean install -Psdk -Dappengine.sdk.root=<PATH_TO_SDK> -Dtest=<TEST_SIMPLE_NAME>#testTheMethod
 
+Ignoring @WithinNamespace handling
+----------------------------------
+
+By default all tests are checked for @WithinNamespace annotation,
+which instructs tests to be wrapped with different namespace setup;
+the array of namespaces from @WithinNamespace' value is used for this setup.
+
+If you want to ignore this namespace testing, use -Dtck.ignore.within.namespace=true flag when running the tests.
+
+    mvn clean install -Dtck.ignore.within.namespace=true -Pcapedwarf,misc
+
 Adapting the environment wrt tests
 ----------------------------------
 
