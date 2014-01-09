@@ -51,12 +51,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  * @author <a href="mailto:kevin.pollet@serli.com">Kevin Pollet</a>
  */
 public class ReportsFeature extends BuildFeature {
+    private static final Logger log = Logger.getLogger(ReportsFeature.class.getName());
+
     @NotNull
     private final String editParametersUrl;
 
@@ -222,9 +225,12 @@ public class ReportsFeature extends BuildFeature {
                 setApplicationName(constants.getApplicationName()).
                 build();
 
+        final String buildTypeExternalId = build.getBuildTypeExternalId();
+        final Integer buildNumber = Integer.valueOf(build.getBuildNumber());
+
         final TestReport testReport = new TestReport().
-                setBuildTypeId(build.getBuildTypeExternalId()).
-                setBuildId(Integer.valueOf(build.getBuildNumber())).
+                setBuildTypeId(buildTypeExternalId).
+                setBuildId(buildNumber).
                 setBuildDate(new DateTime(build.getStartDate())).
                 setBuildDuration(build.getDuration()).
                 setNumberOfFailedTests(fullBuildStatistics.getFailedTestCount()).
@@ -244,17 +250,16 @@ public class ReportsFeature extends BuildFeature {
                             setError(oneTestRun.getFailureInfo().getStacktraceMessage())
             );
         }
-
         testReport.setFailedTests(failedTests);
 
+        log.info(String.format("Pushing build results for '%s' [%s] ...", buildTypeExternalId, buildNumber));
         // publish results to appspot application
         try {
-            reports.
-                    tests().
-                    insert(testReport).
-                    execute();
+            reports.tests().insert(testReport).execute();
 
+            log.info(String.format("Build results push for '%s' [%s] is done.", buildTypeExternalId, buildNumber));
         } catch (IOException e) {
+            log.warning(String.format("Error pushing build results for '%s' [%s]!", buildTypeExternalId, buildNumber));
             throw new RuntimeException(e);
         }
     }
