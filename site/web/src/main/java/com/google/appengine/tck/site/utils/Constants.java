@@ -24,7 +24,7 @@ public final class Constants {
     /**
      * TeamCity application id used to authorize requests to endpoint API.
      */
-    public static final String TEAMCITY_APP_ID = "122735089826-1g9li4u6o34r8p35gao11a86bemt2svv.apps.googleusercontent.com";
+    public static final String TEAMCITY_APP_ID = "585858306678.apps.googleusercontent.com";
 
     /**
      * Google OAuth 2 email scope.
