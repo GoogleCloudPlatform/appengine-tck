@@ -16,26 +16,22 @@
 package com.google.appengine.tck.teamcity;
 
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  * @author <a href="mailto:kevin.pollet@serli.com.org">Kevin Pollet</a>
  */
 public class ReportsDescriptor {
-    @NotNull
     private final PluginDescriptor descriptor;
 
-    public ReportsDescriptor(@NotNull final PluginDescriptor descriptor) {
+    public ReportsDescriptor(final PluginDescriptor descriptor) {
         this.descriptor = descriptor;
     }
 
-    @NotNull
     public String getFeaturePath() {
         return descriptor.getPluginResourcesPath("feature.html");
     }
 
-    @NotNull
     public String getViewPath() {
         return descriptor.getPluginResourcesPath("feature.jsp");
     }

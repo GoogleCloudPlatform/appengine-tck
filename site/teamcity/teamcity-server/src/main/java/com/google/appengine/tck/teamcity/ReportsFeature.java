@@ -15,6 +15,15 @@
 
 package com.google.appengine.tck.teamcity;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import com.appspot.cloud_test_compatibility_kit.reports.Reports;
 import com.appspot.cloud_test_compatibility_kit.reports.model.Test;
 import com.appspot.cloud_test_compatibility_kit.reports.model.TestReport;
@@ -44,15 +53,6 @@ import jetbrains.buildServer.util.EventDispatcher;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  * @author <a href="mailto:kevin.pollet@serli.com">Kevin Pollet</a>
@@ -72,7 +72,7 @@ public class ReportsFeature extends BuildFeature {
     @NotNull
     private final ReportsConstants constants;
 
-    public ReportsFeature(@NotNull EventDispatcher<BuildServerListener> dispatcher, @NotNull ReportsDescriptor descriptor, @NotNull ReportsConstants constants) {
+    public ReportsFeature(EventDispatcher<BuildServerListener> dispatcher, @NotNull ReportsDescriptor descriptor, @NotNull ReportsConstants constants) {
         this.editParametersUrl = descriptor.getFeaturePath();
         this.constants = constants;
         this.jsonFactory = JacksonFactory.getDefaultInstance();
@@ -83,12 +83,14 @@ public class ReportsFeature extends BuildFeature {
             throw new RuntimeException(e);
         }
 
-        dispatcher.addListener(new BuildServerAdapter() {
-            @Override
-            public void buildFinished(SRunningBuild build) {
-                handleBuildFinished(build);
-            }
-        });
+        if (dispatcher != null) {
+            dispatcher.addListener(new BuildServerAdapter() {
+                @Override
+                public void buildFinished(SRunningBuild build) {
+                    handleBuildFinished(build);
+                }
+            });
+        }
     }
 
     @Override
@@ -151,33 +153,36 @@ public class ReportsFeature extends BuildFeature {
 
                 // get the refresh and access token
                 if (result.isEmpty()) {
-                    final GoogleClientSecrets secrets = new GoogleClientSecrets().setInstalled(
-                            new GoogleClientSecrets.Details().
-                                    setClientId(params.get(constants.getApplicationClientId())).
-                                    setClientSecret(params.get(constants.getApplicationClientSecret()))
-                    );
-
-                    try {
-                        final GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
-                                ReportsFeature.this.httpTransport,
-                                ReportsFeature.this.jsonFactory,
-                                secrets.getDetails().getClientId(),
-                                secrets.getDetails().getClientSecret(),
-                                params.get(constants.getApplicationOauthCode()),
-                                constants.getRedirectUri()
-                        ).execute();
-
-                        params.put(constants.getApplicationRefreshToken(), tokenResponse.getRefreshToken());
-                        params.put(constants.getApplicationAccessToken(), tokenResponse.getAccessToken());
-
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    handleTokens(params);
                 }
 
                 return result;
             }
         };
+    }
+
+    protected void handleTokens(Map<String, String> params) {
+        final GoogleClientSecrets secrets = new GoogleClientSecrets().setInstalled(
+                new GoogleClientSecrets.Details().
+                        setClientId(params.get(constants.getApplicationClientId())).
+                        setClientSecret(params.get(constants.getApplicationClientSecret()))
+        );
+
+        try {
+            final GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
+                    this.httpTransport,
+                    this.jsonFactory,
+                    secrets.getDetails().getClientId(),
+                    secrets.getDetails().getClientSecret(),
+                    params.get(constants.getApplicationOauthCode()),
+                    constants.getRedirectUri()
+            ).execute();
+
+            params.put(constants.getApplicationRefreshToken(), tokenResponse.getRefreshToken());
+            params.put(constants.getApplicationAccessToken(), tokenResponse.getAccessToken());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Nullable
