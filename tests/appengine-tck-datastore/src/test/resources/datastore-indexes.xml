@@ -190,8 +190,17 @@
     <datastore-index kind="cursorType" ancestor="true" source="manual">
         <property name="name" direction="asc"/>
     </datastore-index>
+
     <datastore-index kind="cursorType" ancestor="true" source="manual">
         <property name="name" direction="desc"/>
+    </datastore-index>
+
+    <datastore-index kind="cursorType" ancestor="true" source="manual">
+        <property name="__key__" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="cursorType" ancestor="true" source="manual">
+        <property name="__key__" direction="desc"/>
     </datastore-index>
 
     <datastore-index kind="listData" ancestor="true" source="manual">

@@ -24,8 +24,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.datastore.QueryResultList;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,9 +35,10 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertEquals;
 
 /**
- * cursor test.
+ * Cursor test.
  *
  * @author hchen@google.com (Hannah Chen)
+ * @author Ales Justin (ales.justin@jboss.org)
  */
 @RunWith(Arquillian.class)
 public class CursorTest extends DatastoreTestBase {
@@ -140,6 +143,20 @@ public class CursorTest extends DatastoreTestBase {
         checkPage(query, cursor1, cursor2, 2 * limit, limit, testDat[1], testDat[1]);
         // cursor2 as start and cursor1 as end and 15 in limit -- should not return any.
         checkPage(query, cursor2, cursor1, limit, 0, null, null);
+    }
+
+    @Test
+    public void testReverse() {
+        Query query = new Query(kindName, rootKey);
+        query.addSort(Entity.KEY_RESERVED_PROPERTY);
+        QueryResultIterator<Entity> iter = service.prepare(query).asQueryResultIterator();
+        Entity e = iter.next();
+        Cursor cursor = iter.getCursor();
+        //reverse
+        query = query.reverse();
+        cursor = cursor.reverse();
+        iter = service.prepare(query).asQueryResultIterator(FetchOptions.Builder.withStartCursor(cursor));
+        Assert.assertEquals(e, iter.next());
     }
 
     private Cursor checkPage(Query query, Cursor stCursor, Cursor endCursor, int limit, int exptRet,
