@@ -79,11 +79,12 @@ public class ReportsMain {
     private static final String CLIENT_SECRET = System.getProperty("client.secret");
     private static final String OAUTH_TOKEN = System.getProperty("oauth.token");
 
-    private static final Map<String, String> PARAMS = new HashMap<>();
+    private static final Map<String, String> PARAMS;
 
     static {
         ReportsConstants constants = new ReportsConstants();
 
+        PARAMS = new HashMap<>();
         PARAMS.put(constants.getApplicationClientId(), CLIENT_ID);
         PARAMS.put(constants.getApplicationClientSecret(), CLIENT_SECRET);
         PARAMS.put(constants.getApplicationOauthCode(), OAUTH_TOKEN);
