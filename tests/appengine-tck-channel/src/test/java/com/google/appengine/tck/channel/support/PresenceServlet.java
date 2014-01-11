@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
- * Terry Okamoto
+ * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
  */
 public class PresenceServlet extends HttpServlet {
     Logger log = Logger.getLogger(PresenceServlet.class.getName());

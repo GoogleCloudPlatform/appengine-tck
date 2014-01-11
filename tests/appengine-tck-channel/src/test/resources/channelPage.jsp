@@ -47,9 +47,11 @@
        var channelId = document.getElementById("channel-id").innerHTML;
        //var echoMsg = Math.random().toString();
        var msg = "msg:" + channelId;
+       var clientId = "123abc";
 
        var xmlhttp = new XMLHttpRequest();
-       xmlhttp.open("GET","channelEcho.jsp?test-channel-id=" + channelId + "&echo=" + msg, true);
+       xmlhttp.open("GET","channelEcho.jsp?test-channel-id=" + channelId + "&echo=" + msg +
+            "&key=" + clientId + "&msg=" + msg, true);
        xmlhttp.send();
        document.getElementById("last-sent-message").innerHTML = msg;
        logAction("last-sent-message-" + jsChannelId, msg);
