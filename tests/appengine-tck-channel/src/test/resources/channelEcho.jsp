@@ -20,7 +20,25 @@
     String channelId = request.getParameter("test-channel-id");
     String echo = request.getParameter("echo");
 
-    channelService.sendMessage(new ChannelMessage(channelId, "echo-from-server:" + echo));
+    ChannelMessage received = channelService.parseMessage(request);
+    String parsedId = received.getClientId();
+    String parsedMsg = received.getMessage();
+
+    String errorMsg = "";
+    String expectedClientId = "123abc";
+    if (!parsedId.equals(expectedClientId)) {
+        errorMsg += String.format("::Expected parsedId=%s but got %s", expectedClientId, parsedId);
+    }
+
+    String expectedMsg = echo;
+    if (!parsedMsg.equals(expectedMsg)) {
+        errorMsg += String.format("::Expected parsedMsg=%s but got %s", expectedMsg, parsedMsg);
+    }
+
+    String returnMsg = String.format("echo-from-server:%s", echo, errorMsg);
+
+    ChannelMessage message = new ChannelMessage(channelId, returnMsg);
+    channelService.sendMessage(message);
 %>
 <html>
 <head>
