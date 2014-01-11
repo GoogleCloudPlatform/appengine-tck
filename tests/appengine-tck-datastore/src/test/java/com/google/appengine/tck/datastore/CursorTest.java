@@ -150,13 +150,15 @@ public class CursorTest extends DatastoreTestBase {
         Query query = new Query(kindName, rootKey);
         query.addSort(Entity.KEY_RESERVED_PROPERTY);
         QueryResultIterator<Entity> iter = service.prepare(query).asQueryResultIterator();
-        Entity e = iter.next();
+        Entity e1 = iter.next();
+        Entity e2 = iter.next();
         Cursor cursor = iter.getCursor();
         //reverse
         query = query.reverse();
         cursor = cursor.reverse();
         iter = service.prepare(query).asQueryResultIterator(FetchOptions.Builder.withStartCursor(cursor));
-        Assert.assertEquals(e, iter.next());
+        Assert.assertEquals(e2, iter.next());
+        Assert.assertEquals(e1, iter.next());
     }
 
     private Cursor checkPage(Query query, Cursor stCursor, Cursor endCursor, int limit, int exptRet,
