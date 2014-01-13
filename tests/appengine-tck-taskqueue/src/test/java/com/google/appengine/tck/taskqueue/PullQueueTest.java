@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -276,12 +277,25 @@ public class PullQueueTest extends QueueTestBase {
 
             assertEquals(taskBaseName, th1.getTag());
             Assert.assertArrayEquals(taskBaseName.getBytes(), th1.getTagAsBytes());
-            Assert.assertTrue(th1.extractParams().isEmpty());
         } finally {
             queue.deleteTask(th1);
             queue.deleteTask(th2);
             queue.deleteTask(th3);
         }
+    }
+
+    @Test
+    public void testExtractParams() throws Exception {
+        String groupTag = "testExtractParams";
+        String taskBaseName = groupTag + "_" + getTimeStampRandom();
+        queue.add(withMethod(PULL).tag(taskBaseName).payload("foobar=baz", "UTF-8"));
+        List<TaskHandle> tasks = queue.leaseTasks(LeaseOptions.Builder.withCountLimit(1).leasePeriod(1, TimeUnit.MINUTES));
+        Assert.assertEquals(1, tasks.size());
+        TaskHandle th = tasks.get(0);
+        List<Map.Entry<String, String>> entries = th.extractParams();
+        Assert.assertEquals(1, entries.size());
+        Assert.assertEquals("foobar", entries.get(0).getKey());
+        Assert.assertEquals("baz", entries.get(0).getValue());
     }
 
     @Test
@@ -466,7 +480,7 @@ public class PullQueueTest extends QueueTestBase {
     public void testDeadlineInSeconds() {
         queue.add(withMethod(PULL));
         // TODO - what does this deadline actually do?
-        List<TaskHandle> tasks = queue.leaseTasks(LeaseOptions.Builder.withCountLimit(1).deadlineInSeconds(5.0));
+        List<TaskHandle> tasks = queue.leaseTasks(LeaseOptions.Builder.withCountLimit(1).leasePeriod(2, TimeUnit.MINUTES).deadlineInSeconds(5.0));
         queue.deleteTask(tasks);
     }
 
