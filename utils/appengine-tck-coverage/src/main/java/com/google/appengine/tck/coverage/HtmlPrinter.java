@@ -103,7 +103,7 @@ class HtmlPrinter implements Printer {
                 for (Map.Entry<Tuple, Set<CodeLine>> entry : map.entrySet()) {
                     String methodSignature = SignatureConverter.convertMethodSignature(entry.getKey().getMethodName(), entry.getKey().getMethodDesc());
                     String fullMethodSignature = SignatureConverter.convertFullMethodSignature(entry.getKey().getMethodName(), entry.getKey().getMethodDesc());
-                    String methodJavaDocUrl = "http://developers.google.com/appengine/docs/java/javadoc/" + iface.replace('.', '/') + "#" + methodSignature;
+                    String methodJavaDocUrl = "http://developers.google.com/appengine/docs/java/javadoc/" + iface.replace('.', '/').replace('$', '.') + "#" + methodSignature;
                     writer.append("<li class=\"blockList\">").append("<a href=\"").append(methodJavaDocUrl).append("\" target=\"_top\">").append("<h3>").append(esc(fullMethodSignature)).append("</h3></a>");
                     writer.append("<ul class=\"blockList\">");
                     Set<CodeLine> value = entry.getValue();
