@@ -17,6 +17,7 @@ package com.google.appengine.tck.modules;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.google.appengine.api.labs.modules.ModulesService;
 import com.google.appengine.api.labs.modules.ModulesServiceFactory;
@@ -45,6 +46,10 @@ public class ModulesServiceTest extends ModulesTestBase {
         return getEarDeployment(module1, module2);
     }
 
+    private static Set<String> toSet(String... strings) {
+        return new HashSet<>(Arrays.asList(strings));
+    }
+
     @Test
     public void testCurrentModule1() {
         ModulesService service = ModulesServiceFactory.getModulesService();
@@ -59,16 +64,42 @@ public class ModulesServiceTest extends ModulesTestBase {
     }
 
     @Test
+    public void testCurrentVersion1() {
+        ModulesService service = ModulesServiceFactory.getModulesService();
+        Assert.assertEquals("1", service.getCurrentVersion());
+    }
+
+    @Test
+    @OperateOnModule("m2")
+    public void testCurrentVersion2() {
+        ModulesService service = ModulesServiceFactory.getModulesService();
+        Assert.assertEquals("1", service.getCurrentVersion());
+    }
+
+    @Test
+    public void testDefaultVersion1() {
+        ModulesService service = ModulesServiceFactory.getModulesService();
+        Assert.assertEquals("1", service.getDefaultVersion("default"));
+    }
+
+    @Test
+    @OperateOnModule("m2")
+    public void testDefaultVersion2() {
+        ModulesService service = ModulesServiceFactory.getModulesService();
+        Assert.assertEquals("1", waitOnFuture(service.getDefaultVersionAsync("m2")));
+    }
+
+    @Test
     public void testModules1() {
         ModulesService service = ModulesServiceFactory.getModulesService();
-        Assert.assertEquals(new HashSet<>(Arrays.asList("default", "m2")), service.getModules());
+        Assert.assertEquals(toSet("default", "m2"), service.getModules());
     }
 
     @Test
     @OperateOnModule("m2")
     public void testModules2() {
         ModulesService service = ModulesServiceFactory.getModulesService();
-        Assert.assertEquals(new HashSet<>(Arrays.asList("default", "m2")), waitOnFuture(service.getModulesAsync()));
+        Assert.assertEquals(toSet("default", "m2"), waitOnFuture(service.getModulesAsync()));
     }
 
     @Test
@@ -82,5 +113,18 @@ public class ModulesServiceTest extends ModulesTestBase {
     public void testModuleInstances2() {
         ModulesService service = ModulesServiceFactory.getModulesService();
         Assert.assertEquals(Long.valueOf(1L), waitOnFuture(service.getNumInstancesAsync("m2", "1")));
+    }
+
+    @Test
+    public void testModuleVersions1() {
+        ModulesService service = ModulesServiceFactory.getModulesService();
+        Assert.assertEquals(toSet("1"), service.getVersions("m2"));
+    }
+
+    @Test
+    @OperateOnModule("m2")
+    public void testModuleVersions2() {
+        ModulesService service = ModulesServiceFactory.getModulesService();
+        Assert.assertEquals(toSet("1"), waitOnFuture(service.getVersionsAsync("default")));
     }
 }
