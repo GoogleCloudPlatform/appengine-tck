@@ -16,10 +16,19 @@
     <description>GAE TCK Core Endpoints</description>
 
     <dependencies>
+
         <dependency>
             <groupId>com.google.appengine</groupId>
             <artifactId>appengine-endpoints</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-drone-webdriver-depchain</artifactId>
+            <scope>test</scope>
+            <type>pom</type>
+        </dependency>
+
     </dependencies>
 
     <profiles>
