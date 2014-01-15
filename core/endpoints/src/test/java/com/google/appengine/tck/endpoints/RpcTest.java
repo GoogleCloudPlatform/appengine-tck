@@ -49,7 +49,7 @@ public class RpcTest extends EndPointsTestBase {
         TestContext context = new TestContext().setWebXmlFile("rpc-web.xml");
         WebArchive war = getDefaultDeployment(context);
         war.addClasses(RpcEndpoint.class, TestData.class);
-        war.add(new ClassLoaderAsset("index.html"), "index.html");
+        war.add(new ClassLoaderAsset("xindex.html"), "index.html");
         war.add(new ClassLoaderAsset("js/base.js"), "js/base.js");
         war.addAsWebInfResource("rpcendpoint-v1-rest.discovery");
         war.addAsWebInfResource("rpcendpoint-v1-rpc.discovery");
