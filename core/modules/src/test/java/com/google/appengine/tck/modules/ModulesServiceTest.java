@@ -86,7 +86,7 @@ public class ModulesServiceTest extends ModulesTestBase {
     @OperateOnModule("m2")
     public void testDefaultVersion2() {
         ModulesService service = ModulesServiceFactory.getModulesService();
-        Assert.assertEquals("1", waitOnFuture(service.getDefaultVersionAsync("m2")));
+        Assert.assertEquals("1", service.getDefaultVersion("m2"));
     }
 
     @Test
@@ -99,7 +99,7 @@ public class ModulesServiceTest extends ModulesTestBase {
     @OperateOnModule("m2")
     public void testModules2() {
         ModulesService service = ModulesServiceFactory.getModulesService();
-        Assert.assertEquals(toSet("default", "m2"), waitOnFuture(service.getModulesAsync()));
+        Assert.assertEquals(toSet("default", "m2"), service.getModules());
     }
 
     @Test
@@ -112,7 +112,7 @@ public class ModulesServiceTest extends ModulesTestBase {
     @OperateOnModule("m2")
     public void testModuleInstances2() {
         ModulesService service = ModulesServiceFactory.getModulesService();
-        Assert.assertEquals(Long.valueOf(1L), waitOnFuture(service.getNumInstancesAsync("m2", "1")));
+        Assert.assertEquals(1L, service.getNumInstances("m2", "1"));
     }
 
     @Test
@@ -125,6 +125,6 @@ public class ModulesServiceTest extends ModulesTestBase {
     @OperateOnModule("m2")
     public void testModuleVersions2() {
         ModulesService service = ModulesServiceFactory.getModulesService();
-        Assert.assertEquals(toSet("1"), waitOnFuture(service.getVersionsAsync("default")));
+        Assert.assertEquals(toSet("1"), service.getVersions("default"));
     }
 }
