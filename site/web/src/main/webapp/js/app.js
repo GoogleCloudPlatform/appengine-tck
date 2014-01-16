@@ -5,6 +5,12 @@
  */
 var appEngineTckApp = angular.
     module('appEngineTckApp', ['ngRoute', 'googlechart']).
+    filter('duration', function() {
+        return function(input, unit) {
+            var duration = moment.duration(parseInt(input), unit);
+            return duration.hours() + 'h ' + duration.minutes() + 'm ' + duration.seconds() + 's';
+        }
+    }).
     config(['$routeProvider', function ($routeProvider) {
         $routeProvider.
             when('/', {

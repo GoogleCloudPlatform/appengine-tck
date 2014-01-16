@@ -15,7 +15,7 @@
                                     <div data-google-chart data-select="lastTestReportsChartSelect(selectedItem)" data-chart="lastTestReportsChart" style="{{ lastTestReportsChart.cssStyle }}"></div>
                                 </div>
                                 <div class="col-md-5">
-                                    <h4>Build #{{ selectedTestReport.buildId }} <small>{ date: {{ selectedTestReport.buildDate | date: 'medium' }}, duration: {{ selectedTestReport.buildDuration }} s }</small></h4>
+                                    <h4>Build #{{ selectedTestReport.buildId }} <small>{ date: {{ selectedTestReport.buildDate | date: 'medium' }}, duration: {{ selectedTestReport.buildDuration | duration:'seconds' }} }</small></h4>
                                     <div data-google-chart data-select="selectedTestReportChartSelect(selectedItem)" data-chart="selectedTestReportChart" style="{{ selectedTestReportChart.cssStyle }}"></div>
                                 </div>
                             </div>

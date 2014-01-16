@@ -3,6 +3,7 @@
     "private": true,
     "dependencies": {
         "lodash": "2.4.1",
+        "momentjs": "2.5.0",
         "angular": "1.2.5",
         "angular-route": "1.2.5",
         "angular-google-chart": "0.0.5",
