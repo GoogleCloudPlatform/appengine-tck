@@ -15,21 +15,23 @@
 
 package com.google.appengine.tck.site.endpoints;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.memcache.MemcacheService;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import static com.google.appengine.api.datastore.Query.Filter;
 import static com.google.appengine.api.datastore.Query.FilterOperator;
@@ -41,8 +43,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Represents a build test report.
  *
  * @author <a href="mailto:kevin.pollet@serli.com">Kevin Pollet</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class TestReport {
+public class TestReport implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * The default fetch limit for find queries.
      */
@@ -94,24 +99,29 @@ public class TestReport {
      *
      * @param buildTypeId      the build type id.
      * @param limit            the optional fetch limit, by default {@link com.google.appengine.tck.site.endpoints.TestReport#DEFAULT_FETCH_LIMIT}.
-     * @param datastoreService the {@link com.google.appengine.api.datastore.DatastoreService}.
+     * @param reports          the reports entry point
      * @return the matching test reports list or an empty one if none.
      */
-    public static List<TestReport> findByBuildTypeIdOrderByBuildIdDesc(String buildTypeId, Optional<Integer> limit, DatastoreService datastoreService) {
-        final List<TestReport> results = new ArrayList<>();
-        final Filter buildTypeFilter = new Query.FilterPredicate("buildTypeId", FilterOperator.EQUAL, buildTypeId);
-        final Query query = new Query(TEST_REPORT).
-                setFilter(buildTypeFilter).
-                addSort("buildId", DESCENDING);
+    @SuppressWarnings("unchecked")
+    public static List<TestReport> findByBuildTypeIdOrderByBuildIdDesc(String buildTypeId, Optional<Integer> limit, Reports reports) {
+        final MemcacheService memcacheService = reports.getMemcacheService();
+        List<TestReport> results = (List<TestReport>) memcacheService.get(buildTypeId);
+        if (results == null) {
+            final Filter buildTypeFilter = new Query.FilterPredicate("buildTypeId", FilterOperator.EQUAL, buildTypeId);
+            final Query query = new Query(TEST_REPORT).setFilter(buildTypeFilter).addSort("buildId", DESCENDING);
 
-        final PreparedQuery preparedQuery = datastoreService.prepare(query);
-        final List<Entity> entities = preparedQuery.asList(FetchOptions.Builder.withLimit(limit.or(DEFAULT_FETCH_LIMIT)));
+            final DatastoreService datastoreService = reports.getDatastoreService();
+            final PreparedQuery preparedQuery = datastoreService.prepare(query);
+            final List<Entity> entities = preparedQuery.asList(FetchOptions.Builder.withLimit(limit.or(DEFAULT_FETCH_LIMIT)));
 
-        for (Entity oneEntity : entities) {
-            final TestReport report = from(oneEntity);
-            results.add(report);
+            results = new ArrayList<>();
+            for (Entity oneEntity : entities) {
+                final TestReport report = from(oneEntity);
+                results.add(report);
+            }
+
+            memcacheService.put(buildTypeId, results);
         }
-
         return results;
     }
 
@@ -234,11 +244,12 @@ public class TestReport {
     }
 
     /**
-     * Persists {@code this} test report to the given {@link com.google.appengine.api.datastore.DatastoreService}.
+     * Persists {@code this} test report to the given {@link com.google.appengine.api.datastore.DatastoreService}
+     * and invalidate the cache.
      *
-     * @param datastoreService the {@link com.google.appengine.api.datastore.DatastoreService}.
+     * @param reports          the reports entry point
      */
-    public void save(DatastoreService datastoreService) {
+    public void save(Reports reports) {
         final Entity entity = new Entity(TEST_REPORT, buildTypeId + buildId);
         entity.setProperty("buildTypeId", buildTypeId);
         entity.setProperty("buildId", buildId);
@@ -254,6 +265,11 @@ public class TestReport {
         }
 
         entity.setProperty("failedTests", new Text(jsonArray.toString()));
+
+        final DatastoreService datastoreService = reports.getDatastoreService();
         datastoreService.put(entity);
+
+        final MemcacheService memcacheService = reports.getMemcacheService();
+        memcacheService.delete(buildTypeId); // invalidate cache
     }
 }

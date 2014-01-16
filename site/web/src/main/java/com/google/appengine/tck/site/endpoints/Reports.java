@@ -15,21 +15,24 @@
 
 package com.google.appengine.tck.site.endpoints;
 
+import java.util.List;
+
+import javax.inject.Named;
+
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Nullable;
 import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.oauth.OAuthRequestException;
 import com.google.appengine.api.users.User;
 import com.google.appengine.tck.site.utils.Constants;
 import com.google.common.base.Optional;
 
-import javax.inject.Named;
-import java.util.List;
-
 import static com.google.api.server.spi.config.ApiMethod.HttpMethod.GET;
 import static com.google.api.server.spi.config.ApiMethod.HttpMethod.POST;
-import static com.google.appengine.api.datastore.DatastoreServiceFactory.getDatastoreService;
 
 /**
  * The Google cloud endpoint Reports API.
@@ -49,10 +52,24 @@ public class Reports {
     private final DatastoreService datastoreService;
 
     /**
+     * The {@link com.google.appengine.api.memcache.MemcacheService} where build reports are cached.
+     */
+    private final MemcacheService memcacheService;
+
+    /**
      * Constructs an instance of {@code Reports}.
      */
     public Reports() {
-        this.datastoreService = getDatastoreService();
+        this.datastoreService = DatastoreServiceFactory.getDatastoreService();
+        this.memcacheService = MemcacheServiceFactory.getMemcacheService();
+    }
+
+    DatastoreService getDatastoreService() {
+        return datastoreService;
+    }
+
+    MemcacheService getMemcacheService() {
+        return memcacheService;
     }
 
     /**
@@ -69,8 +86,7 @@ public class Reports {
             httpMethod = GET
     )
     public List<TestReport> listTestReports(@Named("buildTypeId") String buildTypeId, @Nullable @Named("limit") Integer limit) {
-        return TestReport.
-                findByBuildTypeIdOrderByBuildIdDesc(buildTypeId, Optional.fromNullable(limit), datastoreService);
+        return TestReport.findByBuildTypeIdOrderByBuildIdDesc(buildTypeId, Optional.fromNullable(limit), this);
     }
 
     /**
@@ -90,6 +106,6 @@ public class Reports {
             throw new OAuthRequestException("Test report cannot be inserted if request is unauthenticated");
         }
 
-        report.save(datastoreService);
+        report.save(this);
     }
 }

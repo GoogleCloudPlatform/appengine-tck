@@ -15,6 +15,8 @@
 
 package com.google.appengine.tck.site.endpoints;
 
+import java.io.Serializable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,7 +30,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author <a href="mailto:kevin.pollet@serli.com">Kevin Pollet</a>
  */
 //TODO use Optional type for error
-public class Test {
+public class Test implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Returns a {@code Test} instance representing the given test {@link org.json.JSONObject} representation.
      *
@@ -148,9 +152,7 @@ public class Test {
             jsonObject.put("className", className);
             jsonObject.put("methodName", methodName);
             jsonObject.put("error", error);
-
             return jsonObject;
-
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
