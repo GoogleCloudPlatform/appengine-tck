@@ -23,10 +23,10 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jboss.arquillian.extension</groupId>
-            <artifactId>arquillian-drone-webdriver-depchain</artifactId>
-            <scope>test</scope>
+            <groupId>org.jboss.arquillian.graphene</groupId>
+            <artifactId>graphene-webdriver</artifactId>
             <type>pom</type>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

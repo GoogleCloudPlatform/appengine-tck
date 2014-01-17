@@ -50,9 +50,9 @@
        var clientId = "123abc";
 
        var xmlhttp = new XMLHttpRequest();
-       xmlhttp.open("GET","channelEcho.jsp?test-channel-id=" + channelId + "&echo=" + msg +
-            "&key=" + clientId + "&msg=" + msg, true);
+       xmlhttp.open("GET","channelEcho.jsp?test-channel-id=" + channelId + "&echo=" + msg + "&key=" + clientId + "&msg=" + msg, true);
        xmlhttp.send();
+
        document.getElementById("last-sent-message").innerHTML = msg;
        logAction("last-sent-message-" + jsChannelId, msg);
    }
@@ -91,7 +91,7 @@
 <p><b>status:</b> <span id="status">never-set</span></p>
 <p><b>last-sent-message:</b> <span id="last-sent-message">never-set</span></p>
 <p><b>last-received-message:</b> <span id="last-received-message">never-set</span></p>
-<button id="send-message-button" type="button" onclick="sendServerMessage()">send server message</button>
+<button id="send-message-button" type="button" onclick="sendServerMessage()">Send server message</button>
 <p><b>Actions:</b><div id="actions"></div></p>
 </body>
 </html>

@@ -1,6 +1,7 @@
 <%@ page import="com.google.appengine.api.channel.ChannelMessage" %>
 <%@ page import="com.google.appengine.api.channel.ChannelService" %>
 <%@ page import="com.google.appengine.api.channel.ChannelServiceFactory" %>
+<%@ page import="java.util.logging.Logger" %>
 <%--
   ~ Copyright 2013 Google Inc. All Rights Reserved.
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +17,8 @@
   ~ limitations under the License.
   --%>
 <%
+    final Logger log = Logger.getLogger(getClass().getName());
+
     ChannelService channelService = ChannelServiceFactory.getChannelService();
     String channelId = request.getParameter("test-channel-id");
     String echo = request.getParameter("echo");
@@ -26,19 +29,26 @@
 
     String errorMsg = "";
     String expectedClientId = "123abc";
-    if (!parsedId.equals(expectedClientId)) {
+    if (expectedClientId.equals(parsedId) == false) {
         errorMsg += String.format("::Expected parsedId=%s but got %s", expectedClientId, parsedId);
     }
-
-    String expectedMsg = echo;
-    if (!parsedMsg.equals(expectedMsg)) {
-        errorMsg += String.format("::Expected parsedMsg=%s but got %s", expectedMsg, parsedMsg);
+    if (echo.equals(parsedMsg) == false) {
+        errorMsg += String.format("::Expected parsedMsg=%s but got %s", echo, parsedMsg);
     }
 
-    String returnMsg = String.format("echo-from-server:%s", echo, errorMsg);
+    String msg;
+    if (errorMsg.length() > 0) {
+        msg = errorMsg;
+        log.warning(String.format("Error parsing channel message: %s", errorMsg));
+    } else {
+        msg = echo;
+    }
 
+    String returnMsg = String.format("echo-from-server:%s", msg);
     ChannelMessage message = new ChannelMessage(channelId, returnMsg);
     channelService.sendMessage(message);
+
+    log.info(String.format("Channel message sent: %s", message));
 %>
 <html>
 <head>

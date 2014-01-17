@@ -46,4 +46,8 @@
         <property name="browser">phantomjs</property>
     </extension>
 
+    <extension qualifier="graphene">
+        <property name="waitModelInterval">3</property>
+    </extension>
+
 </arquillian>

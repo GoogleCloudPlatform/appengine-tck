@@ -17,6 +17,7 @@ package com.google.appengine.tck.channel;
 
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.arquillian.graphene.Graphene;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -27,6 +28,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -58,31 +60,27 @@ public class ChannelTest extends ChannelTestBase {
     @InSequence(10)
     public void testSimpleMessage(@ArquillianResource URL url) throws Exception {
         // 1. Create our test with a unique channel id.
-        String channelId = "" + System.currentTimeMillis();
+        final String channelId = String.valueOf(System.currentTimeMillis());
         driver.get(url + "/channelPage.jsp?test-channel-id=" + channelId);
 
         // 2. Verify that the server received our channel id and is using it for this tests.
         WebElement channel = driver.findElement(By.id("channel-id"));
         assertEquals(channelId, channel.getText());
 
-        // 3. The browser waits for the channel to be opened.  There is an implicit timeout of 30 seconds
-        //    if it is not found.
-        sync(5000L);
-
-        WebElement status = driver.findElement(By.id("opened-" + channelId));
+        // 3. The browser waits for the channel to be opened.  There is an implicit timeout of 30 seconds if it is not found.
+        Graphene.waitModel(driver).until().element(By.id("opened-" + channelId)).is().present();
 
         // 4. Send a message via channel to the server.
         WebElement sendButton = driver.findElement(By.id("send-message-button"));
         sendButton.click();
 
         // 4. Check that we attempted to send a message from the browser to server.
-        sync();
-        WebElement lastMsg = driver.findElement(By.id("last-sent-message-" + channelId));
+        Graphene.waitModel(driver).until().element(By.id("last-sent-message-" + channelId)).is().present();
 
         // 5. Now verify that the browser got the ACK from the server.
-        sync(10000L);
-
         String receivedMsgId = "last-received-message-" + channelId;
+        Graphene.waitModel(driver).until().element(By.id(receivedMsgId)).is().present();
+
         WebElement lastReceived = driver.findElement(By.id(receivedMsgId));
         String expectedMsg = "echo-from-server:msg:" + channelId;
         assertEquals(expectedMsg, lastReceived.getText());
@@ -93,7 +91,7 @@ public class ChannelTest extends ChannelTestBase {
     @InSequence(20)
     public void testTimeout(@ArquillianResource URL url) throws Exception {
         // 1. Create our test with a unique channel id.
-        String channelId = "" + System.currentTimeMillis();
+        final String channelId = "" + System.currentTimeMillis();
 
         // Set timeout for 1 minute.
         String params = String.format("/channelPage.jsp?test-channel-id=%s&timeout-minutes=%d", channelId, 1);
@@ -103,16 +101,10 @@ public class ChannelTest extends ChannelTestBase {
         WebElement channel = driver.findElement(By.id("channel-id"));
         assertEquals(channelId, channel.getText());
 
-        sync(5000L);
-
         // 3. Verify that the channel gets closed after the 1 minute timeout.
-        WebElement stat = driver.findElement(By.id("status"));
-        assertEquals("opened", stat.getText());
+        Graphene.waitModel(driver).until().element(By.id("status")).text().equalTo("opened");
 
         // This should put us over the 1 minute timeout.
-        sync(70000L);
-
-        stat = driver.findElement(By.id("status"));
-        assertEquals("closed", stat.getText());
+        Graphene.waitModel(driver).withTimeout(90, TimeUnit.SECONDS).until().element(By.id("status")).text().equalTo("closed");
     }
 }

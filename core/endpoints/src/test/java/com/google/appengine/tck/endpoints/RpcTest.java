@@ -20,14 +20,15 @@ import java.net.URL;
 import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.endpoints.support.RpcEndpoint;
 import com.google.appengine.tck.endpoints.support.TestData;
+import com.google.common.base.Predicate;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.arquillian.graphene.Graphene;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.asset.ClassLoaderAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
@@ -61,14 +62,15 @@ public class RpcTest extends EndPointsTestBase {
     public void testRpc(@ArquillianResource URL url) throws Exception {
         driver.get(url.toExternalForm());
 
-        sync();
-
         WebElement getButton = driver.findElement(By.id("getButton"));
+        Graphene.waitModel(driver).until().element(getButton).is().enabled();
         getButton.click();
 
-        sync();
-
-        WebElement response = driver.findElement(By.id("response"));
-        Assert.assertTrue(String.format("Expecting non-empty response!"), response.getText().trim().length() > 0);
+        final WebElement response = driver.findElement(By.id("response"));
+        Graphene.waitModel(driver).until(new Predicate<WebDriver>() {
+            public boolean apply(WebDriver input) {
+                return response.getText().length() > 0;
+            }
+        });
     }
 }

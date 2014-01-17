@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.google.appengine.api.oauth.InvalidOAuthParametersException;
 import com.google.appengine.api.oauth.InvalidOAuthTokenException;
@@ -38,6 +39,7 @@ import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.arquillian.graphene.Graphene;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -54,7 +56,6 @@ import org.openqa.selenium.WebElement;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * This uses the Client-Side Web Applications Flow.
@@ -251,7 +252,7 @@ public class ClientSideWebAppFlowTest extends OAuthTestBase {
 
         try {
             WebElement button = driver.findElement(By.id("submit_approve_access"));
-            waitUntilEnabled(button);
+            Graphene.waitModel(driver).withTimeout(5, TimeUnit.SECONDS).until().element(button).is().enabled();
             button.click();
         } catch (NoSuchElementException e) {
             // Apparently access has already been approved and the user is not being asked to approve access.
@@ -281,20 +282,6 @@ public class ClientSideWebAppFlowTest extends OAuthTestBase {
 
         tokenCache.put(cacheKey, accessToken);
         return accessToken;
-    }
-
-    private void waitUntilEnabled(WebElement button) {
-        int tries = 30;
-        int wait = 100;
-        for (int i = 0; i < tries; i++) {
-            if (button.isEnabled()) {
-                return;
-            }
-            sync(wait);
-        }
-        if (!button.isEnabled()) {
-            fail("Button not enabled in " + (tries * wait) + "ms");
-        }
     }
 
     private String invokeMethodOnServer(URL baseUrl, String methodName, String accessToken, String scope) {
