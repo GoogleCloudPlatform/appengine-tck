@@ -419,16 +419,14 @@ public class MailServiceTest extends MailTestBase {
     private MimeProperties pollForMail() {
         int secondsElapsed = 0;
 
-        MimeProperties mp = null;
         while (secondsElapsed <= TIMEOUT_MAX) {
-            //noinspection unchecked
-            mp = getLastMimeProperties();
+            MimeProperties mp = getLastMimeProperties();
             if (mp != null) {
                 return mp;
             }
             sync(2000);
             secondsElapsed += 2;
         }
-        return mp;
+        return null;
     }
 }
