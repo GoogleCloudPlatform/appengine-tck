@@ -87,10 +87,7 @@ public class MailServiceTest extends MailTestBase {
         mp.to = getEmail("to-basic-test");
         mp.body = BODY;
 
-        MailService.Message msg = new MailService.Message();
-        msg.setSubject(mp.subject);
-        msg.setSender(mp.from);
-        msg.setTo(mp.to);
+        MailService.Message msg = createMailServiceMessage(mp);
         msg.setTextBody(BODY);
 
         // Send email to self for debugging.
@@ -120,10 +117,7 @@ public class MailServiceTest extends MailTestBase {
         mp.multiPartsList.add("I am bold.");
         mp.multiPartsList.add(htmlBody);
 
-        MailService.Message msg = new MailService.Message();
-        msg.setSubject(mp.subject);
-        msg.setSender(mp.from);
-        msg.setTo(mp.to);
+        MailService.Message msg = createMailServiceMessage(mp);
         msg.setCc(mp.cc);
         msg.setBcc(mp.bcc);
         msg.setReplyTo(mp.replyTo);
@@ -158,10 +152,7 @@ public class MailServiceTest extends MailTestBase {
         mp.multiPartsList.add(BODY);
         mp.multiPartsList.add(new String(attachment.getData()));
 
-        MailService.Message msg = new MailService.Message();
-        msg.setSubject(mp.subject);
-        msg.setSender(mp.from);
-        msg.setTo(mp.to);
+        MailService.Message msg = createMailServiceMessage(mp);
         msg.setTextBody(BODY);
         msg.setAttachments(attachment);
 
@@ -186,10 +177,7 @@ public class MailServiceTest extends MailTestBase {
             mp.multiPartsList.add(BODY);
             mp.multiPartsList.add(new String(attachment.getData()));
 
-            MailService.Message msg = new MailService.Message();
-            msg.setSubject(mp.subject);
-            msg.setSender(mp.from);
-            msg.setTo(mp.to);
+            MailService.Message msg = createMailServiceMessage(mp);
             msg.setTextBody(BODY);
             msg.setAttachments(attachment);
 
@@ -227,10 +215,7 @@ public class MailServiceTest extends MailTestBase {
         mp.to = getEmail("to-test-bounce") + "bogus";
         mp.body = BODY;
 
-        MailService.Message msg = new MailService.Message();
-        msg.setSubject(mp.subject);
-        msg.setSender(mp.from);
-        msg.setTo(mp.to);
+        MailService.Message msg = createMailServiceMessage(mp);
         msg.setTextBody(BODY);
 
         mailService.send(msg);
@@ -249,10 +234,7 @@ public class MailServiceTest extends MailTestBase {
         mp.to = getEmail("to-test-header");
         mp.body = BODY;
 
-        MailService.Message msg = new MailService.Message();
-        msg.setSubject(mp.subject);
-        msg.setSender(mp.from);
-        msg.setTo(mp.to);
+        MailService.Message msg = createMailServiceMessage(mp);
         msg.setTextBody(BODY);
 
         // https://developers.google.com/appengine/docs/java/mail/#Sending_Mail_with_Headers
@@ -428,5 +410,13 @@ public class MailServiceTest extends MailTestBase {
             secondsElapsed += 2;
         }
         return null;
+    }
+
+    private MailService.Message createMailServiceMessage(MimeProperties mp) {
+        MailService.Message msg = new MailService.Message();
+        msg.setSubject(mp.subject);
+        msg.setSender(mp.from);
+        msg.setTo(mp.to);
+        return msg;
     }
 }
