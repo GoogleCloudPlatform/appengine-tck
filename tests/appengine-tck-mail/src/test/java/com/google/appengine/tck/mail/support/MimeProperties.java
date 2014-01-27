@@ -45,11 +45,9 @@ public class MimeProperties extends AbstractTempData implements Serializable {
     public static final String BLANK = "[Blank]";
 
     public MimeProperties() {
-        super();
     }
 
     public MimeProperties(MimeMessage mime) {
-        this();
         initWithMimeMessage(mime);
     }
 
