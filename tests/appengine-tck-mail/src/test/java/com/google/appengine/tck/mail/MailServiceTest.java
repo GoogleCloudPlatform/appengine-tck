@@ -104,6 +104,7 @@ public class MailServiceTest extends MailTestBase {
 
     @Test
     public void testSendAndReceiveFullMessage() throws Exception {
+        final String textBody = "I am bold.";
         final String htmlBody = "<html><body><b>I am bold.</b></body></html>";
 
         MimeProperties mp = new MimeProperties();
@@ -114,13 +115,14 @@ public class MailServiceTest extends MailTestBase {
         mp.bcc = getEmail("bcc-test-full", EmailType.BCC);
         mp.replyTo = getEmail("replyto-test-full", EmailType.REPLY_TO);
 
-        mp.multiPartsList.add("I am bold.");
+        mp.multiPartsList.add(textBody);
         mp.multiPartsList.add(htmlBody);
 
         MailService.Message msg = createMailServiceMessage(mp);
         msg.setCc(mp.cc);
         msg.setBcc(mp.bcc);
         msg.setReplyTo(mp.replyTo);
+        msg.setTextBody(textBody);
         msg.setHtmlBody(htmlBody);
 
         mailService.send(msg);
@@ -132,6 +134,7 @@ public class MailServiceTest extends MailTestBase {
         assertEquals(mp.cc, msg.getCc().iterator().next());
         assertEquals(mp.bcc, msg.getBcc().iterator().next());
         assertEquals(mp.replyTo, msg.getReplyTo());
+        assertEquals(textBody, msg.getTextBody());
         assertEquals(htmlBody, msg.getHtmlBody());
 
         if (doExecute("testSendAndReceiveFullMessage") == false) {
@@ -294,6 +297,30 @@ public class MailServiceTest extends MailTestBase {
         mailService.sendToAdmins(msg);
 
         // Assuming success if no exception was thrown without calling sendToAdmins();
+    }
+
+    @Test
+    public void testTextBodyAutomaticallyCreatedFromHtmlBody() throws Exception {
+        final String textBody = "I am bold.";
+        final String htmlBody = "<html><body><b>I am bold.</b></body></html>";
+
+        MimeProperties mp = new MimeProperties();
+        mp.subject = "Automatic-Html-To-Text-Conversion-Test-" + System.currentTimeMillis();
+        mp.from = getEmail("from-test-htmltext", EmailType.FROM);
+        mp.to = getEmail("to-test-htmltext", EmailType.TO);
+        mp.multiPartsList.add(textBody);
+        mp.multiPartsList.add(htmlBody);
+
+        MailService.Message msg = createMailServiceMessage(mp);
+        msg.setHtmlBody(htmlBody);
+
+        mailService.send(msg);
+
+        if (doExecute("testSendAndReceiveFullMessage") == false) {
+            log.info("Not running on production, skipping assert.");
+        } else {
+            assertMessageReceived(mp);
+        }
     }
 
     private void assertMessageReceived(MimeProperties expectedMimeProps) {
