@@ -95,10 +95,10 @@ public class MailServiceTest extends MailTestBase {
 
         mailService.send(msg);
 
-        if (doExecute("testSendAndReceiveBasicMessage") == false) {
-            log.info("Not running on production, skipping assert.");
-        } else {
+        if (doExecute("testSendAndReceiveBasicMessage")) {
             assertMessageReceived(mp);
+        } else {
+            log.info("Not running on production, skipping assert.");
         }
     }
 
@@ -137,10 +137,10 @@ public class MailServiceTest extends MailTestBase {
         assertEquals(textBody, msg.getTextBody());
         assertEquals(htmlBody, msg.getHtmlBody());
 
-        if (doExecute("testSendAndReceiveFullMessage") == false) {
-            log.info("Not running on production, skipping assert.");
-        } else {
+        if (doExecute("testSendAndReceiveFullMessage")) {
             assertMessageReceived(mp);
+        } else {
+            log.info("Not running on production, skipping assert.");
         }
     }
 
@@ -161,10 +161,10 @@ public class MailServiceTest extends MailTestBase {
 
         mailService.send(msg);
 
-        if (doExecute("testValidAttachment") == false) {
-            log.info("Not running on production, skipping assert.");
-        } else {
+        if (doExecute("testValidAttachment")) {
             assertMessageReceived(mp);
+        } else {
+            log.info("Not running on production, skipping assert.");
         }
     }
 
@@ -250,11 +250,11 @@ public class MailServiceTest extends MailTestBase {
         msg.setHeaders(headers);
         mailService.send(msg);
 
-        if (doExecute("testAllowedHeaders") == false) {
-            log.info("Not running on production, skipping assert.");
-        } else {
+        if (doExecute("testAllowedHeaders")) {
             assertMessageReceived(mp);
             assertHeadersExist(createExpectedHeadersVerifyList(headersMap));
+        } else {
+            log.info("Not running on production, skipping assert.");
         }
     }
 
@@ -280,10 +280,10 @@ public class MailServiceTest extends MailTestBase {
 
         Transport.send(msg);
 
-        if (doExecute("testJavaxTransportSendAndReceiveBasicMessage") == false) {
-            log.info("Not running on production, skipping assert.");
-        } else {
+        if (doExecute("testJavaxTransportSendAndReceiveBasicMessage")) {
             assertMessageReceived(mp);
+        } else {
+            log.info("Not running on production, skipping assert.");
         }
     }
 
@@ -316,10 +316,10 @@ public class MailServiceTest extends MailTestBase {
 
         mailService.send(msg);
 
-        if (doExecute("testSendAndReceiveFullMessage") == false) {
-            log.info("Not running on production, skipping assert.");
-        } else {
+        if (doExecute("testSendAndReceiveFullMessage")) {
             assertMessageReceived(mp);
+        } else {
+            log.info("Not running on production, skipping assert.");
         }
     }
 
