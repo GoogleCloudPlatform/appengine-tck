@@ -83,8 +83,8 @@ public class MailServiceTest extends MailTestBase {
     public void testSendAndReceiveBasicMessage() throws Exception {
         MimeProperties mp = new MimeProperties();
         mp.subject = "Basic-Message-Test-" + System.currentTimeMillis();
-        mp.from = getEmail("from-basic-test");
-        mp.to = getEmail("to-basic-test");
+        mp.from = getEmail("from-basic-test", EmailType.FROM);
+        mp.to = getEmail("to-basic-test", EmailType.TO);
         mp.body = BODY;
 
         MailService.Message msg = createMailServiceMessage(mp);
@@ -108,11 +108,11 @@ public class MailServiceTest extends MailTestBase {
 
         MimeProperties mp = new MimeProperties();
         mp.subject = "Full-Message-Test-" + System.currentTimeMillis();
-        mp.from = getEmail("from-test-full");
-        mp.to = getEmail("to-test-full");
-        mp.cc = getEmail("cc-test-full");
-        mp.bcc = getEmail("bcc-test-full");
-        mp.replyTo = getEmail("replyto-test-full");
+        mp.from = getEmail("from-test-full", EmailType.FROM);
+        mp.to = getEmail("to-test-full", EmailType.TO);
+        mp.cc = getEmail("cc-test-full", EmailType.CC);
+        mp.bcc = getEmail("bcc-test-full", EmailType.BCC);
+        mp.replyTo = getEmail("replyto-test-full", EmailType.REPLY_TO);
 
         mp.multiPartsList.add("I am bold.");
         mp.multiPartsList.add(htmlBody);
@@ -145,8 +145,8 @@ public class MailServiceTest extends MailTestBase {
     public void testValidAttachment() throws Exception {
         MimeProperties mp = new MimeProperties();
         mp.subject = "Valid-Attachment-Test-" + System.currentTimeMillis();
-        mp.from = getEmail("from-test-valid-attachment");
-        mp.to = getEmail("to-test-valid-attachment");
+        mp.from = getEmail("from-test-valid-attachment", EmailType.FROM);
+        mp.to = getEmail("to-test-valid-attachment", EmailType.TO);
 
         MailService.Attachment attachment = createValidAttachment();
         mp.multiPartsList.add(BODY);
@@ -170,8 +170,8 @@ public class MailServiceTest extends MailTestBase {
         for (String extension : getInvalidAttachmentFileTypes()) {
             MimeProperties mp = new MimeProperties();
             mp.subject = "Invalid-Attachment-Test-" + extension + System.currentTimeMillis();
-            mp.from = getEmail("from-test-invalid-attachment");
-            mp.to = getEmail("to-test-invalid-attachment");
+            mp.from = getEmail("from-test-invalid-attachment", EmailType.FROM);
+            mp.to = getEmail("to-test-invalid-attachment", EmailType.TO);
 
             MailService.Attachment attachment = createInvalidAttachment(extension);
             mp.multiPartsList.add(BODY);
@@ -211,8 +211,8 @@ public class MailServiceTest extends MailTestBase {
     public void testBounceNotification() throws Exception {
         MimeProperties mp = new MimeProperties();
         mp.subject = "Bounce-Notification-Test-" + System.currentTimeMillis();
-        mp.from = getEmail("from-test-bounce");
-        mp.to = getEmail("to-test-bounce") + "bogus";
+        mp.from = getEmail("from-test-bounce", EmailType.FROM);
+        mp.to = getEmail("to-test-bounce", EmailType.TO) + "bogus";
         mp.body = BODY;
 
         MailService.Message msg = createMailServiceMessage(mp);
@@ -230,8 +230,8 @@ public class MailServiceTest extends MailTestBase {
     public void testAllowedHeaders() throws Exception {
         MimeProperties mp = new MimeProperties();
         mp.subject = "Allowed-Headers-Test-" + System.currentTimeMillis();
-        mp.from = getEmail("from-test-header");
-        mp.to = getEmail("to-test-header");
+        mp.from = getEmail("from-test-header", EmailType.FROM);
+        mp.to = getEmail("to-test-header", EmailType.TO);
         mp.body = BODY;
 
         MailService.Message msg = createMailServiceMessage(mp);
@@ -263,8 +263,8 @@ public class MailServiceTest extends MailTestBase {
         }
         MimeProperties mp = new MimeProperties();
         mp.subject = "Javax-Transport-Test-" + System.currentTimeMillis();
-        mp.from = getEmail("from-test-x");
-        mp.to = getEmail("to-test-x");
+        mp.from = getEmail("from-test-x", EmailType.FROM);
+        mp.to = getEmail("to-test-x", EmailType.TO);
         mp.body = BODY;
 
         MimeMessage msg = new MimeMessage(session);
@@ -287,7 +287,7 @@ public class MailServiceTest extends MailTestBase {
     @Test
     public void testSendToAdmin() throws Exception {
         MailService.Message msg = new MailService.Message();
-        msg.setSender(getEmail("from-admin-test"));
+        msg.setSender(getEmail("from-admin-test", EmailType.FROM));
         String subjectTag = "Send-to-admin-" + System.currentTimeMillis();
         msg.setSubject(subjectTag);
         msg.setTextBody(BODY);
@@ -376,7 +376,7 @@ public class MailServiceTest extends MailTestBase {
         return headers;
     }
 
-    private String getEmail(String user) {
+    private String getEmail(String user, EmailType type) {
         return String.format("%s@%s.%s", user, appId(), mailGateway());
     }
 
@@ -418,5 +418,9 @@ public class MailServiceTest extends MailTestBase {
         msg.setSender(mp.from);
         msg.setTo(mp.to);
         return msg;
+    }
+
+    private static enum EmailType {
+        FROM, TO, CC, BCC, REPLY_TO
     }
 }
