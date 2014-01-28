@@ -412,17 +412,21 @@ public class MailServiceTest extends MailTestBase {
     }
 
     private String mailGateway() {
-        String gateway;
+        String gateway = getTestSystemProperty("tck.mail.gateway", "appspotmail.com");
+        log.info("tck.mail.gateway = " + gateway);
+        return gateway;
+    }
+
+    private String getTestSystemProperty(String key, String defaultValue) {
         try {
-            gateway = readProperties(TCK_PROPERTIES).getProperty("tck.mail.gateway");
-            if (gateway == null) {
-                gateway = "appspotmail.com";
+            String value = readProperties(TCK_PROPERTIES).getProperty(key);
+            if (value == null) {
+                value = defaultValue;
             }
+            return value;
         } catch (IOException ioe) {
             throw new IllegalStateException(ioe);
         }
-        log.info("tck.mail.gateway = " + gateway);
-        return gateway;
     }
 
     private MimeProperties pollForMail() {
