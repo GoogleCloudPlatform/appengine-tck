@@ -44,7 +44,7 @@ public abstract class MailTestBase extends TestBase {
         context.setWebXmlFile("mail-web.xml");
 
         WebArchive war = getTckDeployment(context);
-        war.addClasses(MailTestBase.class, MailHandlerServlet.class, BounceHandlerServlet.class, MimeProperties.class);
+        war.addClasses(MailTestBase.class, MailHandlerServlet.class, BounceHandlerServlet.class, MimeProperties.class, EmailMessageField.class, EmailAddressFormatter.class);
 
         return war;
     }
