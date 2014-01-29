@@ -45,6 +45,6 @@ public class DummyTest extends TestBase {
 
     @Test
     public void testProps() throws Exception {
-        System.out.println("tck.email = " + readProperties(TCK_PROPERTIES).getProperty("tck.email"));
+        System.out.println("tck.email = " + getTestSystemProperty("tck.email"));
     }
 }

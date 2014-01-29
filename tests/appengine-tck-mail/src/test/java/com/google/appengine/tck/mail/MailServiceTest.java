@@ -37,6 +37,7 @@ import com.google.appengine.tck.mail.support.MimeProperties;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -83,14 +84,11 @@ public class MailServiceTest extends MailTestBase {
     public void testSendAndReceiveBasicMessage() throws Exception {
         MimeProperties mp = new MimeProperties();
         mp.subject = "Basic-Message-Test-" + System.currentTimeMillis();
-        mp.from = getEmail("from-basic-test");
-        mp.to = getEmail("to-basic-test");
+        mp.from = getEmail("from-basic-test", EmailMessageField.FROM);
+        mp.to = getEmail("to-basic-test", EmailMessageField.TO);
         mp.body = BODY;
 
-        MailService.Message msg = new MailService.Message();
-        msg.setSubject(mp.subject);
-        msg.setSender(mp.from);
-        msg.setTo(mp.to);
+        MailService.Message msg = createMailServiceMessage(mp);
         msg.setTextBody(BODY);
 
         // Send email to self for debugging.
@@ -98,35 +96,34 @@ public class MailServiceTest extends MailTestBase {
 
         mailService.send(msg);
 
-        if (doExecute("testSendAndReceiveBasicMessage") == false) {
-            log.info("Not running on production, skipping assert.");
-        } else {
+        if (doExecute("testSendAndReceiveBasicMessage")) {
             assertMessageReceived(mp);
+        } else {
+            log.info("Not running on production, skipping assert.");
         }
     }
 
     @Test
     public void testSendAndReceiveFullMessage() throws Exception {
+        final String textBody = "I am bold.";
         final String htmlBody = "<html><body><b>I am bold.</b></body></html>";
 
         MimeProperties mp = new MimeProperties();
         mp.subject = "Full-Message-Test-" + System.currentTimeMillis();
-        mp.from = getEmail("from-test-full");
-        mp.to = getEmail("to-test-full");
-        mp.cc = getEmail("cc-test-full");
-        mp.bcc = getEmail("bcc-test-full");
-        mp.replyTo = getEmail("replyto-test-full");
+        mp.from = getEmail("from-test-full", EmailMessageField.FROM);
+        mp.to = getEmail("to-test-full", EmailMessageField.TO);
+        mp.cc = getEmail("cc-test-full", EmailMessageField.CC);
+        mp.bcc = getEmail("bcc-test-full", EmailMessageField.BCC);
+        mp.replyTo = getEmail("replyto-test-full", EmailMessageField.REPLY_TO);
 
-        mp.multiPartsList.add("I am bold.");
+        mp.multiPartsList.add(textBody);
         mp.multiPartsList.add(htmlBody);
 
-        MailService.Message msg = new MailService.Message();
-        msg.setSubject(mp.subject);
-        msg.setSender(mp.from);
-        msg.setTo(mp.to);
+        MailService.Message msg = createMailServiceMessage(mp);
         msg.setCc(mp.cc);
         msg.setBcc(mp.bcc);
         msg.setReplyTo(mp.replyTo);
+        msg.setTextBody(textBody);
         msg.setHtmlBody(htmlBody);
 
         mailService.send(msg);
@@ -138,12 +135,13 @@ public class MailServiceTest extends MailTestBase {
         assertEquals(mp.cc, msg.getCc().iterator().next());
         assertEquals(mp.bcc, msg.getBcc().iterator().next());
         assertEquals(mp.replyTo, msg.getReplyTo());
+        assertEquals(textBody, msg.getTextBody());
         assertEquals(htmlBody, msg.getHtmlBody());
 
-        if (doExecute("testSendAndReceiveFullMessage") == false) {
-            log.info("Not running on production, skipping assert.");
-        } else {
+        if (doExecute("testSendAndReceiveFullMessage")) {
             assertMessageReceived(mp);
+        } else {
+            log.info("Not running on production, skipping assert.");
         }
     }
 
@@ -151,26 +149,23 @@ public class MailServiceTest extends MailTestBase {
     public void testValidAttachment() throws Exception {
         MimeProperties mp = new MimeProperties();
         mp.subject = "Valid-Attachment-Test-" + System.currentTimeMillis();
-        mp.from = getEmail("from-test-valid-attachment");
-        mp.to = getEmail("to-test-valid-attachment");
+        mp.from = getEmail("from-test-valid-attachment", EmailMessageField.FROM);
+        mp.to = getEmail("to-test-valid-attachment", EmailMessageField.TO);
 
         MailService.Attachment attachment = createValidAttachment();
         mp.multiPartsList.add(BODY);
         mp.multiPartsList.add(new String(attachment.getData()));
 
-        MailService.Message msg = new MailService.Message();
-        msg.setSubject(mp.subject);
-        msg.setSender(mp.from);
-        msg.setTo(mp.to);
+        MailService.Message msg = createMailServiceMessage(mp);
         msg.setTextBody(BODY);
         msg.setAttachments(attachment);
 
         mailService.send(msg);
 
-        if (doExecute("testValidAttachment") == false) {
-            log.info("Not running on production, skipping assert.");
-        } else {
+        if (doExecute("testValidAttachment")) {
             assertMessageReceived(mp);
+        } else {
+            log.info("Not running on production, skipping assert.");
         }
     }
 
@@ -179,17 +174,14 @@ public class MailServiceTest extends MailTestBase {
         for (String extension : getInvalidAttachmentFileTypes()) {
             MimeProperties mp = new MimeProperties();
             mp.subject = "Invalid-Attachment-Test-" + extension + System.currentTimeMillis();
-            mp.from = getEmail("from-test-invalid-attachment");
-            mp.to = getEmail("to-test-invalid-attachment");
+            mp.from = getEmail("from-test-invalid-attachment", EmailMessageField.FROM);
+            mp.to = getEmail("to-test-invalid-attachment", EmailMessageField.TO);
 
             MailService.Attachment attachment = createInvalidAttachment(extension);
             mp.multiPartsList.add(BODY);
             mp.multiPartsList.add(new String(attachment.getData()));
 
-            MailService.Message msg = new MailService.Message();
-            msg.setSubject(mp.subject);
-            msg.setSender(mp.from);
-            msg.setTo(mp.to);
+            MailService.Message msg = createMailServiceMessage(mp);
             msg.setTextBody(BODY);
             msg.setAttachments(attachment);
 
@@ -223,14 +215,11 @@ public class MailServiceTest extends MailTestBase {
     public void testBounceNotification() throws Exception {
         MimeProperties mp = new MimeProperties();
         mp.subject = "Bounce-Notification-Test-" + System.currentTimeMillis();
-        mp.from = getEmail("from-test-bounce");
-        mp.to = getEmail("to-test-bounce") + "bogus";
+        mp.from = getEmail("from-test-bounce", EmailMessageField.FROM);
+        mp.to = getEmail("to-test-bounce", EmailMessageField.TO) + "bogus";
         mp.body = BODY;
 
-        MailService.Message msg = new MailService.Message();
-        msg.setSubject(mp.subject);
-        msg.setSender(mp.from);
-        msg.setTo(mp.to);
+        MailService.Message msg = createMailServiceMessage(mp);
         msg.setTextBody(BODY);
 
         mailService.send(msg);
@@ -245,14 +234,11 @@ public class MailServiceTest extends MailTestBase {
     public void testAllowedHeaders() throws Exception {
         MimeProperties mp = new MimeProperties();
         mp.subject = "Allowed-Headers-Test-" + System.currentTimeMillis();
-        mp.from = getEmail("from-test-header");
-        mp.to = getEmail("to-test-header");
+        mp.from = getEmail("from-test-header", EmailMessageField.FROM);
+        mp.to = getEmail("to-test-header", EmailMessageField.TO);
         mp.body = BODY;
 
-        MailService.Message msg = new MailService.Message();
-        msg.setSubject(mp.subject);
-        msg.setSender(mp.from);
-        msg.setTo(mp.to);
+        MailService.Message msg = createMailServiceMessage(mp);
         msg.setTextBody(BODY);
 
         // https://developers.google.com/appengine/docs/java/mail/#Sending_Mail_with_Headers
@@ -265,11 +251,11 @@ public class MailServiceTest extends MailTestBase {
         msg.setHeaders(headers);
         mailService.send(msg);
 
-        if (doExecute("testAllowedHeaders") == false) {
-            log.info("Not running on production, skipping assert.");
-        } else {
+        if (doExecute("testAllowedHeaders")) {
             assertMessageReceived(mp);
             assertHeadersExist(createExpectedHeadersVerifyList(headersMap));
+        } else {
+            log.info("Not running on production, skipping assert.");
         }
     }
 
@@ -281,8 +267,8 @@ public class MailServiceTest extends MailTestBase {
         }
         MimeProperties mp = new MimeProperties();
         mp.subject = "Javax-Transport-Test-" + System.currentTimeMillis();
-        mp.from = getEmail("from-test-x");
-        mp.to = getEmail("to-test-x");
+        mp.from = getEmail("from-test-x", EmailMessageField.FROM);
+        mp.to = getEmail("to-test-x", EmailMessageField.TO);
         mp.body = BODY;
 
         MimeMessage msg = new MimeMessage(session);
@@ -295,23 +281,117 @@ public class MailServiceTest extends MailTestBase {
 
         Transport.send(msg);
 
-        if (doExecute("testJavaxTransportSendAndReceiveBasicMessage") == false) {
-            log.info("Not running on production, skipping assert.");
-        } else {
+        if (doExecute("testJavaxTransportSendAndReceiveBasicMessage")) {
             assertMessageReceived(mp);
+        } else {
+            log.info("Not running on production, skipping assert.");
         }
     }
 
     @Test
     public void testSendToAdmin() throws Exception {
         MailService.Message msg = new MailService.Message();
-        msg.setSender(getEmail("from-admin-test"));
+        msg.setSender(getEmail("from-admin-test", EmailMessageField.FROM));
         String subjectTag = "Send-to-admin-" + System.currentTimeMillis();
         msg.setSubject(subjectTag);
         msg.setTextBody(BODY);
         mailService.sendToAdmins(msg);
 
         // Assuming success if no exception was thrown without calling sendToAdmins();
+    }
+
+    @Test
+    public void testTextBodyAutomaticallyCreatedFromHtmlBody() throws Exception {
+        final String textBody = "I am bold.";
+        final String htmlBody = "<html><body><b>I am bold.</b></body></html>";
+
+        MimeProperties mp = new MimeProperties();
+        mp.subject = "Automatic-Html-To-Text-Conversion-Test-" + System.currentTimeMillis();
+        mp.from = getEmail("from-test-htmltext", EmailMessageField.FROM);
+        mp.to = getEmail("to-test-htmltext", EmailMessageField.TO);
+        mp.multiPartsList.add(textBody);
+        mp.multiPartsList.add(htmlBody);
+
+        MailService.Message msg = createMailServiceMessage(mp);
+        msg.setHtmlBody(htmlBody);
+
+        mailService.send(msg);
+
+        if (doExecute("testSendAndReceiveFullMessage")) {
+            assertMessageReceived(mp);
+        } else {
+            log.info("Not running on production, skipping assert.");
+        }
+    }
+
+    @Ignore("We need to discuss whether to test this or not.")
+    @Test
+    public void testCanSendEmailWithSenderSetToRegisteredAdminOfTheApp() throws Exception {
+        assertSenderAuthorized(getAdminEmail());
+    }
+
+    @Ignore("We need to discuss whether to test this or not.")
+    @Test
+    public void testCanSendEmailWithSenderSetToAnyEmailAddressWithCorrectHostname() throws Exception {
+        assertSenderAuthorized("any_user@" + appId() + "." + mailGateway());
+    }
+
+    // TODO testCanSendEmailWithSenderSetToCurrentlyLoggedInUser
+
+    @Ignore("We need to discuss whether to test this or not.")
+    @Test
+    public void testCanNotSendEmailWhenSenderIsUnauthorized() throws Exception {
+        assertSenderUnauthorized("someone_else@google.com");
+    }
+
+    private String getAdminEmail() {
+        String adminTestingAccount = getTestSystemProperty("appengine.adminTestingAccount.email");
+        if (adminTestingAccount == null) {
+            throw new IllegalStateException("-Dappengine.adminTestingAccount.email is not defined.");
+        }
+        return adminTestingAccount;
+    }
+
+    private void assertSenderAuthorized(String sender) throws IOException {
+        MimeProperties mp = new MimeProperties();
+        mp.subject = "Test-Authorized-Sender-" + System.currentTimeMillis();
+        mp.from = sender;
+        mp.to = getEmail("to-authorized-sender-test", EmailMessageField.TO);
+        mp.body = BODY;
+
+        MailService.Message msg = createMailServiceMessage(mp);
+        msg.setTextBody(BODY);
+
+        try {
+            mailService.send(msg);
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("Unauthorized Sender")) {
+                fail("Could not send mail with sender set to '" + sender + "'. Got exception " + e);
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    private void assertSenderUnauthorized(String unauthorizedSender) throws IOException {
+        MimeProperties mp = new MimeProperties();
+        mp.subject = "Test-Unauthorized-Sender-" + System.currentTimeMillis();
+        mp.from = unauthorizedSender;
+        mp.to = getEmail("to-unauthorized-sender-test", EmailMessageField.TO);
+        mp.body = BODY;
+
+        MailService.Message msg = new MailService.Message();
+        msg.setSubject(mp.subject);
+        msg.setSender(mp.from);
+        msg.setTo(mp.to);
+        msg.setTextBody(BODY);
+
+        try {
+            mailService.send(msg);
+            fail("Expected IllegalArgumentException with message \"Unauthorized Sender\"");
+        } catch (IllegalArgumentException e) {
+            assertTrue("Expected IllegalArgumentException to contain \"Unauthorized Sender\"", e.getMessage().contains("Unauthorized Sender"));
+        }
     }
 
     private void assertMessageReceived(MimeProperties expectedMimeProps) {
@@ -394,8 +474,13 @@ public class MailServiceTest extends MailTestBase {
         return headers;
     }
 
-    private String getEmail(String user) {
-        return String.format("%s@%s.%s", user, appId(), mailGateway());
+    private String getEmail(String user, EmailMessageField field) {
+        EmailAddressFormatter emailAddressFormatter = instance(EmailAddressFormatter.class);
+        if (emailAddressFormatter == null) {
+            return String.format("%s@%s.%s", user, appId(), mailGateway());
+        } else {
+            return emailAddressFormatter.format(user, appId(), mailGateway(), field);
+        }
     }
 
     private String appId() {
@@ -403,15 +488,7 @@ public class MailServiceTest extends MailTestBase {
     }
 
     private String mailGateway() {
-        String gateway;
-        try {
-            gateway = readProperties(TCK_PROPERTIES).getProperty("tck.mail.gateway");
-            if (gateway == null) {
-                gateway = "appspotmail.com";
-            }
-        } catch (IOException ioe) {
-            throw new IllegalStateException(ioe);
-        }
+        String gateway = getTestSystemProperty("tck.mail.gateway", "appspotmail.com");
         log.info("tck.mail.gateway = " + gateway);
         return gateway;
     }
@@ -419,16 +496,23 @@ public class MailServiceTest extends MailTestBase {
     private MimeProperties pollForMail() {
         int secondsElapsed = 0;
 
-        MimeProperties mp = null;
         while (secondsElapsed <= TIMEOUT_MAX) {
-            //noinspection unchecked
-            mp = getLastMimeProperties();
+            MimeProperties mp = getLastMimeProperties();
             if (mp != null) {
                 return mp;
             }
             sync(2000);
             secondsElapsed += 2;
         }
-        return mp;
+        return null;
     }
+
+    private MailService.Message createMailServiceMessage(MimeProperties mp) {
+        MailService.Message msg = new MailService.Message();
+        msg.setSubject(mp.subject);
+        msg.setSender(mp.from);
+        msg.setTo(mp.to);
+        return msg;
+    }
+
 }

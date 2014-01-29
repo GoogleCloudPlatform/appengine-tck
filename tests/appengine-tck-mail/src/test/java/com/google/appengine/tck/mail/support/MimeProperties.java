@@ -25,6 +25,8 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.MimeMessage;
+
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -45,11 +47,9 @@ public class MimeProperties extends AbstractTempData implements Serializable {
     public static final String BLANK = "[Blank]";
 
     public MimeProperties() {
-        super();
     }
 
     public MimeProperties(MimeMessage mime) {
-        this();
         initWithMimeMessage(mime);
     }
 
@@ -95,9 +95,10 @@ public class MimeProperties extends AbstractTempData implements Serializable {
                 Multipart multipart = (Multipart) mime.getContent();
                 for (int i = 0; i < multipart.getCount(); i++) {
                     BodyPart bodyPart = multipart.getBodyPart(i);
+                    String content = getContentAsString(bodyPart);
                     log.info("ContentTypeMultiPart: " + bodyPart.getContentType());
-                    log.info("Content: " + bodyPart.getContent().toString());
-                    multiPartsList.add(new String(bodyPart.getContent().toString()));
+                    log.info("Content: " + content);
+                    multiPartsList.add(content);
                 }
             }
 
@@ -106,6 +107,13 @@ public class MimeProperties extends AbstractTempData implements Serializable {
         } catch (IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private String getContentAsString(BodyPart bodyPart) throws IOException, MessagingException {
+        byte[] buf = new byte[bodyPart.getSize()];
+        DataInputStream din = new DataInputStream(bodyPart.getInputStream());
+        din.readFully(buf);
+        return new String(buf);
     }
 
     public String subject = BLANK;  // use as key

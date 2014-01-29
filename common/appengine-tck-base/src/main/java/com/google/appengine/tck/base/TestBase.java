@@ -231,8 +231,24 @@ public class TestBase {
         }
     }
 
-    protected Properties readProperties(String name) throws IOException {
-        InputStream is = getClass().getClassLoader().getResourceAsStream(name);
+    public static String getTestSystemProperty(String key) {
+        return getTestSystemProperty(key, null);
+    }
+
+    public static String getTestSystemProperty(String key, String defaultValue) {
+        try {
+            String value = readProperties(TCK_PROPERTIES).getProperty(key);
+            if (value == null) {
+                value = defaultValue;
+            }
+            return value;
+        } catch (IOException ioe) {
+            throw new IllegalStateException(ioe);
+        }
+    }
+
+    protected static Properties readProperties(String name) throws IOException {
+        InputStream is = TestBase.class.getClassLoader().getResourceAsStream(name);
 
         if (is == null) {
             throw new IllegalArgumentException("No such resource: " + name);

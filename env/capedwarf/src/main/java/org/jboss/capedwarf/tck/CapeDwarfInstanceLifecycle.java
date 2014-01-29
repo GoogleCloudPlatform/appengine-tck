@@ -22,6 +22,7 @@ import javax.naming.InitialContext;
 import com.google.appengine.tck.event.AbstractInstanceLifecycle;
 import com.google.appengine.tck.event.InstanceLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycle;
+import com.google.appengine.tck.mail.EmailAddressFormatter;
 import org.kohsuke.MetaInfServices;
 
 /**
@@ -35,6 +36,8 @@ public class CapeDwarfInstanceLifecycle extends AbstractInstanceLifecycle {
         if (Session.class.equals(instanceType)) {
             Session session = lookup(Session.class, "java:jboss/mail/Default");
             event.setInstance(session);
+        } else if (EmailAddressFormatter.class.equals(instanceType)) {
+            event.setInstance(CapedwarfEmailAddressFormatter.INSTANCE);
         }
     }
 
