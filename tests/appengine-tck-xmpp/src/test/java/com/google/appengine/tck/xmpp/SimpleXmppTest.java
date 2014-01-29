@@ -15,7 +15,6 @@
 
 package com.google.appengine.tck.xmpp;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,18 +108,8 @@ public class SimpleXmppTest extends XmppTestBase {
     }
 
     private void initConfig() {
-        try {
-            appId = readProperties(TCK_PROPERTIES).getProperty("appengine.appId");
-            if (appId == null) {
-                appId = "tckapp";
-            }
-            xmppServer = readProperties(TCK_PROPERTIES).getProperty("tck.xmpp.server");
-            if (xmppServer == null) {
-                xmppServer = "appspot.com";
-            }
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
+        appId = getTestSystemProperty("appengine.appId", "tckapp");
+        xmppServer = getTestSystemProperty("tck.xmpp.server", "appspot.com");
     }
 
     private void clearTestData() {

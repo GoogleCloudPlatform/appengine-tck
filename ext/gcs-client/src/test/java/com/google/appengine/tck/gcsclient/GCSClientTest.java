@@ -57,13 +57,9 @@ public class GCSClientTest extends GCSClientTestBase {
 
     @Before
     public void setUp() {
-        try {
-            bucket = readProperties(TCK_PROPERTIES).getProperty("tck.gcs.bucket");
-            if (bucket == null) {
-                bucket = SystemProperty.applicationId.get() + ".appspot.com";
-            }
-        } catch (IOException ioe) {
-            throw new IllegalStateException(ioe);
+        bucket = getTestSystemProperty("tck.gcs.bucket");
+        if (bucket == null) {
+            bucket = SystemProperty.applicationId.get() + ".appspot.com";
         }
         gcsService = GcsServiceFactory.createGcsService();
     }
