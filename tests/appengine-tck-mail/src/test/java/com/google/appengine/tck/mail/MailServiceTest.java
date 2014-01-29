@@ -37,6 +37,7 @@ import com.google.appengine.tck.mail.support.MimeProperties;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -320,6 +321,76 @@ public class MailServiceTest extends MailTestBase {
             assertMessageReceived(mp);
         } else {
             log.info("Not running on production, skipping assert.");
+        }
+    }
+
+    @Ignore("We need to discuss whether to test this or not.")
+    @Test
+    public void testCanSendEmailWithSenderSetToRegisteredAdminOfTheApp() throws Exception {
+        assertSenderAuthorized(getAdminEmail());
+    }
+
+    @Ignore("We need to discuss whether to test this or not.")
+    @Test
+    public void testCanSendEmailWithSenderSetToAnyEmailAddressWithCorrectHostname() throws Exception {
+        assertSenderAuthorized("any_user@" + appId() + "." + mailGateway());
+    }
+
+    // TODO testCanSendEmailWithSenderSetToCurrentlyLoggedInUser
+
+    @Ignore("We need to discuss whether to test this or not.")
+    @Test
+    public void testCanNotSendEmailWhenSenderIsUnauthorized() throws Exception {
+        assertSenderUnauthorized("someone_else@google.com");
+    }
+
+    private String getAdminEmail() {
+        String adminTestingAccount = getTestSystemProperty("appengine.adminTestingAccount.email", null);
+        if (adminTestingAccount == null) {
+            throw new IllegalStateException("-Dappengine.adminTestingAccount.email is not defined.");
+        }
+        return adminTestingAccount;
+    }
+
+    private void assertSenderAuthorized(String sender) throws IOException {
+        MimeProperties mp = new MimeProperties();
+        mp.subject = "Test-Authorized-Sender-" + System.currentTimeMillis();
+        mp.from = sender;
+        mp.to = getEmail("to-authorized-sender-test", EmailType.TO);
+        mp.body = BODY;
+
+        MailService.Message msg = createMailServiceMessage(mp);
+        msg.setTextBody(BODY);
+
+        try {
+            mailService.send(msg);
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("Unauthorized Sender")) {
+                fail("Could not send mail with sender set to '" + sender + "'. Got exception " + e);
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    private void assertSenderUnauthorized(String unauthorizedSender) throws IOException {
+        MimeProperties mp = new MimeProperties();
+        mp.subject = "Test-Unauthorized-Sender-" + System.currentTimeMillis();
+        mp.from = unauthorizedSender;
+        mp.to = getEmail("to-unauthorized-sender-test", EmailType.TO);
+        mp.body = BODY;
+
+        MailService.Message msg = new MailService.Message();
+        msg.setSubject(mp.subject);
+        msg.setSender(mp.from);
+        msg.setTo(mp.to);
+        msg.setTextBody(BODY);
+
+        try {
+            mailService.send(msg);
+            fail("Expected IllegalArgumentException with message \"Unauthorized Sender\"");
+        } catch (IllegalArgumentException e) {
+            assertTrue("Expected IllegalArgumentException to contain \"Unauthorized Sender\"", e.getMessage().contains("Unauthorized Sender"));
         }
     }
 
