@@ -15,8 +15,6 @@
 
 package com.google.appengine.tck.appidentity;
 
-import java.io.IOException;
-
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.event.Property;
@@ -45,12 +43,8 @@ public abstract class AppIdentityTestBase extends TestBase {
 
     @Before
     public void initSystemProperties() {
-        try {
-            appIdproperty = readProperties(TCK_PROPERTIES).getProperty("appengine.appId");
-            appEngineServer = readProperties(TCK_PROPERTIES).getProperty("appengine.server");
-        } catch (IOException ioe) {
-            throw new IllegalStateException(ioe);
-        }
+        appIdproperty = getTestSystemProperty("appengine.appId");
+        appEngineServer = getTestSystemProperty("appengine.server");
     }
 
     protected String getExpectedAppId(String context) {

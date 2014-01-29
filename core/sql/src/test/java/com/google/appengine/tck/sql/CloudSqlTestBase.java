@@ -15,7 +15,6 @@
 
 package com.google.appengine.tck.sql;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -57,22 +56,18 @@ public abstract class CloudSqlTestBase extends TestBase {
 
     @Before
     public void initConnectionProperties() {
-        try {
-            connectionStr = readProperties(TCK_PROPERTIES).getProperty("tck.sql.connection");
-            user = readProperties(TCK_PROPERTIES).getProperty("tck.sql.user");
-            pw = readProperties(TCK_PROPERTIES).getProperty("tck.sql.pw");
+        connectionStr = getTestSystemProperty("tck.sql.connection");
+        user = getTestSystemProperty("tck.sql.user");
+        pw = getTestSystemProperty("tck.sql.pw");
 
-            if (connectionStr == null && isRequired("initConnectionProperties", "tck.sql.connection")) {
-                throw new IllegalStateException("-Dtck.sql.connection is not defined.");
-            }
-            if (user == null && isRequired("initConnectionProperties", "tck.sql.user")) {
-                throw new IllegalStateException("-Dtck.sql.user is not defined.");
-            }
-            if (pw == null) {
-                pw = "";
-            }
-        } catch (IOException ioe) {
-            throw new IllegalStateException(ioe);
+        if (connectionStr == null && isRequired("initConnectionProperties", "tck.sql.connection")) {
+            throw new IllegalStateException("-Dtck.sql.connection is not defined.");
+        }
+        if (user == null && isRequired("initConnectionProperties", "tck.sql.user")) {
+            throw new IllegalStateException("-Dtck.sql.user is not defined.");
+        }
+        if (pw == null) {
+            pw = "";
         }
 
         log.info("tck.sql.connection = " + connectionStr);

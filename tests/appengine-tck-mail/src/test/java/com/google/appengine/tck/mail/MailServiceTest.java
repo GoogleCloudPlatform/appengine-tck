@@ -345,7 +345,7 @@ public class MailServiceTest extends MailTestBase {
     }
 
     private String getAdminEmail() {
-        String adminTestingAccount = getTestSystemProperty("appengine.adminTestingAccount.email", null);
+        String adminTestingAccount = getTestSystemProperty("appengine.adminTestingAccount.email");
         if (adminTestingAccount == null) {
             throw new IllegalStateException("-Dappengine.adminTestingAccount.email is not defined.");
         }
@@ -486,18 +486,6 @@ public class MailServiceTest extends MailTestBase {
         String gateway = getTestSystemProperty("tck.mail.gateway", "appspotmail.com");
         log.info("tck.mail.gateway = " + gateway);
         return gateway;
-    }
-
-    private String getTestSystemProperty(String key, String defaultValue) {
-        try {
-            String value = readProperties(TCK_PROPERTIES).getProperty(key);
-            if (value == null) {
-                value = defaultValue;
-            }
-            return value;
-        } catch (IOException ioe) {
-            throw new IllegalStateException(ioe);
-        }
     }
 
     private MimeProperties pollForMail() {
