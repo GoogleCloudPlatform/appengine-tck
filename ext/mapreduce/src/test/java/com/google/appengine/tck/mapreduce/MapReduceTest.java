@@ -93,8 +93,9 @@ public class MapReduceTest extends MapReduceTestBase {
         int[] chars = toChars(payloads);
         Counters counters = result.getCounters();
         for (int i = 0; i < chars.length; i++) {
-            Counter c = counters.getCounter(CountMapper.toKey((char) ('a' + i)));
-            Assert.assertEquals(chars[i], c.getValue());
+            char ch = (char) ('a' + i);
+            Counter c = counters.getCounter(CountMapper.toKey(ch));
+            Assert.assertEquals(String.format("Invalid count for '%s'.", ch), chars[i], c.getValue());
         }
     }
 
