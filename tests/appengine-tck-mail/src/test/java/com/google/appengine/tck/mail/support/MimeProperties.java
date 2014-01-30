@@ -15,9 +15,13 @@
 
 package com.google.appengine.tck.mail.support;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.Text;
-import com.google.appengine.tck.temp.AbstractTempData;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.mail.Address;
 import javax.mail.BodyPart;
@@ -26,13 +30,9 @@ import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.MimeMessage;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.Text;
+import com.google.appengine.tck.temp.AbstractTempData;
 
 /**
  * Save the state of a MimeMessage that was received on MailHandlerServlet so it can be
@@ -102,18 +102,17 @@ public class MimeProperties extends AbstractTempData implements Serializable {
                 }
             }
 
-        } catch (MessagingException me) {
+        } catch (MessagingException | IOException me) {
             throw new IllegalStateException(me);
-        } catch (IOException ioe) {
-            throw new IllegalStateException(ioe);
         }
     }
 
     private String getContentAsString(BodyPart bodyPart) throws IOException, MessagingException {
         byte[] buf = new byte[bodyPart.getSize()];
-        DataInputStream din = new DataInputStream(bodyPart.getInputStream());
-        din.readFully(buf);
-        return new String(buf);
+        try (DataInputStream din = new DataInputStream(bodyPart.getInputStream())) {
+            din.readFully(buf);
+            return new String(buf);
+        }
     }
 
     public String subject = BLANK;  // use as key
