@@ -21,8 +21,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -32,31 +32,28 @@ import javax.servlet.http.HttpServletRequest;
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 public class RequestData implements Serializable {
-
     private byte[] body;
-    private Map<String, String> headers = new HashMap<String, String>();
+    private Map<String, String> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public RequestData(HttpServletRequest req) throws IOException {
         storeHeaders(req);
         storeBody(req);
     }
 
+    @SuppressWarnings("unchecked")
     private void storeHeaders(HttpServletRequest req) {
         Enumeration<String> headerNames = req.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String header = headerNames.nextElement();
-            headers.put(header, req.getHeader(header));
+            headers.put(header.toLowerCase(), req.getHeader(header));
         }
     }
 
     private void storeBody(HttpServletRequest req) throws IOException {
-        ServletInputStream in = req.getInputStream();
-        try {
+        try (ServletInputStream in = req.getInputStream()) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             copyStream(in, baos);
             body = baos.toByteArray();
-        } finally {
-            in.close();
         }
     }
 
