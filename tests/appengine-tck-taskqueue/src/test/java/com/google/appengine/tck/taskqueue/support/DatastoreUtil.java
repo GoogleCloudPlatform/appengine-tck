@@ -17,15 +17,14 @@ package com.google.appengine.tck.taskqueue.support;
 
 import java.io.Serializable;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -41,9 +40,11 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Taskqueue tests store results in Datastore.  This class has helper methods
  * to read/write for test verification.
+ *
+ * @author Hannah
+ * @author Ales Justin
  */
 public class DatastoreUtil implements Serializable {
-
     private final String testRunId;
     private final String entityName;
 
@@ -53,7 +54,7 @@ public class DatastoreUtil implements Serializable {
     }
 
     public Map<String, String> createParamMap(String testMethodTag) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         map.put(TEST_RUN_ID, this.testRunId);
         map.put(TEST_METHOD_TAG, testMethodTag);
         return map;
@@ -90,30 +91,21 @@ public class DatastoreUtil implements Serializable {
     }
 
     public void purgeTestRunRecords() {
-        DatastoreService datastoreService = DatastoreServiceFactory.
-            getDatastoreService();
-        FilterPredicate testRunFilter = new FilterPredicate(TEST_RUN_ID,
-            FilterOperator.EQUAL, testRunId);
-        Query query = new Query(entityName)
-            .setFilter(testRunFilter);
+        DatastoreService datastoreService = DatastoreServiceFactory. getDatastoreService();
+        FilterPredicate testRunFilter = new FilterPredicate(TEST_RUN_ID, FilterOperator.EQUAL, testRunId);
+        Query query = new Query(entityName).setFilter(testRunFilter);
         for (Entity readRec : datastoreService.prepare(query).asIterable()) {
             datastoreService.delete(readRec.getKey());
         }
     }
 
     private CompositeFilter getTestMethodFilter(String testMethodTag) {
-        FilterPredicate method = new FilterPredicate(TEST_METHOD_TAG,
-            FilterOperator.EQUAL, testMethodTag);
-        FilterPredicate testRunFilter = new FilterPredicate(TEST_RUN_ID,
-            FilterOperator.EQUAL, testRunId);
-        CompositeFilter runMethod = CompositeFilterOperator.and(testRunFilter,
-            method);
-        return runMethod;
+        FilterPredicate method = new FilterPredicate(TEST_METHOD_TAG, FilterOperator.EQUAL, testMethodTag);
+        FilterPredicate testRunFilter = new FilterPredicate(TEST_RUN_ID, FilterOperator.EQUAL, testRunId);
+        return CompositeFilterOperator.and(testRunFilter, method);
     }
 
-    public Entity waitForTaskThenFetchEntity(int waitIntervalSecs, int retryMax,
-                                             String testMethodTag) {
-
+    public Entity waitForTaskThenFetchEntity(int waitIntervalSecs, int retryMax, String testMethodTag) {
         long waitIntervalMilliSecs = waitIntervalSecs * 1000;
         Entity entity;
 
@@ -127,31 +119,27 @@ public class DatastoreUtil implements Serializable {
         return null;
     }
 
-    private Entity fetchEntity(String testMethodTag) {
-        DatastoreService datastoreService = DatastoreServiceFactory.
-            getDatastoreService();
-        Query query = new Query(entityName);
-        query.setFilter(getTestMethodFilter(testMethodTag));
-        FetchOptions fo = FetchOptions.Builder.withDefaults();
-        return datastoreService.prepare(query).asSingleEntity();
-    }
-
     private void sleep(long milliSecs) {
         try {
             Thread.sleep(milliSecs);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(e);
         }
     }
 
-    public void assertTaskParamsMatchEntityProperties(Map<String, String> paramMap,
-                                                      Entity entity) {
-        String paramName;
-        String expectedParamValue;
+    private Entity fetchEntity(String testMethodTag) {
+        DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
+        Query query = new Query(entityName);
+        query.setFilter(getTestMethodFilter(testMethodTag));
+        return datastoreService.prepare(query).asSingleEntity();
+    }
+
+    public void assertTaskParamsMatchEntityProperties(Map<String, String> paramMap, Entity entity) {
         assertNotNull("Entity doesn't exist. Task probably didn't execute.", entity);
         for (Map.Entry<String, String> entry : paramMap.entrySet()) {
-            paramName = entry.getKey();
-            expectedParamValue = entry.getValue();
+            String paramName = entry.getKey();
+            String expectedParamValue = entry.getValue();
             String errMsg = "Parameter or Header passed to Task not expected.";
             assertEquals(errMsg, expectedParamValue, entity.getProperty(paramName));
         }

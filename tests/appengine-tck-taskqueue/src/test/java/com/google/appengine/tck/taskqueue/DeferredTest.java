@@ -15,8 +15,8 @@
 
 package com.google.appengine.tck.taskqueue;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.google.appengine.api.NamespaceManager;
 import com.google.appengine.api.datastore.Entity;
@@ -99,8 +99,10 @@ public class DeferredTest extends QueueTestBase {
         QueueFactory.getQueue(E2E_TESTING_DEFERRED).add(taskOptions);
         Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
 
-        Map<String, String> expectedMap = new HashMap<String, String>(paramMap);
+        Map<String, String> expectedMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        expectedMap.putAll(paramMap);
         expectedMap.put("X-AppEngine-TaskName", taskName);
+
         dsUtil.assertTaskParamsMatchEntityProperties(expectedMap, entity);
     }
 
@@ -118,8 +120,10 @@ public class DeferredTest extends QueueTestBase {
         QueueFactory.getQueue(E2E_TESTING_DEFERRED).add(taskOptions);
         Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
 
-        Map<String, String> expectedMap = new HashMap<String, String>(paramMap);
+        Map<String, String> expectedMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        expectedMap.putAll(paramMap);
         expectedMap.put("X-AppEngine-Current-Namespace", specifiedNameSpace);
+
         dsUtil.assertTaskParamsMatchEntityProperties(expectedMap, entity);
     }
 }
