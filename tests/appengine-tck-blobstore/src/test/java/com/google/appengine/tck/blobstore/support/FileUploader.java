@@ -18,16 +18,20 @@ package com.google.appengine.tck.blobstore.support;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.junit.Assert;
 
 /**
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
@@ -44,15 +48,27 @@ public class FileUploader {
     }
 
     public String getUploadUrl(URL url, Method method) throws URISyntaxException, IOException {
+        return getUploadUrl(url, method, Collections.<String, String>emptyMap());
+    }
+
+    public String getUploadUrl(URL url, Map<String, String> params) throws URISyntaxException, IOException {
+        return getUploadUrl(url, Method.POST, params);
+    }
+
+    private String getUploadUrl(URL url, Method method, Map<String, String> params) throws URISyntaxException, IOException {
+        URIBuilder builder = new URIBuilder(url.toURI());
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            builder.addParameter(entry.getKey(), entry.getValue());
+        }
         HttpClient httpClient = new DefaultHttpClient();
         try {
             HttpUriRequest request;
             switch (method) {
                 case GET:
-                    request = new HttpGet(url.toURI());
+                    request = new HttpGet(builder.build());
                     break;
                 case POST:
-                    request = new HttpPost(url.toURI());
+                    request = new HttpPost(builder.build());
                     break;
                 default:
                     throw new IllegalArgumentException(String.format("No such method: %s", method));
@@ -65,6 +81,10 @@ public class FileUploader {
     }
 
     public String uploadFile(String uri, String partName, String filename, String mimeType, byte[] contents) throws URISyntaxException, IOException {
+        return uploadFile(uri, partName, filename, mimeType, contents, 200);
+    }
+
+    public String uploadFile(String uri, String partName, String filename, String mimeType, byte[] contents, int expectedResponseCode) throws URISyntaxException, IOException {
         HttpClient httpClient = new DefaultHttpClient();
         try {
             HttpPost post = new HttpPost(uri);
@@ -72,9 +92,11 @@ public class FileUploader {
             ByteArrayBody contentBody = new ByteArrayBody(contents, mimeType, filename);
             entity.addPart(partName, contentBody);
             post.setEntity(entity);
-
             HttpResponse response = httpClient.execute(post);
-            return EntityUtils.toString(response.getEntity());
+            String result = EntityUtils.toString(response.getEntity());
+            int statusCode = response.getStatusLine().getStatusCode();
+            Assert.assertEquals(String.format("Invalid response code, %s", statusCode), expectedResponseCode, statusCode);
+            return result;
         } finally {
             httpClient.getConnectionManager().shutdown();
         }

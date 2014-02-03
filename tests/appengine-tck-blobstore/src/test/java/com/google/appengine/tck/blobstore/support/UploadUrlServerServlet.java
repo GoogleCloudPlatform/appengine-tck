@@ -41,7 +41,27 @@ public class UploadUrlServerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         BlobstoreService blobstore = BlobstoreServiceFactory.getBlobstoreService();
-        response.getWriter().println(blobstore.createUploadUrl("/uploadHandler", UploadOptions.Builder.withMaxUploadSizeBytes(Long.MAX_VALUE - 1)));
+        response.getWriter().println(blobstore.createUploadUrl("/uploadHandler", parseOptions(request)));
     }
 
+    protected UploadOptions parseOptions(HttpServletRequest request) {
+        UploadOptions options = UploadOptions.Builder.withDefaults();
+
+        String maxPerBlob = request.getParameter("max_per_blob");
+        if (maxPerBlob != null) {
+            options.maxUploadSizeBytesPerBlob(Long.parseLong(maxPerBlob));
+        }
+
+        String maxAll = request.getParameter("max_all");
+        if (maxAll != null) {
+            options.maxUploadSizeBytes(Long.parseLong(maxAll));
+        }
+
+        String bucketName = request.getParameter("bucket_name");
+        if (bucketName != null) {
+            options.googleStorageBucketName(bucketName);
+        }
+
+        return options;
+    }
 }

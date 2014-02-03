@@ -18,6 +18,8 @@ package com.google.appengine.tck.blobstore;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.Collections;
+import java.util.Random;
 
 import com.google.appengine.api.blobstore.BlobInfo;
 import com.google.appengine.api.blobstore.BlobKey;
@@ -32,6 +34,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -45,6 +48,7 @@ import static org.junit.Assert.assertNull;
  */
 @RunWith(Arquillian.class)
 public class BlobstoreUploadTest extends BlobstoreTestBase {
+    private static Random RANDOM = new Random();
 
     @Test
     @RunAsClient
@@ -103,6 +107,40 @@ public class BlobstoreUploadTest extends BlobstoreTestBase {
         assertNull("fileInfo should be null", UploadHandlerServlet.getLastUploadedFileInfo());
     }
 
+    @Test
+    @RunAsClient
+    @InSequence(60)
+    public void testMaxPerBlob(@ArquillianResource URL url) throws Exception {
+        FileUploader fileUploader = new FileUploader();
+        // 5 is smaller then content's length
+        String uploadUrl = fileUploader.getUploadUrl(new URL(url, "getUploadUrl"), Collections.singletonMap("max_per_blob", "5"));
+        fileUploader.uploadFile(uploadUrl, "file", getRandomName(), CONTENT_TYPE, UPLOADED_CONTENT, 413);
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(70)
+    public void testMaxAll(@ArquillianResource URL url) throws Exception {
+        FileUploader fileUploader = new FileUploader();
+        // 5 is smaller then content's length
+        String uploadUrl = fileUploader.getUploadUrl(new URL(url, "getUploadUrl"), Collections.singletonMap("max_all", "5"));
+        fileUploader.uploadFile(uploadUrl, "file", getRandomName(), CONTENT_TYPE, UPLOADED_CONTENT, 413);
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(80)
+    public void testBucketName(@ArquillianResource URL url) throws Exception {
+        FileUploader fileUploader = new FileUploader();
+        String uploadUrl = fileUploader.getUploadUrl(new URL(url, "getUploadUrl"), Collections.singletonMap("bucket_name", "TheBucket"));
+        String blobKey = fileUploader.uploadFile(uploadUrl, "file", getRandomName(), CONTENT_TYPE, UPLOADED_CONTENT);
+        Assert.assertTrue(String.format("Received blobKey '%s'", blobKey), blobKey.contains("gs")); // TODO -- better way?
+    }
+
+    private static String getRandomName() {
+        return String.format("file%s.txt", Math.abs(RANDOM.nextInt()));
+    }
+
     private String getFileContents(BlobKey blobKey) throws IOException {
         AppEngineFile file = getAppEngineFile(blobKey);
         return getFileContents(file);
@@ -114,11 +152,8 @@ public class BlobstoreUploadTest extends BlobstoreTestBase {
     }
 
     private String getFileContents(AppEngineFile file) throws IOException {
-        FileReadChannel channel = FileServiceFactory.getFileService().openReadChannel(file, true);
-        try {
+        try (FileReadChannel channel = FileServiceFactory.getFileService().openReadChannel(file, true)) {
             return getStringFromChannel(channel, 1000);
-        } finally {
-            channel.close();
         }
     }
 
