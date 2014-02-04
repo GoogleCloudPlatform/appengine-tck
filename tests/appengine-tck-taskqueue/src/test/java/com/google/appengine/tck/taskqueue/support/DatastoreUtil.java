@@ -60,9 +60,7 @@ public class DatastoreUtil implements Serializable {
         return map;
     }
 
-    public void addRequestToDataStore(HttpServletRequest req,
-                                      Map<String, String> testParameters) {
-
+    public void addRequestToDataStore(HttpServletRequest req, Map<String, String> testParameters) {
         Entity queueRec = new Entity(entityName);
         queueRec.setProperty(EXECUTED_AT, System.currentTimeMillis());
 
@@ -137,11 +135,15 @@ public class DatastoreUtil implements Serializable {
 
     public void assertTaskParamsMatchEntityProperties(Map<String, String> paramMap, Entity entity) {
         assertNotNull("Entity doesn't exist. Task probably didn't execute.", entity);
+        final String errMsg = "Parameter or Header passed to Task not expected.";
         for (Map.Entry<String, String> entry : paramMap.entrySet()) {
             String paramName = entry.getKey();
             String expectedParamValue = entry.getValue();
-            String errMsg = "Parameter or Header passed to Task not expected.";
-            assertEquals(errMsg, expectedParamValue, entity.getProperty(paramName));
+            Object actualValue = entity.getProperty(paramName);
+            if (actualValue == null) {
+                actualValue = entity.getProperty(paramName.toLowerCase());
+            }
+            assertEquals(errMsg, expectedParamValue, actualValue);
         }
     }
 }
