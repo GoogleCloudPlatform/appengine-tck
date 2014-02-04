@@ -22,6 +22,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>gcsHandler</servlet-name>
+        <servlet-class>com.google.appengine.tck.blobstore.support.GcsHandlerServlet</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>serveHandler</servlet-name>
         <servlet-class>com.google.appengine.tck.blobstore.support.BlobserviceServeServlet</servlet-class>
     </servlet>
@@ -34,6 +39,11 @@
     <servlet-mapping>
         <servlet-name>uploadHandler</servlet-name>
         <url-pattern>/uploadHandler</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>gcsHandler</servlet-name>
+        <url-pattern>/gcsHandler</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

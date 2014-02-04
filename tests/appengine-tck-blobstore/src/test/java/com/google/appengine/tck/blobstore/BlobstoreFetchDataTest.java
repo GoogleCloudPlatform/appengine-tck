@@ -31,7 +31,7 @@ import static org.junit.Assert.fail;
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 @RunWith(Arquillian.class)
-public class BlobstoreFetchDataTest extends BlobstoreTestBase {
+public class BlobstoreFetchDataTest extends SimpleBlobstoreTestBase {
 
     private BlobstoreService blobstore;
     private BlobKey blobKey;

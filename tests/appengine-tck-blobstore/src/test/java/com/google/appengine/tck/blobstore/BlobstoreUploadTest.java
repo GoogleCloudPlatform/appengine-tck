@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import com.google.appengine.api.blobstore.BlobInfo;
@@ -47,7 +49,7 @@ import static org.junit.Assert.assertNull;
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 @RunWith(Arquillian.class)
-public class BlobstoreUploadTest extends BlobstoreTestBase {
+public class BlobstoreUploadTest extends SimpleBlobstoreTestBase {
     private static Random RANDOM = new Random();
 
     @Test
@@ -135,6 +137,19 @@ public class BlobstoreUploadTest extends BlobstoreTestBase {
         String uploadUrl = fileUploader.getUploadUrl(new URL(url, "getUploadUrl"), Collections.singletonMap("bucket_name", "TheBucket"));
         String blobKey = fileUploader.uploadFile(uploadUrl, "file", getRandomName(), CONTENT_TYPE, UPLOADED_CONTENT);
         Assert.assertTrue(String.format("Received blobKey '%s'", blobKey), blobKey.contains("gs")); // TODO -- better way?
+    }
+
+    @Test
+    @RunAsClient
+    @InSequence(90)
+    public void testGcs(@ArquillianResource URL url) throws Exception {
+        FileUploader fileUploader = new FileUploader();
+        Map<String, String> params = new HashMap<>();
+        params.put("bucket_name", "GcsBucket");
+        params.put("successPath", "gcsHandler");
+        String uploadUrl = fileUploader.getUploadUrl(new URL(url, "getUploadUrl"), params);
+        String result = fileUploader.uploadFile(uploadUrl, "file", getRandomName(), CONTENT_TYPE, "GcsTest".getBytes());
+        Assert.assertEquals("GcsTest_123", result);
     }
 
     private static String getRandomName() {

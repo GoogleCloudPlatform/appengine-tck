@@ -35,13 +35,18 @@ public class UploadUrlServerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         BlobstoreService blobstore = BlobstoreServiceFactory.getBlobstoreService();
-        response.getWriter().println(blobstore.createUploadUrl("/uploadHandler"));
+        response.getWriter().println(blobstore.createUploadUrl(parseSuccessPath(request)));
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         BlobstoreService blobstore = BlobstoreServiceFactory.getBlobstoreService();
-        response.getWriter().println(blobstore.createUploadUrl("/uploadHandler", parseOptions(request)));
+        response.getWriter().println(blobstore.createUploadUrl(parseSuccessPath(request), parseOptions(request)));
+    }
+
+    protected String parseSuccessPath(HttpServletRequest request) {
+        String successPath = request.getParameter("successPath");
+        return (successPath != null) ? "/" + successPath : "/uploadHandler";
     }
 
     protected UploadOptions parseOptions(HttpServletRequest request) {

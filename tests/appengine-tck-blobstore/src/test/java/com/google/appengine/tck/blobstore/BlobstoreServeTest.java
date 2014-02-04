@@ -41,7 +41,7 @@ import org.junit.runner.RunWith;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
-public class BlobstoreServeTest extends BlobstoreTestBase {
+public class BlobstoreServeTest extends SimpleBlobstoreTestBase {
     @Test
     @RunAsClient
     public void testUploadedFileHasCorrectContent_upload(@ArquillianResource URL url) throws Exception {

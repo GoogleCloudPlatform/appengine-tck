@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 @RunWith(Arquillian.class)
-public class BlobInputStreamTest extends BlobstoreTestBase {
+public class BlobInputStreamTest extends SimpleBlobstoreTestBase {
 
     @Test
     public void testBlobInputStream() throws Exception {

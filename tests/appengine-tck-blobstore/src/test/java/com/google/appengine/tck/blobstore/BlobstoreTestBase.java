@@ -28,11 +28,11 @@ import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.blobstore.support.BlobserviceServeServlet;
 import com.google.appengine.tck.blobstore.support.FileUploader;
+import com.google.appengine.tck.blobstore.support.GcsHandlerServlet;
 import com.google.appengine.tck.blobstore.support.IOUtils;
 import com.google.appengine.tck.blobstore.support.ServeBlobServlet;
 import com.google.appengine.tck.blobstore.support.UploadHandlerServlet;
 import com.google.appengine.tck.blobstore.support.UploadUrlServerServlet;
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /**
@@ -66,12 +66,12 @@ public class BlobstoreTestBase extends TestBase {
         }
     }
 
-    @Deployment
-    public static WebArchive getDeployment() {
+    protected static WebArchive getBaseDeployment() {
         TestContext testContext = new TestContext().setWebXmlFile("blob_web.xml");
         return getTckDeployment(testContext)
             .addClass(BlobstoreTestBase.class)
             .addClass(IOUtils.class)
+            .addClass(GcsHandlerServlet.class)
             .addClass(FileUploader.class)
             .addClass(ServeBlobServlet.class)
             .addClass(UploadUrlServerServlet.class)

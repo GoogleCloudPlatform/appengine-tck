@@ -35,7 +35,7 @@ import static org.junit.Assert.assertNull;
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 @RunWith(Arquillian.class)
-public class BlobstoreTest extends BlobstoreTestBase {
+public class BlobstoreTest extends SimpleBlobstoreTestBase {
 
     @Test
     @RunAsClient
