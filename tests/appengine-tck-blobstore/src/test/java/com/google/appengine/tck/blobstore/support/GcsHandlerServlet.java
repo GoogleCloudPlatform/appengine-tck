@@ -18,10 +18,9 @@ package com.google.appengine.tck.blobstore.support;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,7 +40,7 @@ public class GcsHandlerServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         BlobstoreService blobstore = BlobstoreServiceFactory.getBlobstoreService();
-        FileInfo info = getFirst(blobstore.getFileInfos(request));
+        FileInfo info = UploadHandlerServlet.getFirst(blobstore.getFileInfos(request), false);
         String gsObjectName = info.getGsObjectName();
 
         GcsService service = GcsServiceFactory.createGcsService();
@@ -51,18 +50,10 @@ public class GcsHandlerServlet extends HttpServlet {
         if (metadata == null) {
             throw new IllegalStateException("Null GCS metadata: " + filename);
         }
+        ServletOutputStream outputStream = response.getOutputStream();
         try (InputStream inputStream = Channels.newInputStream(service.openReadChannel(metadata.getFilename(), 0))) {
-            IOUtils.copyStream(inputStream, response.getOutputStream());
+            IOUtils.copyStream(inputStream, outputStream);
         }
-        response.getWriter().write("_123");
-    }
-
-    private <E> E getFirst(Map<String, List<E>> map) {
-        for (Map.Entry<String, List<E>> entry : map.entrySet()) {
-            if (!entry.getValue().isEmpty()) {
-                return entry.getValue().get(0);
-            }
-        }
-        throw new IllegalStateException("Empty map!");
+        outputStream.write("_123".getBytes());
     }
 }

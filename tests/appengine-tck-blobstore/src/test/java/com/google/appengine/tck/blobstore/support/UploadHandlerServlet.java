@@ -54,13 +54,21 @@ public class UploadHandlerServlet extends HttpServlet {
         }
     }
 
-    private <E> E getFirst(Map<String, List<E>> map) {
+    static <E> E getFirst(Map<String, List<E>> map) {
+        return getFirst(map, true);
+    }
+
+    static <E> E getFirst(Map<String, List<E>> map, boolean allowNull) {
         for (Map.Entry<String, List<E>> entry : map.entrySet()) {
             if (!entry.getValue().isEmpty()) {
                 return entry.getValue().get(0);
             }
         }
-        return null;
+        if (allowNull) {
+            return null;
+        } else {
+            throw new IllegalStateException("Empty map!");
+        }
     }
 
     public static BlobKey getLastUploadedBlobKey() {
