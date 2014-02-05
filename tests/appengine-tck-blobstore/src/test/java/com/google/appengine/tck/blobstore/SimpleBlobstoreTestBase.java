@@ -25,6 +25,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 public class SimpleBlobstoreTestBase extends BlobstoreTestBase {
     @Deployment
     public static WebArchive getDeployment() {
-        return getBaseDeployment();
+        return getBaseDeployment().addClass(SimpleBlobstoreTestBase.class);
     }
 }

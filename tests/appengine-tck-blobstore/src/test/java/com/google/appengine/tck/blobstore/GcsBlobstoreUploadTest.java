@@ -35,10 +35,11 @@ import org.junit.runner.RunWith;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
-public class GcsBlobstoreUploadTest extends BlobstoreTestBase {
+public class GcsBlobstoreUploadTest extends BlobstoreUploadTestBase {
     @Deployment
     public static WebArchive getDeployment() {
         WebArchive war = getBaseDeployment();
+        war.addClass(BlobstoreUploadTestBase.class);
 
         LibUtils libUtils = new LibUtils();
         libUtils.addLibrary(war, "com.google.guava", "guava");
@@ -49,7 +50,7 @@ public class GcsBlobstoreUploadTest extends BlobstoreTestBase {
 
     @Test
     @RunAsClient
-    @InSequence(10)
+    @InSequence(90)
     public void testGcs(@ArquillianResource URL url) throws Exception {
         FileUploader fileUploader = new FileUploader();
         Map<String, String> params = new HashMap<>();
