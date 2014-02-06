@@ -343,15 +343,19 @@ public class TestBase {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
         final List<Entity> list = ds.prepare(new Query(kind)).asList(FetchOptions.Builder.withDefaults());
+        for (Entity e : list) {
+            deleteTempDataInTx(ds, e, type);
+        }
+    }
+
+    protected static void deleteTempDataInTx(DatastoreService ds, Entity entity, Class<? extends TempData> type) {
         Transaction txn = ds.beginTransaction(TransactionOptions.Builder.withXG(true));
         try {
-            for (Entity e : list) {
-                TempData data = type.newInstance();
-                data.fromProperties(e.getProperties());
-                data.preDelete(ds);
-                ds.delete(txn, e.getKey());
-                data.postDelete(ds);
-            }
+            TempData data = type.newInstance();
+            data.fromProperties(entity.getProperties());
+            data.preDelete(ds);
+            ds.delete(txn, entity.getKey());
+            data.postDelete(ds);
             txn.commit();
         } catch (Exception e) {
             throw new IllegalStateException(e);
