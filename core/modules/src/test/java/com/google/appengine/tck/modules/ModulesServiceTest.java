@@ -27,6 +27,7 @@ import org.jboss.arquillian.protocol.modules.OperateOnModule;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -35,6 +36,8 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 public class ModulesServiceTest extends ModulesTestBase {
+    private ModulesService service;
+
     @Deployment
     public static EnterpriseArchive getDeployment() {
         WebArchive module1 = getTckSubDeployment(1).addClass(ModulesServiceTest.class);
@@ -46,85 +49,104 @@ public class ModulesServiceTest extends ModulesTestBase {
         return getEarDeployment(module1, module2);
     }
 
+    @Before
+    public void setUp() {
+        service = ModulesServiceFactory.getModulesService();
+    }
+
     private static Set<String> toSet(String... strings) {
         return new HashSet<>(Arrays.asList(strings));
     }
 
     @Test
     public void testCurrentModule1() {
-        ModulesService service = ModulesServiceFactory.getModulesService();
         Assert.assertEquals("default", service.getCurrentModule());
     }
 
     @Test
     @OperateOnModule("m2")
     public void testCurrentModule2() {
-        ModulesService service = ModulesServiceFactory.getModulesService();
         Assert.assertEquals("m2", service.getCurrentModule());
     }
 
     @Test
     public void testCurrentVersion1() {
-        ModulesService service = ModulesServiceFactory.getModulesService();
         Assert.assertEquals("1", service.getCurrentVersion());
     }
 
     @Test
     @OperateOnModule("m2")
     public void testCurrentVersion2() {
-        ModulesService service = ModulesServiceFactory.getModulesService();
         Assert.assertEquals("1", service.getCurrentVersion());
     }
 
     @Test
+    public void testCurrentInstanceId1() {
+        String module = service.getCurrentModule();
+        String version = service.getCurrentVersion();
+        String id = service.getCurrentInstanceId();
+        Assert.assertNotNull(id);
+        String hostname = service.getInstanceHostname(module, version, id);
+        Assert.assertNotNull(hostname);
+    }
+
+    @Test
+    @OperateOnModule("m2")
+    public void testCurrentInstanceId2() {
+        String version = service.getCurrentVersion();
+        String id = service.getCurrentInstanceId();
+        Assert.assertNotNull(id);
+        String hostname = service.getInstanceHostname("m2", version, id);
+        Assert.assertNotNull(hostname);
+    }
+
+    @Test
     public void testDefaultVersion1() {
-        ModulesService service = ModulesServiceFactory.getModulesService();
         Assert.assertEquals("1", service.getDefaultVersion("default"));
     }
 
     @Test
     @OperateOnModule("m2")
     public void testDefaultVersion2() {
-        ModulesService service = ModulesServiceFactory.getModulesService();
         Assert.assertEquals("1", service.getDefaultVersion("m2"));
     }
 
     @Test
     public void testModules1() {
-        ModulesService service = ModulesServiceFactory.getModulesService();
         Assert.assertEquals(toSet("default", "m2"), service.getModules());
     }
 
     @Test
     @OperateOnModule("m2")
     public void testModules2() {
-        ModulesService service = ModulesServiceFactory.getModulesService();
         Assert.assertEquals(toSet("default", "m2"), service.getModules());
     }
 
     @Test
     public void testModuleInstances1() {
-        ModulesService service = ModulesServiceFactory.getModulesService();
         Assert.assertEquals(1L, service.getNumInstances("default", "1"));
     }
 
     @Test
     @OperateOnModule("m2")
     public void testModuleInstances2() {
-        ModulesService service = ModulesServiceFactory.getModulesService();
         Assert.assertEquals(1L, service.getNumInstances("m2", "1"));
     }
 
     @Test
     public void testModuleVersions1() {
-        ModulesService service = ModulesServiceFactory.getModulesService();
         Assert.assertEquals(toSet("1"), service.getVersions("m2"));
     }
 
     @Test
     @OperateOnModule("m2")
     public void testModuleVersions2() {
-        ModulesService service = ModulesServiceFactory.getModulesService();
         Assert.assertEquals(toSet("1"), service.getVersions("default"));
+    }
+
+    @Test
+    public void testVersionHostname() {
+        String hostname = service.getVersionHostname("m2", service.getCurrentVersion());
+        Assert.assertNotNull(hostname);
     }
 }
