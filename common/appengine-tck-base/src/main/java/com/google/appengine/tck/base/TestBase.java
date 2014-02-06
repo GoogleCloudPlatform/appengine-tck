@@ -277,7 +277,7 @@ public class TestBase {
                 entity.setProperty(entry.getKey(), entry.getValue());
             }
             data.prePut(ds);
-            Key key = ds.put(entity);
+            Key key = ds.put(txn, entity);
             data.postPut(ds);
             txn.commit();
             return key;
@@ -338,16 +338,17 @@ public class TestBase {
             return;
         }
 
+        String kind = getKind(type);
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
         Transaction txn = ds.beginTransaction(TransactionOptions.Builder.withXG(true));
         try {
-            String kind = getKind(type);
-            PreparedQuery pq = ds.prepare(new Query(kind));
+            PreparedQuery pq = ds.prepare(txn, new Query(kind));
             for (Entity e : pq.asIterable()) {
                 TempData data = type.newInstance();
                 data.fromProperties(e.getProperties());
                 data.preDelete(ds);
-                ds.delete(e.getKey());
+                ds.delete(txn, e.getKey());
                 data.postDelete(ds);
             }
             txn.commit();

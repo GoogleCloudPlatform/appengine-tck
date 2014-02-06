@@ -41,8 +41,7 @@ import com.google.appengine.tck.temp.AbstractTempData;
  * * @author terryok@google.com
  */
 public class MimeProperties extends AbstractTempData implements Serializable {
-
-    Logger log = Logger.getLogger(MimeProperties.class.getName());
+    static Logger log = Logger.getLogger(MimeProperties.class.getName());
 
     public static final String BLANK = "[Blank]";
 
@@ -54,7 +53,6 @@ public class MimeProperties extends AbstractTempData implements Serializable {
     }
 
     private void initWithMimeMessage(MimeMessage mime) {
-
         try {
             if (mime.getSubject() != null) {
                 subject = mime.getSubject();
@@ -134,12 +132,12 @@ public class MimeProperties extends AbstractTempData implements Serializable {
         map.put("cc", cc);
         map.put("bcc", bcc);
         map.put("replyTo", replyTo);
-        map.put("body", body);
+        map.put("body", new Text(body));
         map.put("multiPartsList", multiPartsList);
-        Text headersText = new Text(headers.toString());
-        map.put("headers", headersText);
+        map.put("headers", new Text(headers));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void fromPropertiesInternal(Map<String, Object> properties) {
         subject = (String) properties.get("subject");
@@ -148,10 +146,13 @@ public class MimeProperties extends AbstractTempData implements Serializable {
         cc = (String) properties.get("cc");
         bcc = (String) properties.get("bcc");
         replyTo = (String) properties.get("replyTo");
-        body = (String) properties.get("body");
+        body = fromText(properties.get("body"));
         multiPartsList = (List<String>) properties.get("multiPartsList");
-        Text headersText = (Text) properties.get("headers");
-        headers = headersText.getValue();
+        headers = fromText(properties.get("headers"));
+    }
+
+    private static String fromText(Object value) {
+        return Text.class.cast(value).getValue();
     }
 
     @Override

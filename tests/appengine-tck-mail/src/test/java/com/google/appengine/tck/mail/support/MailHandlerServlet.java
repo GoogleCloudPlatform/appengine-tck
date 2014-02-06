@@ -14,7 +14,12 @@
  */
 package com.google.appengine.tck.mail.support;
 
-import com.google.appengine.tck.base.TestBase;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -22,12 +27,8 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Properties;
-import java.util.logging.Logger;
+
+import com.google.appengine.tck.base.TestBase;
 
 /**
  * Handle incoming mail.
@@ -46,8 +47,8 @@ public class MailHandlerServlet extends HttpServlet {
         throws IOException {
 
         Session session = Session.getDefaultInstance(new Properties(), null);
-        MimeMessage message = null;
-        MimeProperties mp = null;
+        MimeMessage message;
+        MimeProperties mp;
         try {
             message = new MimeMessage(session, req.getInputStream());
             mp = new MimeProperties(message);
@@ -58,7 +59,7 @@ public class MailHandlerServlet extends HttpServlet {
             while (e.hasMoreElements()) {
                 String headerLine = (String) e.nextElement();
                 headers.add(headerLine);
-                sb.append("\n" + headerLine);
+                sb.append("\n").append(headerLine);
             }
             log.info("HEADERS: " + sb.toString());
 
