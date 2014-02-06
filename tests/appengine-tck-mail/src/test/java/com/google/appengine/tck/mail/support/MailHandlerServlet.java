@@ -36,22 +36,17 @@ import com.google.appengine.tck.base.TestBase;
  * @author terryok@google.com
  */
 public class MailHandlerServlet extends HttpServlet {
-
-    Logger log = Logger.getLogger(MailHandlerServlet.class.getName());
+    private static final Logger log = Logger.getLogger(MailHandlerServlet.class.getName());
 
     /**
      * Stores subject and headers into memcache for test to confirm mail delivery.
      */
     @Override
-    public void doPost(HttpServletRequest req, HttpServletResponse resp)
-        throws IOException {
-
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Session session = Session.getDefaultInstance(new Properties(), null);
-        MimeMessage message;
-        MimeProperties mp;
         try {
-            message = new MimeMessage(session, req.getInputStream());
-            mp = new MimeProperties(message);
+            MimeMessage message = new MimeMessage(session, req.getInputStream());
+            MimeProperties mp = new MimeProperties(message);
 
             List<String> headers = new ArrayList<>();
             StringBuilder sb = new StringBuilder();
@@ -65,9 +60,8 @@ public class MailHandlerServlet extends HttpServlet {
 
             mp.headers = headers.toString();
             TestBase.putTempData(mp);
-
         } catch (MessagingException me) {
-            log.severe("Error while processing email: " + me.toString());
+            throw new IOException("Error while processing email.", me);
         }
     }
 }
