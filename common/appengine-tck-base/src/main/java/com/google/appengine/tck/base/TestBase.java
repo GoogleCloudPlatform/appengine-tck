@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
@@ -341,10 +342,10 @@ public class TestBase {
         String kind = getKind(type);
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
+        final List<Entity> list = ds.prepare(new Query(kind)).asList(FetchOptions.Builder.withDefaults());
         Transaction txn = ds.beginTransaction(TransactionOptions.Builder.withXG(true));
         try {
-            PreparedQuery pq = ds.prepare(txn, new Query(kind));
-            for (Entity e : pq.asIterable()) {
+            for (Entity e : list) {
                 TempData data = type.newInstance();
                 data.fromProperties(e.getProperties());
                 data.preDelete(ds);
