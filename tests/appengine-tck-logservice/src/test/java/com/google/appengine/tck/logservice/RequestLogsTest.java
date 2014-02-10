@@ -279,6 +279,14 @@ public class RequestLogsTest extends LoggingTestBase {
 
     @Test
     @InSequence(20)
+    public void testModuleId() throws Exception {
+        RequestLogs requestLogs1 = getRequestLogs1();
+        String moduleId = requestLogs1.getModuleId();
+        assertEquals("default", moduleId);
+    }
+
+    @Test
+    @InSequence(20)
     public void testRequestId() throws Exception {
         assertEquals(getRequest1Id(), getRequestLogs1().getRequestId());
         assertEquals(getRequest2Id(), getRequestLogs2().getRequestId());
