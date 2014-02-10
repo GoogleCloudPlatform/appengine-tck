@@ -61,9 +61,6 @@ public class RequestLogsTest extends LoggingTestBase {
 
     public static final String USER_AGENT = "GAE TCK Test";
     public static final String REFERRER = "http://www.referrer.com/foo.html";
-    public static final String ENTITY_KIND = "RequestLogs";
-    public static final String ENTITY_NAME = "TimeData";
-    public static final String REQUEST_ID_PROPERTY = "requestId";
     public static final String REQUEST_1_ENTITY_NAME = "1";
     public static final String REQUEST_1_RESOURCE = "/index.jsp?entityName=" + REQUEST_1_ENTITY_NAME;
     public static final String REQUEST_2_ENTITY_NAME = "2";

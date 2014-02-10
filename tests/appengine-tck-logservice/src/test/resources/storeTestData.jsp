@@ -1,7 +1,7 @@
 <%@ page import="com.google.appengine.api.datastore.DatastoreService" %>
 <%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory" %>
 <%@ page import="com.google.appengine.api.datastore.Entity" %>
-<%@ page import="com.google.appengine.tck.logservice.RequestLogsTest" %>
+<%@ page import="com.google.appengine.tck.logservice.LoggingTestBase" %>
 <%--
   ~ Copyright 2013 Google Inc. All Rights Reserved.
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
   --%>
 <%
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Entity entity = new Entity(RequestLogsTest.ENTITY_KIND, RequestLogsTest.ENTITY_NAME);
+    Entity entity = new Entity(LoggingTestBase.ENTITY_KIND, LoggingTestBase.ENTITY_NAME);
     entity.setProperty("time1", Long.parseLong(request.getParameter("time1")));
     entity.setProperty("time2", Long.parseLong(request.getParameter("time2")));
     entity.setProperty("serverName", request.getServerName());
