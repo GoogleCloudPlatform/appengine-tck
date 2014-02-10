@@ -22,6 +22,7 @@ com.google.appengine.api.log.RequestLogs@setIp@(Ljava/lang/String;)V
 com.google.appengine.api.log.RequestLogs@setLatency@(J)V
 com.google.appengine.api.log.RequestLogs@setMcycles@(J)V
 com.google.appengine.api.log.RequestLogs@setMethod@(Ljava/lang/String;)V
+com.google.appengine.api.log.RequestLogs@setModuleId@(Ljava/lang/String;)V
 com.google.appengine.api.log.RequestLogs@setNickname@(Ljava/lang/String;)V
 com.google.appengine.api.log.RequestLogs@setOffset@(Ljava/lang/String;)V
 com.google.appengine.api.log.RequestLogs@setPendingTime@(J)V
