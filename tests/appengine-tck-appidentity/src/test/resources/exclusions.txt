@@ -1,0 +1,2 @@
+com.google.appengine.api.appidentity.AppIdentityService$GetAccessTokenResult@<init>@(Ljava/lang/String;Ljava/util/Date;)V
+

@@ -333,6 +333,27 @@ public class TestBase {
         }
     }
 
+    /**
+     * Poll for data.
+     *
+     * @param type the temp data type
+     * @param timeout timeout in seconds
+     * @return data or null, if no such data in timeout period
+     */
+    public <T extends TempData> T pollForTempData(Class<T> type, int timeout) {
+        int secondsElapsed = 0;
+
+        while (secondsElapsed <= timeout) {
+            T data = getLastTempData(type);
+            if (data != null) {
+                return data;
+            }
+            sync(1000);
+            secondsElapsed += 1;
+        }
+        return null;
+    }
+
     public static void deleteTempData(Class<? extends TempData> type) {
         // check if in-container
         if (isInContainer() == false) {

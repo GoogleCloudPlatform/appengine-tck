@@ -15,12 +15,23 @@
 
 package com.google.appengine.tck.blobstore;
 
+import java.io.ByteArrayInputStream;
 import java.net.URL;
+import java.nio.channels.Channels;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.tck.blobstore.support.FileUploader;
+import com.google.appengine.tck.blobstore.support.IOUtils;
 import com.google.appengine.tck.lib.LibUtils;
+import com.google.appengine.tools.cloudstorage.GcsFileOptions;
+import com.google.appengine.tools.cloudstorage.GcsFilename;
+import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
+import com.google.appengine.tools.cloudstorage.GcsService;
+import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -59,5 +70,24 @@ public class GcsBlobstoreUploadTest extends BlobstoreUploadTestBase {
         String uploadUrl = fileUploader.getUploadUrl(new URL(url, "getUploadUrl"), params);
         String result = fileUploader.uploadFile(uploadUrl, "file", String.format("abc%s.txt", System.currentTimeMillis()), CONTENT_TYPE, "GcsTest".getBytes());
         Assert.assertEquals("GcsTest_123", result);
+    }
+
+    @Test
+    @InSequence(100)
+    public void testCreateGsBlobKey() throws Exception {
+        final long ts = System.currentTimeMillis();
+        final byte[] bytes = "FooBar".getBytes();
+
+        GcsService service = GcsServiceFactory.createGcsService();
+        GcsFilename filename = new GcsFilename("GcsBucket", String.valueOf(ts));
+        GcsFileOptions options = new GcsFileOptions.Builder().mimeType(CONTENT_TYPE).build();
+        try (GcsOutputChannel out = service.createOrReplace(filename, options)) {
+            IOUtils.copy(Channels.newChannel(new ByteArrayInputStream(bytes)), out);
+        }
+
+        BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+        BlobKey key =  blobstoreService.createGsBlobKey("/gs/GcsBucket/" + ts);
+        byte[] fetched = blobstoreService.fetchData(key, 0, 10);
+        Assert.assertArrayEquals(bytes, fetched);
     }
 }

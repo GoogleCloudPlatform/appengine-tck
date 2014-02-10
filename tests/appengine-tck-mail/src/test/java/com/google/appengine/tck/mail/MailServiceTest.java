@@ -494,17 +494,7 @@ public class MailServiceTest extends MailTestBase {
     }
 
     private MimeProperties pollForMail() {
-        int secondsElapsed = 0;
-
-        while (secondsElapsed <= TIMEOUT_MAX) {
-            MimeProperties mp = getLastMimeProperties();
-            if (mp != null) {
-                return mp;
-            }
-            sync(2000);
-            secondsElapsed += 2;
-        }
-        return null;
+        return pollForTempData(MimeProperties.class, TIMEOUT_MAX);
     }
 
     private MailService.Message createMailServiceMessage(MimeProperties mp) {
