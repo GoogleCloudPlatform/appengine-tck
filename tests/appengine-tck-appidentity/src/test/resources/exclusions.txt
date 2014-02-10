@@ -1,2 +1,4 @@
 com.google.appengine.api.appidentity.AppIdentityService$GetAccessTokenResult@<init>@(Ljava/lang/String;Ljava/util/Date;)V
+com.google.appengine.api.appidentity.AppIdentityService$SigningResult@<init>@(Ljava/lang/String;[B)V
+com.google.appengine.api.appidentity.PublicCertificate@<init>@(Ljava/lang/String;Ljava/lang/String;)V
 

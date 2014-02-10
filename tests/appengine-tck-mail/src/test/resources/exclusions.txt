@@ -1,0 +1,2 @@
+com.google.appengine.api.mail.BounceNotificationParser@<init>@()V
+com.google.appengine.api.mail.MailServiceFactory@<init>@()V

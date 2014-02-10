@@ -1,0 +1,1 @@
+com.google.appengine.tools.cloudstorage.GcsFileMetadata@<init>@(Lcom/google/appengine/tools/cloudstorage/GcsFilename;Lcom/google/appengine/tools/cloudstorage/GcsFileOptions;Ljava/lang/String;J)V
