@@ -1,6 +1,21 @@
-<table>
-    <tr>
-        <td width="20%"><iframe src="modules.html" name="moduleListFrame" title="All Modules" seamless="seamless" scolling="no" /></td>
-        <td width="80%"><iframe src="tests/appengine-tck-appidentity/index.html" name="mainFrame" title="App Identity" scrolling="yes" seamless="seamless" /></td>
-    </tr>
-</table>
+<div class="row" style="height: 500px; min-height: 100%">
+    <div id="modules" class="col-md-2">
+    </div>
+    <div id="moduleCoverage" class="col-md-10" >
+    </div>
+    <script type="application/javascript">
+        $("#modules").load("/modules.html", function() {
+            $("a[target='mainFrame']").each(function() {
+                $(this).removeAttr('target');
+                $(this).attr('href', "javascript:loadModuleCoverage('" + $(this).attr('href') + "'); return false;");
+            });
+            $("#modules style").remove();
+        });
+        $("#moduleCoverage").load("/tests/appengine-tck-appidentity/index.html");
+
+        function loadModuleCoverage(url) {
+            $("#moduleCoverage").load(url);
+        }
+    </script>
+
+</div>

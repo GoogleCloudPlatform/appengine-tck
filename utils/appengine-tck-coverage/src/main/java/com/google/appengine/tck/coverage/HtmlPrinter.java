@@ -92,19 +92,19 @@ class HtmlPrinter implements Printer {
                 "    </style>\n" +
                 "</head>\n" +
                 "<body>");
-//            writer.write("<h1>GAE API Code Coverage</h1>");
-            writer.write("<h1>" + baseDir.getName() + "</h1>");
+//            writer.write("<h3>GAE API Code Coverage</h3>");
+            writer.write("<h3>" + baseDir.getName() + "</h3>");
             for (String iface : report.keySet()) {
                 writer.append("<div class=\"apiClass\">");
-                writer.append("<h2>").append(iface).append("</h2>");
-//                writer.append("<h2><a href=\"").append(classJavaDocUrl).append("\">").append(iface).append("</a></h2>");
+                writer.append("<h4>").append(iface).append("</h4>");
+//                writer.append("<h4><a href=\"").append(classJavaDocUrl).append("\">").append(iface).append("</a></h4>");
                 Map<Tuple, Set<CodeLine>> map = report.get(iface);
                 writer.write("<ul class=\"blockList\">");
                 for (Map.Entry<Tuple, Set<CodeLine>> entry : map.entrySet()) {
                     String methodSignature = SignatureConverter.convertMethodSignature(entry.getKey().getMethodName(), entry.getKey().getMethodDesc());
                     String fullMethodSignature = SignatureConverter.convertFullMethodSignature(entry.getKey().getMethodName(), entry.getKey().getMethodDesc());
                     String methodJavaDocUrl = "http://developers.google.com/appengine/docs/java/javadoc/" + iface.replace('.', '/').replace('$', '.') + "#" + methodSignature;
-                    writer.append("<li class=\"blockList\">").append("<a href=\"").append(methodJavaDocUrl).append("\" target=\"_top\">").append("<h3>").append(esc(fullMethodSignature)).append("</h3></a>");
+                    writer.append("<li class=\"blockList\">").append("<a href=\"").append(methodJavaDocUrl).append("\" target=\"_top\">").append("<h5>").append(esc(fullMethodSignature)).append("</h5></a>");
                     writer.append("<ul class=\"blockList\">");
                     Set<CodeLine> value = entry.getValue();
                     if (value.isEmpty()) {
