@@ -219,4 +219,7 @@ public abstract class LoggingTestBase extends TestBase {
         return System.currentTimeMillis() + "_" + rand;
     }
 
+    public static String getCurrentRequestId() {
+        return (String) ApiProxy.getCurrentEnvironment().getAttributes().get("com.google.appengine.runtime.request_log_id");
+    }
 }

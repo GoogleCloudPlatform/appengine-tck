@@ -33,7 +33,6 @@ import com.google.appengine.api.log.LogQuery;
 import com.google.appengine.api.log.RequestLogs;
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tck.event.Property;
-import com.google.apphosting.api.ApiProxy;
 import org.apache.commons.codec.binary.Base64;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -416,9 +415,5 @@ public class RequestLogsTest extends LoggingTestBase {
     private Entity getTestDataEntity() throws EntityNotFoundException {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         return datastore.get(KeyFactory.createKey(ENTITY_KIND, ENTITY_NAME));
-    }
-
-    private String getCurrentRequestId() {
-        return (String) ApiProxy.getCurrentEnvironment().getAttributes().get("com.google.appengine.runtime.request_log_id");
     }
 }
