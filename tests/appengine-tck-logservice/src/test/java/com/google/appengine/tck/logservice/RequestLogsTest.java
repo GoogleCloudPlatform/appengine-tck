@@ -33,7 +33,6 @@ import com.google.appengine.api.log.LogQuery;
 import com.google.appengine.api.log.RequestLogs;
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tck.event.Property;
-import com.google.apphosting.api.ApiProxy;
 import org.apache.commons.codec.binary.Base64;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -61,9 +60,6 @@ public class RequestLogsTest extends LoggingTestBase {
 
     public static final String USER_AGENT = "GAE TCK Test";
     public static final String REFERRER = "http://www.referrer.com/foo.html";
-    public static final String ENTITY_KIND = "RequestLogs";
-    public static final String ENTITY_NAME = "TimeData";
-    public static final String REQUEST_ID_PROPERTY = "requestId";
     public static final String REQUEST_1_ENTITY_NAME = "1";
     public static final String REQUEST_1_RESOURCE = "/index.jsp?entityName=" + REQUEST_1_ENTITY_NAME;
     public static final String REQUEST_2_ENTITY_NAME = "2";
@@ -283,6 +279,14 @@ public class RequestLogsTest extends LoggingTestBase {
 
     @Test
     @InSequence(20)
+    public void testModuleId() throws Exception {
+        RequestLogs requestLogs1 = getRequestLogs1();
+        String moduleId = requestLogs1.getModuleId();
+        assertEquals("default", moduleId);
+    }
+
+    @Test
+    @InSequence(20)
     public void testRequestId() throws Exception {
         assertEquals(getRequest1Id(), getRequestLogs1().getRequestId());
         assertEquals(getRequest2Id(), getRequestLogs2().getRequestId());
@@ -419,9 +423,5 @@ public class RequestLogsTest extends LoggingTestBase {
     private Entity getTestDataEntity() throws EntityNotFoundException {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         return datastore.get(KeyFactory.createKey(ENTITY_KIND, ENTITY_NAME));
-    }
-
-    private String getCurrentRequestId() {
-        return (String) ApiProxy.getCurrentEnvironment().getAttributes().get("com.google.appengine.runtime.request_log_id");
     }
 }

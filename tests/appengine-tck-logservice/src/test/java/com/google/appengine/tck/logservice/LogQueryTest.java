@@ -25,7 +25,6 @@ import com.google.appengine.api.log.LogQuery;
 import com.google.appengine.api.log.LogService;
 import com.google.appengine.api.log.LogServiceFactory;
 import com.google.appengine.api.log.RequestLogs;
-import com.google.apphosting.api.ApiProxy;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -182,7 +181,7 @@ public class LogQueryTest extends LoggingTestBase {
         long endMilliTime = System.currentTimeMillis() - 2000L;
         List<String> majorVersions = Arrays.asList("1", "2", "3");
         LogQuery logQuery =  new LogQuery()
-            .batchSize((int)batchSize)
+            .batchSize((int) batchSize)
             .startTimeMillis(startMilliTime)
             .endTimeMillis(endMilliTime)
             .minLogLevel(LogService.LogLevel.WARN)
@@ -191,9 +190,7 @@ public class LogQueryTest extends LoggingTestBase {
             .offset(null)
             .majorVersionIds(majorVersions);
 
-        // Execute the query
-        LogService service = LogServiceFactory.getLogService();
-        Iterator<RequestLogs> iterator = service.fetch(logQuery).iterator();
+        executeQuery(logQuery);
 
         // The LogQuery should be unmodified, so you can re-use.
         assertEquals(batchSize, (long)logQuery.getBatchSize());
@@ -207,9 +204,20 @@ public class LogQueryTest extends LoggingTestBase {
         assertEquals(null, logQuery.getOffset());
         assertEquals(majorVersions, logQuery.getMajorVersionIds());
         assertEquals(new ArrayList<String>(), logQuery.getRequestIds());
+
+        List<LogQuery.Version> versions = Arrays.asList(new LogQuery.Version("module1", "1"), new LogQuery.Version("module2", "3"));
+        logQuery =  new LogQuery()
+            .versions(versions)
+            .startTimeMillis(startMilliTime);
+
+        executeQuery(logQuery);
+
+        assertEquals(versions, logQuery.getVersions());
     }
 
-    private String getCurrentRequestId() {
-        return (String) ApiProxy.getCurrentEnvironment().getAttributes().get("com.google.appengine.runtime.request_log_id");
+    private void executeQuery(LogQuery logQuery) {
+        LogService service = LogServiceFactory.getLogService();
+        Iterator<RequestLogs> iterator = service.fetch(logQuery).iterator();
     }
+
 }

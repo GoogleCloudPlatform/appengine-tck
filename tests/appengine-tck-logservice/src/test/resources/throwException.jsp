@@ -1,8 +1,7 @@
 <%@ page import="com.google.appengine.api.datastore.DatastoreService" %>
 <%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory" %>
 <%@ page import="com.google.appengine.api.datastore.Entity" %>
-<%@ page import="com.google.appengine.tck.logservice.RequestLogsTest" %>
-<%@ page import="com.google.apphosting.api.ApiProxy" %>
+<%@ page import="com.google.appengine.tck.logservice.LoggingTestBase" %>
 <%--
   ~ Copyright 2013 Google Inc. All Rights Reserved.
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,11 +17,11 @@
   ~ limitations under the License.
   --%>
 <%
-    String requestId = (String) ApiProxy.getCurrentEnvironment().getAttributes().get("com.google.appengine.runtime.request_log_id");
+    String requestId = LoggingTestBase.getCurrentRequestId();
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Entity entity = new Entity(RequestLogsTest.ENTITY_KIND, request.getParameter("entityName"));
-    entity.setProperty(RequestLogsTest.REQUEST_ID_PROPERTY, requestId);
+    Entity entity = new Entity(LoggingTestBase.ENTITY_KIND, request.getParameter("entityName"));
+    entity.setProperty(LoggingTestBase.REQUEST_ID_PROPERTY, requestId);
     datastore.put(entity);
 
     throw new RuntimeException("test exception");

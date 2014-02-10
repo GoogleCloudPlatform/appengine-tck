@@ -52,6 +52,10 @@ import static org.junit.Assert.assertNull;
  */
 public abstract class LoggingTestBase extends TestBase {
 
+    public static final String ENTITY_KIND = "RequestLogs";
+    public static final String ENTITY_NAME = "TimeData";
+    public static final String REQUEST_ID_PROPERTY = "requestId";
+
     private boolean clearLogAfterEachTestMethod;
 
     public LoggingTestBase() {
@@ -215,4 +219,7 @@ public abstract class LoggingTestBase extends TestBase {
         return System.currentTimeMillis() + "_" + rand;
     }
 
+    public static String getCurrentRequestId() {
+        return (String) ApiProxy.getCurrentEnvironment().getAttributes().get("com.google.appengine.runtime.request_log_id");
+    }
 }

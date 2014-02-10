@@ -93,4 +93,22 @@ public class LoggingTest extends LoggingTestBase {
             logLine.toString().contains(logExpect));
     }
 
+    @Test
+    public void testLogLineTimeUsec() {
+        String logMark = getTimeStampRandom();
+
+        long beforeTimeUsec = System.currentTimeMillis() * 1000;
+        log.log(Level.INFO, "testLogLineTimeUsec " + logMark);
+        long afterTimeUsec = (System.currentTimeMillis() + 1) * 1000;
+        flush(log);
+        sync(7000);
+
+        int retryMax = 1;
+        AppLogLine logLine = findLogLineContaining(logMark, retryMax);
+        assertNotNull("log with " + logMark + " should exist.", logLine);
+
+        assertTrue("Expected logLine.getTimeUsec (" + logLine.getTimeUsec() + ") >= beforeTimeUsec (" + beforeTimeUsec + "), but it was not", logLine.getTimeUsec() >= beforeTimeUsec);
+        assertTrue("Expected logLine.getTimeUsec (" + logLine.getTimeUsec() + ") <= afterTimeUsec (" + afterTimeUsec + "), but it was not", logLine.getTimeUsec() <= beforeTimeUsec);
+    }
+
 }
