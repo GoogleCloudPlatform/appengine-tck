@@ -20,5 +20,8 @@ var appEngineTckApp = angular.
                 templateUrl: 'partials/appEngineTckReports.html',
                 controller: 'ReportsCtrl'
             }).
+            when('/coverage.html', {
+                templateUrl: 'partials/appEngineTckCoverage.html'
+            }).
             otherwise({ redirectTo: '/' });
     }]);
