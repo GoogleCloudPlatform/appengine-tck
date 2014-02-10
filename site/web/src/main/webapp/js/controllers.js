@@ -70,7 +70,7 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
     };
 
     $scope.lastTestReportsChart = {
-        type: 'LineChart',
+        type: 'AreaChart',
         displayed: true,
         cssStyle: 'height: 500px;',
         data: {
@@ -112,7 +112,8 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
                 title: 'Number of tests'
             },
             pointSize: 8,
-            displayExactValues: true
+            displayExactValues: true,
+            isStacked: true
         }
     };
 
