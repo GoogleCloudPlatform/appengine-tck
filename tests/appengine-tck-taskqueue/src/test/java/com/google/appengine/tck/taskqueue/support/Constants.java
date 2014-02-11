@@ -38,4 +38,7 @@ public class Constants {
     public static final String TEST_RUN_ID = "test_run_id";
     public static final String TEST_METHOD_TAG = "test_method_tag";
     public static final String EXECUTED_AT = "executed_at";
+
+    // Markers
+    public static final String MARKER = "_marker_";
 }

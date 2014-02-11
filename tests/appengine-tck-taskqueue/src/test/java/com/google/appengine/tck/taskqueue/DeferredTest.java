@@ -37,8 +37,8 @@ import static com.google.appengine.tck.taskqueue.support.Constants.ENTITY_DEFERR
  * Deferred Task Queue Test.
  *
  * @author hchen@google.com (Hannah Chen)
+ * @author Ales Justin (ales.justin@jboss.org)
  */
-
 @RunWith(Arquillian.class)
 public class DeferredTest extends QueueTestBase {
     private String testRunId;
@@ -125,5 +125,18 @@ public class DeferredTest extends QueueTestBase {
         expectedMap.put("X-AppEngine-Current-Namespace", specifiedNameSpace);
 
         dsUtil.assertTaskParamsMatchEntityProperties(expectedMap, entity);
+    }
+
+    @Test
+    public void testDeferredMarkForRetry() {
+        String testMethodTag = "testDeferredWithRetry";
+        Map<String, String> paramMap = dsUtil.createParamMap(testMethodTag);
+
+        TaskOptions taskOptions = TaskOptions.Builder.withPayload(ExecDeferred.markForRetry(dsUtil, paramMap));
+
+        QueueFactory.getQueue(E2E_TESTING_DEFERRED).add(taskOptions);
+        Entity entity = dsUtil.waitForTaskThenFetchEntity(waitInterval, retryMax, testMethodTag);
+
+        dsUtil.assertTaskParamsMatchEntityProperties(paramMap, entity);
     }
 }

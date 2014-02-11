@@ -30,8 +30,10 @@ import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Transaction;
 
 import static com.google.appengine.tck.taskqueue.support.Constants.EXECUTED_AT;
+import static com.google.appengine.tck.taskqueue.support.Constants.MARKER;
 import static com.google.appengine.tck.taskqueue.support.Constants.TEST_METHOD_TAG;
 import static com.google.appengine.tck.taskqueue.support.Constants.TEST_RUN_ID;
 import static org.junit.Assert.assertEquals;
@@ -85,22 +87,34 @@ public class DatastoreUtil implements Serializable {
             }
         }
 
-        DatastoreServiceFactory.getDatastoreService().put(queueRec);
+        saveEntity(queueRec);
+    }
+
+    public void putMarker(String marker) {
+        Entity entity = new Entity(entityName);
+        entity.setProperty(TEST_RUN_ID, testRunId);
+        entity.setProperty(EXECUTED_AT, System.currentTimeMillis());
+        entity.setProperty(MARKER, marker);
+
+        saveEntity(entity);
+    }
+
+    public Entity getMarker(String marker) {
+        DatastoreService service = DatastoreServiceFactory.getDatastoreService();
+        FilterPredicate testRunFilter = new FilterPredicate(TEST_RUN_ID, FilterOperator.EQUAL, testRunId);
+        FilterPredicate markerFilter = new FilterPredicate(MARKER, FilterOperator.EQUAL, marker);
+        CompositeFilter filter = CompositeFilterOperator.and(testRunFilter, markerFilter);
+        Query query = new Query(entityName).setFilter(filter);
+        return service.prepare(query).asSingleEntity();
     }
 
     public void purgeTestRunRecords() {
         DatastoreService datastoreService = DatastoreServiceFactory. getDatastoreService();
         FilterPredicate testRunFilter = new FilterPredicate(TEST_RUN_ID, FilterOperator.EQUAL, testRunId);
-        Query query = new Query(entityName).setFilter(testRunFilter);
+        Query query = new Query(entityName).setFilter(testRunFilter).setKeysOnly();
         for (Entity readRec : datastoreService.prepare(query).asIterable()) {
             datastoreService.delete(readRec.getKey());
         }
-    }
-
-    private CompositeFilter getTestMethodFilter(String testMethodTag) {
-        FilterPredicate method = new FilterPredicate(TEST_METHOD_TAG, FilterOperator.EQUAL, testMethodTag);
-        FilterPredicate testRunFilter = new FilterPredicate(TEST_RUN_ID, FilterOperator.EQUAL, testRunId);
-        return CompositeFilterOperator.and(testRunFilter, method);
     }
 
     public Entity waitForTaskThenFetchEntity(int waitIntervalSecs, int retryMax, String testMethodTag) {
@@ -117,6 +131,39 @@ public class DatastoreUtil implements Serializable {
         return null;
     }
 
+    public void assertTaskParamsMatchEntityProperties(Map<String, String> paramMap, Entity entity) {
+        assertNotNull("Entity doesn't exist. Task probably didn't execute.", entity);
+        final String errMsg = "Parameter or Header passed to Task not expected.";
+        for (Map.Entry<String, String> entry : paramMap.entrySet()) {
+            String paramName = entry.getKey();
+            String expectedParamValue = entry.getValue();
+            Object actualValue = entity.getProperty(paramName);
+            if (actualValue == null) {
+                actualValue = entity.getProperty(paramName.toLowerCase());
+            }
+            assertEquals(errMsg, expectedParamValue, actualValue);
+        }
+    }
+
+    private void saveEntity(Entity entity) {
+        DatastoreService service = DatastoreServiceFactory.getDatastoreService();
+        Transaction tx = service.beginTransaction();
+        try {
+            service.put(tx, entity);
+            tx.commit();
+        } finally {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+        }
+    }
+
+    private CompositeFilter getTestMethodFilter(String testMethodTag) {
+        FilterPredicate testRunFilter = new FilterPredicate(TEST_RUN_ID, FilterOperator.EQUAL, testRunId);
+        FilterPredicate method = new FilterPredicate(TEST_METHOD_TAG, FilterOperator.EQUAL, testMethodTag);
+        return CompositeFilterOperator.and(testRunFilter, method);
+    }
+
     private void sleep(long milliSecs) {
         try {
             Thread.sleep(milliSecs);
@@ -131,19 +178,5 @@ public class DatastoreUtil implements Serializable {
         Query query = new Query(entityName);
         query.setFilter(getTestMethodFilter(testMethodTag));
         return datastoreService.prepare(query).asSingleEntity();
-    }
-
-    public void assertTaskParamsMatchEntityProperties(Map<String, String> paramMap, Entity entity) {
-        assertNotNull("Entity doesn't exist. Task probably didn't execute.", entity);
-        final String errMsg = "Parameter or Header passed to Task not expected.";
-        for (Map.Entry<String, String> entry : paramMap.entrySet()) {
-            String paramName = entry.getKey();
-            String expectedParamValue = entry.getValue();
-            Object actualValue = entity.getProperty(paramName);
-            if (actualValue == null) {
-                actualValue = entity.getProperty(paramName.toLowerCase());
-            }
-            assertEquals(errMsg, expectedParamValue, actualValue);
-        }
     }
 }

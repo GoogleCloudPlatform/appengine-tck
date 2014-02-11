@@ -16,11 +16,13 @@
 package com.google.appengine.tck.taskqueue.support;
 
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.taskqueue.DeferredTaskContext;
 
@@ -31,19 +33,35 @@ import com.google.appengine.api.taskqueue.DeferredTaskContext;
  * @author ales.justin@jboss.org (Ales Justin)
  */
 public class ExecDeferred implements DeferredTask {
-
     private final Map<String, String> testParams;
     private final DatastoreUtil dsUtil;
+    private String marker; // retry marker
 
     public ExecDeferred(DatastoreUtil dsUtil, Map<String, String> testParameters) {
+        this(dsUtil, testParameters, null);
+    }
+
+    public static ExecDeferred markForRetry(DatastoreUtil dsUtil, Map<String, String> testParameters) {
+        return new ExecDeferred(dsUtil, testParameters, UUID.randomUUID().toString());
+    }
+
+    private ExecDeferred(DatastoreUtil dsUtil, Map<String, String> testParameters, String marker) {
         this.dsUtil = dsUtil;
         this.testParams = testParameters;
+        this.marker = marker;
     }
 
     @Override
     public void run() {
+        Entity entity = null;
+        if (marker != null) {
+            entity = dsUtil.getMarker(marker);
+        }
+
         HttpServletRequest req = DeferredTaskContext.getCurrentRequest();
-        dsUtil.addRequestToDataStore(req, testParams);
+        if (marker == null || entity != null) {
+            dsUtil.addRequestToDataStore(req, testParams);
+        }
 
         HttpServletResponse resp = DeferredTaskContext.getCurrentResponse();
         resp.setHeader("foo", "bar"); // try to do something more useful with response
@@ -52,6 +70,11 @@ public class ExecDeferred implements DeferredTask {
         String sn = servlet.getServletName();
         System.out.println("sn = " + sn);
 
-        DeferredTaskContext.setDoNotRetry(true);
+        if (marker != null && entity == null) {
+            DeferredTaskContext.markForRetry();
+            dsUtil.putMarker(marker);
+        } else {
+            DeferredTaskContext.setDoNotRetry(true);
+        }
     }
 }
