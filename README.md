@@ -16,6 +16,8 @@ or developers writing frameworks on top of GAE API, or simply using GAE API.
 
 e.g. the easiest way to file a bug against GAE API is to provide a valid failing test
 
+Visit our web site at http://www.appengine-tck.org for more info.
+
 License
 -------
 
