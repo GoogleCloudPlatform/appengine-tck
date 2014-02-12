@@ -152,6 +152,9 @@ public class BasicTest extends ProspectiveTestBase {
         service.subscribe(TOPIC, "mySubscription1", 0, "title:hello", createSchema("title", FieldType.STRING));
         service.subscribe(TOPIC, "mySubscription2", 0, "body:foo", createSchema("body", FieldType.STRING));
 
+        List<Subscription> subList = service.listSubscriptions(TOPIC, "", 1, 0);
+        assertEquals(1, subList.size());
+
         List<Subscription> subscriptions = service.listSubscriptions(TOPIC);
         assertEquals(2, subscriptions.size());
 
