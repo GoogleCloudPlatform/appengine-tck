@@ -47,8 +47,13 @@ public class EntityCreator extends Mapper<Long, Void, Void> {
     }
 
     @Override
-    public void beginShard() {
+    public void beginSlice() {
         pool = DatastoreMutationPool.create();
+    }
+
+    @Override
+    public void endSlice() {
+        pool.flush();
     }
 
     public void map(Long index) {
@@ -56,6 +61,5 @@ public class EntityCreator extends Mapper<Long, Void, Void> {
         Entity e = new Entity(kind, name);
         e.setProperty("payload", new Text(payloads.get((int) (index % payloads.size()))));
         pool.put(e);
-        pool.flush();
     }
 }
