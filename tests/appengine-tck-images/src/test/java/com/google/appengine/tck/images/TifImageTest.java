@@ -21,14 +21,9 @@ import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService.OutputEncoding;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.Transform;
-import com.google.appengine.tck.event.ImageLifecycleEvent;
-import com.google.appengine.tck.event.TestLifecycles;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Tests tiff file.
@@ -112,15 +107,7 @@ public class TifImageTest extends ImagesServiceTestBase {
             Image image = readImage(BEACH_TIF);
             Image transImg = imagesService.applyTransform(transform, image, outType);
 
-            ImageLifecycleEvent event = TestLifecycles.createImageLifecycleEvent(getClass(), transform, expected, transImg);
-            TestLifecycles.before(event);
-            Boolean result = event.result();
-
-            if (result == null) {
-                assertArrayEquals(expected.getImageData(), transImg.getImageData());
-            } else {
-                Assert.assertTrue("Images are not equal.", result);
-            }
+            assertImages(transform, expected, transImg);
         }
     }
 }

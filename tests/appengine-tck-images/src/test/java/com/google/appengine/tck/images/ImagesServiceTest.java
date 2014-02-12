@@ -113,7 +113,7 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
     }
 
     @Test
-    public void testChop() throws IOException {
+    public void testCrop() throws IOException {
         ChkType chkType = ChkType.CROP;
         String cropLeftX = "0.0";
         String cropTopY = "0.0";

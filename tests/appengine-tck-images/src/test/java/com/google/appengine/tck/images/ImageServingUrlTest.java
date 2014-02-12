@@ -41,7 +41,6 @@ import static org.junit.Assert.assertTrue;
 public class ImageServingUrlTest extends ImagesServiceTestBase {
 
     private BlobKey blobKey;
-    private BlobKey blobKey2;
 
     private FileService fileService;
 
@@ -51,18 +50,14 @@ public class ImageServingUrlTest extends ImagesServiceTestBase {
         AppEngineFile file = fileService.createNewBlobFile("image/png");
         FileWriteChannel channel = fileService.openWriteChannel(file, true);
         try {
-            ReadableByteChannel in = Channels.newChannel(getImageStream("capedwarf.png"));
-            try {
+            try (ReadableByteChannel in = Channels.newChannel(getImageStream("capedwarf.png"))) {
                 copy(in, channel);
-            } finally {
-                in.close();
             }
         } finally {
             channel.closeFinally();
         }
 
         blobKey = fileService.getBlobKey(file);
-        blobKey2 = blobKey;
     }
 
     @After
@@ -139,6 +134,12 @@ public class ImageServingUrlTest extends ImagesServiceTestBase {
             url = imagesService.getServingUrl(options.secureUrl(true));
             assertStartsWith("https://", url);
         }
+    }
+
+    @Test
+    public void deleteServingUrl() throws Exception {
+        imagesService.getServingUrl(ServingUrlOptions.Builder.withBlobKey(blobKey));
+        imagesService.deleteServingUrl(blobKey);
     }
 
     private void assertStartsWith(String prefix, String url) {

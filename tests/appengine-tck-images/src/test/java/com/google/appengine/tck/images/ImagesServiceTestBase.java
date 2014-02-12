@@ -26,18 +26,26 @@ import java.nio.channels.WritableByteChannel;
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.Transform;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
+import com.google.appengine.tck.event.ImageLifecycleEvent;
+import com.google.appengine.tck.event.TestLifecycles;
 import com.google.appengine.tck.images.util.ImageRequest;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
 import org.junit.Before;
+
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * @author <a href="mailto:marko.luksa@gmail.com">Marko Luksa</a>
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public abstract class ImagesServiceTestBase extends TestBase {
+    protected static final String CAPEDWARF_PNG = "capedwarf.png";
+
     protected static final String[] TEST_FILES = {
         "jpgAttach.jpg",
         "pngAttach.png",
@@ -70,6 +78,18 @@ public abstract class ImagesServiceTestBase extends TestBase {
     @Before
     public void init() throws Exception {
         imagesService = ImagesServiceFactory.getImagesService();
+    }
+
+    protected void assertImages(Transform transform, Image expected, Image transImg) {
+        ImageLifecycleEvent event = TestLifecycles.createImageLifecycleEvent(getClass(), transform, expected, transImg);
+        TestLifecycles.before(event);
+        Boolean result = event.result();
+
+        if (result == null) {
+            assertArrayEquals(expected.getImageData(), transImg.getImageData());
+        } else {
+            Assert.assertTrue("Images are not equal.", result);
+        }
     }
 
     protected InputStream getImageStream(String filename) throws IOException {

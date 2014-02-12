@@ -17,12 +17,14 @@ package com.google.appengine.tck.images;
 
 import java.io.IOException;
 
+import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -59,6 +61,13 @@ public class MakeImageTest extends ImagesServiceTestBase {
     public void makeImageCanReadTIF() throws IOException {
         byte[] imageData = readImageBytes("capedwarf.tif");
         assertMakeImageCanReadImage(imageData);
+    }
+
+    @Test
+    public void blobKeyImage() throws IOException {
+        Image i1 = ImagesServiceFactory.makeImageFromBlob(new BlobKey("gs/bucket/123"));
+        Image i2 = ImagesServiceFactory.makeImageFromFilename("/gs/bucket/123");
+        assertEquals(i1, i2); // should compare blob keys
     }
 
     private void assertMakeImageCanReadImage(byte[] imageData) {

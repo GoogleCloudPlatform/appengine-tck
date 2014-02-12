@@ -15,6 +15,8 @@
 
 package com.google.appengine.tck.images;
 
+import java.io.IOException;
+
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService.OutputEncoding;
 import com.google.appengine.api.images.ImagesServiceFactory;
@@ -25,8 +27,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -34,7 +34,6 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(Arquillian.class)
 public class TransformationsTest extends ImagesServiceTestBase {
-    protected static final String CAPEDWARF_PNG = "capedwarf.png";
 
     @Test
     public void testResize() throws IOException {
@@ -51,7 +50,17 @@ public class TransformationsTest extends ImagesServiceTestBase {
         assertEquals(286, resizedImage.getHeight());
 
         originalImage = readImage(CAPEDWARF_PNG);
+        resizedImage = waitOnFuture(imagesService.applyTransformAsync(ImagesServiceFactory.makeResize(400, 286), originalImage));
+        assertEquals(400, resizedImage.getWidth());
+        assertEquals(286, resizedImage.getHeight());
+
+        originalImage = readImage(CAPEDWARF_PNG);
         resizedImage = imagesService.applyTransform(ImagesServiceFactory.makeResize(300, 286), originalImage, inputSettings, outputSettings);
+        assertEquals(300, resizedImage.getWidth());
+        assertEquals(215, resizedImage.getHeight());
+
+        originalImage = readImage(CAPEDWARF_PNG);
+        resizedImage = waitOnFuture(imagesService.applyTransformAsync(ImagesServiceFactory.makeResize(300, 286), originalImage, inputSettings, outputSettings));
         assertEquals(300, resizedImage.getWidth());
         assertEquals(215, resizedImage.getHeight());
 
@@ -59,6 +68,32 @@ public class TransformationsTest extends ImagesServiceTestBase {
         resizedImage = imagesService.applyTransform(ImagesServiceFactory.makeResize(400, 200), originalImage, outputSettings);
         assertEquals(280, resizedImage.getWidth());
         assertEquals(200, resizedImage.getHeight());
+    }
+
+    @Test
+    public void testResizeAsync() throws IOException {
+        InputSettings inputSettings = new InputSettings();
+        OutputSettings outputSettings = new OutputSettings(OutputEncoding.PNG);
+
+        Image originalImage = readImage(CAPEDWARF_PNG);
+        Image resizedImage = waitOnFuture(imagesService.applyTransformAsync(ImagesServiceFactory.makeResize(400, 286), originalImage));
+        assertEquals(400, resizedImage.getWidth());
+        assertEquals(286, resizedImage.getHeight());
+
+        originalImage = readImage(CAPEDWARF_PNG);
+        resizedImage = waitOnFuture(imagesService.applyTransformAsync(ImagesServiceFactory.makeResize(300, 286), originalImage, outputSettings));
+        assertEquals(300, resizedImage.getWidth());
+        assertEquals(215, resizedImage.getHeight());
+
+        originalImage = readImage(CAPEDWARF_PNG);
+        resizedImage = waitOnFuture(imagesService.applyTransformAsync(ImagesServiceFactory.makeResize(300, 286), originalImage, inputSettings, outputSettings));
+        assertEquals(300, resizedImage.getWidth());
+        assertEquals(215, resizedImage.getHeight());
+
+        originalImage = readImage(CAPEDWARF_PNG);
+        resizedImage = waitOnFuture(imagesService.applyTransformAsync(ImagesServiceFactory.makeResize(300, 286), originalImage, OutputEncoding.JPEG));
+        assertEquals(300, resizedImage.getWidth());
+        assertEquals(215, resizedImage.getHeight());
     }
 
     @Test
@@ -78,8 +113,7 @@ public class TransformationsTest extends ImagesServiceTestBase {
         int resizedWidth = 300;
         int resizedHeight = 200;
         Image originalImage = readImage(CAPEDWARF_PNG);
-        Transform resize = ImagesServiceFactory.makeResize(resizedWidth, resizedHeight, 0.5f,
-             0.5f);
+        Transform resize = ImagesServiceFactory.makeResize(resizedWidth, resizedHeight, 0.5f, 0.5f);
         Image resizedImage = imagesService.applyTransform(resize, originalImage);
         assertEquals(resizedWidth, resizedImage.getWidth());
         assertEquals(resizedHeight, resizedImage.getHeight());
