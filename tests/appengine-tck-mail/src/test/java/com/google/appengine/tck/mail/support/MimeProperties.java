@@ -15,8 +15,9 @@
 
 package com.google.appengine.tck.mail.support;
 
-import java.io.DataInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,10 +107,15 @@ public class MimeProperties extends AbstractTempData implements Serializable {
     }
 
     private String getContentAsString(BodyPart bodyPart) throws IOException, MessagingException {
-        byte[] buf = new byte[bodyPart.getSize()];
-        try (DataInputStream din = new DataInputStream(bodyPart.getInputStream())) {
-            din.readFully(buf);
-            return new String(buf);
+        try (InputStream in = bodyPart.getInputStream();
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+            byte[] buffer = new byte[4096];
+            int len;
+            while ((len = in.read(buffer)) != -1) {
+                out.write(buffer, 0, len);
+            }
+            return new String(out.toByteArray());
         }
     }
 
