@@ -271,7 +271,6 @@ public class UserServiceTest extends UserTestBase {
         Assert.assertTrue(failMsgContains, createdURL.contains(DEST_URL_ENCODED_DOUBLE));
     }
 
-
     @Test
     public void testCreateLoginUrlDomainDev() throws Exception {
         if (!execute("testCreateLoginUrlDomainDev")) {
@@ -299,12 +298,12 @@ public class UserServiceTest extends UserTestBase {
 
         String authDomain = "othergaetcktest.org";
         String federatedIdentity = "FedIdentTest";
-        Set<String> attrRequest = new HashSet<String>();
+        Set<String> attrRequest = new HashSet<>();
 
         // throws IllegalArgumentException since not set to Federated Identity.
         Exception thrownException = null;
         try {
-            String createdURL = UserServiceFactory.getUserService().createLoginURL(DEST_URL, authDomain, federatedIdentity, attrRequest);
+            UserServiceFactory.getUserService().createLoginURL(DEST_URL, authDomain, federatedIdentity, attrRequest);
         } catch (Exception e) {
             thrownException = e;
         }
@@ -353,6 +352,18 @@ public class UserServiceTest extends UserTestBase {
         Assert.assertTrue(createdURL.startsWith(destURLenc));
     }
 
+    @Test
+    public void testCreateLogoutUrlDevWithAuthDomain() throws Exception {
+        if (!execute("testCreateLogoutUrlDevWithAuthDomain")) {
+            return;
+        }
+
+        String authDomain = "othergaetcktest.org";
+        String destURLenc = "/_ah/logout?continue=" + DEST_URL_ENCODED_SINGLE;
+        String createdURL = UserServiceFactory.getUserService().createLogoutURL(DEST_URL, authDomain);
+        Assert.assertTrue(createdURL.startsWith(destURLenc));
+    }
+
     /**
      * On both dev_appserver and appspot, no user should be logged in.  The Arquillian container
      * does not execute the test under an authenticated user.
@@ -368,7 +379,7 @@ public class UserServiceTest extends UserTestBase {
      */
     @Test(expected = IllegalStateException.class)
     public void testUserShouldNotBeAdmin() {
-        boolean userAdmin = userService.isUserAdmin();
+        userService.isUserAdmin();
     }
 
     @Test(expected = UserServiceFailureException.class)
