@@ -15,8 +15,6 @@
 
 package com.google.appengine.tck.mail;
 
-import java.util.List;
-
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.mail.support.BounceHandlerServlet;
@@ -47,14 +45,6 @@ public abstract class MailTestBase extends TestBase {
         war.addClasses(MailTestBase.class, MailHandlerServlet.class, BounceHandlerServlet.class, MimeProperties.class, EmailMessageField.class, EmailAddressFormatter.class);
 
         return war;
-    }
-
-    public static MimeProperties getLastMimeProperties() {
-        return TestBase.getLastTempData(MimeProperties.class);
-    }
-
-    public static List<MimeProperties> getAllMimeProperties() {
-        return TestBase.getAllTempData(MimeProperties.class);
     }
 
     public static void clear() {
