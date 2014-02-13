@@ -46,6 +46,7 @@ import com.google.appengine.tck.event.PropertyLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycles;
 import com.google.appengine.tck.temp.TempData;
+import com.google.appengine.tck.temp.TempDataFilter;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -60,6 +61,8 @@ public class TestBase {
     protected static final long DEFAULT_SLEEP = 3000L;
     protected static final String TCK_PROPERTIES = "tck.properties";
     protected static final String TIMESTAMP_TXT = "timestamp.txt";
+
+    private static final String TEMP_DATA_READ_PROPERTY = "__read";
 
     protected final Logger log = Logger.getLogger(getClass().getName());
 
@@ -277,6 +280,7 @@ public class TestBase {
             for (Map.Entry<String, Object> entry : data.toProperties(ds).entrySet()) {
                 entity.setProperty(entry.getKey(), entry.getValue());
             }
+            entity.setProperty(TEMP_DATA_READ_PROPERTY, false);
             data.prePut(ds);
             Key key = ds.put(txn, entity);
             data.postPut(ds);
@@ -292,24 +296,51 @@ public class TestBase {
     }
 
     public static <T extends TempData> List<T> getAllTempData(Class<T> type) {
+        return getAllTempData(type, false);
+    }
+
+    public static <T extends TempData> List<T> getAllUnreadTempData(Class<T> type) {
+        return getAllTempData(type, true);
+    }
+
+    private static <T extends TempData> List<T> getAllTempData(Class<T> type, boolean unreadOnly) {
         try {
             DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
             String kind = getKind(type);
-            PreparedQuery pq = ds.prepare(new Query(kind).addSort("timestamp", Query.SortDirection.ASCENDING));
+            Query query = new Query(kind).addSort("timestamp", Query.SortDirection.ASCENDING);
+            if (unreadOnly) {
+                query.setFilter(new Query.FilterPredicate(TEMP_DATA_READ_PROPERTY, Query.FilterOperator.EQUAL, false));
+            }
+            PreparedQuery pq = ds.prepare(query);
             Iterator<Entity> iter = pq.asIterator();
             List<T> result = new ArrayList<>();
             while (iter.hasNext()) {
                 Entity entity = iter.next();
-                T data = type.newInstance();
-                data.preGet(ds);
-                data.fromProperties(entity.getProperties());
-                data.postGet(ds);
+                T data = readTempData(type, entity, ds);
                 result.add(data);
             }
             return result;
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private static <T extends TempData> T readTempData(Class<T> type, Entity entity, DatastoreService ds) throws Exception {
+        markRead(entity, ds);
+        return entityToTempData(entity, type, ds);
+    }
+
+    private static <T extends TempData> T entityToTempData(Entity entity, Class<T> type, DatastoreService ds) throws Exception {
+        T data = type.newInstance();
+        data.preGet(ds);
+        data.fromProperties(entity.getProperties());
+        data.postGet(ds);
+        return data;
+    }
+
+    private static void markRead(Entity entity, DatastoreService ds) {
+        entity.setProperty(TEMP_DATA_READ_PROPERTY, true);
+        ds.put(entity);
     }
 
     public static <T extends TempData> T getLastTempData(Class<T> type) {
@@ -320,11 +351,7 @@ public class TestBase {
             Iterator<Entity> iter = pq.asIterator();
             if (iter.hasNext()) {
                 Entity entity = iter.next();
-                T data = type.newInstance();
-                data.preGet(ds);
-                data.fromProperties(entity.getProperties());
-                data.postGet(ds);
-                return data;
+                return readTempData(type, entity, ds);
             } else {
                 return null;
             }
@@ -347,6 +374,23 @@ public class TestBase {
             T data = getLastTempData(type);
             if (data != null) {
                 return data;
+            }
+            sync(1000);
+            secondsElapsed += 1;
+        }
+        return null;
+    }
+
+    public <T extends TempData> T pollForTempData(Class<T> type, int timeout, TempDataFilter<T> filter) {
+        int secondsElapsed = 0;
+
+        while (secondsElapsed <= timeout) {
+            List<T> list = getAllUnreadTempData(type);
+            for (T t : list) {
+                boolean accepted = filter.accept(t);
+                if (accepted) {
+                    return t;
+                }
             }
             sync(1000);
             secondsElapsed += 1;

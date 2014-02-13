@@ -170,4 +170,11 @@ public class MimeProperties extends AbstractTempData implements Serializable {
             '}';
     }
 
+    public boolean isBodySet() {
+        return !body.equals(MimeProperties.BLANK);
+    }
+
+    public boolean isReplyToSet() {
+        return !replyTo.equals(MimeProperties.BLANK);
+    }
 }

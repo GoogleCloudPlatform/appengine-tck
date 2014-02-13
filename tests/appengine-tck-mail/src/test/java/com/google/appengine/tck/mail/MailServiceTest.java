@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 
@@ -34,6 +35,7 @@ import com.google.appengine.api.mail.MailService;
 import com.google.appengine.api.mail.MailServiceFactory;
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tck.mail.support.MimeProperties;
+import com.google.appengine.tck.temp.TempDataFilter;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
 import org.junit.Before;
@@ -252,8 +254,8 @@ public class MailServiceTest extends MailTestBase {
         mailService.send(msg);
 
         if (doExecute("testAllowedHeaders")) {
-            assertMessageReceived(mp);
-            assertHeadersExist(createExpectedHeadersVerifyList(headersMap));
+            MimeProperties receivedMp = pollForMatchingMail(mp);
+            assertHeadersExist(receivedMp, createExpectedHeadersVerifyList(headersMap));
         } else {
             log.info("Not running on production, skipping assert.");
         }
@@ -394,43 +396,48 @@ public class MailServiceTest extends MailTestBase {
         }
     }
 
-    private void assertMessageReceived(MimeProperties expectedMimeProps) {
-        MimeProperties mp = pollForMail();
-        if (mp == null) {
-            fail("No MimeProperties found in temp data after " + TIMEOUT_MAX + " seconds.");
-        }
-
-        assertEquals("subject:", expectedMimeProps.subject, mp.subject);
-        assertEquals("from:", expectedMimeProps.from, mp.from);
-        assertEquals("to:", expectedMimeProps.to, mp.to);
-        assertEquals("cc:", expectedMimeProps.cc, mp.cc);
-
-        // also, the to: and cc: would fail if bcc: was added to them.
-        assertEquals("bcc:", MimeProperties.BLANK, mp.bcc);
-
-        if (expectedMimeProps.replyTo.equals(MimeProperties.BLANK)) {
-            assertEquals("replyTo:", expectedMimeProps.from, mp.replyTo);
-        } else {
-            assertEquals("replyTo:", expectedMimeProps.replyTo, mp.replyTo);
-        }
-
-        if (expectedMimeProps.body.equals(MimeProperties.BLANK)) {
-            for (int i = 0; i < expectedMimeProps.multiPartsList.size(); i++) {
-                String expectedPart = expectedMimeProps.multiPartsList.get(i).trim();
-                String actualPart = mp.multiPartsList.get(i).trim();
-                assertEquals(expectedPart, actualPart);
-            }
-        } else {
-            assertEquals("body:", expectedMimeProps.body, mp.body);
-        }
+    private void assertMessageReceived(final MimeProperties expectedMimeProps) {
+        pollForMatchingMail(expectedMimeProps);
     }
 
-    private void assertHeadersExist(List<String> expectedHeaderLines) {
-        MimeProperties mp = pollForMail();
-        if (mp == null) {
-            fail("No MimeProperties found in temp data after " + TIMEOUT_MAX + " seconds.");
-        }
+    private MimeProperties pollForMatchingMail(final MimeProperties expectedMimeProps) {
+        MimeProperties mp = pollForMail(new TempDataFilter<MimeProperties>() {
+            @Override
+            public boolean accept(MimeProperties mp) {
+                String expectedReplyTo = expectedMimeProps.isReplyToSet() ? expectedMimeProps.replyTo : expectedMimeProps.from;
 
+                if (!Objects.equals(expectedMimeProps.subject, mp.subject)
+                    || !Objects.equals(expectedMimeProps.from, mp.from)
+                    || !Objects.equals(expectedMimeProps.to, mp.to)
+                    || !Objects.equals(expectedMimeProps.cc, mp.cc)
+                    || !Objects.equals(MimeProperties.BLANK, mp.bcc) // also, the to: and cc: would fail if bcc: was added to them.
+                    || !Objects.equals(expectedReplyTo, mp.replyTo)) {
+                    return false;
+                }
+
+                if (expectedMimeProps.isBodySet()) {
+                    if (!Objects.equals(expectedMimeProps.body, mp.body)) {
+                        return false;
+                    }
+                } else {
+                    for (int i = 0; i < expectedMimeProps.multiPartsList.size(); i++) {
+                        String expectedPart = expectedMimeProps.multiPartsList.get(i).trim();
+                        String actualPart = mp.multiPartsList.get(i).trim();
+                        if (!Objects.equals(expectedPart, actualPart)) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        });
+        if (mp == null) {
+            fail("No matching MimeProperties found in temp data after " + TIMEOUT_MAX + " seconds.");
+        }
+        return mp;
+    }
+
+    private void assertHeadersExist(MimeProperties mp, List<String> expectedHeaderLines) {
         List<String> errors = new ArrayList<>();
 
         for (String headerLine : expectedHeaderLines) {
@@ -493,8 +500,8 @@ public class MailServiceTest extends MailTestBase {
         return gateway;
     }
 
-    private MimeProperties pollForMail() {
-        return pollForTempData(MimeProperties.class, TIMEOUT_MAX);
+    private MimeProperties pollForMail(TempDataFilter<MimeProperties> filter) {
+        return pollForTempData(MimeProperties.class, TIMEOUT_MAX, filter);
     }
 
     private MailService.Message createMailServiceMessage(MimeProperties mp) {
