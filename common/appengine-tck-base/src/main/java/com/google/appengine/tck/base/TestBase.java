@@ -307,9 +307,11 @@ public class TestBase {
         try {
             DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
             String kind = getKind(type);
-            Query query = new Query(kind).addSort("timestamp", Query.SortDirection.ASCENDING);
+            Query query = new Query(kind);
             if (unreadOnly) {
                 query.setFilter(new Query.FilterPredicate(TEMP_DATA_READ_PROPERTY, Query.FilterOperator.EQUAL, false));
+            } else {
+                query.addSort("timestamp", Query.SortDirection.ASCENDING);
             }
             PreparedQuery pq = ds.prepare(query);
             Iterator<Entity> iter = pq.asIterator();
