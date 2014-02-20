@@ -40,6 +40,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * @author <a href="mailto:marko.luksa@gmail.com">Marko Luksa</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
 public class StaticFilesTest extends TestBase {
@@ -89,25 +90,34 @@ public class StaticFilesTest extends TestBase {
         assertResponseEquals("Request handled by FooServlet", url, "fooservlet/nonstatic/nonExisting.html");
     }
 
-
-
-    private void assertResponseEquals(String expectedResponse, URL url, String path) throws URISyntaxException, IOException {
-        assertEquals(expectedResponse, getResponseAsString(url, path).trim());
-    }
-
-    private String getResponseAsString(URL url, String path) throws URISyntaxException, IOException {
-        HttpResponse response = getResponse(url, path);
-        return EntityUtils.toString(response.getEntity());
+    private void assertResponseEquals(final String expectedResponse, URL url, String path) throws URISyntaxException, IOException {
+        assertResponse(url, path, new Tester() {
+            public void doAssert(HttpResponse response) throws IOException {
+                assertEquals(expectedResponse, EntityUtils.toString(response.getEntity()));
+            }
+        });
     }
 
     private void assertPageNotFound(URL url, String path) throws IOException, URISyntaxException {
-        HttpResponse response = getResponse(url, path);
-        assertEquals(404, response.getStatusLine().getStatusCode());
+        assertResponse(url, path, new Tester() {
+            public void doAssert(HttpResponse response) throws IOException {
+                assertEquals(404, response.getStatusLine().getStatusCode());
+            }
+        });
     }
 
-    private HttpResponse getResponse(URL url, String path) throws URISyntaxException, IOException {
-        HttpClient client = new DefaultHttpClient();
-        HttpGet get = new HttpGet(new URL(url, path).toURI());
-        return client.execute(get);
+    private void assertResponse(URL url, String path, Tester tester) throws URISyntaxException, IOException {
+        final HttpClient client = new DefaultHttpClient();
+        try {
+            HttpGet get = new HttpGet(new URL(url, path).toURI());
+            HttpResponse response = client.execute(get);
+            tester.doAssert(response);
+        } finally {
+            client.getConnectionManager().shutdown();
+        }
+    }
+
+    private static interface Tester {
+        void doAssert(HttpResponse response) throws IOException;
     }
 }
