@@ -15,6 +15,14 @@
     <url>https://developers.google.com/appengine/</url>
     <description>GAE TCK Core Miscellaneous</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
     <profiles>
         <profile>
             <id>default</id>
