@@ -93,7 +93,7 @@ public class StaticFilesTest extends TestBase {
     private void assertResponseEquals(final String expectedResponse, URL url, String path) throws URISyntaxException, IOException {
         assertResponse(url, path, new Tester() {
             public void doAssert(HttpResponse response) throws IOException {
-                assertEquals(expectedResponse, EntityUtils.toString(response.getEntity()));
+                assertEquals(expectedResponse, EntityUtils.toString(response.getEntity()).trim());
             }
         });
     }
