@@ -15,18 +15,10 @@
 
 package com.google.appengine.tck.misc.staticfiles;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 
-import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.misc.staticfiles.support.FooServlet;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -36,14 +28,12 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
-
 /**
  * @author <a href="mailto:marko.luksa@gmail.com">Marko Luksa</a>
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
-public class StaticFilesTest extends TestBase {
+public class OverlappingServletsAndStaticFilesTest extends StaticFilesTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
@@ -90,34 +80,4 @@ public class StaticFilesTest extends TestBase {
         assertResponseEquals("Request handled by FooServlet", url, "fooservlet/nonstatic/nonExisting.html");
     }
 
-    private void assertResponseEquals(final String expectedResponse, URL url, String path) throws URISyntaxException, IOException {
-        assertResponse(url, path, new Tester() {
-            public void doAssert(HttpResponse response) throws IOException {
-                assertEquals(expectedResponse, EntityUtils.toString(response.getEntity()).trim());
-            }
-        });
-    }
-
-    private void assertPageNotFound(URL url, String path) throws IOException, URISyntaxException {
-        assertResponse(url, path, new Tester() {
-            public void doAssert(HttpResponse response) throws IOException {
-                assertEquals(404, response.getStatusLine().getStatusCode());
-            }
-        });
-    }
-
-    private void assertResponse(URL url, String path, Tester tester) throws URISyntaxException, IOException {
-        final HttpClient client = new DefaultHttpClient();
-        try {
-            HttpGet get = new HttpGet(new URL(url, path).toURI());
-            HttpResponse response = client.execute(get);
-            tester.doAssert(response);
-        } finally {
-            client.getConnectionManager().shutdown();
-        }
-    }
-
-    private static interface Tester {
-        void doAssert(HttpResponse response) throws IOException;
-    }
 }
