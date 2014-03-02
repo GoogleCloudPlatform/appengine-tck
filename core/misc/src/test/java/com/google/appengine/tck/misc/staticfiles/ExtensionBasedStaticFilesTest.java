@@ -22,33 +22,32 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
  * @author <a href="mailto:marko.luksa@gmail.com">Marko Luksa</a>
- *
- * NOTE: .txt files are included in root dir only; .html files are included in subdirs also
+ *         <p/>
+ *         NOTE: .txt files are included in root dir only; .html files are included in subdirs also
  */
 @RunWith(Arquillian.class)
 public class ExtensionBasedStaticFilesTest extends StaticFilesTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        return getTckDeployment(new TestContext()
-            .setAppEngineWebXmlFile("appengine-web-extension-based-static-files.xml"))
-            .addAsWebResource(new StringAsset("This is /foo.csv"), "/foo.csv")
-            .addAsWebResource(new StringAsset("This is /foo.txt"), "/foo.txt")
-            .addAsWebResource(new StringAsset("This is /foo/bar.txt"), "/foo/bar.txt")
-            .addAsWebResource(new StringAsset("This is /foo.html"), "/foo.html")
-            .addAsWebResource(new StringAsset("This is /foo/bar.html"), "/foo/bar.html")
-            .addAsWebResource(new StringAsset("This is /excluded_shallow/bar.html"), "/excluded_shallow/bar.html")
-            .addAsWebResource(new StringAsset("This is /excluded_shallow/subdir/bar.html"), "/excluded_shallow/subdir/bar.html")
-            .addAsWebResource(new StringAsset("This is /excluded_deep/bar.html"), "/excluded_deep/bar.html")
-            .addAsWebResource(new StringAsset("This is /excluded_deep/subdir/bar.html"), "/excluded_deep/subdir/bar.html")
-            ;
+        WebArchive archive = getTckDeployment(new TestContext()
+            .setAppEngineWebXmlFile("appengine-web-extension-based-static-files.xml"));
+        createFile(archive, "/foo.csv");
+        createFile(archive, "/foo.txt");
+        createFile(archive, "/foo/bar.txt");
+        createFile(archive, "/foo.html");
+        createFile(archive, "/foo/bar.html");
+        createFile(archive, "/excluded_shallow/bar.html");
+        createFile(archive, "/excluded_shallow/subdir/bar.html");
+        createFile(archive, "/excluded_deep/bar.html");
+        createFile(archive, "/excluded_deep/subdir/bar.html");
+        return archive;
     }
 
     @Test
@@ -60,22 +59,22 @@ public class ExtensionBasedStaticFilesTest extends StaticFilesTestBase {
     @Test
     @RunAsClient
     public void testShallowInclude(@ArquillianResource URL url) throws Exception {
-        assertResponseEquals("This is /foo.txt", url, "foo.txt");
+        assertPageFound(url, "foo.txt");
         assertPageNotFound(url, "/foo/bar.txt");
     }
 
     @Test
     @RunAsClient
     public void testDeepInclude(@ArquillianResource URL url) throws Exception {
-        assertResponseEquals("This is /foo.html", url, "foo.html");
-        assertResponseEquals("This is /foo/bar.html", url, "foo/bar.html");
+        assertPageFound(url, "foo.html");
+        assertPageFound(url, "foo/bar.html");
     }
 
     @Test
     @RunAsClient
     public void testShallowExclude(@ArquillianResource URL url) throws Exception {
         assertPageNotFound(url, "excluded_shallow/foo.html");
-        assertResponseEquals("This is /excluded_shallow/subdir/bar.html", url, "excluded_shallow/subdir/bar.html");
+        assertPageFound(url, "excluded_shallow/subdir/bar.html");
     }
 
     @Test

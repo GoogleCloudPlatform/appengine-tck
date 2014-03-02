@@ -22,7 +22,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,19 +34,20 @@ public class NoIncludeStaticFilesTest extends StaticFilesTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        return getTckDeployment(new TestContext()
-            .setAppEngineWebXmlFile("appengine-web-nostaticfiles.xml"))
-            .addAsWebResource(new StringAsset("This is /foo.html"), "/foo.html")
-            .addAsWebResource(new StringAsset("This is /foo/bar.html"), "/foo/bar.html")
-            .addAsWebResource(new StringAsset("This is /excluded/bar.html"), "/excluded/bar.html")
-            .addAsWebResource(new StringAsset("This is /foo/bar.excluded.html"), "/foo/bar.excluded.html");
+        WebArchive archive = getTckDeployment(new TestContext()
+            .setAppEngineWebXmlFile("appengine-web-nostaticfiles.xml"));
+        createFile(archive, "/foo.html");
+        createFile(archive, "/foo/bar.html");
+        createFile(archive, "/excluded/bar.html");
+        createFile(archive, "/foo/bar.excluded.html");
+        return archive;
     }
 
     @Test
     @RunAsClient
     public void testAllFilesIncludedByDefault(@ArquillianResource URL url) throws Exception {
-        assertResponseEquals("This is /foo.html", url, "foo.html");
-        assertResponseEquals("This is /foo/bar.html", url, "foo/bar.html");
+        assertPageFound(url, "foo.html");
+        assertPageFound(url, "foo/bar.html");
     }
 
     @Test
