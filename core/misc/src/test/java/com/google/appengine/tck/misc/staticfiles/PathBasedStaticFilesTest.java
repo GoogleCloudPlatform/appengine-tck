@@ -22,7 +22,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,18 +34,19 @@ public class PathBasedStaticFilesTest extends StaticFilesTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        return getTckDeployment(new TestContext()
-            .setAppEngineWebXmlFile("appengine-web-path-based-static-files.xml"))
-            .addAsWebResource(new StringAsset("This is /foo/bar.txt"), "/foo/bar.txt")
-            .addAsWebResource(new StringAsset("This is /included_shallow/foo.txt"), "/included_shallow/foo.txt")
-            .addAsWebResource(new StringAsset("This is /included_shallow/subdir/foo.txt"), "/included_shallow/subdir/foo.txt")
-            .addAsWebResource(new StringAsset("This is /included_shallow/subdir/subsubdir/foo.txt"), "/included_shallow/subdir/subsubdir/foo.txt")
-            .addAsWebResource(new StringAsset("This is /included_deep/foo.txt"), "/included_deep/foo.txt")
-            .addAsWebResource(new StringAsset("This is /included_deep/subdir/foo.txt"), "/included_deep/subdir/foo.txt")
-            .addAsWebResource(new StringAsset("This is /included_deep/subdir/subsubdir/foo.txt"), "/included_deep/subdir/subsubdir/foo.txt")
-            .addAsWebResource(new StringAsset("This is /included_deep/not_excluded/foo.txt"), "/included_deep/not_excluded/foo.txt")
-            .addAsWebResource(new StringAsset("This is /included_deep/excluded_shallow/foo.txt"), "/included_deep/excluded_shallow/foo.txt")
-            .addAsWebResource(new StringAsset("This is /included_deep/excluded_shallow/subdir/foo.txt"), "/included_deep/excluded_shallow/subdir/foo.txt");
+        WebArchive archive = getTckDeployment(new TestContext()
+            .setAppEngineWebXmlFile("appengine-web-path-based-static-files.xml"));
+        createFile(archive, "/foo/bar.txt");
+        createFile(archive, "/included_shallow/foo.txt");
+        createFile(archive, "/included_shallow/subdir/foo.txt");
+        createFile(archive, "/included_shallow/subdir/subsubdir/foo.txt");
+        createFile(archive, "/included_deep/foo.txt");
+        createFile(archive, "/included_deep/subdir/foo.txt");
+        createFile(archive, "/included_deep/subdir/subsubdir/foo.txt");
+        createFile(archive, "/included_deep/not_excluded/foo.txt");
+        createFile(archive, "/included_deep/excluded_shallow/foo.txt");
+        createFile(archive, "/included_deep/excluded_shallow/subdir/foo.txt");
+        return archive;
     }
 
     @Test
@@ -58,7 +58,7 @@ public class PathBasedStaticFilesTest extends StaticFilesTestBase {
     @Test
     @RunAsClient
     public void testShallowInclude(@ArquillianResource URL url) throws Exception {
-        assertResponseEquals("This is /included_shallow/foo.txt", url, "included_shallow/foo.txt");
+        assertPageFound(url, "included_shallow/foo.txt");
         assertPageNotFound(url, "included_shallow/subdir/foo.txt");
         assertPageNotFound(url, "included_shallow/subdir/subsubdir/foo.txt");
     }
@@ -66,17 +66,17 @@ public class PathBasedStaticFilesTest extends StaticFilesTestBase {
     @Test
     @RunAsClient
     public void testDeepInclude(@ArquillianResource URL url) throws Exception {
-        assertResponseEquals("This is /included_deep/foo.txt", url, "included_deep/foo.txt");
-        assertResponseEquals("This is /included_deep/subdir/foo.txt", url, "included_deep/subdir/foo.txt");
-        assertResponseEquals("This is /included_deep/subdir/subsubdir/foo.txt", url, "included_deep/subdir/subsubdir/foo.txt");
+        assertPageFound(url, "included_deep/foo.txt");
+        assertPageFound(url, "included_deep/subdir/foo.txt");
+        assertPageFound(url, "included_deep/subdir/subsubdir/foo.txt");
     }
 
     @Test
     @RunAsClient
     public void testShallowExclude(@ArquillianResource URL url) throws Exception {
-        assertResponseEquals("This is /included_deep/not_excluded/foo.txt", url, "included_deep/not_excluded/foo.txt");
+        assertPageFound(url, "included_deep/not_excluded/foo.txt");
         assertPageNotFound(url, "included_deep/excluded_shallow/foo.txt");
-        assertResponseEquals("This is /included_deep/excluded_shallow/subdir/foo.txt", url, "included_deep/excluded_shallow/subdir/foo.txt");
+        assertPageFound(url, "included_deep/excluded_shallow/subdir/foo.txt");
     }
 
     @Test

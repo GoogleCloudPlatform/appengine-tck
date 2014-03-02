@@ -25,6 +25,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 import static org.junit.Assert.assertEquals;
 
@@ -32,6 +34,14 @@ import static org.junit.Assert.assertEquals;
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 public class StaticFilesTestBase extends TestBase {
+    protected static WebArchive createFile(WebArchive archive, String path) {
+        return archive.addAsWebResource(new StringAsset("This is " + path), path);
+    }
+
+    protected void assertPageFound(URL url, final String path) throws URISyntaxException, IOException {
+        assertResponseEquals("This is /" + path, url, path);
+    }
+
     protected void assertResponseEquals(final String expectedResponse, URL url, String path) throws URISyntaxException, IOException {
         assertResponse(url, path, new Tester() {
             public void doAssert(HttpResponse response) throws IOException {

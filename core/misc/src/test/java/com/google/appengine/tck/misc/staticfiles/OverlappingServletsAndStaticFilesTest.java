@@ -23,7 +23,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,14 +36,15 @@ public class OverlappingServletsAndStaticFilesTest extends StaticFilesTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        return getTckDeployment(new TestContext()
+        WebArchive archive = getTckDeployment(new TestContext()
             .setWebXmlFile("staticfiles_web.xml")
             .setAppEngineWebXmlFile("appengine-web-staticfiles.xml"))
-            .addClass(FooServlet.class)
-            .addAsWebResource(new StringAsset("This is /fooservlet/static/foo.html"), "/fooservlet/static/foo.html")
-            .addAsWebResource(new StringAsset("This is /fooservlet/nonstatic/foo.html"), "/fooservlet/nonstatic/foo.html")
-            .addAsWebResource(new StringAsset("This is /noservlet/static/foo.html"), "/noservlet/static/foo.html")
-            .addAsWebResource(new StringAsset("This is /noservlet/nonstatic/foo.html"), "/noservlet/nonstatic/foo.html");
+            .addClass(FooServlet.class);
+        createFile(archive, "/fooservlet/static/foo.html");
+        createFile(archive, "/fooservlet/nonstatic/foo.html");
+        createFile(archive, "/noservlet/static/foo.html");
+        createFile(archive, "/noservlet/nonstatic/foo.html");
+        return archive;
     }
 
     @Test
