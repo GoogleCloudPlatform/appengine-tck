@@ -25,6 +25,8 @@
         </include>
 
         <include path="/with-expiration/**" expiration="3d 4h 5m 6s"/>
+
+        <include path="/with-default-expiration/**"/>
     </static-files>
 
 </appengine-web-app>

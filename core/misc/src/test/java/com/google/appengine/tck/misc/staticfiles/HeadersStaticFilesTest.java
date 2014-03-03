@@ -16,6 +16,7 @@
 package com.google.appengine.tck.misc.staticfiles;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,12 +43,16 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(Arquillian.class)
 public class HeadersStaticFilesTest extends StaticFilesTestBase {
 
+    public static final long _3D_4H_5M_6S_SECONDS = (long) (3 * 24 * 3600 + 4 * 3600 + 5 * 60 + 6);
+    public static final long DEFAULT_EXPIRATION_SECONDS = 600L; // 10 minutes
+
     @Deployment
     public static WebArchive getDeployment() {
         WebArchive archive = getTckDeployment(new TestContext()
             .setAppEngineWebXmlFile("appengine-web-headers-static-files.xml"));
         createFile(archive, "/with-header/foo.txt");
         createFile(archive, "/with-expiration/foo.txt");
+        createFile(archive, "/with-default-expiration/foo.txt");
         return archive;
     }
 
@@ -66,34 +71,45 @@ public class HeadersStaticFilesTest extends StaticFilesTestBase {
 
     @Test
     @RunAsClient
+    public void testDefaultExpiration(@ArquillianResource URL url) throws Exception {
+        assertPageExpiresIn(DEFAULT_EXPIRATION_SECONDS, url, "with-default-expiration/foo.txt");
+    }
+
+    @Test
+    @RunAsClient
     public void testExpiration(@ArquillianResource URL url) throws Exception {
-        assertResponse(url, "with-expiration/foo.txt", new Tester() {
+        assertPageExpiresIn(_3D_4H_5M_6S_SECONDS, url, "with-expiration/foo.txt");
+    }
+
+    private void assertPageExpiresIn(final long seconds, URL url, String path) throws URISyntaxException, IOException {
+        assertResponse(url, path, new Tester() {
             public void doAssert(HttpResponse response) throws IOException {
-                assertEquals("This is /with-expiration/foo.txt", EntityUtils.toString(response.getEntity()).trim());
                 assertHeaderPresent("Date", response);
                 assertHeaderPresent("Expires", response);
                 assertHeaderPresent("Cache-Control", response);
-                Date date = parseDate(response.getFirstHeader("Date").getValue());
-                Date expires = parseDate(response.getFirstHeader("Expires").getValue());
-                long seconds_3D_4H_5M_6S = (long) (3 * 24 * 3600 + 4 * 3600 + 5 * 60 + 6);
-                assertEquals(new Date(date.getTime() + 1000 * seconds_3D_4H_5M_6S), expires);
-                assertEquals("public, max-age=" + seconds_3D_4H_5M_6S, response.getFirstHeader("Cache-Control").getValue());
+                Date date = getDateHeader(response, "Date");
+                Date expectedExpiresDate = new Date(date.getTime() + 1000 * seconds);
+                assertEquals(expectedExpiresDate, getDateHeader(response, "Expires"));
+                assertEquals("public, max-age=" + seconds, response.getFirstHeader("Cache-Control").getValue());
             }
-
-            private Date parseDate(String date) {
-                try {
-                    return new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH).parse(date);
-                } catch (ParseException e) {
-                    throw new IllegalArgumentException("Cannot parse as date: " + date);
-                }
-            }
-
         });
+    }
+
+    private Date getDateHeader(HttpResponse response, String headerName) {
+        return parseDate(response.getFirstHeader(headerName).getValue());
     }
 
     private void assertHeaderPresent(String headerName, HttpResponse response) {
         assertNotNull("Expected to find header " + headerName + " in server response, but it was not there",
             response.getFirstHeader(headerName));
+    }
+
+    private Date parseDate(String date) {
+        try {
+            return new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH).parse(date);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Cannot parse as date: " + date);
+        }
     }
 
 }
