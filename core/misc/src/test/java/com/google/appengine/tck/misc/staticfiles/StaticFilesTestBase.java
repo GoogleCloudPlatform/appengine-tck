@@ -58,7 +58,7 @@ public class StaticFilesTestBase extends TestBase {
         });
     }
 
-    private void assertResponse(URL url, String path, Tester tester) throws URISyntaxException, IOException {
+    protected void assertResponse(URL url, String path, Tester tester) throws URISyntaxException, IOException {
         final HttpClient client = new DefaultHttpClient();
         try {
             HttpGet get = new HttpGet(new URL(url, path).toURI());
@@ -69,7 +69,7 @@ public class StaticFilesTestBase extends TestBase {
         }
     }
 
-    private static interface Tester {
+    protected static interface Tester {
         void doAssert(HttpResponse response) throws IOException;
     }
 }
