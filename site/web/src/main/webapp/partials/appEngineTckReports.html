@@ -6,7 +6,7 @@
                 <div data-ng-controller="TestReportsCtrl" data-ng-init="init(buildType.id)">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Tests</h3>
+                            <h3 class="panel-title">Tests <span data-ng-show="loading"><img src="../img/ajax-loader.gif"/></span><small class="text-danger" data-ng-hide="toTestAvailable">(No test available)</small></h3>
                         </div>
                         <div class="panel-body">
                             <div class="row">
