@@ -37,11 +37,62 @@ appEngineTckApp.controller('ReportsCtrl', function($scope, $window) {
     };
 });
 
+
 appEngineTckApp.controller('TestReportsCtrl', function($scope) {
-    $scope.selectedTestReportChart = {
-        type: 'PieChart',
+
+    $scope.showFullTreeMapTooltip = function(row, size) {
+        return '<div style="background:#fd9; padding:10px; border-style:solid">' +
+            '<span style="font-family:Courier"><b>' + $scope.selectedTestReportChart.data.rows[row].c[0].v + '</b></span><br/>' +
+            'Number of fails : ' + size + '</div>';
+    };
+
+    $scope.basicParamChart = {
         displayed: true,
         cssStyle: 'height: 500px;',
+        options: {
+            fill: 20,
+            displayExactValues: true,
+            chartArea: {
+                width: '90%',
+                height: '90%'
+            },
+            minColor: '#FFCC99',
+            midColor: '#FF6600',
+            maxColor: '#FF0000',
+            generateTooltip: $scope.showFullTreeMapTooltip
+        }
+    };
+
+    $scope.selectedTestReportTreemapChart = {
+        __proto__: $scope.basicParamChart,
+        type: 'TreeMap',
+        data: {
+            cols: [
+                {
+                    id: "testedPackage",
+                    label: "Tested Package",
+                    type: "string"
+                },
+                {
+                    id: "parent",
+                    label: "Parent",
+                    type: "string"
+                },
+                {
+                    id: "nbFails",
+                    label: "Nb fails",
+                    type: "number"
+                }
+            ],
+            rows: [
+            ]
+        },
+        drillDownLevel: 1
+    };
+
+    $scope.selectedTestReportPieChart = {
+        __proto__: $scope.basicParamChart,
+        type: 'PieChart',
         data: {
             cols: [
                 {
@@ -58,16 +109,10 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
             rows: [
             ]
         },
-        options: {
-            fill: 20,
-            displayExactValues: true,
-            chartArea: {
-                width: '90%',
-                height: '90%'
-            }
-        },
         drillDownLevel: 0
     };
+
+    $scope.selectedTestReportChart = $scope.selectedTestReportPieChart;
 
     $scope.lastTestReportsChart = {
         type: 'AreaChart',
@@ -120,26 +165,13 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
     $scope.selectedTestReportChartSelect = function(selectedItem) {
         var drillDownLevel = $scope.selectedTestReportChart.drillDownLevel;
 
-        if (drillDownLevel === 1) {
+        if (drillDownLevel === 1 && selectedItem.row === 0) {
+            $scope.selectedTestReportChart = $scope.selectedTestReportPieChart;
             $scope.selectedTestReportChart.data.rows = testReportToPieChartRows($scope.selectedTestReport);
-            $scope.selectedTestReportChart.drillDownLevel--;
         }
         else if (drillDownLevel === 0 && selectedItem.row === 1) {
-            $scope.selectedTestReportChart.data.rows = [];
-            var failedTestsByClassName = _.countBy($scope.selectedTestReport.failedTests, function(failedTest){ return failedTest.className; });
-
-            for (className in failedTestsByClassName) {
-                $scope.selectedTestReportChart.data.rows.push(
-                    {
-                        c: [
-                            { v: className },
-                            { v: failedTestsByClassName[className] }
-                        ]
-                    }
-                );
-            }
-
-            $scope.selectedTestReportChart.drillDownLevel++;
+            $scope.selectedTestReportChart = $scope.selectedTestReportTreemapChart;
+            $scope.selectedTestReportChart.data.rows = testReportToTreemapChartRows($scope.selectedTestReport);
         }
     };
 
@@ -149,8 +181,8 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
 
     $scope.$watch('selectedTestReport', function(newValue, oldValue) {
         if (newValue !== oldValue) {
+            $scope.selectedTestReportChart = $scope.selectedTestReportPieChart;
             $scope.selectedTestReportChart.data.rows = testReportToPieChartRows(newValue);
-            $scope.selectedTestReportChart.drillDownLevel = 0;
         }
     });
 
@@ -173,6 +205,8 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
     });
 
     $scope.init = function(buildTypeId) {
+        $scope.toTestAvailable = true;
+        $scope.loading = true;
         gapi.client.reports.tests.
             list({ buildTypeId: buildTypeId, limit: 10 }).
             execute(function(resp) {
@@ -181,7 +215,10 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
                         $scope.testReports = resp.items;
                         $scope.selectedTestReport = resp.items[0];
                     });
+                    $scope.loading = false;
                 }
+                $scope.toTestAvailable = !$scope.loading;
+                $scope.loading = false;
             });
     };
 
@@ -206,5 +243,52 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
                 ]
             }
         ];
+    };
+
+    var testReportToTreemapChartRows = function(report) {
+        var addedPackage = [];
+        var packagesByClass = {};
+
+        report.failedTests.forEach( function(test) {
+            packagesByClass[test.className] = test.packageName;
+        });
+
+        var rows = [
+            {
+                c: [
+                    { v: 'Global' },
+                    { v: null },
+                    { v: 0 }
+                ]
+            }
+        ];
+
+        var failedTestsByClassName = _.countBy(report.failedTests, function(failedTest){ return failedTest.className; });
+        for (className in failedTestsByClassName) {
+            if ( $.inArray(packagesByClass[className], addedPackage) === -1 ) {
+                rows.push(
+                    {
+                        c: [
+                            { v: packagesByClass[className] },
+                            { v: 'Global' },
+                            { v: 0 }
+                        ]
+                    }
+                );
+                addedPackage.push( packagesByClass[className] );
+            }
+
+            rows.push(
+                {
+                    c: [
+                        { v: className },
+                        { v: packagesByClass[className] },
+                        { v: failedTestsByClassName[className] }
+                    ]
+                }
+            );
+        }
+
+        return rows;
     };
 });
