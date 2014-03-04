@@ -278,11 +278,10 @@ Current core tests:
 * Modules
 * SQL
 
-As we don't want to overload the testing, each custom core set of tests should be under unique profile.
+All these tests also run by default, same way as API tests.
+(we used to require explicit profile, this is not the case anymore)
 
-e.g. in the case of Endpoints support we use -Pendpoints
-
-    mvn clean install -Pcapedwarf,endpoints
+    mvn clean install -Pcapedwarf
 
 This will run all Endpoints tests against CapeDwarf environment.
 
@@ -298,7 +297,7 @@ Current external tests:
 * Google Cloud Storage Client
 * JUnit Example
 
-Same as core tests, each custom external set of tests is under unique profile.
+MapReduce and Google Cloud Storage tests run by default, where DataNucleus and Example are under custom profiles.
 
 e.g. in the case of DataNucleus GAE plugin we use -Pdatanucleus
 
@@ -308,7 +307,7 @@ This will run all DataNucleus tests against CapeDwarf environment.
 
 e.g. running MapReduce tests against SDK
 
-    mvn clean install -Psdk,mapreduce -Dappengine.sdk.root=<PATH_TO_SDK>
+    mvn clean install -Psdk -Dappengine.sdk.root=<PATH_TO_SDK>
 
 Note: adapting the tests to run against real environment can sometime be a huge (bytecode) hack. :-)
 
