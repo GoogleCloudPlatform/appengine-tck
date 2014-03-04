@@ -41,7 +41,7 @@ Running MapReduce Tests
     cd appengine-tck
     mvn clean install
     cd ext/mapreduce
-    mvn clean install -Psdk,mapreduce -Dappengine.sdk.root=<PATH_TO_SDK>
+    mvn clean install -Psdk -Dappengine.sdk.root=<PATH_TO_SDK>
 
 Running Google Cloud Storage Client Tests
 -----------------------------------------
@@ -49,7 +49,7 @@ Running Google Cloud Storage Client Tests
     cd appengine-tck
     mvn clean install
     cd ext/gcs-client
-    mvn clean install -Pcapedwarf,gcs-client
+    mvn clean install -Pcapedwarf
 
 
 Running the Example

@@ -28,7 +28,7 @@
     <container qualifier="capedwarf">
         <configuration>
             <property name="jbossHome">${capedwarf.home}</property>
-            <property name="serverConfig">standalone-capedwarf.xml</property>
+            <property name="serverConfig">standalone-capedwarf-modules.xml</property>
             <property name="javaVmArguments">-Xmx1024m -XX:MaxPermSize=${jboss.max.perm.size:512m} -Djboss.mail.host=${jboss.mail.host:localhost}</property>
             <property name="allowConnectingToRunningServer">true</property>
         </configuration>
