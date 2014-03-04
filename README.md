@@ -227,7 +227,7 @@ the array of namespaces from @WithinNamespace' value is used for this setup.
 
 If you want to ignore this namespace testing, use -Dtck.ignore.within.namespace=true flag when running the tests.
 
-    mvn clean install -Dtck.ignore.within.namespace=true -Pcapedwarf,misc
+    mvn clean install -Dtck.ignore.within.namespace=true -Pcapedwarf
 
 Adapting the environment wrt tests
 ----------------------------------
@@ -283,7 +283,7 @@ All these tests also run by default, same way as API tests.
 
     mvn clean install -Pcapedwarf
 
-This will run all Endpoints tests against CapeDwarf environment.
+Simply run tests against selected environment / profile; e.g. CapeDwarf in this case.
 
 External tests
 --------------
