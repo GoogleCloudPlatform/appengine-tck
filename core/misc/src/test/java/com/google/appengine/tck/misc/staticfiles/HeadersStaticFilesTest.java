@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import com.google.appengine.tck.base.TestContext;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -36,6 +37,7 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:marko.luksa@gmail.com">Marko Luksa</a>
@@ -83,20 +85,33 @@ public class HeadersStaticFilesTest extends StaticFilesTestBase {
 
     private void assertPageExpiresIn(final long seconds, URL url, String path) throws URISyntaxException, IOException {
         assertResponse(url, path, new Tester() {
+            public static final long EXPIRES_TOLERANCE_SECONDS = 5;
+
             public void doAssert(HttpResponse response) throws IOException {
-                assertHeaderPresent("Date", response);
                 assertHeaderPresent("Expires", response);
                 assertHeaderPresent("Cache-Control", response);
-                Date date = getDateHeader(response, "Date");
-                Date expectedExpiresDate = new Date(date.getTime() + 1000 * seconds);
-                assertEquals(expectedExpiresDate, getDateHeader(response, "Expires"));
                 assertEquals("public, max-age=" + seconds, response.getFirstHeader("Cache-Control").getValue());
+
+                Date expires = getDateHeader(response, "Expires");
+                Date serverDate = getDateHeader(response, "Date");
+                if (serverDate == null) {
+                    long expectedExpiresMillis = (System.currentTimeMillis() / 1000 + seconds) * 1000;
+                    Date expectedApproximateExpiresDate = new Date(expectedExpiresMillis);
+                    long diff = Math.abs(expires.getTime() - expectedExpiresMillis);
+                    assertTrue(
+                        "Expected Expires to be within " + EXPIRES_TOLERANCE_SECONDS + "s of " + expectedApproximateExpiresDate + " but it was " + expires,
+                        diff < EXPIRES_TOLERANCE_SECONDS * 1000);
+                } else {
+                    Date expectedExpiresDate = new Date(serverDate.getTime() + 1000 * seconds);
+                    assertEquals(expectedExpiresDate, expires);
+                }
             }
         });
     }
 
     private Date getDateHeader(HttpResponse response, String headerName) {
-        return parseDate(response.getFirstHeader(headerName).getValue());
+        Header header = response.getFirstHeader(headerName);
+        return header == null ? null : parseDate(header.getValue());
     }
 
     private void assertHeaderPresent(String headerName, HttpResponse response) {
