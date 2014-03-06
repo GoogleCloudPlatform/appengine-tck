@@ -55,10 +55,6 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
             .addClass(QueryTestBase.class);
     }
 
-    protected boolean doExecute(String context) {
-        return execute(context);
-    }
-
     protected static Date createDate(int year, int month, int day) {
         Calendar cal = Calendar.getInstance();
         //noinspection MagicConstant

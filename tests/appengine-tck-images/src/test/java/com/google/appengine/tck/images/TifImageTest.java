@@ -21,6 +21,7 @@ import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService.OutputEncoding;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.Transform;
+import com.google.appengine.tck.env.Environment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,68 +36,58 @@ public class TifImageTest extends ImagesServiceTestBase {
     private static final String BEACH_TIF = "beach.tif";
     private static final OutputEncoding[] OUTPUT_ENCODE = {OutputEncoding.JPEG, OutputEncoding.PNG};
 
-    protected boolean doExecute(String context) {
-        return execute(context);
-    }
-
     @Test
     public void testResize() throws IOException {
-        if (doExecute("testResize")) {
-            int resizeWidth = 150;
-            int resizeHeigh = 150;
-            Transform transform = ImagesServiceFactory.makeResize(resizeWidth, resizeHeigh);
-            assertTransformation(transform, "Resize");
-        }
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
+        int resizeWidth = 150;
+        int resizeHeigh = 150;
+        Transform transform = ImagesServiceFactory.makeResize(resizeWidth, resizeHeigh);
+        assertTransformation(transform, "Resize");
     }
 
     @Test
     public void testRotate() throws IOException {
-        if (doExecute("testRotate")) {
-            int rotageDegree = 90;
-            Transform transform = ImagesServiceFactory.makeRotate(rotageDegree);
-            assertTransformation(transform, "Rotate");
-        }
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
+        int rotageDegree = 90;
+        Transform transform = ImagesServiceFactory.makeRotate(rotageDegree);
+        assertTransformation(transform, "Rotate");
     }
 
     @Test
     public void testHorizontalFlip() throws IOException {
-        if (doExecute("testHorizonalFlip")) {
-            Transform transform = ImagesServiceFactory.makeHorizontalFlip();
-            assertTransformation(transform, "HorizontalFlip");
-        }
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
+        Transform transform = ImagesServiceFactory.makeHorizontalFlip();
+        assertTransformation(transform, "HorizontalFlip");
     }
 
     @Test
     public void testVerticalFlip() throws IOException {
-        if (doExecute("testVerticalFlip")) {
-            Transform transform = ImagesServiceFactory.makeVerticalFlip();
-            assertTransformation(transform, "VerticalFlip");
-        }
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
+        Transform transform = ImagesServiceFactory.makeVerticalFlip();
+        assertTransformation(transform, "VerticalFlip");
     }
 
     @Test
     public void testCrop() throws IOException {
-        if (doExecute("testCrop")) {
-            double cropLeftX = 0.0;
-            double cropTopY = 0.0;
-            double cropRightX = 0.5;
-            double cropBottomY = 0.5;
-            Transform transform = ImagesServiceFactory.makeCrop(
-                cropLeftX,
-                cropTopY,
-                cropRightX,
-                cropBottomY
-            );
-            assertTransformation(transform, "Crop");
-        }
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
+        double cropLeftX = 0.0;
+        double cropTopY = 0.0;
+        double cropRightX = 0.5;
+        double cropBottomY = 0.5;
+        Transform transform = ImagesServiceFactory.makeCrop(
+            cropLeftX,
+            cropTopY,
+            cropRightX,
+            cropBottomY
+        );
+        assertTransformation(transform, "Crop");
     }
 
     @Test
     public void testFeelingLucky() throws IOException {
-        if (doExecute("testFeelingLucky")) {
-            Transform transform = ImagesServiceFactory.makeImFeelingLucky();
-            assertTransformation(transform, "ImFeelingLucky");
-        }
+        assumeEnvironment(Environment.APPSPOT);
+        Transform transform = ImagesServiceFactory.makeImFeelingLucky();
+        assertTransformation(transform, "ImFeelingLucky");
     }
 
     private void assertTransformation(Transform transform, String transformType) throws IOException {

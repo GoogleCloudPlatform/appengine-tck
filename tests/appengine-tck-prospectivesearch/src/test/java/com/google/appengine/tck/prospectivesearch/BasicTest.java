@@ -26,6 +26,7 @@ import com.google.appengine.api.prospectivesearch.ProspectiveSearchService;
 import com.google.appengine.api.prospectivesearch.ProspectiveSearchServiceFactory;
 import com.google.appengine.api.prospectivesearch.QuerySyntaxException;
 import com.google.appengine.api.prospectivesearch.Subscription;
+import com.google.appengine.tck.env.Environment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -119,14 +120,14 @@ public class BasicTest extends ProspectiveTestBase {
 
     @Test
     public void testSubscriptionWithoutLeaseTimeSecondsPracticallyNeverExpires() {
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
+
         service.subscribe(TOPIC, "mySubscription", 0, "title:hello", createSchema("title", FieldType.STRING));
         Subscription subscription = service.getSubscription(TOPIC, "mySubscription");
         long expirationTime = subscription.getExpirationTime();
 
-        if (execute("testSubscriptionWithoutLeaseTimeSecondsPracticallyNeverExpires")) {
-            long expected = todayPlusHundredYears().getTime() / 1000;
-            assertTrue("subscription should not expire at least 100 years", expirationTime > expected);
-        }
+        long expected = todayPlusHundredYears().getTime() / 1000;
+        assertTrue("subscription should not expire at least 100 years", expirationTime > expected);
     }
 
     @Test

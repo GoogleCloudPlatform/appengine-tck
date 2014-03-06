@@ -34,6 +34,7 @@ import javax.mail.internet.MimeMessage;
 import com.google.appengine.api.mail.MailService;
 import com.google.appengine.api.mail.MailServiceFactory;
 import com.google.appengine.api.utils.SystemProperty;
+import com.google.appengine.tck.env.Environment;
 import com.google.appengine.tck.mail.support.MimeProperties;
 import com.google.appengine.tck.temp.TempDataFilter;
 import org.jboss.arquillian.junit.Arquillian;
@@ -78,12 +79,10 @@ public class MailServiceTest extends MailTestBase {
         clear();
     }
 
-    protected boolean doExecute(String context) {
-        return execute(context);
-    }
-
     @Test
     public void testSendAndReceiveBasicMessage() throws Exception {
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
+
         MimeProperties mp = new MimeProperties();
         mp.subject = "Basic-Message-Test-" + System.currentTimeMillis();
         mp.from = getEmail("from-basic-test", EmailMessageField.FROM);
@@ -98,15 +97,13 @@ public class MailServiceTest extends MailTestBase {
 
         mailService.send(msg);
 
-        if (doExecute("testSendAndReceiveBasicMessage")) {
-            assertMessageReceived(mp);
-        } else {
-            log.info("Not running on production, skipping assert.");
-        }
+        assertMessageReceived(mp);
     }
 
     @Test
     public void testSendAndReceiveFullMessage() throws Exception {
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
+
         final String textBody = "I am bold.";
         final String htmlBody = "<html><body><b>I am bold.</b></body></html>";
 
@@ -140,15 +137,13 @@ public class MailServiceTest extends MailTestBase {
         assertEquals(textBody, msg.getTextBody());
         assertEquals(htmlBody, msg.getHtmlBody());
 
-        if (doExecute("testSendAndReceiveFullMessage")) {
-            assertMessageReceived(mp);
-        } else {
-            log.info("Not running on production, skipping assert.");
-        }
+        assertMessageReceived(mp);
     }
 
     @Test
     public void testValidAttachment() throws Exception {
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
+
         MimeProperties mp = new MimeProperties();
         mp.subject = "Valid-Attachment-Test-" + System.currentTimeMillis();
         mp.from = getEmail("from-test-valid-attachment", EmailMessageField.FROM);
@@ -164,11 +159,7 @@ public class MailServiceTest extends MailTestBase {
 
         mailService.send(msg);
 
-        if (doExecute("testValidAttachment")) {
-            assertMessageReceived(mp);
-        } else {
-            log.info("Not running on production, skipping assert.");
-        }
+        assertMessageReceived(mp);
     }
 
     @Test
@@ -234,6 +225,8 @@ public class MailServiceTest extends MailTestBase {
 
     @Test
     public void testAllowedHeaders() throws Exception {
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
+
         MimeProperties mp = new MimeProperties();
         mp.subject = "Allowed-Headers-Test-" + System.currentTimeMillis();
         mp.from = getEmail("from-test-header", EmailMessageField.FROM);
@@ -253,16 +246,14 @@ public class MailServiceTest extends MailTestBase {
         msg.setHeaders(headers);
         mailService.send(msg);
 
-        if (doExecute("testAllowedHeaders")) {
-            MimeProperties receivedMp = pollForMatchingMail(mp);
-            assertHeadersExist(receivedMp, createExpectedHeadersVerifyList(headersMap));
-        } else {
-            log.info("Not running on production, skipping assert.");
-        }
+        MimeProperties receivedMp = pollForMatchingMail(mp);
+        assertHeadersExist(receivedMp, createExpectedHeadersVerifyList(headersMap));
     }
 
     @Test
     public void testJavaxTransportSendAndReceiveBasicMessage() throws Exception {
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
+
         Session session = instance(Session.class);
         if (session == null) {
             session = Session.getDefaultInstance(new Properties(), null);
@@ -283,11 +274,7 @@ public class MailServiceTest extends MailTestBase {
 
         Transport.send(msg);
 
-        if (doExecute("testJavaxTransportSendAndReceiveBasicMessage")) {
-            assertMessageReceived(mp);
-        } else {
-            log.info("Not running on production, skipping assert.");
-        }
+        assertMessageReceived(mp);
     }
 
     @Test
@@ -304,6 +291,8 @@ public class MailServiceTest extends MailTestBase {
 
     @Test
     public void testTextBodyAutomaticallyCreatedFromHtmlBody() throws Exception {
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
+
         final String textBody = "I am bold.";
         final String htmlBody = "<html><body><b>I am bold.</b></body></html>";
 
@@ -319,11 +308,7 @@ public class MailServiceTest extends MailTestBase {
 
         mailService.send(msg);
 
-        if (doExecute("testSendAndReceiveFullMessage")) {
-            assertMessageReceived(mp);
-        } else {
-            log.info("Not running on production, skipping assert.");
-        }
+        assertMessageReceived(mp);
     }
 
     @Ignore("We need to discuss whether to test this or not.")

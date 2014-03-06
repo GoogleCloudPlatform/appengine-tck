@@ -23,6 +23,7 @@ import java.util.Set;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.users.UserServiceFailureException;
+import com.google.appengine.tck.env.Environment;
 import com.google.appengine.tck.users.support.ServletAnswer;
 import com.google.appengine.tck.util.AuthClientException;
 import com.google.appengine.tck.util.GaeAuthClient;
@@ -227,9 +228,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLoginUrlProd() throws Exception {
-        if (!execute("testCreateLoginUrlProd")) {
-            return;
-        }
+        assumeEnvironment(Environment.APPSPOT);
 
         String start = "https://www.google.com/accounts/ServiceLogin?service=ah";
         String createdURL = UserServiceFactory.getUserService().createLoginURL(DEST_URL);
@@ -243,9 +242,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLoginUrlDev() throws Exception {
-        if (!execute("testCreateLoginUrlDev")) {
-            return;
-        }
+        assumeEnvironment(Environment.CAPEDWARF, Environment.SDK);
 
         String destURLenc = "/_ah/login?continue=" + DEST_URL_ENCODED_SINGLE;
         String createdURL = UserServiceFactory.getUserService().createLoginURL(DEST_URL);
@@ -254,9 +251,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLoginUrlDomainProd() throws Exception {
-        if (!execute("testCreateLoginUrlDomainProd")) {
-            return;
-        }
+        assumeEnvironment(Environment.APPSPOT);
 
         String start = "https://www.google.com/accounts/ServiceLogin?service=ah";
         String authDomain = "othergaetcktest.org";
@@ -273,9 +268,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLoginUrlDomainDev() throws Exception {
-        if (!execute("testCreateLoginUrlDomainDev")) {
-            return;
-        }
+        assumeEnvironment(Environment.CAPEDWARF, Environment.SDK);
 
         String authDomain = "othergaetcktest.org";
         String destURLenc = "/_ah/login?continue=" + DEST_URL_ENCODED_SINGLE;
@@ -286,9 +279,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLoginUrlFederatedNotSetProd() throws Exception {
-        if (!execute("testCreateLoginUrlFederatedNotSetProd")) {
-            return;
-        }
+        assumeEnvironment(Environment.APPSPOT);
 
         // Assuming Authentication Type set to Google Accounts, so org should be blank.
         String userOrg = ApiProxy.getCurrentEnvironment()
@@ -314,9 +305,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLoginUrlFederatedNotSetDev() throws Exception {
-        if (!execute("testCreateLoginUrlFederatedNotSetDev")) {
-            return;
-        }
+        assumeEnvironment(Environment.CAPEDWARF, Environment.SDK);
 
         String authDomain = "othergaetcktest.org";
         String destURLenc = "/_ah/login?continue=" + DEST_URL_ENCODED_SINGLE;
@@ -327,9 +316,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLogoutUrlProd() throws Exception {
-        if (!execute("testCreateLogoutUrlProd")) {
-            return;
-        }
+        assumeEnvironment(Environment.APPSPOT);
 
         String contains1 = "https://www.google.com/accounts/Logout";
         String createdURL = UserServiceFactory.getUserService().createLogoutURL(DEST_URL);
@@ -343,9 +330,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLogoutUrlDev() throws Exception {
-        if (!execute("testCreateLogoutUrlDev")) {
-            return;
-        }
+        assumeEnvironment(Environment.CAPEDWARF, Environment.SDK);
 
         String destURLenc = "/_ah/logout?continue=" + DEST_URL_ENCODED_SINGLE;
         String createdURL = UserServiceFactory.getUserService().createLogoutURL(DEST_URL);
@@ -354,9 +339,7 @@ public class UserServiceTest extends UserTestBase {
 
     @Test
     public void testCreateLogoutUrlDevWithAuthDomain() throws Exception {
-        if (!execute("testCreateLogoutUrlDevWithAuthDomain")) {
-            return;
-        }
+        assumeEnvironment(Environment.CAPEDWARF, Environment.SDK);
 
         String authDomain = "othergaetcktest.org";
         String destURLenc = "/_ah/logout?continue=" + DEST_URL_ENCODED_SINGLE;

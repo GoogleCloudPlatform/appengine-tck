@@ -25,6 +25,7 @@ import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.files.FileWriteChannel;
 import com.google.appengine.api.images.ServingUrlOptions;
+import com.google.appengine.tck.env.Environment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
 import org.junit.Before;
@@ -92,21 +93,25 @@ public class ImageServingUrlTest extends ImagesServiceTestBase {
     }
 
     @Test
-    public void servingUrlWithSecureFlag() throws Exception {
+    public void servingUrlWithSecureFlagFalse() throws Exception {
         ServingUrlOptions servingUrlOptions = ServingUrlOptions.Builder.withBlobKey(blobKey);
         String url = imagesService.getServingUrl(servingUrlOptions.crop(false));
         assertStartsWith("http://", url);
 
         url = imagesService.getServingUrl(servingUrlOptions.imageSize(32).crop(false).secureUrl(false));
         assertStartsWith("http://", url);
+    }
 
-        if (execute("servingUrlWithSecureFlag")) {
-            url = imagesService.getServingUrl(servingUrlOptions.secureUrl(true));
-            assertStartsWith("https://", url);
+    @Test
+    public void servingUrlWithSecureFlagTrue() throws Exception {
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
 
-            url = imagesService.getServingUrl(servingUrlOptions.imageSize(32).crop(false).secureUrl(true));
-            assertStartsWith("https://", url);
-        }
+        ServingUrlOptions servingUrlOptions = ServingUrlOptions.Builder.withBlobKey(blobKey);
+        String url = imagesService.getServingUrl(servingUrlOptions.secureUrl(true));
+        assertStartsWith("https://", url);
+
+        url = imagesService.getServingUrl(servingUrlOptions.imageSize(32).crop(false).secureUrl(true));
+        assertStartsWith("https://", url);
     }
 
     @Test
@@ -125,15 +130,15 @@ public class ImageServingUrlTest extends ImagesServiceTestBase {
 
     @Test
     public void servingUrlWithOptionsWithSecureFlag() throws Exception {
-        if (execute("servingUrlWithOptionsWithSecureFlag")) {
-            ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
 
-            String url = imagesService.getServingUrl(options);
-            assertStartsWith("http://", url);
+        ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
 
-            url = imagesService.getServingUrl(options.secureUrl(true));
-            assertStartsWith("https://", url);
-        }
+        String url = imagesService.getServingUrl(options);
+        assertStartsWith("http://", url);
+
+        url = imagesService.getServingUrl(options.secureUrl(true));
+        assertStartsWith("https://", url);
     }
 
     @Test

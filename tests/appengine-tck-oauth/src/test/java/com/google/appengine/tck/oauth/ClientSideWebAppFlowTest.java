@@ -27,6 +27,7 @@ import com.google.appengine.api.oauth.InvalidOAuthParametersException;
 import com.google.appengine.api.oauth.InvalidOAuthTokenException;
 import com.google.appengine.api.oauth.OAuthService;
 import com.google.appengine.api.oauth.OAuthServiceFactory;
+import com.google.appengine.tck.env.Environment;
 import com.google.appengine.tck.event.Property;
 import com.google.appengine.tck.oauth.support.OAuthServletAnswer;
 import org.apache.http.HttpResponse;
@@ -141,9 +142,7 @@ public class ClientSideWebAppFlowTest extends OAuthTestBase {
     @Test
     @RunAsClient
     public void testNoScopeThrowsInvalidOAuthTokenException(@ArquillianResource URL url) throws Exception {
-        if (doIgnore("testNoScopeThrowsInvalidOAuthTokenException")) {
-            return;
-        }
+        assumeEnvironment(Environment.APPSPOT);
 
         String accessToken = getGoogleAccessToken(nonAdminTestingAccountEmail, nonAdminTestingAccountPw,
             oauthClientId, oauthRedirectUri, SCOPE_USER);
@@ -159,9 +158,8 @@ public class ClientSideWebAppFlowTest extends OAuthTestBase {
     @Test
     @RunAsClient
     public void testInvalidScopeThrowsInvalidOAuthTokenException(@ArquillianResource URL url) throws Exception {
-        if (doIgnore("testInvalidScopeThrowsInvalidOAuthTokenException")) {
-            return;
-        }
+        assumeEnvironment(Environment.APPSPOT);
+
         String accessToken = getGoogleAccessToken(nonAdminTestingAccountEmail, nonAdminTestingAccountPw,
             oauthClientId, oauthRedirectUri, SCOPE_USER);
 
@@ -177,9 +175,8 @@ public class ClientSideWebAppFlowTest extends OAuthTestBase {
     @Test
     @RunAsClient
     public void testUnauthorizedMultipleScopeDoesNotAuthenticate(@ArquillianResource URL url) throws Exception {
-        if (doIgnore("testUnauthorizedMultipleScopeDoesNotAuthenticate")) {
-            return;
-        }
+        assumeEnvironment(Environment.APPSPOT);
+
         String accessToken = getGoogleAccessToken(nonAdminTestingAccountEmail, nonAdminTestingAccountPw,
             oauthClientId, oauthRedirectUri, SCOPE_USER);
 
@@ -208,9 +205,8 @@ public class ClientSideWebAppFlowTest extends OAuthTestBase {
     @Test
     @RunAsClient
     public void testGetClientId(@ArquillianResource URL url) {
-        if (doIgnore("testGetClientId")) {
-            return;
-        }
+        assumeEnvironment(Environment.APPSPOT);
+
         String accessToken = getGoogleAccessToken(nonAdminTestingAccountEmail, nonAdminTestingAccountPw,
             oauthClientId, oauthRedirectUri, SCOPE_USER);
 

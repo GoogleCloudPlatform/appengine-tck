@@ -16,9 +16,12 @@
 package com.google.appengine.tck.env.appspot;
 
 import com.google.appengine.tck.event.AbstractPropertyLifecycle;
+import com.google.appengine.tck.event.TestLifecycle;
+import org.kohsuke.MetaInfServices;
 
 /**
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
  */
+@MetaInfServices(TestLifecycle.class)
 public class AppspotPropertyLifecycle extends AbstractPropertyLifecycle {
 }

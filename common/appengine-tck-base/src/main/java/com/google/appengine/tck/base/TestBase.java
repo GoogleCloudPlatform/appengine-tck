@@ -21,10 +21,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
@@ -52,6 +55,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Assume;
 
 /**
  * Base test class for all GAE TCK tests.
@@ -99,6 +103,8 @@ public class TestBase {
         war.addPackage(TestLifecycles.class.getPackage());
         // temp data
         war.addPackage(TempData.class.getPackage());
+        // env
+        war.addClass(Environment.class);
 
         // web.xml
         if (context.getWebXmlFile() != null) {
@@ -173,11 +179,25 @@ public class TestBase {
         Assert.assertTrue("Expected to match regexp " + regexp + " but was: " + str, str != null && str.matches(regexp));
     }
 
+    /**
+     * Assume certain environment.
+     * This way we can ignore tests at runtime.
+     *
+     * @param supported supported envs
+     */
+    protected void assumeEnvironment(Environment... supported) {
+        Set<Environment> set = new HashSet<>(Arrays.asList(supported));
+        Assume.assumeTrue(set.contains(getEnvironment()));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Deprecated // use assumeEnvironment instead
     protected boolean execute(String context) {
         Boolean result = executeRaw(context);
         return (result != null && result);
     }
 
+    @Deprecated // use assumeEnvironment instead
     protected Boolean executeRaw(String context) {
         ExecutionLifecycleEvent event = TestLifecycles.createExecutionLifecycleEvent(getClass(), context);
         TestLifecycles.before(event);
@@ -188,10 +208,6 @@ public class TestBase {
         Property result = property(propertyName);
         Boolean required = result.required();
         return (required == null || required); // by default null means it's required
-    }
-
-    protected boolean doIgnore(String context) {
-        return execute(context) == false;
     }
 
     protected Property property(String propertyName) {

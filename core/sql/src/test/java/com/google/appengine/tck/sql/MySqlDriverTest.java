@@ -18,6 +18,7 @@ package com.google.appengine.tck.sql;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import com.google.appengine.tck.env.Environment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,10 +33,7 @@ import org.junit.runner.RunWith;
 public class MySqlDriverTest extends CloudSqlTestBase {
     @Test
     public void testConnectionMySqlDriver() throws Exception {
-        if (doIgnore("testConnectionMySqlDriver")) {
-            log.info("This test is not intended to run with the dev env.");
-            return;
-        }
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
 
         // This needs to be enabled in appengine-web.xml to make the jdbc driver available.
         //   <use-google-connector-j>true</use-google-connector-j>

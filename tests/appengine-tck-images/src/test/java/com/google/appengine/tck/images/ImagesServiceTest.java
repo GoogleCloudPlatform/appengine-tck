@@ -21,6 +21,7 @@ import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService.OutputEncoding;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.Transform;
+import com.google.appengine.tck.env.Environment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,13 +49,13 @@ public class ImagesServiceTest extends ImagesServiceTestBase {
 
     @Test
     public void testFeelLucky() throws IOException {
-        // I'm Feeling Lucky is not available in dev_appserver
-        if (execute("testFeelLucky")) {
-            Transform transform = ImagesServiceFactory.makeImFeelingLucky();
-            for (String sfile : FNAMES) {
-                for (OutputEncoding encoding : ENCODES) {
-                    applyAndVerify(sfile, transform, ChkType.FLIP, encoding);
-                }
+        // I'm Feeling Lucky is not available in dev_appserver, CapeDwarf
+        assumeEnvironment(Environment.APPSPOT);
+
+        Transform transform = ImagesServiceFactory.makeImFeelingLucky();
+        for (String sfile : FNAMES) {
+            for (OutputEncoding encoding : ENCODES) {
+                applyAndVerify(sfile, transform, ChkType.FLIP, encoding);
             }
         }
     }

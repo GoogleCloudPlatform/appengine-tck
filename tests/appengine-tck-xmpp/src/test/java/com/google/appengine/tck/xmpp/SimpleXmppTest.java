@@ -32,6 +32,7 @@ import com.google.appengine.api.xmpp.MessageType;
 import com.google.appengine.api.xmpp.SendResponse;
 import com.google.appengine.api.xmpp.XMPPService;
 import com.google.appengine.api.xmpp.XMPPServiceFactory;
+import com.google.appengine.tck.env.Environment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -73,9 +74,7 @@ public class SimpleXmppTest extends XmppTestBase {
 
     @Test
     public void testXmppSendMessageAndReceiveDefaultJid() {
-        if (execute("testXmppSendMessageAndReceiveDefaultJid") == false) {
-            return;
-        }
+        assumeEnvironment(Environment.APPSPOT);
 
         JID fromJID = new JID(appId + "@" + xmppServer);
         // We're sending messages to ourselves, so toJID and fromJID are the same.

@@ -20,6 +20,7 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 
 import com.google.appengine.api.rdbms.AppEngineDriver;
+import com.google.appengine.tck.env.Environment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,10 +35,7 @@ import org.junit.runner.RunWith;
 public class GaeDriverTest extends CloudSqlTestBase {
     @Test
     public void testConnectionAppEngineDriver() throws Exception {
-        if (doIgnore("testConnectionAppEngineDriver")) {
-            log.info("This test is not intended to run with the dev env.");
-            return;
-        }
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
 
         final Driver driver = new AppEngineDriver();
 

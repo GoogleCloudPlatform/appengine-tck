@@ -30,6 +30,7 @@ import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
 import com.google.appengine.api.appidentity.AppIdentityServiceFailureException;
 import com.google.appengine.api.appidentity.PublicCertificate;
+import com.google.appengine.tck.env.Environment;
 import com.google.appengine.tck.event.Property;
 import com.google.apphosting.api.ApiProxy;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -125,13 +126,11 @@ public class AppIdentityServiceTest extends AppIdentityTestBase {
 
     @Test
     public void testGetServiceAccountName() {
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
+
         String serviceAccountName = appIdentity.getServiceAccountName();
         String errMsg = serviceAccountName + " is not valid.";
-        if (execute("testGetServiceAccountName")) {
-            Assert.assertTrue(errMsg, EmailValidator.getInstance().isValid(serviceAccountName));
-        } else {
-            Assert.assertTrue(!serviceAccountName.isEmpty());
-        }
+        Assert.assertTrue(errMsg, EmailValidator.getInstance().isValid(serviceAccountName));
     }
 
     @Test
@@ -240,7 +239,7 @@ public class AppIdentityServiceTest extends AppIdentityTestBase {
             }
         }
         String summary = "totalCerts:" + certsForApp.size() + ": totalValid:" + totalValid +
-                " totalInvalid:" + totalInvalid + " totalExceptions:" + allExceptions.size();
+            " totalInvalid:" + totalInvalid + " totalExceptions:" + allExceptions.size();
         log.info(summary);
 
         // At least one certificate caused an exception so make test Error.

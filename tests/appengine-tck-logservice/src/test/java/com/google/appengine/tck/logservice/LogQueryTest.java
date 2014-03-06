@@ -25,6 +25,7 @@ import com.google.appengine.api.log.LogQuery;
 import com.google.appengine.api.log.LogService;
 import com.google.appengine.api.log.LogServiceFactory;
 import com.google.appengine.api.log.RequestLogs;
+import com.google.appengine.tck.env.Environment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -126,9 +127,8 @@ public class LogQueryTest extends LoggingTestBase {
     @InSequence(20)
     public void testIncomplete() throws Exception {
         // GAE dev server doesn't handle this
-        if (execute("testIncomplete") == false) {
-            return;
-        }
+        assumeEnvironment(Environment.APPSPOT, Environment.CAPEDWARF);
+
         String infoLogMsg = "info_incompleteRequest-" + System.currentTimeMillis();
         log.info(infoLogMsg);
         flush(log);
