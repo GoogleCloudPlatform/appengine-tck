@@ -49,6 +49,7 @@ import com.google.appengine.tck.event.Property;
 import com.google.appengine.tck.event.PropertyLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycles;
+import com.google.appengine.tck.mail.EmailAddressFormatter;
 import com.google.appengine.tck.temp.TempData;
 import com.google.appengine.tck.temp.TempDataFilter;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -103,6 +104,8 @@ public class TestBase {
         war.addPackage(TestLifecycles.class.getPackage());
         // temp data
         war.addPackage(TempData.class.getPackage());
+        // mail
+        war.addPackage(EmailAddressFormatter.class.getPackage());
         // env
         war.addClass(Environment.class);
 
