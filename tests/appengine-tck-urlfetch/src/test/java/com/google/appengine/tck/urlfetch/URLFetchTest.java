@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -29,7 +30,6 @@ import com.google.appengine.api.urlfetch.HTTPRequest;
 import com.google.appengine.api.urlfetch.HTTPResponse;
 import com.google.appengine.api.urlfetch.URLFetchService;
 import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
-import com.google.appengine.repackaged.com.google.common.base.Charsets;
 import com.google.appengine.tck.urlfetch.support.FetchServlet;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
@@ -41,6 +41,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 public class URLFetchTest extends URLFetchTestBase {
+    private static Charset UTF_8 = Charset.forName("UTF-8");
 
     @Test
     public void testAsyncOps() throws Exception {
@@ -85,7 +86,7 @@ public class URLFetchTest extends URLFetchTestBase {
 
         HTTPRequest req = new HTTPRequest(url, HTTPMethod.POST);
         req.setHeader(new HTTPHeader("Content-Type", "application/octet-stream"));
-        req.setPayload("Tralala".getBytes(Charsets.UTF_8));
+        req.setPayload("Tralala".getBytes(UTF_8));
 
         HTTPResponse response = service.fetch(req);
         String content = new String(response.getContent());
@@ -100,7 +101,7 @@ public class URLFetchTest extends URLFetchTestBase {
 
         HTTPRequest req = new HTTPRequest(url, HTTPMethod.POST);
         req.setHeader(new HTTPHeader("Content-Type", "application/octet-stream"));
-        req.setPayload("Headers!".getBytes(Charsets.UTF_8));
+        req.setPayload("Headers!".getBytes(UTF_8));
 
         HTTPResponse response = service.fetch(req);
 

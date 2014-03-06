@@ -16,6 +16,9 @@
 package com.google.appengine.tck.images;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.google.appengine.api.images.Composite;
 import com.google.appengine.api.images.CompositeTransform;
@@ -23,7 +26,6 @@ import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesService.OutputEncoding;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.OutputSettings;
-import com.google.appengine.repackaged.com.google.common.collect.Lists;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,13 +35,17 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 public class CompositeTest extends ImagesServiceTestBase {
+    @SuppressWarnings("unchecked")
+    private static <T> List<T> newArrayList(T... cs) {
+        return new ArrayList<>(Arrays.asList(cs));
+    }
 
     @Test
     public void testDefault() throws IOException {
         // w - 200, h - 143
         Image originalImage = readImage(CAPEDWARF_PNG);
         Composite c1 = ImagesServiceFactory.makeComposite(originalImage, 0, 0, 1, Composite.Anchor.BOTTOM_LEFT);
-        Image ci = imagesService.composite(Lists.newArrayList(c1), 200, 143, 0);
+        Image ci = imagesService.composite(newArrayList(c1), 200, 143, 0);
         assertImages(null, originalImage, ci);
 
     }
@@ -48,7 +54,7 @@ public class CompositeTest extends ImagesServiceTestBase {
     public void testEncoding() throws IOException {
         Image originalImage = readImage(CAPEDWARF_PNG);
         Composite c1 = ImagesServiceFactory.makeComposite(originalImage, 0, 0, 1, Composite.Anchor.BOTTOM_LEFT);
-        Image ci = imagesService.composite(Lists.newArrayList(c1), 200, 143, 0, OutputEncoding.JPEG);
+        Image ci = imagesService.composite(newArrayList(c1), 200, 143, 0, OutputEncoding.JPEG);
         assertImages(null, originalImage, ci);
     }
 
@@ -56,7 +62,7 @@ public class CompositeTest extends ImagesServiceTestBase {
     public void testSettings() throws IOException {
         Image originalImage = readImage(CAPEDWARF_PNG);
         Composite c1 = ImagesServiceFactory.makeComposite(originalImage, 0, 0, 1, Composite.Anchor.BOTTOM_LEFT);
-        Image ci = imagesService.composite(Lists.newArrayList(c1), 200, 143, 0, new OutputSettings(OutputEncoding.JPEG));
+        Image ci = imagesService.composite(newArrayList(c1), 200, 143, 0, new OutputSettings(OutputEncoding.JPEG));
         assertImages(null, originalImage, ci);
     }
 
@@ -69,7 +75,7 @@ public class CompositeTest extends ImagesServiceTestBase {
         Image result = imagesService.applyTransform(transform, originalImage);
         assertImages(transform, originalImage, result);
 
-        transform = ImagesServiceFactory.makeCompositeTransform(Lists.newArrayList(ImagesServiceFactory.makeVerticalFlip(), ImagesServiceFactory.makeVerticalFlip()));
+        transform = ImagesServiceFactory.makeCompositeTransform(newArrayList(ImagesServiceFactory.makeVerticalFlip(), ImagesServiceFactory.makeVerticalFlip()));
         originalImage = readImage(CAPEDWARF_PNG);
         result = imagesService.applyTransform(transform, originalImage);
         assertImages(transform, originalImage, result);
