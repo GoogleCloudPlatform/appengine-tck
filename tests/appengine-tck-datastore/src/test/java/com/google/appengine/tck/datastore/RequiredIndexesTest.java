@@ -23,7 +23,6 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.tck.env.Environment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -154,8 +153,7 @@ public class RequiredIndexesTest extends QueryTestBase {
     }
 
     @Test
-    public void testQueryWithEqualityAndInequalityFiltersAndSortOnASinglePropertyDoesNotRequireConfiguredIndex() throws Exception {
-        assumeEnvironment(Environment.CAPEDWARF, Environment.SDK);
+    public void testQueryWithEqualityAndInequalityFiltersAndSortOnASinglePropertyDoesRequireConfiguredIndex() throws Exception {
         try {
             executeQuery(
                 new Query("Unindexed")
@@ -171,8 +169,7 @@ public class RequiredIndexesTest extends QueryTestBase {
     }
 
     @Test
-    public void testAncestorQueryWithEqualityAndInequalityFiltersAndSortOnASinglePropertyDoesNotRequireConfiguredIndex() throws Exception {
-        assumeEnvironment(Environment.CAPEDWARF, Environment.SDK);
+    public void testAncestorQueryWithEqualityAndInequalityFiltersAndSortOnASinglePropertyDoesRequireConfiguredIndex() throws Exception {
         try {
             executeQuery(
                 new Query("Unindexed")
