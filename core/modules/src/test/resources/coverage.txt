@@ -1,2 +1,2 @@
-com.google.appengine.api.labs.modules.ModulesService
-com.google.appengine.api.labs.modules.ModulesServiceFactory
+com.google.appengine.api.modules.ModulesService
+com.google.appengine.api.modules.ModulesServiceFactory

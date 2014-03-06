@@ -31,10 +31,6 @@
             <artifactId>appengine-gcs-client</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.google.appengine</groupId>
-            <artifactId>appengine-api-labs</artifactId>
-        </dependency>
     </dependencies>
 
     <profiles>

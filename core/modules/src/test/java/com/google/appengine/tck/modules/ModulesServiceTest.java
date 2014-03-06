@@ -19,8 +19,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.google.appengine.api.labs.modules.ModulesService;
-import com.google.appengine.api.labs.modules.ModulesServiceFactory;
+import com.google.appengine.api.modules.ModulesService;
+import com.google.appengine.api.modules.ModulesServiceFactory;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.protocol.modules.OperateOnModule;
@@ -41,11 +41,7 @@ public class ModulesServiceTest extends ModulesTestBase {
     @Deployment
     public static EnterpriseArchive getDeployment() {
         WebArchive module1 = getTckSubDeployment(1).addClass(ModulesServiceTest.class);
-        addModulesLib(module1);
-
         WebArchive module2 = getTckSubDeployment(2).addClass(ModulesServiceTest.class);
-        addModulesLib(module2);
-
         return getEarDeployment(module1, module2);
     }
 

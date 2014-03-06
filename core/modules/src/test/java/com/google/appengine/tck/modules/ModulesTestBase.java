@@ -17,7 +17,6 @@ package com.google.appengine.tck.modules;
 
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
-import com.google.appengine.tck.lib.LibUtils;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -37,11 +36,6 @@ public abstract class ModulesTestBase extends TestBase {
 
     protected static WebArchive getTckSubDeployment(int module) {
         return getTckDeployment(toSubdeployment(module));
-    }
-
-    protected static void addModulesLib(WebArchive war) {
-        LibUtils utils = new LibUtils();
-        utils.addLibrary(war, "com.google.appengine", "appengine-api-labs");
     }
 
     protected static EnterpriseArchive toEarDeployment(WebArchive... wars) {
