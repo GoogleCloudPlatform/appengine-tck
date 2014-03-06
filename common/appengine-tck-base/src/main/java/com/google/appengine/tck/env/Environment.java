@@ -13,16 +13,15 @@
  * limitations under the License.
  */
 
-package com.google.appengine.tck.event;
+package com.google.appengine.tck.env;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public abstract class AbstractInstanceLifecycle extends AbstractTypedTestLifecycle<InstanceLifecycleEvent> {
-    protected Class<InstanceLifecycleEvent> getExactEventType() {
-        return InstanceLifecycleEvent.class;
-    }
-
-    protected void doAfter(InstanceLifecycleEvent event) {
-    }
+public enum Environment {
+    APPSPOT,
+    SDK,
+    CAPEDWARF,
+    APPSCALE,
+    UNKNOWN
 }

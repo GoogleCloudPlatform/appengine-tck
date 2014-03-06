@@ -13,48 +13,24 @@
  * limitations under the License.
  */
 
-package org.jboss.capedwarf.tck;
-
-import javax.mail.Session;
-import javax.naming.Context;
-import javax.naming.InitialContext;
+package com.google.appengine.tck.env.appspot;
 
 import com.google.appengine.tck.env.Environment;
 import com.google.appengine.tck.event.AbstractInstanceLifecycle;
 import com.google.appengine.tck.event.InstanceLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycle;
-import com.google.appengine.tck.mail.EmailAddressFormatter;
 import org.kohsuke.MetaInfServices;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @MetaInfServices(TestLifecycle.class)
-public class CapeDwarfInstanceLifecycle extends AbstractInstanceLifecycle {
+public class AppspotInstanceLifecycle extends AbstractInstanceLifecycle {
     @SuppressWarnings("unchecked")
     protected void doBefore(InstanceLifecycleEvent event) {
         Class<?> instanceType = event.getInstanceType();
-        if (Session.class.equals(instanceType)) {
-            Session session = lookup(Session.class, "java:jboss/mail/Default");
-            event.setInstance(session);
-        } else if (EmailAddressFormatter.class.equals(instanceType)) {
-            event.setInstance(CapedwarfEmailAddressFormatter.INSTANCE);
-        } else if (Environment.class.equals(instanceType)) {
-            event.setInstance(Environment.CAPEDWARF);
-        }
-    }
-
-    private static <T> T lookup(Class<T> instanceType, String jndiName) {
-        try {
-            Context context = new InitialContext();
-            try {
-                Object result = context.lookup(jndiName);
-                return instanceType.cast(result);
-            } finally {
-                context.close();
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
+        if (Environment.class.equals(instanceType)) {
+            event.setInstance(Environment.APPSPOT);
         }
     }
 }

@@ -27,6 +27,7 @@ public class AppspotArchiveProcessor extends EnvApplicationArchiveProcessor {
     protected void handleWebArchiveInternal(WebArchive war) {
         addService(war, TestLifecycle.class,
             AppspotExecutionLifecycle.class,
+            AppspotInstanceLifecycle.class,
             AppspotPropertyLifecycle.class,
             AppspotUrlLifecycle.class
         );

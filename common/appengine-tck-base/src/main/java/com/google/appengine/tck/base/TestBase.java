@@ -39,6 +39,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.appengine.tck.category.IgnoreMultisuite;
+import com.google.appengine.tck.env.Environment;
 import com.google.appengine.tck.event.ExecutionLifecycleEvent;
 import com.google.appengine.tck.event.InstanceLifecycleEvent;
 import com.google.appengine.tck.event.Property;
@@ -200,7 +201,11 @@ public class TestBase {
     }
 
     protected <T> T instance(Class<T> instanceType) {
-        InstanceLifecycleEvent<T> event = TestLifecycles.createInstanceLifecycleEvent(getClass(), instanceType);
+        return instance(getClass(), instanceType);
+    }
+
+    protected static <T> T instance(Class<?> testClass, Class<T> instanceType) {
+        InstanceLifecycleEvent<T> event = TestLifecycles.createInstanceLifecycleEvent(testClass, instanceType);
         TestLifecycles.before(event);
         return event.getInstance();
     }
@@ -237,6 +242,16 @@ public class TestBase {
 
     public static String getTestSystemProperty(String key) {
         return getTestSystemProperty(key, null);
+    }
+
+    protected Environment getEnvironment() {
+        Environment env = instance(Environment.class);
+        return (env != null) ? env : Environment.UNKNOWN;
+    }
+
+    public static Environment getEnvironment(Class<?> testClass) {
+        Environment env = instance(testClass, Environment.class);
+        return (env != null) ? env : Environment.UNKNOWN;
     }
 
     public static String getTestSystemProperty(String key, String defaultValue) {
