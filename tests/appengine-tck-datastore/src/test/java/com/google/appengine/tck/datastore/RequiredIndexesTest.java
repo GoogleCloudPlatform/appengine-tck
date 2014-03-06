@@ -98,6 +98,15 @@ public class RequiredIndexesTest extends QueryTestBase {
     }
 
     @Test
+    public void testQueryWithEqalityAndInequalityFilterOnKeyPropertyDoesNotRequireConfiguredIndex() throws Exception {
+        executeQuery(
+            new Query("Unindexed")
+                .setFilter(
+                    and(new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY, GREATER_THAN, KeyFactory.createKey("Unindexed", 1)),
+                        new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY, EQUAL, KeyFactory.createKey("Unindexed", 2)))));
+    }
+
+    @Test
     public void testQueryWithAncestorAndInequalityFilterOnKeyPropertyDoesNotRequireConfiguredIndex() throws Exception {
         executeQuery(
             new Query("Unindexed")
