@@ -196,6 +196,13 @@
                                 </includes>
                             </resource>
                             <resource>
+                                <directory>${project.parent.parent.basedir}/tests/appengine-tck-modules</directory>
+                                <targetPath>tests/appengine-tck-modules</targetPath>
+                                <includes>
+                                    <include>index.html</include>
+                                </includes>
+                            </resource>
+                            <resource>
                                 <directory>${project.parent.parent.basedir}/tests/appengine-tck-oauth</directory>
                                 <targetPath>tests/appengine-tck-oauth</targetPath>
                                 <includes>
@@ -248,13 +255,6 @@
                             <resource>
                                 <directory>${project.parent.parent.basedir}/core/endpoints</directory>
                                 <targetPath>core/endpoints</targetPath>
-                                <includes>
-                                    <include>index.html</include>
-                                </includes>
-                            </resource>
-                            <resource>
-                                <directory>${project.parent.parent.basedir}/core/modules</directory>
-                                <targetPath>core/modules</targetPath>
                                 <includes>
                                     <include>index.html</include>
                                 </includes>
