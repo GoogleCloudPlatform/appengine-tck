@@ -258,6 +258,7 @@ Current API tests:
 * Logging
 * Mail
 * Memcache
+* Modules
 * OAuth
 * Prospective Search
 * Search
@@ -275,7 +276,6 @@ Current core tests:
 
 * Endpoints support
 * Miscellaneous; e.g. black list usage, etc
-* Modules
 * SQL
 
 All these tests also run by default, same way as API tests.

@@ -18,7 +18,6 @@
         <!-- External -->
         <module>endpoints</module>
         <module>misc</module>
-        <module>modules</module>
         <module>sockets</module>
         <module>sql</module>
     </modules>

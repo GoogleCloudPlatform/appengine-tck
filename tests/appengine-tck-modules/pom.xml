@@ -3,24 +3,19 @@
     <!-- Parent -->
     <parent>
         <groupId>com.google.appengine.tck</groupId>
-        <artifactId>appengine-tck-core</artifactId>
+        <artifactId>appengine-tck-tests</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>modules</artifactId>
+    <artifactId>appengine-tck-modules</artifactId>
     <packaging>jar</packaging>
-    <name>GAE TCK Core Modules</name>
+    <name>GAE TCK Modules Test</name>
     <url>https://developers.google.com/appengine/</url>
-    <description>GAE TCK Core Modules</description>
+    <description>GAE TCK Modules Test</description>
 
     <dependencies>
-        <dependency>
-            <groupId>com.google.appengine</groupId>
-            <artifactId>appengine-api-1.0-sdk</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.jboss.arquillian.protocol</groupId>
             <artifactId>arquillian-protocol-modules</artifactId>
