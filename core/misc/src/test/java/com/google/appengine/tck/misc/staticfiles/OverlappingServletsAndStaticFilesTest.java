@@ -37,7 +37,7 @@ public class OverlappingServletsAndStaticFilesTest extends StaticFilesTestBase {
     @Deployment
     public static WebArchive getDeployment() {
         WebArchive archive = getTckDeployment(new TestContext()
-            .setWebXmlFile("staticfiles_web.xml")
+            .setWebXmlFile("web-overlapping-servlets-and-static-files.xml")
             .setAppEngineWebXmlFile("appengine-web-staticfiles.xml"))
             .addClass(FooServlet.class);
         createFile(archive, "/fooservlet/static/foo.html");
