@@ -48,19 +48,7 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
 
     $scope.basicParamChart = {
         displayed: true,
-        cssStyle: 'height: 500px;',
-        options: {
-            fill: 20,
-            displayExactValues: true,
-            chartArea: {
-                width: '90%',
-                height: '90%'
-            },
-            minColor: '#FFCC99',
-            midColor: '#FF6600',
-            maxColor: '#FF0000',
-            generateTooltip: $scope.showFullTreeMapTooltip
-        }
+        cssStyle: 'height: 500px;'
     };
 
     $scope.selectedTestReportTreemapChart = {
@@ -82,10 +70,27 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
                     id: "nbFails",
                     label: "Nb fails",
                     type: "number"
+                },
+                {
+                    id: "correlation",
+                    label: "Correlation",
+                    type: "number"
                 }
             ],
             rows: [
             ]
+        },
+        options: {
+            fill: 20,
+            displayExactValues: true,
+            chartArea: {
+                width: '90%',
+                height: '90%'
+            },
+            minColor: '#FFCC99',
+            midColor: '#FF6600',
+            maxColor: '#FF0000',
+            generateTooltip: $scope.showFullTreeMapTooltip
         },
         drillDownLevel: 1
     };
@@ -108,6 +113,14 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
             ],
             rows: [
             ]
+        },
+        options: {
+            fill: 20,
+            displayExactValues: true,
+            chartArea: {
+                width: '90%',
+                height: '90%'
+            }
         },
         drillDownLevel: 0
     };
@@ -246,49 +259,68 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
     };
 
     var testReportToTreemapChartRows = function(report) {
-        var addedPackage = [];
-        var packagesByClass = {};
+
+        var addedPackages = [];
+        var addedClasses = [];
+
+        var packagesRow = [];
+        var classesRow = [];
+        var methodsRow = [];
+
+        var failedTestsByClassName = _.countBy(report.failedTests, function(failedTest){ return failedTest.className; });
 
         report.failedTests.forEach( function(test) {
-            packagesByClass[test.className] = test.packageName;
+            methodsRow.push(
+                {
+                    c: [
+                        { v: test.methodName },
+                        { v: test.className },
+                        { v: 1 },
+                        { v: failedTestsByClassName[test.className] }
+                    ]
+                }
+            );
+
+            if ( $.inArray(test.className, addedClasses) === -1 ) {
+                classesRow.push(
+                    {
+                        c: [
+                            { v: test.className },
+                            { v: test.packageName },
+                            { v: 0 },
+                            { v: 0 }
+                        ]
+                    }
+                );
+                addedClasses.push( test.className );
+            }
+
+            if ( $.inArray(test.packageName, addedPackages) === -1 ) {
+                packagesRow.push(
+                    {
+                        c: [
+                            { v: test.packageName },
+                            { v: 'Global' },
+                            { v: 0 },
+                            { v: 0 }
+                        ]
+                    }
+                );
+                addedPackages.push( test.packageName );
+            }
         });
 
-        var rows = [
+        var baseRow = [
             {
                 c: [
                     { v: 'Global' },
                     { v: null },
+                    { v: 0 },
                     { v: 0 }
                 ]
             }
         ];
 
-        var failedTestsByClassName = _.countBy(report.failedTests, function(failedTest){ return failedTest.className; });
-        for (className in failedTestsByClassName) {
-            if ( $.inArray(packagesByClass[className], addedPackage) === -1 ) {
-                rows.push(
-                    {
-                        c: [
-                            { v: packagesByClass[className] },
-                            { v: 'Global' },
-                            { v: 0 }
-                        ]
-                    }
-                );
-                addedPackage.push( packagesByClass[className] );
-            }
-
-            rows.push(
-                {
-                    c: [
-                        { v: className },
-                        { v: packagesByClass[className] },
-                        { v: failedTestsByClassName[className] }
-                    ]
-                }
-            );
-        }
-
-        return rows;
+        return baseRow.concat( packagesRow, classesRow, methodsRow );
     };
 });
