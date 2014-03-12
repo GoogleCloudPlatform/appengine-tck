@@ -262,6 +262,7 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
 
         var addedPackages = [];
         var addedClasses = [];
+        var addedMethods = [];
 
         var packagesRow = [];
         var classesRow = [];
@@ -273,13 +274,14 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
             methodsRow.push(
                 {
                     c: [
-                        { v: test.methodName },
+                        { v: ( $.inArray(test.methodName, addedMethods) === -1 ) ? test.methodName : test.methodName + ' (' + test.className + ')' },
                         { v: test.className },
                         { v: 1 },
                         { v: failedTestsByClassName[test.className] }
                     ]
                 }
             );
+            addedMethods.push( test.methodName );
 
             if ( $.inArray(test.className, addedClasses) === -1 ) {
                 classesRow.push(
