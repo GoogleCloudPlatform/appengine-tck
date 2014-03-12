@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * Tests whether a servlet mapped to /* is invoked when request URI is / or /subdir/
+ * Tests whether a servlet mapped to /* is invoked when request URI is / or /subdir/ or /subdir
  *
  * @author <a href="mailto:marko.luksa@gmail.com">Marko Luksa</a>
  */
@@ -54,5 +54,11 @@ public class OverlappingServletsAndFoldersTest extends StaticFilesTestBase {
     @RunAsClient
     public void testFooServletInvokedOnSubDir(@ArquillianResource URL url) throws Exception {
         assertResponseEquals("Request handled by FooServlet", url, "subdir/");
+    }
+
+    @Test
+    @RunAsClient
+    public void testFooServletInvokedOnSubDirWithoutTrailingSlash(@ArquillianResource URL url) throws Exception {
+        assertResponseEquals("Request handled by FooServlet", url, "subdir");
     }
 }
