@@ -687,6 +687,12 @@ public class ReportsMain {
         public ParametersProvider getParametersProvider() {
             return null;
         }
+
+        @NotNull
+        @Override
+        public Collection<SBuildFeatureDescriptor> getBuildFeaturesOfType(@NotNull String s) {
+            return null;
+        }
     }
 
     private static class SBuildFeatureDescriptorMock implements SBuildFeatureDescriptor {
