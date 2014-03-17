@@ -252,7 +252,7 @@ public class ReportsFeature extends BuildFeature {
                             setPackageName(failedTestName.getPackageName()).
                             setClassName(failedTestName.getClassName()).
                             setMethodName(failedTestName.getTestMethodName()).
-                            setError(oneTestRun.getFailureInfo().getStacktraceMessage())
+                            setError(oneTestRun.getFailureInfo().getShortStacktrace())
             );
         }
         testReport.setFailedTests(failedTests);
