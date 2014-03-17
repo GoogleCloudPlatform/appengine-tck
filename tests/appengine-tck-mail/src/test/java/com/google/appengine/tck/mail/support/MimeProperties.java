@@ -39,7 +39,8 @@ import com.google.appengine.tck.temp.AbstractTempData;
  * Save the state of a MimeMessage that was received on MailHandlerServlet so it can be
  * verified in the test.
  * <p/>
- * * @author terryok@google.com
+ * @author terryok@google.com
+ * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 public class MimeProperties extends AbstractTempData implements Serializable {
     static Logger log = Logger.getLogger(MimeProperties.class.getName());
@@ -139,7 +140,7 @@ public class MimeProperties extends AbstractTempData implements Serializable {
         map.put("bcc", bcc);
         map.put("replyTo", replyTo);
         map.put("body", new Text(body));
-        map.put("multiPartsList", multiPartsList);
+        map.put("multiPartsList", toTextList(multiPartsList));
         map.put("headers", new Text(headers));
     }
 
@@ -153,8 +154,24 @@ public class MimeProperties extends AbstractTempData implements Serializable {
         bcc = (String) properties.get("bcc");
         replyTo = (String) properties.get("replyTo");
         body = fromText(properties.get("body"));
-        multiPartsList = (List<String>) properties.get("multiPartsList");
+        multiPartsList = fromTextList((List<Text>) properties.get("multiPartsList"));
         headers = fromText(properties.get("headers"));
+    }
+
+    private static List<String> fromTextList(List<Text> textList) {
+        List<String> stringList = new ArrayList<>(textList.size());
+        for (Text text : textList) {
+            stringList.add(text.getValue());
+        }
+        return stringList;
+    }
+
+    private static List<Text> toTextList(List<String> stringList) {
+        List<Text> textList = new ArrayList<>(stringList.size());
+        for (String string : stringList) {
+            textList.add(new Text(string));
+        }
+        return textList;
     }
 
     private static String fromText(Object value) {
