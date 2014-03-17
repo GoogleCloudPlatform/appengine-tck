@@ -41,9 +41,24 @@ appEngineTckApp.controller('ReportsCtrl', function($scope, $window) {
 appEngineTckApp.controller('TestReportsCtrl', function($scope) {
 
     $scope.showFullTreeMapTooltip = function(row, size) {
-        return '<div style="background:#fd9; padding:10px; border-style:solid">' +
-            '<span style="font-family:Courier"><b>' + $scope.selectedTestReportChart.data.rows[row].c[0].v + '</b></span><br/>' +
-            'Number of fails : ' + size + '</div>';
+        var methodName = $scope.selectedTestReportChart.data.rows[row].c[0].v;
+        var html = '<div style="background:#fd9; padding:10px; border-style:solid">' +
+            '<span style="font-family:Courier"><b>' + methodName + '</b></span><br/>';
+
+        if ( size === 1 ) {
+            var errorInfo = $scope.errorByClass[methodName];
+            if ( errorInfo === undefined ) {
+                html += 'Error info unavailable';
+            }
+            else {
+                html += 'Error info : ' + errorInfo + '</div>';
+            }
+        }
+        else {
+            html += 'Number of fails : ' + size + '</div>';
+        }
+
+        return html;
     };
 
     $scope.basicParamChart = {
@@ -268,13 +283,17 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
         var classesRow = [];
         var methodsRow = [];
 
+        $scope.errorByClass = [];
+
         var failedTestsByClassName = _.countBy(report.failedTests, function(failedTest){ return failedTest.className; });
 
         report.failedTests.forEach( function(test) {
+            var methodName = ( $.inArray(test.methodName, addedMethods) === -1 ) ? test.methodName : test.methodName + ' (' + test.className + ')';
+
             methodsRow.push(
                 {
                     c: [
-                        { v: ( $.inArray(test.methodName, addedMethods) === -1 ) ? test.methodName : test.methodName + ' (' + test.className + ')' },
+                        { v: methodName },
                         { v: test.className },
                         { v: 1 },
                         { v: failedTestsByClassName[test.className] }
@@ -282,6 +301,7 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
                 }
             );
             addedMethods.push( test.methodName );
+            $scope.errorByClass[methodName] = test.error;
 
             if ( $.inArray(test.className, addedClasses) === -1 ) {
                 classesRow.push(
