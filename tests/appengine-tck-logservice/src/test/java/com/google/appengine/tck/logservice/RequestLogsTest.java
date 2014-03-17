@@ -367,6 +367,28 @@ public class RequestLogsTest extends LoggingTestBase {
         assertNotNull(mapEntryMsg, logs.getUrlMapEntry());
     }
 
+    @Test
+    @InSequence(20)
+    public void testRequestLogsAreSortedNewestFirst() throws EntityNotFoundException {
+        LogQuery query = new LogQuery()
+            .startTimeMillis(System.currentTimeMillis() - 60000);
+        Iterator<RequestLogs> iterator = findLogLine(query, 3);
+
+        Long previousStartTimeUsec = null;
+        while (iterator.hasNext()) {
+            RequestLogs requestLogs = iterator.next();
+            long startTimeUsec = requestLogs.getStartTimeUsec();
+            if (previousStartTimeUsec != null) {
+                assertTrue(
+                    "RequestLogs with startTimeUsec " + startTimeUsec
+                        + " was returned after RequestLogs with startTimeUsec " + previousStartTimeUsec,
+                    previousStartTimeUsec >= startTimeUsec);
+            }
+            previousStartTimeUsec = startTimeUsec;
+        }
+    }
+
+
     private RequestLogs getCurrentRequestLogs() {
         return getRequestLogs(getCurrentRequestId());
     }
