@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -159,6 +160,10 @@ public class MimeProperties extends AbstractTempData implements Serializable {
     }
 
     private static List<String> fromTextList(List<Text> textList) {
+        if (textList == null || textList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         List<String> stringList = new ArrayList<>(textList.size());
         for (Text text : textList) {
             stringList.add(text.getValue());
@@ -167,6 +172,10 @@ public class MimeProperties extends AbstractTempData implements Serializable {
     }
 
     private static List<Text> toTextList(List<String> stringList) {
+        if (stringList == null || stringList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         List<Text> textList = new ArrayList<>(stringList.size());
         for (String string : stringList) {
             textList.add(new Text(string));
