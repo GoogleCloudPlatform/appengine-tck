@@ -44,7 +44,6 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
         var methodName = $scope.selectedTestReportChart.data.rows[row].c[0].v;
         var correlation = $scope.selectedTestReportChart.data.rows[row].c[3].v;
 
-        console.log($scope.selectedTestReportChart.data.rows[row]);
         var html = '<div style="background:#fd9; padding:10px; border-style:solid">' +
             '<span style="font-family:Courier"><b>' + methodName + '</b></span><br/>';
 
