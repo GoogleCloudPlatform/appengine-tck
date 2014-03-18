@@ -53,13 +53,13 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
                 html += 'Error info unavailable';
             }
             else {
-                html += 'Error info : ' + errorInfo + '</div>';
+                html += 'Error info : ' + errorInfo;
             }
         }
         else {
-            html += 'Number of fails : ' + size + '</div>';
+            html += 'Number of fails : ' + size;
         }
-
+        html += '</div>';
         return html;
     };
 
