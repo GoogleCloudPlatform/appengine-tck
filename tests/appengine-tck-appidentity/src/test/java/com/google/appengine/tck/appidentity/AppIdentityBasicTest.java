@@ -60,4 +60,12 @@ public class AppIdentityBasicTest extends AppIdentityTestBase {
         String errMsg = "The instance id should not be null";
         Assert.assertNotNull(errMsg, instanceId);
     }
+
+    @Test
+    public void testRequestId() {
+        ApiProxy.Environment env = ApiProxy.getCurrentEnvironment();
+        String requestId = (String) env.getAttributes().get("com.google.appengine.runtime.request_log_id");
+        String errMsg = "The request id should not be null";
+        Assert.assertNotNull(errMsg, requestId);
+    }
 }
