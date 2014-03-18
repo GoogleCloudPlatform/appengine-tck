@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 
 /**
  * @author <a href="mailto:terryok@google.com">Terry Okamoto</a>
+ * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
  */
 @RunWith(Arquillian.class)
 public class AppIdentityBasicTest extends AppIdentityTestBase {
@@ -50,5 +51,13 @@ public class AppIdentityBasicTest extends AppIdentityTestBase {
         String hostname = (String) env.getAttributes().get("com.google.appengine.runtime.default_version_hostname");
         String errMsg = "The versioned hostname should end with " + expectedHostname + ", but was " + hostname;
         Assert.assertTrue(errMsg, hostname.endsWith(expectedHostname));
+    }
+
+    @Test
+    public void testInstanceId() {
+        ApiProxy.Environment env = ApiProxy.getCurrentEnvironment();
+        String instanceId = (String) env.getAttributes().get("com.google.appengine.instance.id");
+        String errMsg = "The instance id should not be null";
+        Assert.assertNotNull(errMsg, instanceId);
     }
 }
