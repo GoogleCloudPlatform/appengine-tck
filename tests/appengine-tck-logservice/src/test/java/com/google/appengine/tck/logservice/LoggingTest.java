@@ -20,6 +20,9 @@ import java.util.logging.Logger;
 
 import com.google.appengine.api.NamespaceManager;
 import com.google.appengine.api.log.AppLogLine;
+import com.google.appengine.api.log.LogQuery;
+import com.google.appengine.api.log.LogServiceFactory;
+import com.google.appengine.api.log.RequestLogs;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -29,6 +32,7 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Marko Luksa
@@ -111,4 +115,52 @@ public class LoggingTest extends LoggingTestBase {
         assertTrue("Expected logLine.getTimeUsec (" + logLine.getTimeUsec() + ") <= afterTimeUsec (" + afterTimeUsec + "), but it was not", logLine.getTimeUsec() <= beforeTimeUsec);
     }
 
+    @Test
+    public void testLogLinesAreReturnedInSameOrderAsTheyAreLogged() {
+        String logMark = getTimeStampRandom();
+        String msg1 = "msg 1 " + logMark;
+        String msg2 = "msg 2 " + logMark;
+        log.log(Level.INFO, msg1);
+        log.log(Level.INFO, msg2);
+        flush(log);
+        sync(15000);
+
+        RequestLogs requestLogs = getCurrentRequestLogs();
+        Integer msg1Index = null;
+        Integer msg2Index = null;
+        int i = 0;
+        for (AppLogLine appLogLine : requestLogs.getAppLogLines()) {
+            if (appLogLine.getLogMessage().contains(msg1)) {
+                msg1Index = i;
+            } else if (appLogLine.getLogMessage().contains(msg2)) {
+                msg2Index = i;
+            }
+            i++;
+        }
+        assertNotNull("1st log message not found in appLogLines", msg1Index);
+        assertNotNull("2nd log message not found in appLogLines", msg2Index);
+        assertTrue("Expected first logged message to come before second logged message", msg1Index < msg2Index);
+    }
+
+    public RequestLogs getCurrentRequestLogs() {
+        LogQuery logQuery = new LogQuery()
+            .includeAppLogs(true)
+            .includeIncomplete(true)
+            .startTimeMillis(System.currentTimeMillis() - 20000);
+        for (RequestLogs requestLogs : LogServiceFactory.getLogService().fetch(logQuery)) {
+            if (requestLogs.getRequestId().equals(getCurrentRequestId())) {
+                return requestLogs;
+            }
+        }
+        fail("Could not find RequestLogs for current request");
+        return null;
+
+//        not sure, why the following code throws LogServiceException: An error occurred retrieving logs from storage.
+//        LogQuery logQuery = new LogQuery()
+//            .includeAppLogs(true)
+//            .requestIds(Collections.singletonList(getCurrentRequestId()));
+//        Iterable<RequestLogs> iterable = LogServiceFactory.getLogService().fetch(logQuery);
+//        assertTrue("Could not find RequestLogs for current request", iterable.iterator().hasNext());
+//        return iterable.iterator().next();
+    }
 }
