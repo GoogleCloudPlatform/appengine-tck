@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -77,6 +78,24 @@ public class LoggingTest extends LoggingTestBase {
         }
 
         assertLogContains(text);
+    }
+
+    @Test
+    public void testLogMessageStartsWithClassAndMethodAndEndsWithNewLine() {
+        String methodName = "testLogMessageStartsWithClassAndMethodAndEndsWithNewLine";
+        String logMark = getTimeStampRandom();
+        String msg = "logged message " + logMark;
+
+        Logger fooLogger = Logger.getLogger("fooLogger");   // logger name is ignored completely (!?)
+        fooLogger.info(msg);
+        flush(fooLogger);
+        sync(7000);
+
+        int retryMax = 1;
+        AppLogLine appLogLine = findLogLineContaining(msg, retryMax);
+
+        String expectedMessage = getClass().getName() + " " + methodName + ": " + msg + "\n";
+        assertEquals(expectedMessage, appLogLine.getLogMessage());
     }
 
     @Test
