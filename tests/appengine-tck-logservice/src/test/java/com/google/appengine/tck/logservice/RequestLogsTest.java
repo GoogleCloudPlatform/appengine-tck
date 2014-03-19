@@ -370,21 +370,19 @@ public class RequestLogsTest extends LoggingTestBase {
     @Test
     @InSequence(20)
     public void testRequestLogsAreSortedNewestFirst() throws EntityNotFoundException {
-        LogQuery query = new LogQuery()
-            .startTimeMillis(System.currentTimeMillis() - 60000);
+        LogQuery query = new LogQuery().startTimeMillis(System.currentTimeMillis() - 60000);
         Iterator<RequestLogs> iterator = findLogLine(query, 3);
 
-        Long previousStartTimeUsec = null;
+        Long previousEndTimeUsec = null;
         while (iterator.hasNext()) {
             RequestLogs requestLogs = iterator.next();
-            long startTimeUsec = requestLogs.getStartTimeUsec();
-            if (previousStartTimeUsec != null) {
+            long endTimeUsec = requestLogs.getEndTimeUsec();
+            if (previousEndTimeUsec != null) {
                 assertTrue(
-                    "RequestLogs with startTimeUsec " + startTimeUsec
-                        + " was returned after RequestLogs with startTimeUsec " + previousStartTimeUsec,
-                    previousStartTimeUsec >= startTimeUsec);
+                    "RequestLogs with endTimeUsec " + endTimeUsec + " was returned after RequestLogs with endTimeUsec " + previousEndTimeUsec,
+                    previousEndTimeUsec >= endTimeUsec);
             }
-            previousStartTimeUsec = startTimeUsec;
+            previousEndTimeUsec = endTimeUsec;
         }
     }
 
