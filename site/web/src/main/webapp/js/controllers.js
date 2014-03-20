@@ -42,22 +42,24 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
 
     $scope.showFullTreeMapTooltip = function(row, size) {
         var methodName = $scope.selectedTestReportChart.data.rows[row].c[0].v;
+        var correlation = $scope.selectedTestReportChart.data.rows[row].c[3].v;
+
         var html = '<div style="background:#fd9; padding:10px; border-style:solid">' +
             '<span style="font-family:Courier"><b>' + methodName + '</b></span><br/>';
 
-        if ( size === 1 ) {
+        if ( correlation !== 0 ) {
             var errorInfo = $scope.errorByClass[methodName];
             if ( errorInfo === undefined ) {
                 html += 'Error info unavailable';
             }
             else {
-                html += 'Error info : ' + errorInfo + '</div>';
+                html += 'Error info : ' + errorInfo;
             }
         }
         else {
-            html += 'Number of fails : ' + size + '</div>';
+            html += 'Number of fails : ' + size;
         }
-
+        html += '</div>';
         return html;
     };
 
