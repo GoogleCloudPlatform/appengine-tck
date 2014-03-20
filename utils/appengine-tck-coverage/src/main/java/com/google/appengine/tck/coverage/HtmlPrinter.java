@@ -51,7 +51,7 @@ class HtmlPrinter implements Printer {
                 "    <style type=\"text/css\">\n" +
                 "body {\n" +
                 "    font-family: Arial, sans-serif;\n" +
-                "    font-size: 12px;\n" +
+//                "    font-size: 12px;\n" +
                 "}\n" +
                 "\n" +
                 "div.apiClass {\n" +
