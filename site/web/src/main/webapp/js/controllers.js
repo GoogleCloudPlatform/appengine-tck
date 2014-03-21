@@ -37,7 +37,6 @@ appEngineTckApp.controller('ReportsCtrl', function($scope, $window) {
     };
 });
 
-
 appEngineTckApp.controller('TestReportsCtrl', function($scope) {
 
     $scope.showFullTreeMapTooltip = function(row, size) {
@@ -50,10 +49,10 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
         if ( correlation !== 0 ) {
             var errorInfo = $scope.errorByClass[methodName];
             if ( errorInfo === undefined ) {
-                html += 'Error info unavailable';
+                html += 'Log unavailable';
             }
             else {
-                html += 'Error info : ' + errorInfo;
+                html += 'Log : ' + errorInfo;
             }
         }
         else {
@@ -68,7 +67,7 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
         cssStyle: 'height: 500px;'
     };
 
-    $scope.selectedTestReportTreemapChart = {
+    $scope.basicParamTreemapChart = {
         __proto__: $scope.basicParamChart,
         type: 'TreeMap',
         data: {
@@ -97,6 +96,11 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
             rows: [
             ]
         },
+        drillDownLevel: 1
+    };
+
+    $scope.selectedTestReportTreemapChartFailedTests = {
+        __proto__: $scope.basicParamTreemapChart,
         options: {
             fill: 20,
             displayExactValues: true,
@@ -108,8 +112,23 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
             midColor: '#FF6600',
             maxColor: '#FF0000',
             generateTooltip: $scope.showFullTreeMapTooltip
-        },
-        drillDownLevel: 1
+        }
+    };
+
+    $scope.selectedTestReportTreemapChartIgnoredTests = {
+        __proto__: $scope.basicParamTreemapChart,
+        options: {
+            fill: 20,
+            displayExactValues: true,
+            chartArea: {
+                width: '90%',
+                height: '90%'
+            },
+            minColor: '#FFFF66',
+            midColor: '#FFCC00',
+            maxColor: '#FF9900',
+            generateTooltip: $scope.showFullTreeMapTooltip
+        }
     };
 
     $scope.selectedTestReportPieChart = {
@@ -199,9 +218,13 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
             $scope.selectedTestReportChart = $scope.selectedTestReportPieChart;
             $scope.selectedTestReportChart.data.rows = testReportToPieChartRows($scope.selectedTestReport);
         }
-        else if (drillDownLevel === 0 && selectedItem.row === 1) {
-            $scope.selectedTestReportChart = $scope.selectedTestReportTreemapChart;
-            $scope.selectedTestReportChart.data.rows = testReportToTreemapChartRows($scope.selectedTestReport);
+        else if (drillDownLevel === 0 && selectedItem.row === 1 && $scope.selectedTestReport.failedTests !== undefined) {
+            $scope.selectedTestReportChart = $scope.selectedTestReportTreemapChartFailedTests;
+            $scope.selectedTestReportChart.data.rows = testReportToTreemapChartRows($scope.selectedTestReport.failedTests);
+        }
+        else if (drillDownLevel === 0 && selectedItem.row === 2 && $scope.selectedTestReport.ignoredTests !== undefined) {
+            $scope.selectedTestReportChart = $scope.selectedTestReportTreemapChartIgnoredTests;
+            $scope.selectedTestReportChart.data.rows = testReportToTreemapChartRows($scope.selectedTestReport.ignoredTests);
         }
     };
 
@@ -285,17 +308,14 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
         var classesRow = [];
         var methodsRow = [];
 
+        var failedTestsByClassName = _.countBy(report, function(failedTest){ return failedTest.className; });
         $scope.errorByClass = [];
 
-        var failedTestsByClassName = _.countBy(report.failedTests, function(failedTest){ return failedTest.className; });
-
-        report.failedTests.forEach( function(test) {
-            var methodName = ( $.inArray(test.methodName, addedMethods) === -1 ) ? test.methodName : test.methodName + ' (' + test.className + ')';
-
+        report.forEach( function(test) {
             methodsRow.push(
                 {
                     c: [
-                        { v: methodName },
+                        { v: ( $.inArray(test.methodName, addedMethods) === -1 ) ? test.methodName : test.methodName + ' (' + test.className + ')' },
                         { v: test.className },
                         { v: 1 },
                         { v: failedTestsByClassName[test.className] }
@@ -303,7 +323,7 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
                 }
             );
             addedMethods.push( test.methodName );
-            $scope.errorByClass[methodName] = test.error;
+            $scope.errorByClass[test.methodName] = test.error;
 
             if ( $.inArray(test.className, addedClasses) === -1 ) {
                 classesRow.push(
