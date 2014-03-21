@@ -86,15 +86,19 @@ public class TestReport implements Serializable {
 
         final List<Test> ignoredTests = new ArrayList<>();
         try {
-            final JSONArray jsonArray = new JSONArray(new JSONTokener(((Text) entity.getProperty("ignoredTests")).getValue()));
-            for (int i = 0; i < jsonArray.length(); i++) {
-                final Test test = Test.valueOf(jsonArray.getJSONObject(i));
-                ignoredTests.add(test);
+            final Text ignoredTestsEntity = (Text) entity.getProperty("ignoredTests");
+            if (ignoredTestsEntity != null) {
+                final JSONArray jsonArray = new JSONArray(new JSONTokener(ignoredTestsEntity.getValue()));
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    final Test test = Test.valueOf(jsonArray.getJSONObject(i));
+                    ignoredTests.add(test);
+                }
+            }
+            else {
+                log.info(String.format("Ignored test do not have detailed information : %s [%s]", entity.getProperty("buildTypeId"), entity.getProperty("buildId")));
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);
-        } catch (NullPointerException e) {
-            log.info(String.format("Ignored test do not have detailed information : %s [%s]", entity.getProperty("buildTypeId"), entity.getProperty("buildId")));
         }
 
         return new TestReport(
