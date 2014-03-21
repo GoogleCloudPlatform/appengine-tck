@@ -257,6 +257,21 @@ public class ReportsFeature extends BuildFeature {
         }
         testReport.setFailedTests(failedTests);
 
+        final List<Test> ignoredTests = new ArrayList<>();
+        for (STestRun oneTestRun : fullBuildStatistics.getIgnoredTests()) {
+            final STest ignoredTest = oneTestRun.getTest();
+            final TestName ignoredTestName = ignoredTest.getName();
+
+            ignoredTests.add(
+                    new Test().
+                            setPackageName(ignoredTestName.getPackageName()).
+                            setClassName(ignoredTestName.getClassName()).
+                            setMethodName(ignoredTestName.getTestMethodName()).
+                            setError(oneTestRun.getIgnoreComment())
+            );
+        }
+        testReport.setIgnoredTests(ignoredTests);
+
         log.info(String.format("Pushing build results for '%s' [%s] ...", buildTypeExternalId, buildNumber));
         // publish results to appspot application
         try {
