@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
@@ -46,6 +47,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class TestReport implements Serializable {
+    private static final Logger log = Logger.getLogger(TestReport.class.getName());
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -72,7 +75,6 @@ public class TestReport implements Serializable {
 
         final List<Test> failedTests = new ArrayList<>();
         try {
-
             final JSONArray jsonArray = new JSONArray(new JSONTokener(((Text) entity.getProperty("failedTests")).getValue()));
             for (int i = 0; i < jsonArray.length(); i++) {
                 final Test test = Test.valueOf(jsonArray.getJSONObject(i));
@@ -80,6 +82,19 @@ public class TestReport implements Serializable {
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);
+        }
+
+        final List<Test> ignoredTests = new ArrayList<>();
+        try {
+            final JSONArray jsonArray = new JSONArray(new JSONTokener(((Text) entity.getProperty("ignoredTests")).getValue()));
+            for (int i = 0; i < jsonArray.length(); i++) {
+                final Test test = Test.valueOf(jsonArray.getJSONObject(i));
+                ignoredTests.add(test);
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        } catch (NullPointerException e) {
+            log.info(String.format("Ignored test do not have detailed information : %s [%s]", entity.getProperty("buildTypeId"), entity.getProperty("buildId")));
         }
 
         return new TestReport(
@@ -90,7 +105,8 @@ public class TestReport implements Serializable {
                 ((Long) entity.getProperty("numberOfPassedTests")).intValue(),
                 ((Long) entity.getProperty("numberOfIgnoredTests")).intValue(),
                 ((Long) entity.getProperty("numberOfFailedTests")).intValue(),
-                failedTests
+                failedTests,
+                ignoredTests
         );
     }
 
@@ -133,6 +149,7 @@ public class TestReport implements Serializable {
     private int numberOfIgnoredTests;
     private int numberOfFailedTests;
     private List<Test> failedTests;
+    private List<Test> ignoredTests;
 
     /**
      * Constructs a {@code TestReport} instance.
@@ -144,10 +161,11 @@ public class TestReport implements Serializable {
      * @param numberOfIgnoredTests the number of ignored tests.
      * @param numberOfFailedTests  the number of failed tests.
      * @param failedTests          the failed tests.
+     * @param ignoredTests         the ignored tests.
      * @throws java.lang.NullPointerException     if {@code buildTypeId}, {@code buildDate} and/or {@code failedTests} are {@code null}.
      * @throws java.lang.IllegalArgumentException if {@code buildTypeId} is empty.
      */
-    public TestReport(String buildTypeId, int buildId, Date buildDate, long buildDuration, int numberOfPassedTests, int numberOfIgnoredTests, int numberOfFailedTests, List<Test> failedTests) {
+    public TestReport(String buildTypeId, int buildId, Date buildDate, long buildDuration, int numberOfPassedTests, int numberOfIgnoredTests, int numberOfFailedTests, List<Test> failedTests, List<Test> ignoredTests) {
         checkNotNull(buildDate, "'buildDate' parameter cannot be null");
         checkNotNull(failedTests, "'failedTests' parameter cannot be null");
         checkNotNull(buildTypeId, "'buildTypeId' parameter cannot be null");
@@ -161,14 +179,16 @@ public class TestReport implements Serializable {
         this.numberOfIgnoredTests = numberOfIgnoredTests;
         this.numberOfFailedTests = numberOfFailedTests;
         this.failedTests = ImmutableList.copyOf(failedTests);
+        this.ignoredTests = ImmutableList.copyOf(ignoredTests);
     }
 
     /**
      * For JSON.
      */
     private TestReport() {
-        // ensure that the failed tests list is never null
+        // ensure that the failed and ignored tests list is never null
         this.failedTests = ImmutableList.of();
+        this.ignoredTests = ImmutableList.of();
     }
 
     /**
@@ -239,8 +259,15 @@ public class TestReport implements Serializable {
      *
      * @return the failed tests list or an empty one if none.
      */
-    public List<Test> getFailedTests() {
-        return failedTests;
+    public List<Test> getFailedTests() { return failedTests; }
+
+    /**
+     * Returns the failing tests.
+     *
+     * @return the failed tests list or an empty one if none.
+     */
+    public List<Test> getIgnoredTests() {
+        return ignoredTests;
     }
 
     /**
@@ -259,12 +286,19 @@ public class TestReport implements Serializable {
         entity.setProperty("numberOfIgnoredTests", numberOfIgnoredTests);
         entity.setProperty("numberOfFailedTests", numberOfFailedTests);
 
-        final JSONArray jsonArray = new JSONArray();
+        final JSONArray jsonArrayFailedTests = new JSONArray();
         for (Test oneFailingTest : failedTests) {
-            jsonArray.put(oneFailingTest.asJson());
+            jsonArrayFailedTests.put(oneFailingTest.asJson());
         }
 
-        entity.setProperty("failedTests", new Text(jsonArray.toString()));
+        entity.setProperty("failedTests", new Text(jsonArrayFailedTests.toString()));
+
+        final JSONArray jsonArrayIgnoredTests = new JSONArray();
+        for (Test oneIgnoredTest : ignoredTests) {
+            jsonArrayIgnoredTests.put(oneIgnoredTest.asJson());
+        }
+
+        entity.setProperty("ignoredTests", new Text(jsonArrayIgnoredTests.toString()));
 
         final DatastoreService datastoreService = reports.getDatastoreService();
         datastoreService.put(entity);
