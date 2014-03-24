@@ -93,8 +93,7 @@ public class TestReport implements Serializable {
                     final Test test = Test.valueOf(jsonArray.getJSONObject(i));
                     ignoredTests.add(test);
                 }
-            }
-            else {
+            } else {
                 log.info(String.format("Ignored test do not have detailed information : %s [%s]", entity.getProperty("buildTypeId"), entity.getProperty("buildId")));
             }
         } catch (JSONException e) {
@@ -294,14 +293,12 @@ public class TestReport implements Serializable {
         for (Test oneFailingTest : failedTests) {
             jsonArrayFailedTests.put(oneFailingTest.asJson());
         }
-
         entity.setProperty("failedTests", new Text(jsonArrayFailedTests.toString()));
 
         final JSONArray jsonArrayIgnoredTests = new JSONArray();
         for (Test oneIgnoredTest : ignoredTests) {
             jsonArrayIgnoredTests.put(oneIgnoredTest.asJson());
         }
-
         entity.setProperty("ignoredTests", new Text(jsonArrayIgnoredTests.toString()));
 
         final DatastoreService datastoreService = reports.getDatastoreService();
