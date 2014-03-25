@@ -1,3 +1,6 @@
 body { padding-top: 70px; }
 footer { padding-top: 50px; }
 .lead-title { font-size: 70px; }
+.sliderLabels .labelFrom { float: left; }
+.sliderLabels .labelTo { float: right; }
+.ngrs-range-slider { margin-bottom: 10px; }
