@@ -75,6 +75,13 @@ public class ImageServingUrlTest extends ImagesServiceTestBase {
     }
 
     @Test
+    public void servingUrlAlwaysReturnsSameUrlForSameBlobKey() throws Exception {
+        String servingUrl1 = imagesService.getServingUrl(ServingUrlOptions.Builder.withBlobKey(blobKey));
+        String servingUrl2 = imagesService.getServingUrl(ServingUrlOptions.Builder.withBlobKey(blobKey));
+        assertEquals(servingUrl1, servingUrl2);
+    }
+
+    @Test
     public void servingUrlWithImageSize() throws Exception {
         ServingUrlOptions servingUrlOptions = ServingUrlOptions.Builder.withBlobKey(blobKey);
         String baseUrl = imagesService.getServingUrl(servingUrlOptions);
