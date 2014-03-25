@@ -13,6 +13,11 @@
                                 <div class="col-md-7">
                                     <h4>Last builds</h4>
                                     <div data-google-chart data-select="lastTestReportsChartSelect(selectedItem)" data-chart="lastTestReportsChart" style="{{ lastTestReportsChart.cssStyle }}"></div>
+                                    <div range-slider min="buildMin" max="buildMax" model-min="sliderValues.from" model-max="sliderValues.to" show-values="false" prevent-equal-min-max="2"></div>
+                                    <div class="sliderLabels">
+                                        <span class="labelFrom small">{{originalData[originalData.length - sliderValues.from - 1].buildId}}</span>
+                                        <span class="labelTo small">{{originalData[originalData.length - sliderValues.to - 1].buildId}}</span>
+                                    </div>
                                 </div>
                                 <div class="col-md-5">
                                     <h4>Build #{{ selectedTestReport.buildId }} <small>{ date: {{ selectedTestReport.buildDate | date: 'medium' }}, duration: {{ selectedTestReport.buildDuration | duration:'seconds' }} }</small></h4>

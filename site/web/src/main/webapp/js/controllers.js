@@ -218,21 +218,46 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
 
     $scope.$watch('testReports', function(newValues, oldValues) {
         if (newValues !== oldValues) {
-            var hAxis = $scope.lastTestReportsChart.options.hAxis;
-            hAxis.gridlines.count = (newValues[0].buildId - newValues[newValues.length - 1].buildId) + 1;
+            $scope.originalData = newValues;
 
-            for(var i = 0; i < newValues.length; i++) {
-                $scope.lastTestReportsChart.data.rows.push({
+            $scope.sliderValues = {
+                from: 0,
+                to: newValues.length - 1
+            };
+
+            $scope.buildMin = $scope.sliderValues.from;
+            $scope.buildMax = $scope.sliderValues.to;
+
+            $scope.displayFromTo( $scope.sliderValues );
+        }
+    });
+
+    $scope.$watchCollection('sliderValues', function( newSliderValues ) {
+        if (newSliderValues !== undefined) {
+            $scope.displayFromTo( newSliderValues );
+        }
+    });
+
+    $scope.displayFromTo = function(newSliderValues, oldSliderValues) {
+        if ( newSliderValues !== oldSliderValues ) {
+            var newRows = [];
+            for (var i = $scope.originalData.length - newSliderValues.to - 1; i < $scope.originalData.length - newSliderValues.from; i++) {
+                newRows.push({
                     c: [
-                        { v: newValues[i].buildId },
-                        { v: newValues[i].numberOfPassedTests },
-                        { v: newValues[i].numberOfFailedTests },
-                        { v: newValues[i].numberOfIgnoredTests }
+                        { v: $scope.originalData[i].buildId },
+                        { v: $scope.originalData[i].numberOfPassedTests },
+                        { v: $scope.originalData[i].numberOfFailedTests },
+                        { v: $scope.originalData[i].numberOfIgnoredTests }
                     ]
                 });
             }
+            $scope.lastTestReportsChart.data.rows = newRows;
+            var hAxis = $scope.lastTestReportsChart.options.hAxis;
+            hAxis.gridlines.count = ($scope.originalData[$scope.originalData.length - newSliderValues.to - 1].buildId - $scope.originalData[$scope.originalData.length - newSliderValues.from - 1].buildId) + 1;
+
+            $scope.sliderValues = newSliderValues;
         }
-    });
+    };
 
     $scope.init = function(buildTypeId) {
         $scope.toTestAvailable = true;

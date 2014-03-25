@@ -1,12 +1,14 @@
 {
-    "name": "site-web",
-    "private": true,
-    "dependencies": {
-        "lodash": "2.4.1",
-        "momentjs": "2.5.0",
-        "angular": "1.2.5",
-        "angular-route": "1.2.5",
-        "angular-google-chart": "0.0.5",
-        "bootstrap": "3.0.3"
-    }
+  "name": "site-web",
+  "private": true,
+  "dependencies": {
+    "lodash": "2.4.1",
+    "momentjs": "2.5.0",
+    "angular": "1.2.5",
+    "angular-route": "1.2.5",
+    "angular-google-chart": "0.0.5",
+    "bootstrap": "3.0.3",
+    "angular-rangeslider": "~0.0.7",
+    "jquery": "~2.1.0"
+  }
 }

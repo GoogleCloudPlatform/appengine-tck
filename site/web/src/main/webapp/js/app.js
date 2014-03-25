@@ -4,7 +4,7 @@
  * @author <a href="mailto:kevin.pollet@serli.com">Kevin Pollet</a>
  */
 var appEngineTckApp = angular.
-    module('appEngineTckApp', ['ngRoute', 'googlechart']).
+    module('appEngineTckApp', ['ngRoute', 'googlechart', 'ui-rangeSlider']).
     filter('duration', function() {
         return function(input, unit) {
             var duration = moment.duration(parseInt(input), unit);
