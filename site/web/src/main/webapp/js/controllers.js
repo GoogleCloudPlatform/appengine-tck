@@ -56,7 +56,7 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
             }
         }
         else {
-            html += 'Number of fails : ' + size;
+            html += 'Number of ' + $scope.selectedTestReportChart.testType + ' : ' + size;
         }
         html += '</div>';
         return html;
@@ -112,7 +112,8 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
             midColor: '#FF6600',
             maxColor: '#FF0000',
             generateTooltip: $scope.showFullTreeMapTooltip
-        }
+        },
+        testType: 'failed'
     };
 
     $scope.selectedTestReportTreemapChartIgnoredTests = {
@@ -128,7 +129,8 @@ appEngineTckApp.controller('TestReportsCtrl', function($scope) {
             midColor: '#FFCC00',
             maxColor: '#FF9900',
             generateTooltip: $scope.showFullTreeMapTooltip
-        }
+        },
+        testType: 'ignored'
     };
 
     $scope.selectedTestReportPieChart = {
