@@ -209,10 +209,10 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
         Entity midEntity = storeTestEntityWithSingleProperty(key, midValue);
         Entity nullEntity = storeTestEntityWithSingleProperty(key, null);
 
-        assertSet(whenFilteringBy(GREATER_THAN, lowValue, key), queryReturns(midEntity, highEntity));
-        assertSet(whenFilteringBy(GREATER_THAN_OR_EQUAL, midValue, key), queryReturns(midEntity, highEntity));
-        assertSet(whenFilteringBy(LESS_THAN, highValue, key), queryReturns(nullEntity, midEntity, lowEntity));
-        assertSet(whenFilteringBy(LESS_THAN_OR_EQUAL, midValue, key), queryReturns(nullEntity, midEntity, lowEntity));
+        assertSet(queryReturns(midEntity, highEntity), whenFilteringBy(GREATER_THAN, lowValue, key));
+        assertSet(queryReturns(midEntity, highEntity), whenFilteringBy(GREATER_THAN_OR_EQUAL, midValue, key));
+        assertSet(queryReturns(nullEntity, midEntity, lowEntity), whenFilteringBy(LESS_THAN, highValue, key));
+        assertSet(queryReturns(nullEntity, midEntity, lowEntity), whenFilteringBy(LESS_THAN_OR_EQUAL, midValue, key));
 
         clearData(TEST_ENTITY_KIND, key, 0);
     }
@@ -233,8 +233,8 @@ public abstract class QueryTestBase extends DatastoreHelperTestBase {
         Entity barEntity = storeTestEntityWithSingleProperty(key, bar);
         Entity noPropertyEntity = storeTestEntityWithoutProperties(key);
 
-        assertSet(whenFilteringBy(EQUAL, foo, key), queryReturns(fooEntity));
-        assertSet(whenFilteringBy(NOT_EQUAL, foo, key), queryReturns(barEntity));
+        assertSet(queryReturns(fooEntity), whenFilteringBy(EQUAL, foo, key));
+        assertSet(queryReturns(barEntity), whenFilteringBy(NOT_EQUAL, foo, key));
 
         clearData(TEST_ENTITY_KIND, key, 0);
     }
