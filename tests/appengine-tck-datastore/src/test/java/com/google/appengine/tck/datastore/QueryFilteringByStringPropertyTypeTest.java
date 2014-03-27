@@ -54,7 +54,7 @@ public class QueryFilteringByStringPropertyTypeTest extends QueryTestBase {
         Entity kate = storeTestEntityWithSingleProperty("Kate");
         Entity ashley = storeTestEntityWithSingleProperty("Ashley");
 
-        assertSet(whenFilteringBy(IN, Arrays.asList("Kate", "Ashley")), queryReturns(kate, ashley));
+        assertSet(queryReturns(kate, ashley), whenFilteringBy(IN, Arrays.asList("Kate", "Ashley")));
     }
 
     @Test

@@ -58,11 +58,12 @@ public class QueryFilteringOnCollectionPropertyTest extends QueryTestBase {
 
         storeTestEntityWithSingleProperty(parentKey, Arrays.asList(1, 2));
         assertSet(
+            queryReturnsNothing(),
             whenFilteringWith(and(
                 new FilterPredicate(SINGLE_PROPERTY_NAME, GREATER_THAN, 1),
                 new FilterPredicate(SINGLE_PROPERTY_NAME, LESS_THAN, 2)),
-                parentKey),
-            queryReturnsNothing());
+                parentKey)
+        );
     }
 
 
@@ -76,11 +77,12 @@ public class QueryFilteringOnCollectionPropertyTest extends QueryTestBase {
 
 
         assertSet(
+            queryReturns(entity),
             whenFilteringWith(and(
                 new FilterPredicate(SINGLE_PROPERTY_NAME, EQUAL, 1),
                 new FilterPredicate(SINGLE_PROPERTY_NAME, EQUAL, 2)),
-                parentKey),
-            queryReturns(entity));
+                parentKey)
+        );
     }
 
     @Test
@@ -93,15 +95,17 @@ public class QueryFilteringOnCollectionPropertyTest extends QueryTestBase {
         Entity entity123 = storeTestEntityWithSingleProperty(parentKey, Arrays.asList(1, 2, 3));
 
         // The NOT_EQUAL operator works as a "value is other than" test.
-        assertSet(whenFilteringWith(new FilterPredicate(SINGLE_PROPERTY_NAME, NOT_EQUAL, 1), parentKey),
-            queryReturns(entity12, entity123));
+        assertSet(
+            queryReturns(entity12, entity123),
+            whenFilteringWith(new FilterPredicate(SINGLE_PROPERTY_NAME, NOT_EQUAL, 1), parentKey));
 
         assertSet(
+            queryReturns(entity123),
             whenFilteringWith(and(
                 new FilterPredicate(SINGLE_PROPERTY_NAME, NOT_EQUAL, 1),
                 new FilterPredicate(SINGLE_PROPERTY_NAME, NOT_EQUAL, 2)),
-                parentKey),
-            queryReturns(entity123));    // NOTE: should only match entity123, but not entity12
+                parentKey)
+        );    // NOTE: should only match entity123, but not entity12
 
     }
 
