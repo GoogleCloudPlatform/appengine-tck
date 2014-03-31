@@ -190,7 +190,8 @@ public class TestBase {
      */
     protected void assumeEnvironment(Environment... supported) {
         Set<Environment> set = new HashSet<>(Arrays.asList(supported));
-        Assume.assumeTrue(set.contains(getEnvironment()));
+        final Environment environment = getEnvironment();
+        Assume.assumeTrue(String.format("Unsupported environment: %s [%s]", environment, set), set.contains(environment));
     }
 
     @SuppressWarnings("deprecation")
