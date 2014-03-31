@@ -17,9 +17,7 @@ package com.google.appengine.tck.users;
 
 import com.google.appengine.api.users.User;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
@@ -32,10 +30,6 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(Arquillian.class)
 public class UserTest extends UserTestBase {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     /**
      * Tests constructor.
      * <p>Both email and authDomain are valid string, no exception.
@@ -50,29 +44,26 @@ public class UserTest extends UserTestBase {
      * Tests constructor.
      * <p>email is null, expect NullPointerException.
      */
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testUser_emailNull() {
-        thrown.expect(NullPointerException.class);
-        User user = new User(null, "gmail.com");
+        new User(null, "gmail.com");
     }
 
     /**
      * Tests constructor.
      * <p>authDomain is null, expect NullPointerException.
      */
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testUser_authNull() {
-        thrown.expect(NullPointerException.class);
-        User user = new User("someone@example.com", null);
+        new User("someone@example.com", null);
     }
 
     /**
      * Tests compareTo null.
      */
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testCompareTo_null() {
         User user = new User("a", "b");
-        thrown.expect(NullPointerException.class);
         user.compareTo(null);
     }
 

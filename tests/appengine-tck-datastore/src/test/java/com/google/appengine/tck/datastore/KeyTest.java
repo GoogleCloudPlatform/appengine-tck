@@ -29,13 +29,10 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.memcache.MemcacheSerialization;
 import com.google.appengine.api.utils.SystemProperty;
-
 import org.apache.commons.codec.binary.Base64;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
@@ -47,9 +44,6 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(Arquillian.class)
 public class KeyTest extends DatastoreTestBase {
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     private static final String kindName = "keyData";
 
     @Before
@@ -58,7 +52,7 @@ public class KeyTest extends DatastoreTestBase {
         if (service.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
             Entity newRec;
             String[] locDat = {"ac", "ab", "ae", "aa", "ac"};
-            List<Entity> elist = new ArrayList<Entity>();
+            List<Entity> elist = new ArrayList<>();
             int[] popDat = {8008278, 279557, 1222, 0, 12345};
             for (int i = 0; i < locDat.length; i++) {
                 newRec = new Entity(kindName, rootKey);
@@ -137,22 +131,22 @@ public class KeyTest extends DatastoreTestBase {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testWithNamespce() {
         String[] namespaceDat = {"", "developer", "testing"};
         Entity entity;
         String kindTest = kindName + "-NS";
-        List<Key> kList = new ArrayList<Key>();
+        List<Key> kList = new ArrayList<>();
         // create data and get key
-        for (int i = 0; i < namespaceDat.length; i++) {
-            NamespaceManager.set(namespaceDat[i]);
+        for (String aNamespaceDat : namespaceDat) {
+            NamespaceManager.set(aNamespaceDat);
             Query q = new Query(kindTest);
             if (service.prepare(q).countEntities(FetchOptions.Builder.withDefaults()) == 0) {
                 entity = new Entity(kindTest);
-                if (namespaceDat[i].equals("")) {
+                if (aNamespaceDat.equals("")) {
                     entity.setProperty("jobType", "google");
                 } else {
-                    entity.setProperty("jobType", namespaceDat[i]);
+                    entity.setProperty("jobType", aNamespaceDat);
                 }
                 service.put(entity);
             } else {
@@ -178,7 +172,6 @@ public class KeyTest extends DatastoreTestBase {
         Query q = new Query(kindTest);
         q.setFilter(new FilterPredicate("__key__", Query.FilterOperator.EQUAL, kList.get(2)));
 
-        thrown.expect(IllegalArgumentException.class);
         service.prepare(q).asSingleEntity();
     }
 

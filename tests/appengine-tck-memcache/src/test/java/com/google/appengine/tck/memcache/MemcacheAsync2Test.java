@@ -32,9 +32,7 @@ import com.google.appengine.api.memcache.Stats;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -62,9 +60,6 @@ public class MemcacheAsync2Test extends CacheTestBase {
         asyncMemcache = MemcacheServiceFactory.getAsyncMemcacheService();
         memcache.clearAll();
     }
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     /**
      * Tests single put/get.

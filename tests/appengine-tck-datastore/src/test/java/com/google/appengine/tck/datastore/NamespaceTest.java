@@ -26,9 +26,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.utils.SystemProperty;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
@@ -41,9 +39,6 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(Arquillian.class)
 public class NamespaceTest extends DatastoreTestBase {
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     private String kindName = "namespaceType";
     private String[] namespaceDat = {"", "developerNS", "testingNS"};
     private String[] stringDat = {"google", "developer", "testing"};
@@ -120,9 +115,8 @@ public class NamespaceTest extends DatastoreTestBase {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testValidation() {
-        thrown.expect(IllegalArgumentException.class);
         NamespaceManager.set("abc#$%123");
     }
 

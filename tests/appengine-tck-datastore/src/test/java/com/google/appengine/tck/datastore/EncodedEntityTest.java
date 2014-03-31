@@ -24,9 +24,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
@@ -38,11 +36,7 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(Arquillian.class)
 public class EncodedEntityTest extends DatastoreTestBase {
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     private String kindName = "entityproperty";
-
 
     @Test
     public void testEmbeddedEntity() throws InterruptedException {

@@ -28,9 +28,7 @@ import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.datastore.QueryResultList;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import static com.google.appengine.api.datastore.Query.FilterOperator.EQUAL;
@@ -47,10 +45,6 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Arquillian.class)
 
 public class PreparedQueryTest extends QueryTestBase {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     private Entity john;
     private Entity johnsParent;
     private PreparedQuery preparedQuery;
@@ -98,13 +92,11 @@ public class PreparedQueryTest extends QueryTestBase {
         assertEquals(john, iterator.next());
     }
 
-    @Test
+    @Test(expected = NoSuchElementException.class)
     public void testIteratorThrowsNoSuchElementException() throws Exception {
         Iterator<Entity> iterator = preparedQuery.asIterator();
         iterator.next();
         assertFalse(iterator.hasNext());
-
-        thrown.expect(NoSuchElementException.class);
         iterator.next();
     }
 
@@ -181,6 +173,4 @@ public class PreparedQueryTest extends QueryTestBase {
         assertEquals(1, list.size());
         assertEquals(john, list.get(0));
     }
-
-
 }
