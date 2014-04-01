@@ -17,7 +17,10 @@ package com.google.appengine.tck.search;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import com.google.appengine.api.NamespaceManager;
 import com.google.appengine.api.search.Document;
@@ -27,7 +30,10 @@ import com.google.appengine.api.search.GetRequest;
 import com.google.appengine.api.search.GetResponse;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
+import com.google.appengine.api.search.PutResponse;
+import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.Schema;
+import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchService;
 import com.google.appengine.api.search.SearchServiceFactory;
 import org.jboss.arquillian.junit.Arquillian;
@@ -72,8 +78,8 @@ public class IndexTest extends SearchTestBase {
         NamespaceManager.set(ns);
         SearchService searchService2 = SearchServiceFactory.getSearchService();
         Index index = searchService2.getIndex(IndexSpec.newBuilder()
-            .setName(indexName)
-            .build());
+                .setName(indexName)
+                .build());
         delDocs(index);
         addDocs(index, docCount);
 
@@ -102,8 +108,8 @@ public class IndexTest extends SearchTestBase {
         int docCount = 5;
         NamespaceManager.set(ns);
         Index index = searchService.getIndex(IndexSpec.newBuilder()
-            .setName(indexName)
-            .build());
+                .setName(indexName)
+                .build());
         delDocs(index);
         addDocs(index, docCount);
 
@@ -190,6 +196,280 @@ public class IndexTest extends SearchTestBase {
             sync();
             assertNull(oneIndex.get(docIdList.get(0)));
         }
+    }
+
+    @Test
+    public void testPutDeleteAsyncDocsByString() throws InterruptedException {
+        String indexName = "put-index";
+        String docId = "testPutDocs";
+        List<String> docIdList = new ArrayList<>();
+        Index index = searchService.getIndex(IndexSpec.newBuilder()
+                .setName(indexName)
+                .build());
+
+        Field field = Field.newBuilder().setName("subject").setText("put(Document.Builder)").build();
+        Document.Builder docBuilder = Document.newBuilder()
+                .setId(docId + "1")
+                .addField(field);
+        index.put(docBuilder);
+        docIdList.add(docId + "1");
+
+        field = Field.newBuilder().setName("subject").setText("put(Document)").build();
+        Document document = Document.newBuilder()
+                .setId(docId + "2")
+                .addField(field).build();
+        index.put(document);
+        docIdList.add(docId + "1");
+
+        GetIndexesRequest request = GetIndexesRequest.newBuilder()
+                .setIndexNamePrefix(indexName)
+                .build();
+        GetResponse<Index> response = searchService.getIndexes(request);
+        List<Index> listIndexes = response.getResults();
+        for (Index oneIndex : listIndexes) {
+            Field retField = oneIndex.get(docId + "1").getOnlyField("subject");
+            assertEquals("put(Document.Builder)", retField.getText());
+            retField = oneIndex.get(docId + "2").getOnlyField("subject");
+            assertEquals("put(Document)", retField.getText());
+            oneIndex.deleteAsync(docIdList.get(0));
+            sync();
+            assertNull(oneIndex.get(docIdList.get(0)));
+        }
+    }
+
+    @Test
+    public void testPutDeleteAsyncDocsByIterable() throws InterruptedException {
+        String indexName = "put-index";
+        String docId = "testPutDocs";
+        Index index = createIndex(indexName, docId);
+
+        List<String> dList = new ArrayList<>();
+        Results<ScoredDocument> found = searchDocs(index, "", 0);
+        Iterator<ScoredDocument> it = found.iterator();
+
+        ScoredDocument doc = it.next();
+        assertEquals(docId + "1", doc.getId());
+        dList.add(doc.getId());
+
+        doc = it.next();
+        assertEquals(docId + "2", doc.getId());
+        dList.add(doc.getId());
+
+        GetIndexesRequest request = GetIndexesRequest.newBuilder()
+                .setIndexNamePrefix(indexName)
+                .build();
+        GetResponse<Index> response = searchService.getIndexes(request);
+        List<Index> listIndexes = response.getResults();
+
+        for (Index oneIndex : listIndexes) {
+            oneIndex.deleteAsync(dList);
+            sync();
+            verifyDocCount(index, 0);
+        }
+    }
+
+    @Test
+    public void testPutGetRangeGetRequest() throws InterruptedException {
+        String indexName = "put-index";
+        String docId = "testPutDocs";
+        Index index = createIndex(indexName, docId);
+
+        GetIndexesRequest request = GetIndexesRequest.newBuilder()
+                .setIndexNamePrefix(indexName)
+                .build();
+        GetResponse<Index> response = searchService.getIndexes(request);
+        List<Index> listIndexes = response.getResults();
+
+        for (Index oneIndex : listIndexes) {
+            GetResponse<Document> docs = oneIndex.getRange(GetRequest.newBuilder().setStartId(docId + "1").setLimit(10).build());
+            sync();
+            assertEquals(docs.getResults().size(), 2);
+        }
+    }
+
+    @Test
+    public void testPutGetRangeBuilder() throws InterruptedException {
+        String indexName = "put-index";
+        String docId = "testPutDocs";
+        Index index = createIndex(indexName, docId);
+
+        GetIndexesRequest request = GetIndexesRequest.newBuilder()
+                .setIndexNamePrefix(indexName)
+                .build();
+        GetResponse<Index> response = searchService.getIndexes(request);
+        List<Index> listIndexes = response.getResults();
+
+        for (Index oneIndex : listIndexes) {
+            GetResponse<Document> docs = oneIndex.getRange(GetRequest.newBuilder().setStartId(docId + "1").setLimit(10));
+            sync();
+            assertEquals(docs.getResults().size(), 2);
+        }
+    }
+
+    @Test
+    public void testPutGetRangeAsyncGetResponse() throws InterruptedException, ExecutionException {
+        String indexName = "put-index";
+        String docId = "testPutDocs";
+        Index index = createIndex(indexName, docId);
+
+        GetIndexesRequest request = GetIndexesRequest.newBuilder()
+                .setIndexNamePrefix(indexName)
+                .build();
+        GetResponse<Index> response = searchService.getIndexes(request);
+        List<Index> listIndexes = response.getResults();
+
+        for (Index oneIndex : listIndexes) {
+            Future<GetResponse<Document>> futurDocs = oneIndex.getRangeAsync(GetRequest.newBuilder().setStartId(docId + "1").setLimit(10).build());
+            sync();
+            assertEquals(futurDocs.get().getResults().size(), 2);
+        }
+    }
+
+    @Test
+    public void testPutGetRangeAsyncBuilder() throws InterruptedException, ExecutionException {
+        String indexName = "put-index";
+        String docId = "testPutDocs";
+        Index index = createIndex(indexName, docId);
+
+        GetIndexesRequest request = GetIndexesRequest.newBuilder()
+                .setIndexNamePrefix(indexName)
+                .build();
+        GetResponse<Index> response = searchService.getIndexes(request);
+        List<Index> listIndexes = response.getResults();
+
+        for (Index oneIndex : listIndexes) {
+            Future<GetResponse<Document>> futurDocs = oneIndex.getRangeAsync(GetRequest.newBuilder().setStartId(docId + "1").setLimit(10));
+            sync();
+            assertEquals(futurDocs.get().getResults().size(), 2);
+        }
+    }
+
+    @Test
+    public void testPutAsyncBuilder() {
+        String indexName = "put-index";
+        String docId = "testPutDocs";
+
+        Index index = searchService.getIndex(IndexSpec.newBuilder()
+                .setName(indexName)
+                .build());
+
+        Field field = Field.newBuilder().setName("subject").setText("put(Document.Builder)").build();
+        Document.Builder docBuilder = Document.newBuilder()
+                .setId(docId + "1")
+                .addField(field);
+
+        index.putAsync(docBuilder);
+
+        GetIndexesRequest request = GetIndexesRequest.newBuilder()
+                .setIndexNamePrefix(indexName)
+                .build();
+        GetResponse<Index> response = searchService.getIndexes(request);
+        List<Index> listIndexes = response.getResults();
+
+        for (Index oneIndex : listIndexes) {
+            Field retField = oneIndex.get(docId + "1").getOnlyField("subject");
+            sync();
+            assertEquals("put(Document.Builder)", retField.getText());
+        }
+    }
+
+    @Test
+    public void testPutAsyncDocument() {
+        String indexName = "put-index";
+        String docId = "testPutDocs";
+
+        Index index = searchService.getIndex(IndexSpec.newBuilder()
+                .setName(indexName)
+                .build());
+
+        Field field = Field.newBuilder().setName("subject").setText("put(Document)").build();
+        Document document = Document.newBuilder()
+                .setId(docId + "1")
+                .addField(field).build();
+
+        Future<PutResponse> resp = index.putAsync(document);
+
+        while (!resp.isDone()) {
+            if (resp.isCancelled()) {
+                break;
+            }
+        }
+
+        GetIndexesRequest request = GetIndexesRequest.newBuilder()
+                .setIndexNamePrefix(indexName)
+                .build();
+        GetResponse<Index> response = searchService.getIndexes(request);
+        List<Index> listIndexes = response.getResults();
+
+        for (Index oneIndex : listIndexes) {
+            Field retField = oneIndex.get(docId + "1").getOnlyField("subject");
+            sync();
+            assertEquals("put(Document)", retField.getText());
+        }
+    }
+
+    @Test
+    public void testPutAsyncIterable() {
+        String indexName = "put-index";
+        String docId = "testPutDocs";
+
+        Index index = searchService.getIndex(IndexSpec.newBuilder()
+                .setName(indexName)
+                .build());
+
+        List<Document> documents = new ArrayList<>();
+        Field field = Field.newBuilder().setName("subject").setText("put(Document)").build();
+        Document document1 = Document.newBuilder()
+                .setId(docId + "1")
+                .addField(field).build();
+        field = Field.newBuilder().setName("subject").setText("put(Document)").build();
+        Document document2 = Document.newBuilder()
+                .setId(docId + "2")
+                .addField(field).build();
+
+        documents.add(document1);
+        documents.add(document2);
+
+        Future<PutResponse> resp = index.putAsync(documents);
+
+        while (!resp.isDone()) {
+            if (resp.isCancelled()) {
+                break;
+            }
+        }
+
+        GetIndexesRequest request = GetIndexesRequest.newBuilder()
+                .setIndexNamePrefix(indexName)
+                .build();
+        GetResponse<Index> response = searchService.getIndexes(request);
+        List<Index> listIndexes = response.getResults();
+
+        for (Index oneIndex : listIndexes) {
+            Field retField = oneIndex.get(docId + "1").getOnlyField("subject");
+            assertEquals("put(Document)", retField.getText());
+            retField = oneIndex.get(docId + "2").getOnlyField("subject");
+            assertEquals("put(Document)", retField.getText());
+            sync();
+        }
+    }
+
+    private Index createIndex(String indexName, String docId) {
+        Index index = searchService.getIndex(IndexSpec.newBuilder()
+                .setName(indexName)
+                .build());
+
+        Field field = Field.newBuilder().setName("subject").setText("put(Document.Builder)").build();
+        Document.Builder docBuilder = Document.newBuilder()
+                .setId(docId + "1")
+                .addField(field);
+        index.put(docBuilder);
+
+        field = Field.newBuilder().setName("subject").setText("put(Document)").build();
+        Document document = Document.newBuilder()
+                .setId(docId + "2")
+                .addField(field).build();
+        index.put(document);
+        return index;
     }
 
     private void addData(String indexName) throws InterruptedException, ParseException {
