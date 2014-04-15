@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -190,8 +191,23 @@ public class TestBase {
      */
     protected void assumeEnvironment(Environment... supported) {
         Set<Environment> set = new HashSet<>(Arrays.asList(supported));
+        assumeEnvironment(set);
+    }
+
+    private void assumeEnvironment(Set<Environment> supported) {
         final Environment environment = getEnvironment();
-        Assume.assumeTrue(String.format("Unsupported environment: %s [%s]", environment, set), set.contains(environment));
+        Assume.assumeTrue(String.format("Unsupported environment: %s [%s]", environment, supported), supported.contains(environment));
+    }
+
+    /**
+     * Assume *NOT* certain environment.
+     * This way we can ignore tests at runtime.
+     *
+     * @param nots the not supported envs
+     */
+    protected void assumeNotEnvironment(Environment... nots) {
+        EnumSet<Environment> set = EnumSet.copyOf(Arrays.asList(nots));
+        assumeEnvironment(EnumSet.complementOf(set));
     }
 
     @SuppressWarnings("deprecation")
