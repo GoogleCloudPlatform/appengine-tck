@@ -22,7 +22,9 @@ import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.misc.servlet.support.Exceptions;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -54,16 +56,25 @@ public class LoaderTest extends TestBase {
         return war;
     }
 
-    @Test
-    @RunAsClient
-    public void testPing(@ArquillianResource URL root) throws Exception {
-        URL url = new URL(root, "bang");
+    private void doPing(HttpUriRequest request) throws Exception {
         final HttpClient client = new DefaultHttpClient();
         try {
-            HttpResponse response = client.execute(new HttpPost(url.toURI()));
+            HttpResponse response = client.execute(request);
             Assert.assertEquals(content, EntityUtils.toString(response.getEntity()));
         } finally {
             client.getConnectionManager().shutdown();
         }
+    }
+
+    @Test
+    @RunAsClient
+    public void testGet(@ArquillianResource URL root) throws Exception {
+        doPing(new HttpGet(new URL(root, "/bang").toURI()));
+    }
+
+    @Test
+    @RunAsClient
+    public void testPost(@ArquillianResource URL root) throws Exception {
+        doPing(new HttpPost(new URL(root, "/bang").toURI()));
     }
 }
