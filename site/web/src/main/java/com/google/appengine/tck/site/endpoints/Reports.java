@@ -27,7 +27,6 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.oauth.OAuthRequestException;
-import com.google.appengine.api.users.User;
 import com.google.appengine.tck.site.utils.Constants;
 import com.google.common.base.Optional;
 
@@ -101,11 +100,14 @@ public class Reports {
             path = "tests",
             httpMethod = POST
     )
-    public void insertTestReport(TestReport report, User user) throws OAuthRequestException {
+    public void insertTestReport(TestReport report) throws OAuthRequestException {
+        report.save(this);
+    }
+    /*public void insertTestReport(TestReport report, User user) throws OAuthRequestException {
         if (user == null) {
             throw new OAuthRequestException("Test report cannot be inserted if request is unauthenticated");
         }
 
         report.save(this);
-    }
+    }*/
 }

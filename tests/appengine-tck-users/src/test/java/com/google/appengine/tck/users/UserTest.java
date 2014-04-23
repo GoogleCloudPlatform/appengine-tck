@@ -16,6 +16,8 @@
 package com.google.appengine.tck.users;
 
 import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.tck.mu.UserIsLoggedIn;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +32,14 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(Arquillian.class)
 public class UserTest extends UserTestBase {
+
+    @Test
+    @UserIsLoggedIn(email="julien.deray@serli.com")
+    public void annotationTest() {
+        User user = UserServiceFactory.getUserService().getCurrentUser();
+        assertNotNull(user);
+    }
+
     /**
      * Tests constructor.
      * <p>Both email and authDomain are valid string, no exception.

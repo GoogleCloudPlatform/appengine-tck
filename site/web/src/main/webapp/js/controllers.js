@@ -33,7 +33,7 @@ appEngineTckApp.controller('ReportsCtrl', function($scope, $window) {
             $scope.$apply(function($scope) {
                 $scope.isGoogleApisLoaded = true;
             });
-        }, 'https://cloud-test-compatibility-kit.appspot.com/_ah/api');
+        }, 'http://localhost:8989/_ah/api');
     };
 });
 
