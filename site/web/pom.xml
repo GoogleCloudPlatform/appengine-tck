@@ -78,6 +78,7 @@
                     <plugin>
                         <groupId>com.google.appengine</groupId>
                         <artifactId>appengine-maven-plugin</artifactId>
+                        <version>1.9.1</version>
                         <configuration>
                             <enableJarClasses>false</enableJarClasses>
                         </configuration>
