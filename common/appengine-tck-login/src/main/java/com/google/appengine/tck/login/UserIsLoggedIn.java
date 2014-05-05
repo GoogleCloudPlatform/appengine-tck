@@ -13,11 +13,20 @@
  * limitations under the License.
  */
 
-package com.google.appengine.tck.mu;
+package com.google.appengine.tck.login;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME) @java.lang.annotation.Target({ElementType.METHOD })
+/**
+ * @author Julien Deray
+ * @author Ales Justin
+ */
+@Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD })
 public @interface UserIsLoggedIn {
     public String email();
+    boolean isAdmin() default false;
+    String location() default "http://www.appengine-tck.org";
 }

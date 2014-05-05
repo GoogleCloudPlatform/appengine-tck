@@ -13,17 +13,22 @@
  * limitations under the License.
  */
 
-package com.google.appengine.tck.mu;
+package com.google.appengine.tck.login;
 
-import com.google.appengine.api.users.UserServiceFactory;
+import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
+import org.jboss.arquillian.core.spi.LoadableExtension;
+import org.kohsuke.MetaInfServices;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-public class GetLoginUrlServlet extends HttpServlet {
-    public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.getWriter().write(UserServiceFactory.getUserService().createLoginURL(req.getParameter("location")));
+/**
+ * @author Julien Deray
+ * @author Ales Justin
+ */
+@MetaInfServices
+@SuppressWarnings("UnusedParameters")
+public class UserLoginExtension implements LoadableExtension {
+    @Override
+    public void register(ExtensionBuilder builder) {
+        builder.observer(UserLogin.class);
+        builder.service(ApplicationArchiveProcessor.class, UserLoginApplicationArchiveProcessor.class);
     }
 }

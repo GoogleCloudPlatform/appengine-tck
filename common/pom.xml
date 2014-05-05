@@ -17,6 +17,7 @@
     <modules>
         <!-- Utils -->
         <module>appengine-tck-base</module>
+        <module>appengine-tck-login</module>
         <module>appengine-tck-multisuite</module>
     </modules>
 

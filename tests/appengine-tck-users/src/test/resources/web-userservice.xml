@@ -26,21 +26,11 @@
         <servlet-class>com.google.appengine.tck.users.support.UserServiceServlet</servlet-class>
     </servlet>
 
-    <servlet>
-        <servlet-name>user-service-login</servlet-name>
-        <servlet-class>com.google.appengine.tck.mu.GetLoginUrlServlet</servlet-class>
-    </servlet>
-
     <!-- Mappings -->
 
     <servlet-mapping>
         <servlet-name>user-service-helper</servlet-name>
         <url-pattern>/user-service-helper</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>user-service-login</servlet-name>
-        <url-pattern>/user-service-login</url-pattern>
     </servlet-mapping>
 
 </web-app>

@@ -19,6 +19,7 @@
         <dependency>
             <groupId>org.jboss.arquillian.protocol</groupId>
             <artifactId>arquillian-protocol-modules</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

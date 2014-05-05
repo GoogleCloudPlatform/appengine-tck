@@ -65,7 +65,7 @@
         <version.org.glassfish.javax.el>3.0.0</version.org.glassfish.javax.el>
 
         <!-- TestUtils -->
-        <version.org.apache.httpcomponents>4.2.5</version.org.apache.httpcomponents>
+        <version.org.apache.httpcomponents>4.3.1</version.org.apache.httpcomponents>
         <version.org.apache.commons.validator>1.4.0</version.org.apache.commons.validator>
 
         <!-- Maven -->
@@ -333,6 +333,12 @@
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>
                 <artifactId>appengine-tck-base</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>appengine-tck-login</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -636,7 +642,6 @@
                 <artifactId>graphene-webdriver</artifactId>
                 <version>${version.org.jboss.arquillian.graphene2}</version>
                 <type>pom</type>
-                <scope>test</scope>
             </dependency>
 
             <dependency>
@@ -663,7 +668,6 @@
                 <groupId>org.jboss.arquillian.protocol</groupId>
                 <artifactId>arquillian-protocol-modules</artifactId>
                 <version>${version.arquillian.gae}</version>
-                <scope>test</scope>
             </dependency>
 
             <dependency>

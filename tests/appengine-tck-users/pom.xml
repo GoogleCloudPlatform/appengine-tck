@@ -29,12 +29,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jboss.arquillian.graphene</groupId>
-            <artifactId>graphene-webdriver</artifactId>
-            <type>pom</type>
-            <scope>test</scope>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-login</artifactId>
         </dependency>
-
     </dependencies>
 
 </project>

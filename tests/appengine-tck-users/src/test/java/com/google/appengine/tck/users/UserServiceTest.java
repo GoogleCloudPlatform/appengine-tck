@@ -244,7 +244,7 @@ public class UserServiceTest extends UserTestBase {
     public void testCreateLoginUrlDev() throws Exception {
         assumeEnvironment(Environment.CAPEDWARF, Environment.SDK);
 
-        String destURLenc = "/_ah/email?continue=" + DEST_URL_ENCODED_SINGLE;
+        String destURLenc = "/_ah/login?continue=" + DEST_URL_ENCODED_SINGLE;
         String createdURL = UserServiceFactory.getUserService().createLoginURL(DEST_URL);
         Assert.assertEquals(destURLenc, createdURL);
     }
@@ -271,7 +271,7 @@ public class UserServiceTest extends UserTestBase {
         assumeEnvironment(Environment.CAPEDWARF, Environment.SDK);
 
         String authDomain = "othergaetcktest.org";
-        String destURLenc = "/_ah/email?continue=" + DEST_URL_ENCODED_SINGLE;
+        String destURLenc = "/_ah/login?continue=" + DEST_URL_ENCODED_SINGLE;
         String createdURL = UserServiceFactory.getUserService().createLoginURL(DEST_URL, authDomain);
         // TODO: verify how to check for the authDomain.
         Assert.assertTrue(createdURL.startsWith(destURLenc));
@@ -308,7 +308,7 @@ public class UserServiceTest extends UserTestBase {
         assumeEnvironment(Environment.CAPEDWARF, Environment.SDK);
 
         String authDomain = "othergaetcktest.org";
-        String destURLenc = "/_ah/email?continue=" + DEST_URL_ENCODED_SINGLE;
+        String destURLenc = "/_ah/login?continue=" + DEST_URL_ENCODED_SINGLE;
         String createdURL = UserServiceFactory.getUserService().createLoginURL(DEST_URL, authDomain);
         // TODO: verify how to check for the authDomain.
         Assert.assertTrue(createdURL.startsWith(destURLenc));

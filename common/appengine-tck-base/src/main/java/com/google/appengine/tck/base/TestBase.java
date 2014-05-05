@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -52,11 +51,8 @@ import com.google.appengine.tck.event.PropertyLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycleEvent;
 import com.google.appengine.tck.event.TestLifecycles;
 import com.google.appengine.tck.mail.EmailAddressFormatter;
-import com.google.appengine.tck.mu.MockUserExtension;
-import com.google.appengine.tck.mu.UserIsLoggedIn;
 import com.google.appengine.tck.temp.TempData;
 import com.google.appengine.tck.temp.TempDataFilter;
-import org.jboss.arquillian.core.spi.LoadableExtension;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -113,8 +109,6 @@ public class TestBase {
         war.addPackage(EmailAddressFormatter.class.getPackage());
         // env
         war.addClass(Environment.class);
-        // mock user (mu)
-        war.addPackage(UserIsLoggedIn.class.getPackage());
 
         // web.xml
         if (context.getWebXmlFile() != null) {

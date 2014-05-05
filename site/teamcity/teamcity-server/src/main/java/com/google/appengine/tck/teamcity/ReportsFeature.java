@@ -227,7 +227,6 @@ public class ReportsFeature extends BuildFeature {
 
         // build the test report
         final Reports reports = new Reports.Builder(httpTransport, jsonFactory, credential).
-                setRootUrl("http://localhost:8989/_ah/api").
                 setApplicationName(constants.getApplicationName()).
                 build();
 
