@@ -16,6 +16,7 @@
 package com.google.appengine.tck.users;
 
 import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.tck.login.UserIsLoggedIn;
 import org.jboss.arquillian.junit.Arquillian;
@@ -35,9 +36,19 @@ public class UserTest extends UserTestBase {
 
     @Test
     @UserIsLoggedIn(email = "tck@appengine-tck.org")
-    public void testAnnotation() {
+    public void testLoggedUser() {
         User user = UserServiceFactory.getUserService().getCurrentUser();
         assertNotNull(user);
+        assertEquals("tck@appengine-tck.org", user.getEmail());
+    }
+
+    @Test
+    @UserIsLoggedIn(email = "tck@appengine-tck.org", isAdmin = true)
+    public void testLoggedAdmin() {
+        UserService service = UserServiceFactory.getUserService();
+        User user = service.getCurrentUser();
+        assertNotNull(user);
+        assertTrue(service.isUserAdmin());
     }
 
     /**
