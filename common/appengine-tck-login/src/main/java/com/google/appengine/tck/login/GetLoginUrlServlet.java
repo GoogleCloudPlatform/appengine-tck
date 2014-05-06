@@ -16,6 +16,7 @@
 package com.google.appengine.tck.login;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,8 +29,17 @@ import com.google.appengine.api.users.UserServiceFactory;
  * @author Ales Justin
  */
 public class GetLoginUrlServlet extends HttpServlet {
+    private static final String HTML = "<html><body>%s</body></html>";
+
     public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String loginURL = UserServiceFactory.getUserService().createLoginURL(req.getParameter("location"));
-        resp.getWriter().write(String.format("<html><body><div id=\"login-url\">%s</div></body></html>", loginURL));
+        final PrintWriter writer = resp.getWriter();
+
+        final String type = req.getParameter("type");
+        if ("poke".equals(type)) {
+            writer.write(String.format(HTML, "Poke!"));
+        } else {
+            String loginURL = UserServiceFactory.getUserService().createLoginURL(req.getParameter("location"));
+            writer.write(String.format(HTML, String.format("<div id=\"login-url\">%s</div>", loginURL)));
+        }
     }
 }

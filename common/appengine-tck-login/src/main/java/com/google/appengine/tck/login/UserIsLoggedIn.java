@@ -28,5 +28,5 @@ import java.lang.annotation.Target;
 public @interface UserIsLoggedIn {
     public String email();
     boolean isAdmin() default false;
-    String location() default "http://www.appengine-tck.org";
+    String location() default UserLogin.USER_LOGIN_SERVLET_PATH + "?type=poke";
 }

@@ -18,14 +18,17 @@ package com.google.appengine.tck.login;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Collection;
+import java.util.Set;
 
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
 import org.jboss.arquillian.container.spi.event.container.AfterDeploy;
 import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.core.spi.EventContext;
+import org.jboss.arquillian.protocol.modules.Cookies;
 import org.jboss.arquillian.test.spi.event.suite.Before;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
@@ -64,18 +67,27 @@ public class UserLogin {
 
         if (userIsLoggedIn != null) {
             final WebDriver driver = createWebDriver();
+            try {
+                driver.manage().deleteAllCookies();
 
-            driver.manage().deleteAllCookies();
-            driver.get(baseUri + USER_LOGIN_SERVLET_PATH + "?location=" + URLEncoder.encode(userIsLoggedIn.location(), "UTF-8"));
-            String loginURL = driver.findElement(By.id("login-url")).getText();
+                driver.navigate().to(baseUri + USER_LOGIN_SERVLET_PATH + "?location=" + URLEncoder.encode(userIsLoggedIn.location(), "UTF-8"));
+                String loginURL = driver.findElement(By.id("login-url")).getText();
 
-            driver.get(baseUri + loginURL);
-            driver.findElement(By.id("email")).clear();
-            driver.findElement(By.id("email")).sendKeys(userIsLoggedIn.email());
-            if (userIsLoggedIn.isAdmin()) {
-                driver.findElement(By.id("isAdmin")).click();
+                driver.navigate().to(baseUri + loginURL);
+                driver.findElement(By.id("email")).clear();
+                driver.findElement(By.id("email")).sendKeys(userIsLoggedIn.email());
+                if (userIsLoggedIn.isAdmin()) {
+                    driver.findElement(By.id("isAdmin")).click();
+                }
+                driver.findElements(By.name("action")).get(0).click();
+
+                Set<Cookie> cookies = driver.manage().getCookies();
+                for (Cookie cookie : cookies) {
+                    Cookies.addCookie(cookie.getName(), cookie.getValue());
+                }
+            } finally {
+                driver.close();
             }
-            driver.findElements(By.name("action")).get(0).click();
         }
     }
 
