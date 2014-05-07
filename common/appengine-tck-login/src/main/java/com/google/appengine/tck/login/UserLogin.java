@@ -89,6 +89,8 @@ public class UserLogin {
                 driver.close();
             }
         }
+
+        event.proceed();
     }
 
     private WebDriver createWebDriver() {
