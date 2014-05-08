@@ -2,7 +2,7 @@
 <cronentries>
     <cron>
         <url>/ping</url>
-        <description>Ping every 10sec</description>
+        <description>Ping every minute</description>
         <schedule>every 1 mins</schedule>
     </cron>
 </cronentries>
