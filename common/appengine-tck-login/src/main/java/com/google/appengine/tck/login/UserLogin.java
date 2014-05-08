@@ -15,17 +15,24 @@
 
 package com.google.appengine.tck.login;
 
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.Collection;
 import java.util.Set;
 
+import org.jboss.arquillian.container.spi.client.protocol.ProtocolDescription;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
+import org.jboss.arquillian.container.spi.context.annotation.DeploymentScoped;
 import org.jboss.arquillian.container.spi.event.container.AfterDeploy;
+import org.jboss.arquillian.container.test.impl.domain.ProtocolDefinition;
+import org.jboss.arquillian.container.test.impl.domain.ProtocolRegistry;
+import org.jboss.arquillian.core.api.InstanceProducer;
+import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.core.spi.EventContext;
-import org.jboss.arquillian.protocol.modules.Cookies;
+import org.jboss.arquillian.protocol.modules.ModulesApi;
+import org.jboss.arquillian.protocol.modules.ModulesProtocolConfiguration;
 import org.jboss.arquillian.test.spi.event.suite.Before;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
@@ -39,19 +46,19 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 public class UserLogin {
     static final String USER_LOGIN_SERVLET_PATH = "user-login-builtin";
 
-    private URI baseUri;
+    @Inject @DeploymentScoped
+    private InstanceProducer<ProtocolRegistry> registry;
 
-    public void grabBaseURI(@Observes AfterDeploy event, ProtocolMetaData data) {
-        baseUri = locateBaseURI(data);
+    private ProtocolMetaData protocolMetaData;
+
+    public void prepare(@Observes AfterDeploy event, ProtocolMetaData data) {
+        this.protocolMetaData = data;
     }
 
-    private URI locateBaseURI(ProtocolMetaData data) {
-        Collection<HTTPContext> contexts = data.getContexts(HTTPContext.class);
-        if (contexts == null || contexts.size() == 0 || contexts.size() > 1) {
-            throw new RuntimeException("Could not determine auth URL: " + contexts);
-        }
-
-        HTTPContext context = contexts.iterator().next();
+    protected URI getBaseURI(Method method) throws Exception {
+        ProtocolDefinition definition = registry.get().getProtocol(ProtocolDescription.DEFAULT);
+        ModulesProtocolConfiguration configuration = (ModulesProtocolConfiguration) definition.createProtocolConfiguration();
+        HTTPContext context = ModulesApi.findHTTPContext(configuration, protocolMetaData, method);
         return context.getServlets().get(0).getBaseURI();
     }
 
@@ -66,6 +73,7 @@ public class UserLogin {
         }
 
         if (userIsLoggedIn != null) {
+            final URI baseUri = getBaseURI(before.getTestMethod());
             final WebDriver driver = createWebDriver();
             try {
                 driver.manage().deleteAllCookies();
@@ -83,7 +91,7 @@ public class UserLogin {
 
                 Set<Cookie> cookies = driver.manage().getCookies();
                 for (Cookie cookie : cookies) {
-                    Cookies.addCookie(cookie.getName(), cookie.getValue());
+                    ModulesApi.addCookie(cookie.getName(), cookie.getValue());
                 }
             } finally {
                 driver.close();
