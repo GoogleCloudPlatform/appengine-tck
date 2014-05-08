@@ -23,11 +23,10 @@ import java.util.Set;
 import org.jboss.arquillian.container.spi.client.protocol.ProtocolDescription;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
-import org.jboss.arquillian.container.spi.context.annotation.DeploymentScoped;
 import org.jboss.arquillian.container.spi.event.container.AfterDeploy;
 import org.jboss.arquillian.container.test.impl.domain.ProtocolDefinition;
 import org.jboss.arquillian.container.test.impl.domain.ProtocolRegistry;
-import org.jboss.arquillian.core.api.InstanceProducer;
+import org.jboss.arquillian.core.api.Instance;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.core.spi.EventContext;
@@ -46,8 +45,8 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 public class UserLogin {
     static final String USER_LOGIN_SERVLET_PATH = "user-login-builtin";
 
-    @Inject @DeploymentScoped
-    private InstanceProducer<ProtocolRegistry> registry;
+    @Inject
+    private Instance<ProtocolRegistry> registry;
 
     private ProtocolMetaData protocolMetaData;
 
