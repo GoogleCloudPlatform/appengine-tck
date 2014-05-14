@@ -20,6 +20,9 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Set;
 
+import com.google.appengine.tck.base.TestBase;
+import com.google.appengine.tck.driver.DefaultLoginHandler;
+import com.google.appengine.tck.driver.LoginHandler;
 import org.jboss.arquillian.container.spi.client.protocol.ProtocolDescription;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
@@ -80,14 +83,15 @@ public class UserLogin {
                 driver.navigate().to(baseUri + USER_LOGIN_SERVLET_PATH + "?location=" + URLEncoder.encode(userIsLoggedIn.location(), "UTF-8"));
                 String loginURL = driver.findElement(By.id("login-url")).getText();
 
+                // go-to login page
                 driver.navigate().to(baseUri + loginURL);
-                driver.findElement(By.id("email")).clear();
-                driver.findElement(By.id("email")).sendKeys(userIsLoggedIn.email());
-                if (userIsLoggedIn.isAdmin()) {
-                    driver.findElement(By.id("isAdmin")).click();
+                // find custom login handler, if exists
+                LoginHandler loginHandler = TestBase.instance(getClass(), LoginHandler.class);
+                if (loginHandler == null) {
+                    loginHandler = new DefaultLoginHandler();
                 }
-                driver.findElements(By.name("action")).get(0).click();
-
+                loginHandler.login(driver, new UserLoginContext(userIsLoggedIn));
+                // copy cookies
                 Set<Cookie> cookies = driver.manage().getCookies();
                 for (Cookie cookie : cookies) {
                     ModulesApi.addCookie(cookie.getName(), cookie.getValue());

@@ -15,25 +15,26 @@
 
 package com.google.appengine.tck.env.appspot;
 
+import com.google.appengine.tck.driver.LoginContext;
 import com.google.appengine.tck.driver.LoginHandler;
-import com.google.appengine.tck.env.Environment;
-import com.google.appengine.tck.event.AbstractInstanceLifecycle;
-import com.google.appengine.tck.event.InstanceLifecycleEvent;
-import com.google.appengine.tck.event.TestLifecycle;
-import org.kohsuke.MetaInfServices;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-@MetaInfServices(TestLifecycle.class)
-public class AppspotInstanceLifecycle extends AbstractInstanceLifecycle {
-    @SuppressWarnings("unchecked")
-    protected void doBefore(InstanceLifecycleEvent event) {
-        Class<?> instanceType = event.getInstanceType();
-        if (Environment.class.equals(instanceType)) {
-            event.setInstance(Environment.APPSPOT);
-        } else if (LoginHandler.class.equals(instanceType)) {
-            event.setInstance(new AppspotLoginHandler());
+public class AppspotLoginHandler implements LoginHandler {
+    public void login(WebDriver driver, LoginContext context) {
+        WebElement email = driver.findElement(By.id("Email"));
+        if (email.getAttribute("readonly") == null) {
+            email.clear();
+            email.sendKeys(context.getEmail());
         }
+
+        WebElement password = driver.findElement(By.id("Passwd"));
+        password.sendKeys(context.getPassword());
+
+        driver.findElement(By.name("signIn")).click();
     }
 }

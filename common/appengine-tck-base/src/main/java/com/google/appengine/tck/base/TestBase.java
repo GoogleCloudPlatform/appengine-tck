@@ -240,7 +240,7 @@ public class TestBase {
         return instance(getClass(), instanceType);
     }
 
-    protected static <T> T instance(Class<?> testClass, Class<T> instanceType) {
+    public static <T> T instance(Class<?> testClass, Class<T> instanceType) {
         InstanceLifecycleEvent<T> event = TestLifecycles.createInstanceLifecycleEvent(testClass, instanceType);
         TestLifecycles.before(event);
         return event.getInstance();
