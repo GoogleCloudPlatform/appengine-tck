@@ -16,6 +16,7 @@
 package com.google.appengine.tck.login;
 
 import com.google.appengine.tck.driver.LoginContext;
+import com.google.appengine.tck.util.Utils;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -28,11 +29,11 @@ public class UserLoginContext implements LoginContext {
     }
 
     public String getEmail() {
-        return user.email();
+        return Utils.replace(user.email());
     }
 
     public String getPassword() {
-        return System.getProperty("user.login.password", System.getProperty("appengine.password", "<MISSING_PASSWORD>"));
+        return Utils.replace("${user.login.password:${appengine.password:<MISSING_PASSWORD>}}");
     }
 
     public boolean isAdmin() {

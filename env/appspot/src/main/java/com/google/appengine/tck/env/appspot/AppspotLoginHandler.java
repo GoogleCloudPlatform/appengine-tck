@@ -18,6 +18,7 @@ package com.google.appengine.tck.env.appspot;
 import com.google.appengine.tck.driver.LoginContext;
 import com.google.appengine.tck.driver.LoginHandler;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -26,15 +27,19 @@ import org.openqa.selenium.WebElement;
  */
 public class AppspotLoginHandler implements LoginHandler {
     public void login(WebDriver driver, LoginContext context) {
-        WebElement email = driver.findElement(By.id("Email"));
-        if (email.getAttribute("readonly") == null) {
-            email.clear();
-            email.sendKeys(context.getEmail());
+        try {
+            WebElement email = driver.findElement(By.id("Email"));
+            if (email.getAttribute("readonly") == null) {
+                email.clear();
+                email.sendKeys(context.getEmail());
+            }
+
+            WebElement password = driver.findElement(By.id("Passwd"));
+            password.sendKeys(context.getPassword());
+
+            driver.findElement(By.name("signIn")).click();
+        } catch (NoSuchElementException e) {
+            throw new IllegalStateException(String.format("URL[%s]\n\n%s", driver.getCurrentUrl(), driver.getPageSource()), e);
         }
-
-        WebElement password = driver.findElement(By.id("Passwd"));
-        password.sendKeys(context.getPassword());
-
-        driver.findElement(By.name("signIn")).click();
     }
 }

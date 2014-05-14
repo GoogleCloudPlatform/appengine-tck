@@ -55,4 +55,19 @@ public final class Utils {
             in.close();
         }
     }
+
+    // replace ${x:default}
+    public static String replace(String string) {
+        if (string.startsWith("${") && string.endsWith("}")) {
+            string = string.substring(2, string.length() - 1);
+            int p = string.indexOf(":");
+            if (p >= 0) {
+                return System.getProperty(string.substring(0, p), replace(string.substring(p + 1)));
+            } else {
+                return System.getProperty(string);
+            }
+        } else {
+            return string;
+        }
+    }
 }

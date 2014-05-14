@@ -83,8 +83,12 @@ public class UserLogin {
                 driver.navigate().to(baseUri + USER_LOGIN_SERVLET_PATH + "?location=" + URLEncoder.encode(userIsLoggedIn.location(), "UTF-8"));
                 String loginURL = driver.findElement(By.id("login-url")).getText();
 
+                // check
+                if (isInternalLink(loginURL)) {
+                    loginURL = baseUri + loginURL;
+                }
                 // go-to login page
-                driver.navigate().to(baseUri + loginURL);
+                driver.navigate().to(loginURL);
                 // find custom login handler, if exists
                 LoginHandler loginHandler = TestBase.instance(getClass(), LoginHandler.class);
                 if (loginHandler == null) {
@@ -104,7 +108,11 @@ public class UserLogin {
         event.proceed();
     }
 
-    private WebDriver createWebDriver() {
+    protected WebDriver createWebDriver() {
         return new HtmlUnitDriver();
+    }
+
+    protected boolean isInternalLink(String link) {
+        return !(link.startsWith("http://") || link.startsWith("https://"));
     }
 }

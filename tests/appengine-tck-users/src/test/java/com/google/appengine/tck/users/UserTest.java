@@ -35,15 +35,14 @@ import static org.junit.Assert.assertTrue;
 public class UserTest extends UserTestBase {
 
     @Test
-    @UserIsLoggedIn(email = "tck@appengine-tck.org")
+    @UserIsLoggedIn(email = "${user.login.email:${appengine.userId:tck@appengine-tck.org}}")
     public void testLoggedUser() {
         User user = UserServiceFactory.getUserService().getCurrentUser();
         assertNotNull(user);
-        assertEquals("tck@appengine-tck.org", user.getEmail());
     }
 
     @Test
-    @UserIsLoggedIn(email = "tck@appengine-tck.org", isAdmin = true)
+    @UserIsLoggedIn(email = "${user.login.email:${appengine.userId:tck@appengine-tck.org}}", isAdmin = true)
     public void testLoggedAdmin() {
         UserService service = UserServiceFactory.getUserService();
         User user = service.getCurrentUser();
