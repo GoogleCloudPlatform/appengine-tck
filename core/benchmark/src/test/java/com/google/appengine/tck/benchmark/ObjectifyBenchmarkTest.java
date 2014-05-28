@@ -25,10 +25,11 @@ import java.util.UUID;
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.benchmark.support.Data;
+import com.google.appengine.tck.benchmark.support.Root;
 import com.google.appengine.tck.lib.LibUtils;
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.Result;
 import com.googlecode.objectify.VoidWork;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -47,13 +48,11 @@ import org.junit.runner.RunWith;
 public class ObjectifyBenchmarkTest extends TestBase {
     private static final Random RANDOM = new Random();
 
-    private Objectify objectify;
-
     @Deployment
     public static WebArchive getDeployment() {
         TestContext context = new TestContext().setUseSystemProperties(true).setCompatibilityProperties(TCK_PROPERTIES);
         WebArchive war = getTckDeployment(context);
-        war.addClass(Data.class);
+        war.addPackage(Data.class.getPackage());
         LibUtils libUtils = new LibUtils();
         libUtils.addLibrary(war, "com.googlecode.objectify", "objectify");
         libUtils.addLibrary(war, "com.google.guava", "guava");
@@ -62,8 +61,8 @@ public class ObjectifyBenchmarkTest extends TestBase {
 
     @Before
     public void setUp() {
+        ObjectifyService.register(Root.class);
         ObjectifyService.register(Data.class);
-        objectify = ObjectifyService.ofy();
     }
 
     @After
@@ -76,21 +75,29 @@ public class ObjectifyBenchmarkTest extends TestBase {
         final int N = Integer.parseInt(getTestSystemProperty("benchmark.datastore.size", "6000"));
         log.info(String.format(">>>> N = %s", N));
 
+        Root root = new Root();
+        root.setName("Root" + System.currentTimeMillis());
+        Result<Key<Root>> result = ObjectifyService.ofy().save().entity(root);
+        final Key<Root> parent = result.now();
+
         // wrap inserts in same Tx -- as expected
-        objectify.transact(new VoidWork() {
+        ObjectifyService.ofy().transact(new VoidWork() {
             public void vrun() {
-                doInsert(generateData(N));
+                doInsert(generateData(N, parent));
             }
         });
 
         // do it w/o Tx
-        doInsert(generateData(N));
+        doInsert(generateData(N, parent));
     }
 
-    protected List<Data> generateData(int N) {
+    protected List<Data> generateData(int N, Key parent) {
         final List<Data> list = new ArrayList<>(N);
         for (int i = 0; i < N; i++) {
             Data data = new Data();
+
+            data.setParent(parent);
+
             data.setCount(i);
             data.setDate(new Date());
             data.setName(UUID.randomUUID().toString());
@@ -108,11 +115,11 @@ public class ObjectifyBenchmarkTest extends TestBase {
 
     protected void doInsert(List<Data> list) {
         long start = System.currentTimeMillis();
-        Map<Key<Data>, Data> saved = objectify.save().entities(list).now();
+        Map<Key<Data>, Data> saved = ObjectifyService.ofy().save().entities(list).now();
         long end = System.currentTimeMillis();
 
-        long totalSeconds = (end - start) / 1000;
-        log.info(String.format(">>>> Save [%s] time: %ssec", list.size(), totalSeconds));
+        long totalMillis = (end - start);
+        log.info(String.format(">>>> Save [%s] time: %sms", list.size(), totalMillis));
 
         Assert.assertEquals(list.size(), saved.size());
     }

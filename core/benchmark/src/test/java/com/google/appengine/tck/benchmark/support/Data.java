@@ -18,9 +18,11 @@ package com.google.appengine.tck.benchmark.support;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+import com.googlecode.objectify.annotation.Parent;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -29,6 +31,8 @@ import com.googlecode.objectify.annotation.Index;
 public class Data implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @Parent
+    Key parent;
     @Id
     private Long id;
     @Index
@@ -40,6 +44,14 @@ public class Data implements Serializable {
     private float up;
     private float down;
     private int count;
+
+    public Key getParent() {
+        return parent;
+    }
+
+    public void setParent(Key parent) {
+        this.parent = parent;
+    }
 
     public Long getId() {
         return id;
