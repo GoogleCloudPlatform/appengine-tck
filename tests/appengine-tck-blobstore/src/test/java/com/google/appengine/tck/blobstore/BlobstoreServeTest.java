@@ -27,7 +27,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -51,14 +52,11 @@ public class BlobstoreServeTest extends SimpleBlobstoreTestBase {
 
         final String content = new String(UPLOADED_CONTENT);
         final URI uri = new URL(url, "blobserviceserve?blobKey=" + blobKey).toURI();
-        final HttpClient client = new DefaultHttpClient();
-        try {
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
             doTest(client, uri, null, null, content);
             doTest(client, uri, Collections.<Header>singleton(new BasicHeader("Range", "bytes=1-3")), null, content.substring(1, 3 + 1));
             doTest(client, uri, null, Collections.singletonMap("blobRange", "2"), content.substring(2));
             doTest(client, uri, null, Collections.singletonMap("blobRangeString", "bytes=2-5"), content.substring(2, 5 + 1));
-        } finally {
-            client.getConnectionManager().shutdown();
         }
     }
 

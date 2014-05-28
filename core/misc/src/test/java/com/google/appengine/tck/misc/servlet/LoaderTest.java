@@ -21,11 +21,11 @@ import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.base.TestContext;
 import com.google.appengine.tck.misc.servlet.support.Exceptions;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -57,12 +57,9 @@ public class LoaderTest extends TestBase {
     }
 
     private void doPing(HttpUriRequest request) throws Exception {
-        final HttpClient client = new DefaultHttpClient();
-        try {
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpResponse response = client.execute(request);
             Assert.assertEquals(content, EntityUtils.toString(response.getEntity()));
-        } finally {
-            client.getConnectionManager().shutdown();
         }
     }
 

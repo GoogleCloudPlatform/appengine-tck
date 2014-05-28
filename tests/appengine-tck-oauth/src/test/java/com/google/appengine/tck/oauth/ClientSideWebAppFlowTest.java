@@ -15,6 +15,7 @@
 
 package com.google.appengine.tck.oauth;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -32,10 +33,10 @@ import com.google.appengine.tck.event.Property;
 import com.google.appengine.tck.oauth.support.OAuthServletAnswer;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -80,7 +81,7 @@ import static org.junit.Assert.assertTrue;
 public class ClientSideWebAppFlowTest extends OAuthTestBase {
 
     private OAuthService oAuthService;
-    private HttpClient client;
+    private CloseableHttpClient client;
     @Drone
     private WebDriver driver;
 
@@ -108,13 +109,16 @@ public class ClientSideWebAppFlowTest extends OAuthTestBase {
             oAuthService = OAuthServiceFactory.getOAuthService();
         }
 
-        client = new DefaultHttpClient();
+        client = HttpClients.createDefault();
     }
 
     @After
     public void tearDown() {
         if (client != null) {
-            client.getConnectionManager().shutdown();
+            try {
+                client.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 

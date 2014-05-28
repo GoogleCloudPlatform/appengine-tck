@@ -33,8 +33,8 @@ import io.undertow.servlet.util.DefaultClassIntrospector;
 import io.undertow.testutils.DefaultServer;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.jasper.deploy.JspPropertyGroup;
 import org.apache.jasper.deploy.TagLibraryInfo;
 import org.apache.maven.model.Build;
@@ -149,13 +149,10 @@ public class JspMojo extends AbstractMojo {
 
         DefaultServer.setRootHandler(servletPath);
 
-        HttpClient client = new DefaultHttpClient(new PoolingClientConnectionManager());
-        try {
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
             for (File jsp : root.listFiles(filter)) {
                 touchJsp(client, jsp.getName());
             }
-        } finally {
-            client.getConnectionManager().shutdown();
         }
     }
 

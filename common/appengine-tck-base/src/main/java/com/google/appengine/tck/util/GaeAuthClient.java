@@ -31,7 +31,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
@@ -43,10 +44,10 @@ import org.apache.http.util.EntityUtils;
  */
 public class GaeAuthClient {
 
-    private HttpClient client;
+    private CloseableHttpClient client;
 
     public GaeAuthClient(String servletUrl, String username, String password) throws AuthClientException {
-        client = new DefaultHttpClient();
+        client = HttpClients.createDefault();
         authInit(servletUrl, username, password);
     }
 
@@ -55,7 +56,10 @@ public class GaeAuthClient {
     }
 
     public void shutdown() {
-        client.getConnectionManager().shutdown();
+        try {
+            client.close();
+        } catch (IOException ignored) {
+        }
     }
 
     public HttpResponse getUrl(String url) throws IOException {

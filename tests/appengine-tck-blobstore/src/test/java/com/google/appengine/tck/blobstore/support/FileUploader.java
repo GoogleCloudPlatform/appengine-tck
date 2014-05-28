@@ -22,14 +22,15 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ByteArrayBody;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.Assert;
 
@@ -60,8 +61,7 @@ public class FileUploader {
         for (Map.Entry<String, String> entry : params.entrySet()) {
             builder.addParameter(entry.getKey(), entry.getValue());
         }
-        HttpClient httpClient = new DefaultHttpClient();
-        try {
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpUriRequest request;
             switch (method) {
                 case GET:
@@ -73,10 +73,8 @@ public class FileUploader {
                 default:
                     throw new IllegalArgumentException(String.format("No such method: %s", method));
             }
-            HttpResponse response = httpClient.execute(request);
+            HttpResponse response = client.execute(request);
             return EntityUtils.toString(response.getEntity()).trim();
-        } finally {
-            httpClient.getConnectionManager().shutdown();
         }
     }
 
@@ -85,20 +83,17 @@ public class FileUploader {
     }
 
     public String uploadFile(String uri, String partName, String filename, String mimeType, byte[] contents, int expectedResponseCode) throws URISyntaxException, IOException {
-        HttpClient httpClient = new DefaultHttpClient();
-        try {
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPost post = new HttpPost(uri);
-            MultipartEntity entity = new MultipartEntity();
-            ByteArrayBody contentBody = new ByteArrayBody(contents, mimeType, filename);
-            entity.addPart(partName, contentBody);
-            post.setEntity(entity);
-            HttpResponse response = httpClient.execute(post);
+            ByteArrayBody contentBody = new ByteArrayBody(contents, ContentType.create(mimeType), filename);
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.addPart(partName, contentBody);
+            post.setEntity(builder.build());
+            HttpResponse response = client.execute(post);
             String result = EntityUtils.toString(response.getEntity());
             int statusCode = response.getStatusLine().getStatusCode();
             Assert.assertEquals(String.format("Invalid response code, %s", statusCode), expectedResponseCode, statusCode);
             return result;
-        } finally {
-            httpClient.getConnectionManager().shutdown();
         }
     }
 

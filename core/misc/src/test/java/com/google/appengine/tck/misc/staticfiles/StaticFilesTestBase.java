@@ -21,9 +21,9 @@ import java.net.URL;
 
 import com.google.appengine.tck.base.TestBase;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -59,13 +59,10 @@ public class StaticFilesTestBase extends TestBase {
     }
 
     protected void assertResponse(URL url, String path, Tester tester) throws URISyntaxException, IOException {
-        final HttpClient client = new DefaultHttpClient();
-        try {
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpGet get = new HttpGet(new URL(url, path).toURI());
             HttpResponse response = client.execute(get);
             tester.doAssert(response);
-        } finally {
-            client.getConnectionManager().shutdown();
         }
     }
 
