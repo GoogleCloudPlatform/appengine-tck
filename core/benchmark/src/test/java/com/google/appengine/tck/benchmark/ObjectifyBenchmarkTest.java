@@ -29,6 +29,7 @@ import com.google.appengine.tck.lib.LibUtils;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.VoidWork;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -72,10 +73,22 @@ public class ObjectifyBenchmarkTest extends TestBase {
 
     @Test
     public void testInserts() throws Exception {
-        int N = Integer.parseInt(getTestSystemProperty("benchmark.datastore.size", "6000"));
+        final int N = Integer.parseInt(getTestSystemProperty("benchmark.datastore.size", "6000"));
         log.info(String.format(">>>> N = %s", N));
 
-        List<Data> list = new ArrayList<>();
+        // wrap inserts in same Tx -- as expected
+        objectify.transact(new VoidWork() {
+            public void vrun() {
+                doInsert(generateData(N));
+            }
+        });
+
+        // do it w/o Tx
+        doInsert(generateData(N));
+    }
+
+    protected List<Data> generateData(int N) {
+        final List<Data> list = new ArrayList<>(N);
         for (int i = 0; i < N; i++) {
             Data data = new Data();
             data.setCount(i);
@@ -90,13 +103,16 @@ public class ObjectifyBenchmarkTest extends TestBase {
 
             list.add(data);
         }
+        return list;
+    }
 
+    protected void doInsert(List<Data> list) {
         long start = System.currentTimeMillis();
         Map<Key<Data>, Data> saved = objectify.save().entities(list).now();
         long end = System.currentTimeMillis();
-        long totalSeconds = (end - start) / 1000;
 
-        log.info(String.format(">>>> Save [%s] time: %ssec", N, totalSeconds));
+        long totalSeconds = (end - start) / 1000;
+        log.info(String.format(">>>> Save [%s] time: %ssec", list.size(), totalSeconds));
 
         Assert.assertEquals(list.size(), saved.size());
     }
