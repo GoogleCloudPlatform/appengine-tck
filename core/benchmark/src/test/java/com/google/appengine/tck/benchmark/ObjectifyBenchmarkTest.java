@@ -29,7 +29,6 @@ import com.google.appengine.tck.benchmark.support.Root;
 import com.google.appengine.tck.lib.LibUtils;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
-import com.googlecode.objectify.Result;
 import com.googlecode.objectify.VoidWork;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -77,8 +76,7 @@ public class ObjectifyBenchmarkTest extends TestBase {
 
         Root root = new Root();
         root.setName("Root" + System.currentTimeMillis());
-        Result<Key<Root>> result = ObjectifyService.ofy().save().entity(root);
-        final Key<Root> parent = result.now();
+        final Key<Root> parent = ObjectifyService.ofy().save().entity(root).now();
 
         // wrap inserts in same Tx -- as expected
         ObjectifyService.ofy().transact(new VoidWork() {
