@@ -100,6 +100,8 @@
         <version.org.json>20090211</version.org.json>
         <!-- Google Cloud Storage Client -->
         <version.com.google.appengine.tools.cloudstorage>0.3.7</version.com.google.appengine.tools.cloudstorage>
+        <!-- Benchmark -->
+        <version.objectify>5.0.2</version.objectify>
         <!--- Sonar -->
         <sonar.language>java</sonar.language>
 
@@ -923,6 +925,11 @@
                 <version>${version.com.google.appengine.tools.cloudstorage}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.googlecode.objectify</groupId>
+                <artifactId>objectify</artifactId>
+                <version>${version.objectify}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

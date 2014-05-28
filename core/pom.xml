@@ -16,6 +16,7 @@
 
     <modules>
         <!-- External -->
+        <module>benchmark</module>
         <module>endpoints</module>
         <module>misc</module>
         <module>sockets</module>
