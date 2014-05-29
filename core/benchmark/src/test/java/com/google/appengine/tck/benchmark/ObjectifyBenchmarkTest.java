@@ -74,9 +74,7 @@ public class ObjectifyBenchmarkTest extends TestBase {
         final int N = Integer.parseInt(getTestSystemProperty("benchmark.datastore.size", "6000"));
         log.info(String.format(">>>> N = %s", N));
 
-        Root root = new Root();
-        root.setName("Root" + System.currentTimeMillis());
-        final Key<Root> parent = ObjectifyService.ofy().save().entity(root).now();
+        final Key<Root> parent = getRootKey();
 
         // wrap inserts in same Tx -- as expected
         ObjectifyService.ofy().transact(new VoidWork() {
@@ -87,6 +85,12 @@ public class ObjectifyBenchmarkTest extends TestBase {
 
         // do it w/o Tx
         doInsert(generateData(N, parent));
+    }
+
+    protected Key<Root> getRootKey() {
+        Root root = new Root();
+        root.setName("Root" + System.currentTimeMillis());
+        return ObjectifyService.ofy().save().entity(root).now();
     }
 
     protected List<Data> generateData(int N, Key parent) {

@@ -26,7 +26,7 @@ public class BazTransformer implements Transformer<Baz, String> {
     }
 
     public Baz transformFrom(String in) {
-        String[] xy = in.toString().split(",");
+        String[] xy = in.split(",");
         return new Baz(Integer.parseInt(xy[0]), Integer.parseInt(xy[1]));
     }
 }
