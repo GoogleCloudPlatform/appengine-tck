@@ -77,11 +77,14 @@ public class ObjectifyBenchmarkTest extends TestBase {
         final Key<Root> parent = getRootKey();
 
         // wrap inserts in same Tx -- as expected
+        long txStart = System.currentTimeMillis();
         ObjectifyService.ofy().transact(new VoidWork() {
             public void vrun() {
                 doInsert(generateData(N, parent));
             }
         });
+        long txEnd = System.currentTimeMillis();
+        logDuration("Full Tx ", txStart, txEnd);
 
         // do it w/o Tx
         doInsert(generateData(N, parent));
@@ -120,9 +123,13 @@ public class ObjectifyBenchmarkTest extends TestBase {
         Map<Key<Data>, Data> saved = ObjectifyService.ofy().save().entities(list).now();
         long end = System.currentTimeMillis();
 
-        long totalMillis = (end - start);
-        log.info(String.format(">>>> Save [%s] time: %sms", list.size(), totalMillis));
+        logDuration(String.format("Save [%d]", saved.size()), start, end);
 
         Assert.assertEquals(list.size(), saved.size());
+    }
+
+    protected void logDuration(String msg, long start, long end) {
+        long totalMillis = (end - start);
+        log.info(String.format(">>>> %s time: %sms", msg, totalMillis));
     }
 }
