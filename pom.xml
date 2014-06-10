@@ -36,8 +36,8 @@
 
     <properties>
         <!-- GAE -->
-        <version.com.google.gae.api>1.9.5</version.com.google.gae.api>
-        <version.com.google.gae.plugin>1.9.5</version.com.google.gae.plugin>
+        <version.com.google.gae.api>1.9.6</version.com.google.gae.api>
+        <version.com.google.gae.plugin>1.9.6</version.com.google.gae.plugin>
 
         <!-- Ext -->
         <version.metainf>1.1</version.metainf>
