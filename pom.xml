@@ -49,9 +49,9 @@
         <!-- Testing -->
         <version.javax.servlet>2.5</version.javax.servlet>
         <version.junit>4.11</version.junit>
-        <version.arquillian>1.1.4.Final</version.arquillian>
+        <version.arquillian>1.1.5.Final</version.arquillian>
         <version.arquillian.gae>1.0.0.Beta9</version.arquillian.gae>
-        <version.org.jboss.arquillian.graphene2>2.0.2.Final</version.org.jboss.arquillian.graphene2>
+        <version.org.jboss.arquillian.graphene2>2.0.3.Final</version.org.jboss.arquillian.graphene2>
 
         <!-- Utils -->
         <version.org.javassist>3.18.1-GA</version.org.javassist>
