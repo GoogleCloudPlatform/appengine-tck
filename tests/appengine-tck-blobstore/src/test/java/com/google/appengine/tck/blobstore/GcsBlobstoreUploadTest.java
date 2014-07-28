@@ -64,7 +64,7 @@ public class GcsBlobstoreUploadTest extends BlobstoreUploadTestBase {
     @InSequence(90)
     public void testGcs(@ArquillianResource URL url) throws Exception {
     	String filename = String.format("abc%s.txt", System.currentTimeMillis());
-    	
+
         FileUploader fileUploader = new FileUploader();
         Map<String, String> params = new HashMap<>();
         params.put("bucket_name", "GcsBucket");
