@@ -116,6 +116,6 @@ public abstract class MapReduceTestBase extends TestBase {
     }
 
     protected MapReduceSettings getSettings() {
-        return new MapReduceSettings().setWorkerQueueName("mapreduce-workers").setControllerQueueName("default");
+        return new MapReduceSettings.Builder().setWorkerQueueName("mapreduce-workers").build();
     }
 }

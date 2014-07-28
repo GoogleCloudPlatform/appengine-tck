@@ -50,39 +50,39 @@ public class MapReduceTest extends MapReduceTestBase {
         return war;
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCountJob() throws Exception {
         List<String> payloads = Arrays.asList("capedwarf", "jboss", "redhat");
         int shardCount = 1;
 
-        final String createHandle = MapReduceJob.start(
-            MapReduceSpecification.of(
-                "Create MapReduce entities",
-                new ConsecutiveLongInput(0, payloads.size() * (long) shardCount, shardCount),
-                new EntityCreator("MapReduceTest", payloads),
-                Marshallers.getVoidMarshaller(),
-                Marshallers.getVoidMarshaller(),
-                NoReducer.<Void, Void, Void>create(),
-                NoOutput.<Void, Void>create(1)),
-            getSettings());
+        MapReduceSpecification.Builder builder = new MapReduceSpecification.Builder();
+        builder.setJobName("Create MapReduce entities");
+        builder.setInput(new ConsecutiveLongInput(0, payloads.size() * (long) shardCount, shardCount));
+        builder.setMapper(new EntityCreator("MapReduceTest", payloads));
+        builder.setKeyMarshaller(Marshallers.getVoidMarshaller());
+        builder.setValueMarshaller(Marshallers.getVoidMarshaller());
+        builder.setReducer(NoReducer.create());
+        builder.setOutput(new NoOutput());
+
+        final String createHandle = MapReduceJob.start(builder.build(), getSettings());
 
         JobInfo createJI = waitToFinish("CREATE", createHandle);
         Object create = createJI.getOutput();
         log.warning("----- Create: " + create);
 
         int mapShardCount = 1;
-        int reduceShardCount = 1;
 
-        String countHandle = MapReduceJob.start(
-            MapReduceSpecification.of(
-                "MapReduceTest stats",
-                new DatastoreInput("MapReduceTest", mapShardCount),
-                new CountMapper(),
-                Marshallers.getStringMarshaller(),
-                Marshallers.getLongMarshaller(),
-                new CountReducer(),
-                new InMemoryOutput<KeyValue<String, Long>>(reduceShardCount)),
-            getSettings());
+        builder = new MapReduceSpecification.Builder();
+        builder.setJobName("MapReduceTest stats");
+        builder.setInput(new DatastoreInput("MapReduceTest", mapShardCount));
+        builder.setMapper(new CountMapper());
+        builder.setKeyMarshaller(Marshallers.getStringMarshaller());
+        builder.setValueMarshaller(Marshallers.getLongMarshaller());
+        builder.setReducer(new CountReducer());
+        builder.setOutput(new InMemoryOutput<KeyValue<String, Long>>());
+
+        final String countHandle = MapReduceJob.start(builder.build(), getSettings());
 
         JobInfo countJI = waitToFinish("COUNT", countHandle);
         Object count = countJI.getOutput();
