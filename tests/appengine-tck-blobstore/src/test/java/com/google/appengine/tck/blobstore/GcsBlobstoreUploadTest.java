@@ -53,8 +53,16 @@ public class GcsBlobstoreUploadTest extends BlobstoreUploadTestBase {
         war.addClass(BlobstoreUploadTestBase.class);
 
         LibUtils libUtils = new LibUtils();
-        libUtils.addLibrary(war, "com.google.guava", "guava");
         libUtils.addLibrary(war, "com.google.appengine.tools", "appengine-gcs-client");
+        libUtils.addLibrary(war, "com.google.guava", "guava");
+        libUtils.addLibrary(war, "joda-time", "joda-time");
+        libUtils.addLibrary(war, "com.google.api-client", "google-api-client");
+        libUtils.addLibrary(war, "com.google.http-client", "google-http-client");
+        libUtils.addLibrary(war, "com.google.http-client", "google-http-client-appengine");
+        libUtils.addLibrary(war, "com.google.http-client", "google-http-client-jackson2");
+        libUtils.addLibrary(war, "com.google.api-client", "google-api-client-appengine");
+        libUtils.addLibrary(war, "com.google.apis", "google-api-services-storage");
+        libUtils.addLibrary(war, "com.fasterxml.jackson.core", "jackson-core");
 
         return war;
     }
