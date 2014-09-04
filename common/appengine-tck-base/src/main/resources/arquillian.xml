@@ -50,4 +50,8 @@
         <property name="waitModelInterval">3</property>
     </extension>
 
+    <extension qualifier="byteman">
+        <property name="autoInstallAgent">false</property>
+    </extension>
+
 </arquillian>

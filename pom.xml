@@ -53,6 +53,10 @@
         <version.arquillian.gae>1.0.0.Beta9</version.arquillian.gae>
         <version.org.jboss.arquillian.graphene2>2.0.3.Final</version.org.jboss.arquillian.graphene2>
 
+        <!-- Byteman -->
+        <version.org.jboss.byteman>2.2.0.1</version.org.jboss.byteman>
+        <version.org.jboss.arquillian.byteman>1.0.0.Alpha2</version.org.jboss.arquillian.byteman>
+
         <!-- Utils -->
         <version.org.javassist>3.18.1-GA</version.org.javassist>
         <version.org.jboss.maven.transformer.plugin>1.0.0.Beta5</version.org.jboss.maven.transformer.plugin>
@@ -716,6 +720,26 @@
                 <artifactId>arquillian-appscale-remote</artifactId>
                 <version>${version.arquillian.gae}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <!-- Byteman -->
+
+            <dependency>
+                <groupId>org.jboss.byteman</groupId>
+                <artifactId>byteman</artifactId>
+                <version>${version.org.jboss.byteman}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.byteman</groupId>
+                <artifactId>byteman-submit</artifactId>
+                <version>${version.org.jboss.byteman}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.arquillian.extension</groupId>
+                <artifactId>arquillian-extension-byteman</artifactId>
+                <version>${version.org.jboss.arquillian.byteman}</version>
             </dependency>
 
             <!-- Utils -->

@@ -17,6 +17,7 @@
     <modules>
         <!-- External -->
         <module>benchmark</module>
+        <module>byteman</module>
         <module>endpoints</module>
         <module>misc</module>
         <module>sockets</module>
