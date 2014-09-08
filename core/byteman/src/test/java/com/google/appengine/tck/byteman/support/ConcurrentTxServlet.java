@@ -17,6 +17,7 @@ package com.google.appengine.tck.byteman.support;
 
 import java.io.IOException;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,22 +33,36 @@ import com.google.appengine.api.datastore.Transaction;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class ConcurrentTxServlet extends HttpServlet {
+    private final Logger log = Logger.getLogger(getClass().getName());
+
     private final Random RANDOM = new Random();
+    private final Entity ROOT = new Entity("ROOT", 1);
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        ds.put(ROOT); // create root
+    }
 
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String entityGroup = req.getParameter("eg");
         String counter = req.getParameter("c");
 
-        Entity entity = new Entity(entityGroup);
+        Entity entity = new Entity(entityGroup, ROOT.getKey());
         entity.setProperty("foo", RANDOM.nextInt());
 
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         final Transaction tx = ds.beginTransaction();
         try {
+            log.warning("Before put ... " + counter);
             putEntity(ds, entity);
+            log.warning("After put ... " + counter);
             tx.commit();
             resp.getWriter().write("OK" + counter);
         } catch (Exception e) {
+            log.warning("Error ... " + e);
             tx.rollback();
             resp.getWriter().write("ERROR" + counter + ":" + e.getClass());
         } finally {
@@ -56,10 +71,10 @@ public class ConcurrentTxServlet extends HttpServlet {
     }
 
     private void putEntity(DatastoreService ds, Entity entity) throws IOException {
-        ds.put(entity);
+        log.warning("Key = " + ds.put(entity));
     }
 
     private void cleanup(String counter) {
-        log("Counter = " + counter);
+        log.warning("Counter = " + counter);
     }
 }

@@ -34,6 +34,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.extension.byteman.api.BMRule;
 import org.jboss.arquillian.extension.byteman.api.BMRules;
+import org.jboss.arquillian.extension.byteman.api.ExecType;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -47,16 +48,18 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @BMRules({
     @BMRule(
-        name = "entry1",
+        name = "entry",
         targetClass = "com.google.appengine.tck.byteman.support.ConcurrentTxServlet",
         targetMethod = "putEntity",
-        targetLocation = "AT EXIT",
-        action = "waitFor(\"cleanup\")"),
+        targetLocation = "EXIT",
+        action = "waitFor(\"cleanup\")",
+        exec = ExecType.CLIENT_CONTAINER),
     @BMRule(
         name = "exit",
         targetClass = "com.google.appengine.tck.byteman.support.ConcurrentTxServlet",
         targetMethod = "cleanup",
-        action = "signalWake(\"cleanup\")"),
+        action = "signalWake(\"cleanup\")",
+        exec = ExecType.CLIENT_CONTAINER),
 }
 )
 public class ConcurrentTxTest extends TestBase {

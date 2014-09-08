@@ -55,7 +55,7 @@
 
         <!-- Byteman -->
         <version.org.jboss.byteman>2.2.0.1</version.org.jboss.byteman>
-        <version.org.jboss.arquillian.byteman>1.0.0.Alpha2</version.org.jboss.arquillian.byteman>
+        <version.org.jboss.arquillian.byteman>1.0.0.Final-SNAPSHOT</version.org.jboss.arquillian.byteman>
 
         <!-- Utils -->
         <version.org.javassist>3.18.1-GA</version.org.javassist>
