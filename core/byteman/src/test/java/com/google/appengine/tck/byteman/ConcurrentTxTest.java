@@ -48,17 +48,23 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @BMRules({
     @BMRule(
-        name = "entry",
+        name = "put",
         targetClass = "com.google.appengine.tck.byteman.support.ConcurrentTxServlet",
         targetMethod = "putEntity",
         targetLocation = "EXIT",
         action = "waitFor(\"cleanup\")",
         exec = ExecType.CLIENT_CONTAINER),
     @BMRule(
-        name = "exit",
+        name = "cleanup",
         targetClass = "com.google.appengine.tck.byteman.support.ConcurrentTxServlet",
         targetMethod = "cleanup",
         action = "signalWake(\"cleanup\")",
+        exec = ExecType.CLIENT_CONTAINER),
+    @BMRule(
+        name = "error",
+        targetClass = "com.google.appengine.tck.byteman.support.ConcurrentTxServlet",
+        targetMethod = "error",
+        action = "signalWake(\"cleanup\", true)",
         exec = ExecType.CLIENT_CONTAINER),
 }
 )

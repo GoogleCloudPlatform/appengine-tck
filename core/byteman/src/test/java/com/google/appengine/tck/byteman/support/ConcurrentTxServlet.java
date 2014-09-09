@@ -65,6 +65,7 @@ public class ConcurrentTxServlet extends HttpServlet {
             log.warning("Error ... " + e);
             tx.rollback();
             resp.getWriter().write("ERROR" + counter + ":" + e.getClass());
+            error(counter);
         } finally {
             cleanup(counter);
         }
@@ -74,7 +75,11 @@ public class ConcurrentTxServlet extends HttpServlet {
         log.warning("Key = " + ds.put(entity));
     }
 
+    private void error(String counter) {
+        log.warning("Error = " + counter);
+    }
+
     private void cleanup(String counter) {
-        log.warning("Counter = " + counter);
+        log.warning("Cleanup = " + counter);
     }
 }
