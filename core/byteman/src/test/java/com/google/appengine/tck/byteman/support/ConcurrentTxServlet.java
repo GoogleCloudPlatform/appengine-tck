@@ -64,7 +64,7 @@ public class ConcurrentTxServlet extends HttpServlet {
         } catch (Exception e) {
             log.warning("Error ... " + e);
             tx.rollback();
-            resp.getWriter().write("ERROR" + counter + ":" + e.getClass());
+            resp.getWriter().write("ERROR" + counter + ":" + e.getClass().getName());
             error(counter);
         } finally {
             cleanup(counter);

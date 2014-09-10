@@ -18,6 +18,7 @@ package com.google.appengine.tck.byteman;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import com.google.appengine.tck.base.TestBase;
@@ -119,9 +120,11 @@ public class ConcurrentTxTest extends TestBase {
 
             if (h1.out.startsWith("ERROR1")) {
                 Assert.assertTrue("Expected ok: " + h2, h2.out.startsWith("OK2"));
+                Assert.assertTrue("Expected CME: " + h2, h1.out.contains(ConcurrentModificationException.class.getName()));
             } else {
                 Assert.assertTrue("Expected ok: " + h1, h1.out.startsWith("OK1"));
                 Assert.assertTrue("Expected error: " + h2, h2.out.startsWith("ERROR2"));
+                Assert.assertTrue("Expected CME: " + h2, h2.out.contains(ConcurrentModificationException.class.getName()));
             }
         }
     }
