@@ -15,22 +15,15 @@
 
 package com.google.appengine.tck.byteman;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
-import com.google.appengine.tck.base.TestBase;
-import com.google.appengine.tck.base.TestContext;
-import com.google.appengine.tck.byteman.support.ConcurrentTxServlet;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.extension.byteman.api.BMRule;
@@ -69,27 +62,11 @@ import org.junit.runner.RunWith;
         exec = ExecType.CLIENT_CONTAINER),
 }
 )
-public class ConcurrentTxTest extends TestBase {
+public class SameEntityGroupTest extends ConcurrentTxTestBase {
+
     @Deployment
     public static WebArchive getDeployment() {
-        WebArchive war = getTckDeployment(new TestContext().setWebXmlFile("bm-web.xml"));
-        war.addClass(ConcurrentTxServlet.class);
-        return war;
-    }
-
-    private static Thread execute(final CloseableHttpClient client, final HttpUriRequest request, final Holder holder) {
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    try (CloseableHttpResponse response = client.execute(request)) {
-                        holder.out = EntityUtils.toString(response.getEntity());
-                    }
-                } catch (IOException ignore) {
-                }
-            }
-        });
-        thread.start();
-        return thread;
+        return getBaseDeployment();
     }
 
     @Test
@@ -111,9 +88,7 @@ public class ConcurrentTxTest extends TestBase {
             builder.addParameter("c", "2");
             threads.add(execute(client, new HttpPost(builder.build()), h2));
 
-            for (Thread thread : threads) {
-                thread.join();
-            }
+            join(threads);
 
             System.out.println("h1 = " + h1);
             System.out.println("h2 = " + h2);
@@ -126,15 +101,6 @@ public class ConcurrentTxTest extends TestBase {
                 Assert.assertTrue("Expected error: " + h2, h2.out.startsWith("ERROR2"));
                 Assert.assertTrue("Expected CME: " + h2, h2.out.contains(ConcurrentModificationException.class.getName()));
             }
-        }
-    }
-
-    private static class Holder {
-        private String out;
-
-        @Override
-        public String toString() {
-            return String.valueOf(out);
         }
     }
 }

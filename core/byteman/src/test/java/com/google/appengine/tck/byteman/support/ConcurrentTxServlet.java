@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
 
 /**
@@ -36,21 +37,27 @@ public class ConcurrentTxServlet extends HttpServlet {
     private final Logger log = Logger.getLogger(getClass().getName());
 
     private final Random RANDOM = new Random();
-    private final Entity ROOT = new Entity("ROOT", 1);
+
+    private final Entity ROOT_1 = new Entity("ROOT", 1);
+    private final Entity ROOT_2 = new Entity("ROOT", 2);
 
     @Override
     public void init() throws ServletException {
         super.init();
 
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        ds.put(ROOT); // create root
+        ds.put(ROOT_1); // create root 1
+        ds.put(ROOT_2); // create root 2
     }
 
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String entityGroup = req.getParameter("eg");
         String counter = req.getParameter("c");
+        String parent = req.getParameter("p");
 
-        Entity entity = new Entity(entityGroup, ROOT.getKey());
+        Key parentKey = "2".equals(parent) ? ROOT_2.getKey() : ROOT_1.getKey();
+
+        Entity entity = new Entity(entityGroup, parentKey);
         entity.setProperty("foo", RANDOM.nextInt());
 
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
