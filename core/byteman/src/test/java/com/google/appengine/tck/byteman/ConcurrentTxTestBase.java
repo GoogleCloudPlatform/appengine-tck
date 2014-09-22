@@ -17,9 +17,6 @@ package com.google.appengine.tck.byteman;
 
 import java.io.IOException;
 
-import com.google.appengine.tck.base.TestBase;
-import com.google.appengine.tck.base.TestContext;
-import com.google.appengine.tck.byteman.support.ConcurrentTxServlet;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -29,10 +26,10 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public abstract class ConcurrentTxTestBase extends TestBase {
+public abstract class ConcurrentTxTestBase extends BytemanTestBase {
     protected static WebArchive getBaseDeployment() {
-        WebArchive war = getTckDeployment(new TestContext().setWebXmlFile("bm-web.xml"));
-        war.addClasses(ConcurrentTxServlet.class, ConcurrentTxTestBase.class);
+        WebArchive war = getBytemanDeployment();
+        war.addClasses(ConcurrentTxTestBase.class);
         return war;
     }
 
