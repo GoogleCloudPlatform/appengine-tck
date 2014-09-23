@@ -69,9 +69,7 @@ public class SameEntityGroupTest extends ConcurrentTxTestBase {
         return getBaseDeployment();
     }
 
-    @Test
-    @RunAsClient
-    public void testDup(@ArquillianResource URI root) throws Exception {
+    private void doTest(URI root, boolean xg) throws Exception {
         try (CloseableHttpClient client = HttpClients.createMinimal()) {
 
             List<Thread> threads = new ArrayList<>();
@@ -80,12 +78,14 @@ public class SameEntityGroupTest extends ConcurrentTxTestBase {
             URIBuilder builder = new URIBuilder(root + "/ctx");
             builder.addParameter("eg", "EG1");
             builder.addParameter("c", "1");
+            builder.addParameter("xg", String.valueOf(xg));
             threads.add(execute(client, new HttpPost(builder.build()), h1));
 
             Holder h2 = new Holder();
             builder = new URIBuilder(root + "/ctx");
             builder.addParameter("eg", "EG1");
             builder.addParameter("c", "2");
+            builder.addParameter("xg", String.valueOf(xg));
             threads.add(execute(client, new HttpPost(builder.build()), h2));
 
             join(threads);
@@ -102,5 +102,17 @@ public class SameEntityGroupTest extends ConcurrentTxTestBase {
                 Assert.assertTrue("Expected CME: " + h2, h2.out.contains(ConcurrentModificationException.class.getName()));
             }
         }
+    }
+
+    @Test
+    @RunAsClient
+    public void testDupPlain(@ArquillianResource URI root) throws Exception {
+        doTest(root, false);
+    }
+
+    @Test
+    @RunAsClient
+    public void testDupXG(@ArquillianResource URI root) throws Exception {
+        doTest(root, true);
     }
 }

@@ -62,9 +62,7 @@ public class DiffEntityGroupTest extends ConcurrentTxTestBase {
         return getBaseDeployment();
     }
 
-    @Test
-    @RunAsClient
-    public void testOK(@ArquillianResource URI root) throws Exception {
+    private void doTest(URI root, boolean xg) throws Exception {
         try (CloseableHttpClient client = HttpClients.createMinimal()) {
 
             List<Thread> threads = new ArrayList<>();
@@ -74,6 +72,7 @@ public class DiffEntityGroupTest extends ConcurrentTxTestBase {
             builder.addParameter("eg", "EG1");
             builder.addParameter("c", "1");
             builder.addParameter("p", "1");
+            builder.addParameter("xg", String.valueOf(xg));
             threads.add(execute(client, new HttpPost(builder.build()), h1));
 
             Holder h2 = new Holder();
@@ -81,6 +80,7 @@ public class DiffEntityGroupTest extends ConcurrentTxTestBase {
             builder.addParameter("eg", "EG2");
             builder.addParameter("c", "2");
             builder.addParameter("p", "2");
+            builder.addParameter("xg", String.valueOf(xg));
             threads.add(execute(client, new HttpPost(builder.build()), h2));
 
             join(threads);
@@ -91,5 +91,17 @@ public class DiffEntityGroupTest extends ConcurrentTxTestBase {
             Assert.assertTrue("Expected ok: " + h1, h1.out.startsWith("OK1"));
             Assert.assertTrue("Expected ok: " + h2, h2.out.startsWith("OK2"));
         }
+    }
+
+    @Test
+    @RunAsClient
+    public void testOkPlain(@ArquillianResource URI root) throws Exception {
+        doTest(root, false);
+    }
+
+    @Test
+    @RunAsClient
+    public void testOkXG(@ArquillianResource URI root) throws Exception {
+        doTest(root, true);
     }
 }

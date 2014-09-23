@@ -29,6 +29,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.TransactionOptions;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -54,6 +55,7 @@ public class ConcurrentTxServlet extends HttpServlet {
         String entityGroup = req.getParameter("eg");
         String counter = req.getParameter("c");
         String parent = req.getParameter("p");
+        boolean xg = Boolean.parseBoolean(req.getParameter("xg"));
 
         Key parentKey = "2".equals(parent) ? ROOT_2.getKey() : ROOT_1.getKey();
 
@@ -61,7 +63,7 @@ public class ConcurrentTxServlet extends HttpServlet {
         entity.setProperty("foo", RANDOM.nextInt());
 
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        final Transaction tx = ds.beginTransaction();
+        final Transaction tx = ds.beginTransaction(TransactionOptions.Builder.withXG(xg));
         try {
             log.warning("Before put ... " + counter);
             putEntity(ds, entity);
