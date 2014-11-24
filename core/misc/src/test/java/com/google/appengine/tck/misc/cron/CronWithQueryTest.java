@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Google Inc. All Rights Reserved.
+ * Copyright 2014 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,14 +25,14 @@ import org.junit.runner.RunWith;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
-public class CronTest extends CronTestBase {
+public class CronWithQueryTest extends CronTestBase {
     @Deployment
     public static WebArchive getDeployment() {
-        return getBaseDeployment("cron-default");
+        return getBaseDeployment("cron-query");
     }
 
     @Test
-    public void testDummy() {
-        doTestAction("none");
+    public void testAction() {
+        doTestAction("query");
     }
 }

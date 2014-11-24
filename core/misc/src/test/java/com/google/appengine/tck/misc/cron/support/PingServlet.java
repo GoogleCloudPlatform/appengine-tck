@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.tck.base.TestBase;
+
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
@@ -29,5 +31,12 @@ public class PingServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         log("Ping!");
+
+        String action = req.getParameter("action");
+        if (action == null) {
+            action = "none";
+        }
+
+        TestBase.putTempData(new ActionData(action));
     }
 }
