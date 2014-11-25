@@ -386,9 +386,11 @@ public class MailServiceTest extends MailTestBase {
     }
 
     private MimeProperties pollForMatchingMail(final MimeProperties expectedMimeProps) {
+        log.info("Polling for matching mail. Expecting: " + expectedMimeProps);
         MimeProperties mp = pollForMail(new TempDataFilter<MimeProperties>() {
             @Override
             public boolean accept(MimeProperties mp) {
+                log.info("Testing for match: " + mp);
                 String expectedReplyTo = expectedMimeProps.isReplyToSet() ? expectedMimeProps.replyTo : expectedMimeProps.from;
 
                 if (!Objects.equals(expectedMimeProps.subject, mp.subject)
