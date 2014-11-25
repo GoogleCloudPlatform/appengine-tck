@@ -397,7 +397,6 @@ public class MailServiceTest extends MailTestBase {
                     || !Objects.equals(expectedMimeProps.from, mp.from)
                     || !Objects.equals(expectedMimeProps.to, mp.to)
                     || !Objects.equals(expectedMimeProps.cc, mp.cc)
-                    || !Objects.equals(MimeProperties.BLANK, mp.bcc) // also, the to: and cc: would fail if bcc: was added to them.
                     || !Objects.equals(expectedReplyTo, mp.replyTo)) {
                     return false;
                 }
