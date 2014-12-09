@@ -26,10 +26,8 @@
     <modules>
         <module>common</module>
         <module>core</module>
-        <module>dist</module>
         <module>env</module>
         <module>ext</module>
-        <module>site</module>
         <module>tests</module>
         <module>utils</module>
     </modules>
@@ -995,5 +993,35 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <profiles>
+
+        <profile>
+            <id>dist</id>
+            <activation>
+                <property>
+                    <name>dist</name>
+                </property>
+            </activation>
+
+            <modules>
+                <module>dist</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>site</id>
+            <activation>
+                <property>
+                    <name>site</name>
+                </property>
+            </activation>
+
+            <modules>
+                <module>site</module>
+            </modules>
+        </profile>
+
+    </profiles>
 
 </project>
