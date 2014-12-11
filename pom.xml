@@ -48,7 +48,7 @@
         <version.javax.servlet>2.5</version.javax.servlet>
         <version.junit>4.11</version.junit>
         <version.arquillian>1.1.5.Final</version.arquillian>
-        <version.arquillian.gae>1.0.0.Beta9</version.arquillian.gae>
+        <version.arquillian.gae>1.0.0-SNAPSHOT</version.arquillian.gae>
         <version.org.jboss.arquillian.graphene2>2.0.3.Final</version.org.jboss.arquillian.graphene2>
 
         <!-- Byteman -->
@@ -376,6 +376,12 @@
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>
                 <artifactId>sdk-env</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.tck</groupId>
+                <artifactId>gcloud-env</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -716,6 +722,13 @@
             <dependency>
                 <groupId>org.jboss.arquillian.container</groupId>
                 <artifactId>arquillian-appscale-remote</artifactId>
+                <version>${version.arquillian.gae}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.arquillian.container</groupId>
+                <artifactId>arquillian-gae-gcloud</artifactId>
                 <version>${version.arquillian.gae}</version>
                 <scope>test</scope>
             </dependency>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Google Inc. All Rights Reserved.
+ * Copyright 2014 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,16 +13,18 @@
  * limitations under the License.
  */
 
-package com.google.appengine.tck.env;
+package com.google.appengine.tck.env.gcloud;
+
+import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
+import org.jboss.arquillian.core.spi.LoadableExtension;
+import org.kohsuke.MetaInfServices;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public enum Environment {
-    APPSPOT,
-    SDK,
-    GCLOUD,
-    CAPEDWARF,
-    APPSCALE,
-    UNKNOWN
+@MetaInfServices
+public class GCloudLoadableExtension implements LoadableExtension {
+    public void register(ExtensionBuilder builder) {
+        builder.service(ApplicationArchiveProcessor.class, GCloudArchiveProcessor.class);
+    }
 }

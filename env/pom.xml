@@ -17,6 +17,7 @@
     <modules>
         <!-- Diff environments -->
         <module>appspot</module>
+        <module>gcloud</module>
         <module>capedwarf</module>
         <module>sdk</module>
     </modules>
