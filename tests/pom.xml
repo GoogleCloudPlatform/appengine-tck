@@ -220,6 +220,9 @@
                             <includes>
                                 <include>com/google/appengine/tck/**/*Test.java</include>
                             </includes>
+                            <systemProperties>
+                                <appengine.vm>true</appengine.vm>
+                            </systemProperties>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -400,4 +403,5 @@
             </dependencies>
         </profile>
     </profiles>
+
 </project>

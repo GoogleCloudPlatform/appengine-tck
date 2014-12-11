@@ -16,6 +16,7 @@
 package com.google.appengine.tck.base;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -53,7 +54,10 @@ import com.google.appengine.tck.event.TestLifecycles;
 import com.google.appengine.tck.mail.EmailAddressFormatter;
 import com.google.appengine.tck.temp.TempData;
 import com.google.appengine.tck.temp.TempDataFilter;
+import org.jboss.arquillian.config.impl.extension.StringPropertyReplacer;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.Asset;
+import org.jboss.shrinkwrap.api.asset.ClassLoaderAsset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -123,11 +127,12 @@ public class TestBase {
         }
 
         // appengine-web.xml
+        String appengineWebXmlFile = "appengine-web.xml";
         if (context.getAppEngineWebXmlFile() != null) {
-            war.addAsWebInfResource(context.getAppEngineWebXmlFile(), "appengine-web.xml");
-        } else {
-            war.addAsWebInfResource("appengine-web.xml");
+            appengineWebXmlFile = context.getAppEngineWebXmlFile();
         }
+        Asset gaeWebXml = new ClassLoaderAsset(appengineWebXmlFile);
+        war.addAsWebInfResource(rewriteAsset(gaeWebXml), "appengine-web.xml");
 
         if (context.hasCallbacks()) {
             war.addAsWebInfResource("META-INF/datastorecallbacks.xml", "classes/META-INF/datastorecallbacks.xml");
@@ -157,6 +162,22 @@ public class TestBase {
         }
 
         return war;
+    }
+
+    protected static Asset rewriteAsset(Asset original) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try (InputStream stream = original.openStream()) {
+                int b;
+                while ((b = stream.read()) != -1) {
+                    baos.write(b);
+                }
+            }
+            String content = baos.toString();
+            return new StringAsset(StringPropertyReplacer.replaceProperties(content));
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**
