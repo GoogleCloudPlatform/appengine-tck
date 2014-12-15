@@ -15,8 +15,14 @@
 
 package com.google.appengine.tck.misc.http;
 
+import java.net.URL;
+
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.junit.InSequence;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -26,12 +32,7 @@ public class HttpSessionTest extends AbstractHttpSessionTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        System.setProperty("appengine.sessions.enabled", "true");
-        try {
-            return getBaseDeployment();
-        } finally {
-            System.clearProperty("appengine.sessions.enabled");
-        }
+        return getBaseDeployment(true);
     }
 
     @Test
@@ -41,5 +42,19 @@ public class HttpSessionTest extends AbstractHttpSessionTestBase {
             x = -1;
         }
         getSession().setAttribute("xyz", ++x);
+    }
+
+    @Test
+    @InSequence(1)
+    @RunAsClient
+    public void testSet(@ArquillianResource URL url) throws Exception {
+        getClient().post(url + "/session?action=set&string=ales");
+    }
+
+    @Test
+    @InSequence(2)
+    @RunAsClient
+    public void testGet(@ArquillianResource URL url) throws Exception {
+        Assert.assertEquals("alesj", getClient().post(url + "/session?action=get&suffix=j"));
     }
 }

@@ -25,12 +25,7 @@ public class StubSessionTest extends AbstractHttpSessionTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {
-        System.setProperty("appengine.sessions.enabled", "false");
-        try {
-            return getBaseDeployment();
-        } finally {
-            System.clearProperty("appengine.sessions.enabled");
-        }
+        return getBaseDeployment(false);
     }
 
 }
