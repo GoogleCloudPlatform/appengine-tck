@@ -17,6 +17,8 @@ package com.google.appengine.tck.misc.http;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -26,6 +28,24 @@ public class StubSessionTest extends AbstractHttpSessionTestBase {
     @Deployment
     public static WebArchive getDeployment() {
         return getBaseDeployment(false);
+    }
+
+    @Test
+    public void testCheckAttribute() throws Exception {
+        Integer x = (Integer) getSession().getAttribute("xyz");
+        if (x == null) {
+            x = -1;
+        }
+        try {
+            getSession().setAttribute("xyz", ++x);
+            Assert.fail("Non-writtable attribute!");
+        } catch (Exception ignored) {
+        }
+        try {
+            getSession().removeAttribute("xyz");
+            Assert.fail("Non-writtable attribute!");
+        } catch (Exception ignored) {
+        }
     }
 
 }
