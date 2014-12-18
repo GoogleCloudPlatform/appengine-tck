@@ -19,6 +19,8 @@
     <version>1</version>
     <threadsafe>true</threadsafe>
 
+    <warmup-requests-enabled>false</warmup-requests-enabled>
+
     <sessions-enabled>${appengine.sessions.enabled}</sessions-enabled>
     <async-session-persistence enabled="${appengine.async.session.persistence}" />
 </appengine-web-app>

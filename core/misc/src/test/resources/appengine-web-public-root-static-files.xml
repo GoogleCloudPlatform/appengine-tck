@@ -19,6 +19,8 @@
     <version>1</version>
     <threadsafe>true</threadsafe>
 
+    <warmup-requests-enabled>false</warmup-requests-enabled>
+
     <public-root>/static</public-root>
 
 </appengine-web-app>

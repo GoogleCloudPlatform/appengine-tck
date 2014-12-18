@@ -19,6 +19,8 @@
     <version>1</version>
     <threadsafe>true</threadsafe>
 
+    <warmup-requests-enabled>false</warmup-requests-enabled>
+
     <static-files>
         <include path="/included_shallow/*"/>
         <include path="/included_deep/**"/>

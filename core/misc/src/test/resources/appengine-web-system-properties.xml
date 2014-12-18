@@ -19,6 +19,8 @@
     <version>1</version>
     <threadsafe>true</threadsafe>
 
+    <warmup-requests-enabled>false</warmup-requests-enabled>
+
     <system-properties>
         <property name="customSystemProperty" value="customSystemPropertyValue"/>
     </system-properties>

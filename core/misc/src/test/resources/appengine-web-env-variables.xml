@@ -19,6 +19,8 @@
     <version>1</version>
     <threadsafe>true</threadsafe>
 
+    <warmup-requests-enabled>false</warmup-requests-enabled>
+
     <env-variables>
         <env-var name="customEnvVariable" value="customEnvVariableValue"/>
     </env-variables>

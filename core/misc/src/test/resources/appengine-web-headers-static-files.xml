@@ -19,6 +19,8 @@
     <version>1</version>
     <threadsafe>true</threadsafe>
 
+    <warmup-requests-enabled>false</warmup-requests-enabled>
+
     <static-files>
         <include path="/with-header/**">
             <http-header name="X-Additional-Header" value="This header added through &lt;static-files&gt; in appengine-web.xml" />
