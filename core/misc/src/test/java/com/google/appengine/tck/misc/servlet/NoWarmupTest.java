@@ -24,7 +24,7 @@ import org.junit.Test;
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class NoWarmupTest extends AbstractWarmupTest {
+public class NoWarmupTest extends AbstractWarmupTestBase {
 
     @Deployment
     public static WebArchive getDeployment() {

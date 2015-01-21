@@ -28,7 +28,7 @@ import org.junit.runner.RunWith;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
-public abstract class AbstractWarmupTest extends TestBase {
+public abstract class AbstractWarmupTestBase extends TestBase {
 
     protected static WebArchive getBaseDeployment(boolean enabled) {
         System.setProperty("appengine.warmup.enabled", Boolean.toString(enabled));
@@ -37,7 +37,7 @@ public abstract class AbstractWarmupTest extends TestBase {
             context.setWebXmlFile("web-warmup.xml");
             context.setAppEngineWebXmlFile("appengine-web-warmup.xml");
             WebArchive war = getTckDeployment(context);
-            war.addClass(AbstractWarmupTest.class);
+            war.addClass(AbstractWarmupTestBase.class);
             war.addClass(WarmupServlet.class);
             war.addClass(WarmupData.class);
             return war;
