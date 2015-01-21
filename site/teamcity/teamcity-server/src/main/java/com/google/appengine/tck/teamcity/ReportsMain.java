@@ -528,16 +528,6 @@ public class ReportsMain {
             return null;
         }
 
-        @Override
-        public void muteBuildProblems(@NotNull User user, boolean b, @NotNull String s) {
-
-        }
-
-        @Override
-        public BuildProblemData addUserBuildProblem(@NotNull User user, @NotNull String s) {
-            return null;
-        }
-
         @Nullable
         @Override
         public Branch getBranch() {
@@ -693,6 +683,16 @@ public class ReportsMain {
         public Collection<SBuildFeatureDescriptor> getBuildFeaturesOfType(@NotNull String s) {
             return null;
         }
+
+        @Override
+        public void muteBuildProblems(@NotNull SUser sUser, boolean b, @NotNull String s) {
+
+        }
+
+        @Override
+        public BuildProblemData addUserBuildProblem(@NotNull SUser sUser, @NotNull String s) {
+            return null;
+        }
     }
 
     private static class SBuildFeatureDescriptorMock implements SBuildFeatureDescriptor {
@@ -819,6 +819,23 @@ public class ReportsMain {
 
         @Override
         public int getSignature() {
+            return 0;
+        }
+
+        @Nullable
+        @Override
+        public STestRun findTestByTestNameId(long l) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public STestRun findTestByTestRunId(long l) {
+            return null;
+        }
+
+        @Override
+        public int getAllTestRunCount() {
             return 0;
         }
     }

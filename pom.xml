@@ -76,7 +76,7 @@
         <version.maven.min>3.1</version.maven.min>
 
         <!-- Site -->
-        <version.org.jetbrains.teamcity>8.1.1</version.org.jetbrains.teamcity>
+        <version.org.jetbrains.teamcity>9.0</version.org.jetbrains.teamcity>
         <version.com.google.api-client>1.17.0-rc</version.com.google.api-client>
         <version.com.google.http-client>1.17.0-rc</version.com.google.http-client>
         <version.com.google.oauth-client>1.16.0-rc</version.com.google.oauth-client>
