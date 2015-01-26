@@ -17,6 +17,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.appengine.tck</groupId>
+            <artifactId>appengine-tck-login</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
