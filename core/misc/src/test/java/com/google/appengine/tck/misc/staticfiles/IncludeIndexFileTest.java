@@ -18,6 +18,7 @@ package com.google.appengine.tck.misc.staticfiles;
 import java.net.URL;
 
 import com.google.appengine.tck.base.TestContext;
+import com.google.appengine.tck.login.UserIsLoggedIn;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -32,16 +33,17 @@ public class IncludeIndexFileTest extends StaticFilesTestBase {
     @Deployment
     public static WebArchive getDeployment() {
         WebArchive archive = getTckDeployment(new TestContext()
-            .setAppEngineWebXmlFile("appengine-web-nostaticfiles.xml"));
-        createFile(archive, "/foo/index.html");
+            .setAppEngineWebXmlFile("appengine-web-admin-staticfiles.xml")
+	    .setWebXmlFile("web-security-constraint.xml"));
+        createFile(archive, "/admin/index.html");
         return archive;
     }
 
     @Test
     @RunAsClient
+    @UserIsLoggedIn(email = "${user.login.email:${appengine.userId:tck@appengine-tck.org}}", isAdmin = true)
     public void testAllFilesIncludedByDefault(@ArquillianResource URL url) throws Exception {
-        assertPageFound(url, "foo/");
-        assertPageFound(url, "foo/index.html");
+        assertPageFound(url, "admin/index.html");
     }
 
 }
