@@ -22,11 +22,16 @@ import com.google.appengine.tck.login.UserIsLoggedIn;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/**
+ * @author Iván Perdomo
+ * @author Ales Justin
+ */
 @RunWith(Arquillian.class)
 public class IncludeIndexFileTest extends StaticFilesTestBase {
 
@@ -41,7 +46,15 @@ public class IncludeIndexFileTest extends StaticFilesTestBase {
 
     @Test
     @RunAsClient
+    @InSequence(1) // making sure we're not logged-in
+    public void testDifferentPage(@ArquillianResource URL url) throws Exception {
+        assertDifferentPageFound(url, "admin/index.html"); // GAE redirects, CD returns 403
+    }
+
+    @Test
+    @RunAsClient
     @UserIsLoggedIn(email = "${user.login.email:${appengine.userId:tck@appengine-tck.org}}", isAdmin = true)
+    @InSequence(2)
     public void testAllFilesIncludedByDefault(@ArquillianResource URL url) throws Exception {
         assertPageFound(url, "admin/index.html");
     }

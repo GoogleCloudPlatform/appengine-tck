@@ -30,6 +30,6 @@ public class DefaultLoginHandler implements LoginHandler {
         if (context.isAdmin()) {
             driver.findElement(By.id("isAdmin")).click();
         }
-        driver.findElement(By.name("action")).click();
+        driver.findElement(By.id("btn-login")).click();
     }
 }

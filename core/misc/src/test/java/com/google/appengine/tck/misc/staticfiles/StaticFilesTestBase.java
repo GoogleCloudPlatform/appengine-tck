@@ -15,6 +15,8 @@
 
 package com.google.appengine.tck.misc.staticfiles;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -25,10 +27,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.jboss.arquillian.protocol.modules.ModulesApi;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Assert;
 
 /**
  * @author <a href="mailto:mluksa@redhat.com">Marko Luksa</a>
@@ -39,7 +41,23 @@ public class StaticFilesTestBase extends TestBase {
     }
 
     protected void assertPageFound(URL url, final String path) throws URISyntaxException, IOException {
-        assertResponseEquals("This is /" + path, url, path);
+        assertPageFound(url, path, path);
+    }
+
+    protected void assertPageFound(URL url, final String path, String expectedPath) throws URISyntaxException, IOException {
+        assertResponseEquals("This is /" + expectedPath, url, path);
+    }
+
+    protected void assertDifferentPageFound(URL url, final String path) throws URISyntaxException, IOException {
+        assertDifferentPageFound(url, path, path);
+    }
+
+    protected void assertDifferentPageFound(URL url, final String path, final String expectedPath) throws URISyntaxException, IOException {
+        assertResponse(url, path, new Tester() {
+            public void doAssert(HttpResponse response) throws IOException {
+                Assert.assertNotEquals("This is /" + expectedPath, EntityUtils.toString(response.getEntity()));
+            }
+        });
     }
 
     protected void assertResponseEquals(final String expectedResponse, URL url, String path) throws URISyntaxException, IOException {
@@ -61,6 +79,9 @@ public class StaticFilesTestBase extends TestBase {
     protected void assertResponse(URL url, String path, Tester tester) throws URISyntaxException, IOException {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpGet get = new HttpGet(new URL(url, path).toURI());
+            if (ModulesApi.hasCookies()) {
+                get.addHeader("Cookie", ModulesApi.getCookies());
+            }
             HttpResponse response = client.execute(get);
             tester.doAssert(response);
         }
