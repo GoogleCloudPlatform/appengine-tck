@@ -48,6 +48,7 @@ import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SRunningBuild;
 import jetbrains.buildServer.serverSide.STest;
 import jetbrains.buildServer.serverSide.STestRun;
+import jetbrains.buildServer.serverSide.TestFailureInfo;
 import jetbrains.buildServer.tests.TestName;
 import jetbrains.buildServer.util.EventDispatcher;
 import org.jetbrains.annotations.NotNull;
@@ -247,12 +248,15 @@ public class ReportsFeature extends BuildFeature {
             final STest failedTest = oneTestRun.getTest();
             final TestName failedTestName = failedTest.getName();
 
+            TestFailureInfo failureInfo = oneTestRun.getFailureInfo();
+            String error = (failureInfo != null) ? failureInfo.getShortStacktrace() : "[NO-FAILURE-INFO]";
+
             failedTests.add(
                     new Test().
                             setPackageName(failedTestName.getPackageName()).
                             setClassName(failedTestName.getClassName()).
                             setMethodName(failedTestName.getTestMethodName()).
-                            setError(oneTestRun.getFailureInfo().getShortStacktrace())
+                            setError(error)
             );
         }
         testReport.setFailedTests(failedTests);
