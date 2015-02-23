@@ -15,6 +15,9 @@
 
 package com.google.appengine.tck.datastore;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -34,9 +37,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * datastore Index only query test. http://go/indexonlyqueries
@@ -94,7 +94,7 @@ public class IndexQueryTest extends DatastoreTestBase {
         Query query = new Query(kindName, rootKey);
         query.addProjection(new PropertyProjection("stringData", String.class));
         query.addProjection(new PropertyProjection("intData", Integer.class));
-        String sql = "SELECT intData, stringData FROM " + kindName + " WHERE __ancestor__ is " + rootKey;
+        String sql = "SELECT stringData, intData FROM " + kindName + " WHERE __ancestor__ is " + rootKey;
         assertEquals(sql.toLowerCase(), query.toString().toLowerCase());
         List<Entity> results = service.prepare(query).asList(fetchOption);
         assertEquals(count, results.size());
