@@ -15,6 +15,11 @@
 
 package com.google.appengine.tck.datastore;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,11 +47,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -349,7 +349,7 @@ public class TransactionsTest extends DatastoreTestBase {
     @Test
     public void testXGTransaction() throws Exception {
 
-        final int N = 5; // max XG entity groups
+        final int N = 25; // max XG entity groups
 
         List<Key> keys = new ArrayList<>();
         for (int i = 0; i < N + 1; i++) {
