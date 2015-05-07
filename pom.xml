@@ -34,14 +34,14 @@
 
     <properties>
         <!-- GAE -->
-        <version.com.google.gae.api>1.9.17a</version.com.google.gae.api>
-        <version.com.google.gae.plugin>1.9.17a</version.com.google.gae.plugin>
+        <version.com.google.gae.api>1.9.20</version.com.google.gae.api>
+        <version.com.google.gae.plugin>1.9.20</version.com.google.gae.plugin>
 
         <!-- Ext -->
         <version.metainf>1.1</version.metainf>
 
         <!-- CapeDwarf -->
-        <version.jboss.wildfly>8.1.0.CR2</version.jboss.wildfly>
+        <version.jboss.wildfly>8.2.0.Final</version.jboss.wildfly>
         <version.org.jboss.xnio>3.2.2.Final</version.org.jboss.xnio>
 
         <!-- Testing -->
