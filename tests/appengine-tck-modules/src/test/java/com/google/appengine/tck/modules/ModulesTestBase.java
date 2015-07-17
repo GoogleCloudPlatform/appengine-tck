@@ -48,9 +48,17 @@ public abstract class ModulesTestBase extends TestBase {
     }
 
     protected static EnterpriseArchive getEarDeployment(WebArchive... wars) {
+        return getEarDeployment("application.xml", wars);
+    }
+
+    protected static EnterpriseArchive getEarDeployment(String applicationXml, WebArchive... wars) {
+        return getEarDeployment(applicationXml, "appengine-application.xml", wars);
+    }
+
+    protected static EnterpriseArchive getEarDeployment(String applicationXml, String gaeApplicationXml, WebArchive... wars) {
         EnterpriseArchive ear = toEarDeployment(wars);
-        ear.addAsManifestResource("application.xml");
-        ear.addAsResource("appengine-application.xml");
+        ear.addAsManifestResource(applicationXml, "application.xml");
+        ear.addAsResource(gaeApplicationXml, "appengine-application.xml");
         return ear;
     }
 }
