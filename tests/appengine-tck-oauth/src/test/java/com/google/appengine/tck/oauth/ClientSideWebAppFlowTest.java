@@ -15,6 +15,10 @@
 
 package com.google.appengine.tck.oauth;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -54,10 +58,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * This uses the Client-Side Web Applications Flow.
@@ -134,6 +134,8 @@ public class ClientSideWebAppFlowTest extends OAuthTestBase {
     @Test
     @RunAsClient
     public void testGetEmailValidScope(@ArquillianResource URL url) throws Exception {
+        assumeEnvironment(Environment.APPSPOT);
+
         String accessToken = getGoogleAccessToken(nonAdminTestingAccountEmail, nonAdminTestingAccountPw,
             oauthClientId, oauthRedirectUri, SCOPE_USER);
 
@@ -194,8 +196,11 @@ public class ClientSideWebAppFlowTest extends OAuthTestBase {
             answer.getReturnVal().contains(expectedException));
     }
 
+    @Test
     @RunAsClient
     public void testIsUserAdminFalse(@ArquillianResource URL url) throws Exception {
+        assumeEnvironment(Environment.APPSPOT);
+
         String accessToken = getGoogleAccessToken(nonAdminTestingAccountEmail, nonAdminTestingAccountPw,
             oauthClientId, oauthRedirectUri, SCOPE_USER);
 
