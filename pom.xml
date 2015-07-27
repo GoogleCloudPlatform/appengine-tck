@@ -41,7 +41,7 @@
         <version.metainf>1.1</version.metainf>
 
         <!-- CapeDwarf -->
-        <version.jboss.wildfly>8.2.0.Final</version.jboss.wildfly>
+        <version.jboss.wildfly>8.2.1.Final</version.jboss.wildfly>
         <version.org.jboss.xnio>3.2.2.Final</version.org.jboss.xnio>
 
         <!-- Testing -->
