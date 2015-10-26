@@ -40,6 +40,7 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.ParameterAnnotationsAttribute;
+import javassist.bytecode.SignatureAttribute;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.MemberValue;
 
@@ -50,7 +51,7 @@ import javassist.bytecode.annotation.MemberValue;
 @SuppressWarnings("unchecked")
 public class CodeCoverage {
     private static final Logger log = Logger.getLogger(CodeCoverage.class.getName());
-    private static final Tuple DUMMY = new Tuple("<init>", "");
+    private static final Tuple TYPE_USAGE = new Tuple("<type-usage>", "()V");
 
     private final Map<String, Boolean> annotations = new HashMap<>();
     private final Map<String, List<Tuple>> descriptors = new TreeMap<>();
@@ -105,8 +106,8 @@ public class CodeCoverage {
                 boolean hasAttributes = methods.size() > 0;
                 annotations.put(clazz, hasAttributes);
                 if (hasAttributes == false) {
-                    map.put(DUMMY, new TreeSet<CodeLine>());
-                    mds.add(DUMMY);
+                    map.put(TYPE_USAGE, new TreeSet<CodeLine>());
+                    mds.add(TYPE_USAGE);
                 }
             } else {
                 fillSupers(classFile);
@@ -186,7 +187,7 @@ public class CodeCoverage {
         String className = file.getName();
 
         AnnotationsAttribute faa = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.visibleTag);
-        checkAnnotations(className, DUMMY.getMethodName(), faa, -1);
+        checkAnnotations(className, TYPE_USAGE.getMethodName(), faa, -1);
 
         List<MethodInfo> methods = file.getMethods();
         for (MethodInfo m : methods) {
@@ -226,6 +227,11 @@ public class CodeCoverage {
                     }
                 }
 
+                SignatureAttribute.MethodSignature signature = SignatureAttribute.toMethodSignature(m.getDescriptor());
+                handleMethodSignature(className, m.getName(), firstLine - 1, signature.getReturnType());
+                handleMethodSignature(className, m.getName(), firstLine - 1, signature.getParameterTypes());
+                handleMethodSignature(className, m.getName(), firstLine - 1, signature.getExceptionTypes());
+
                 ParameterAnnotationsAttribute paa = (ParameterAnnotationsAttribute) m.getAttribute(ParameterAnnotationsAttribute.visibleTag);
                 if (paa != null) {
                     Annotation[][] paas = paa.getAnnotations();
@@ -249,6 +255,24 @@ public class CodeCoverage {
         }
     }
 
+    protected void handleMethodSignature(String className, String method, int line, SignatureAttribute.Type... types) {
+        for (SignatureAttribute.Type type : types) {
+            if (type instanceof SignatureAttribute.ClassType) {
+                SignatureAttribute.ClassType ct = (SignatureAttribute.ClassType) type;
+                String ctName = ct.getName();
+                Map<Tuple, Set<CodeLine>> map = report.get(ctName);
+                if (map != null) {
+                    Set<CodeLine> set = map.get(TYPE_USAGE);
+                    if (set == null) {
+                        set = new TreeSet<>();
+                        map.put(TYPE_USAGE, set);
+                    }
+                    set.add(new CodeLine(className, method, line));
+                }
+            }
+        }
+    }
+
     protected void checkAnnotations(String clazz, String member, AnnotationsAttribute aa, int line) {
         if (aa != null) {
             for (Map.Entry<String, Boolean> entry : annotations.entrySet()) {
@@ -263,6 +287,9 @@ public class CodeCoverage {
 
     protected void checkAnnotation(String clazz, String member, int line, boolean hasMembers, String annotation, Annotation ann) {
         Map<Tuple, Set<CodeLine>> map = report.get(annotation);
+        if (map == null) {
+            return;
+        }
         if (hasMembers) {
             List<Tuple> tuples = descriptors.get(annotation);
             for (Tuple tuple : tuples) {
@@ -274,7 +301,7 @@ public class CodeCoverage {
                 }
             }
         } else {
-            Set<CodeLine> set = map.get(DUMMY);
+            Set<CodeLine> set = map.get(TYPE_USAGE);
             set.add(new CodeLine(clazz, member, line));
         }
     }
