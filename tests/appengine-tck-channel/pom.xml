@@ -18,9 +18,9 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.google.appengine.tck</groupId>
-                <artifactId>appengine-tck-jsp</artifactId>
-                <version>${project.version}</version>
+                <groupId>org.jboss.maven.plugins</groupId>
+                <artifactId>jsp-maven-plugin</artifactId>
+                <version>${version.org.jboss.maven.jsp.plugin}</version>
                 <executions>
                     <execution>
                         <id>jsp-compile</id>
@@ -30,6 +30,13 @@
                         <phase>test-compile</phase>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.appengine</groupId>
+                        <artifactId>appengine-api-1.0-sdk</artifactId>
+                        <version>${version.com.google.gae.api}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

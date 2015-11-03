@@ -93,9 +93,9 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>com.google.appengine.tck</groupId>
-                        <artifactId>appengine-tck-coverage</artifactId>
-                        <version>${project.version}</version>
+                        <groupId>org.jboss.maven.plugins</groupId>
+                        <artifactId>code-coverage-maven-plugin</artifactId>
+                        <version>${version.org.jboss.maven.coverage.plugin}</version>
                         <executions>
                             <execution>
                                 <id>api-coverage</id>
@@ -105,6 +105,10 @@
                                 <phase>process-test-classes</phase>
                                 <configuration>
                                     <module>tests</module>
+                                    <repositoryUser>GoogleCloudPlatform</repositoryUser>
+                                    <repositoryProject>appengine-tck</repositoryProject>
+                                    <coverageTitle>GAE API</coverageTitle>
+                                    <javadocRoot>http://developers.google.com/appengine/docs/java/javadoc/</javadocRoot>
                                 </configuration>
                             </execution>
                         </executions>
@@ -114,8 +118,8 @@
 
             <dependencies>
                 <dependency>
-                    <groupId>com.google.appengine.tck</groupId>
-                    <artifactId>appengine-tck-coverage</artifactId>
+                    <groupId>org.jboss.maven.plugins</groupId>
+                    <artifactId>code-coverage-maven-plugin</artifactId>
                 </dependency>
             </dependencies>
         </profile>

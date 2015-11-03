@@ -58,6 +58,8 @@
         <!-- Utils -->
         <version.org.javassist>3.18.1-GA</version.org.javassist>
         <version.org.jboss.maven.transformer.plugin>1.0.0.Beta5</version.org.jboss.maven.transformer.plugin>
+        <version.org.jboss.maven.coverage.plugin>1.0.0.Final</version.org.jboss.maven.coverage.plugin>
+        <version.org.jboss.maven.jsp.plugin>1.0.0.Final</version.org.jboss.maven.jsp.plugin>
 
         <!--UnderTow / JSP -->
         <version.io.undertow>1.0.14.Final</version.io.undertow>
@@ -531,12 +533,6 @@
 
             <dependency>
                 <groupId>com.google.appengine.tck</groupId>
-                <artifactId>appengine-tck-coverage</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.google.appengine.tck</groupId>
                 <artifactId>appengine-tck-transformers</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -767,55 +763,16 @@
                 <version>${version.org.jboss.maven.transformer.plugin}</version>
             </dependency>
 
-            <!-- UnderTow -->
-
             <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>${version.javax.servlet.3.1}</version>
+                <groupId>org.jboss.maven.plugins</groupId>
+                <artifactId>code-coverage-maven-plugin</artifactId>
+                <version>${version.org.jboss.maven.coverage.plugin}</version>
             </dependency>
 
             <dependency>
-                <groupId>io.undertow</groupId>
-                <artifactId>undertow-core</artifactId>
-                <version>${version.io.undertow}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.undertow</groupId>
-                <artifactId>undertow-servlet</artifactId>
-                <version>${version.io.undertow}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.undertow</groupId>
-                <artifactId>undertow-core</artifactId>
-                <version>${version.io.undertow}</version>
-                <type>test-jar</type>
-            </dependency>
-
-            <dependency>
-                <groupId>io.undertow.jastow</groupId>
-                <artifactId>jastow</artifactId>
-                <version>${version.io.undertow.jastow}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>javax.servlet.jsp</groupId>
-                <artifactId>javax.servlet.jsp-api</artifactId>
-                <version>${version.javax.servlet.jsp}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.jdt.core.compiler</groupId>
-                <artifactId>ecj</artifactId>
-                <version>${version.org.eclipse.jdt.core.compiler.ecj}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>javax.el</artifactId>
-                <version>${version.org.glassfish.javax.el}</version>
+                <groupId>org.jboss.maven.plugins</groupId>
+                <artifactId>jsp-maven-plugin</artifactId>
+                <version>${version.org.jboss.maven.jsp.plugin}</version>
             </dependency>
 
             <!-- TestUtils -->
@@ -837,21 +794,7 @@
                 <artifactId>commons-validator</artifactId>
                 <version>${version.org.apache.commons.validator}</version>
             </dependency>
-
-            <!-- Maven -->
-
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-plugin-api</artifactId>
-                <version>${version.maven}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-core</artifactId>
-                <version>${version.maven}</version>
-            </dependency>
-
+            
             <!-- Ext -->
 
             <dependency>
