@@ -58,7 +58,7 @@
         <!-- Utils -->
         <version.org.javassist>3.18.1-GA</version.org.javassist>
         <version.org.jboss.maven.transformer.plugin>1.0.0.Beta5</version.org.jboss.maven.transformer.plugin>
-        <version.org.jboss.maven.coverage.plugin>1.0.0.Final</version.org.jboss.maven.coverage.plugin>
+        <version.org.jboss.maven.coverage.plugin>1.0.1.Final</version.org.jboss.maven.coverage.plugin>
         <version.org.jboss.maven.jsp.plugin>1.0.0.Final</version.org.jboss.maven.jsp.plugin>
 
         <!--UnderTow / JSP -->
