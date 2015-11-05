@@ -27,7 +27,7 @@ public class TestContext implements Cloneable {
     private boolean subdeployment;
     private String archiveName;
 
-    private String webXmlContent = "<web/>";
+    private String webXmlContent = "<web-app/>";
     private String webXmlFile;
 
     private String appEngineWebXmlFile;
