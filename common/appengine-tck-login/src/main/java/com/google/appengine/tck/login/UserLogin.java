@@ -81,14 +81,20 @@ public class UserLogin {
                 driver.manage().deleteAllCookies();
 
                 driver.navigate().to(baseUri + USER_LOGIN_SERVLET_PATH + "?location=" + URLEncoder.encode(userIsLoggedIn.location(), "UTF-8"));
-                String loginURL = driver.findElement(By.id("login-url")).getText();
 
-                // check
-                if (isInternalLink(loginURL)) {
-                    loginURL = baseUri + loginURL;
+                String currentUrl = driver.getCurrentUrl(); // check if we've been redirected to login already
+                if (currentUrl.contains("_ah/login") == false) {
+                    String loginURL = driver.findElement(By.id("login-url")).getText();
+
+                    // check
+                    if (isInternalLink(loginURL)) {
+                        loginURL = baseUri + loginURL;
+                    }
+
+                    // go-to login page
+                    driver.navigate().to(loginURL);
                 }
-                // go-to login page
-                driver.navigate().to(loginURL);
+
                 // find custom login handler, if exists
                 LoginHandler loginHandler = TestBase.instance(getClass(), LoginHandler.class);
                 if (loginHandler == null) {
