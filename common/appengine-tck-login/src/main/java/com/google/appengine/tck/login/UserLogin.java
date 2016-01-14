@@ -18,6 +18,7 @@ package com.google.appengine.tck.login;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Set;
 
 import com.google.appengine.tck.base.TestBase;
@@ -39,6 +40,7 @@ import org.jboss.arquillian.test.spi.event.suite.Before;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 /**
@@ -82,9 +84,10 @@ public class UserLogin {
 
                 driver.navigate().to(baseUri + USER_LOGIN_SERVLET_PATH + "?location=" + URLEncoder.encode(userIsLoggedIn.location(), "UTF-8"));
 
-                String currentUrl = driver.getCurrentUrl(); // check if we've been redirected to login already
-                if (currentUrl.contains("_ah/login") == false) {
-                    String loginURL = driver.findElement(By.id("login-url")).getText();
+                // did we navigate to this requested page, or did we get redirected/forwarded to login already
+                List<WebElement> loginUrlElts = driver.findElements(By.id("login-url"));
+                if (loginUrlElts.size() > 0) {
+                    String loginURL = loginUrlElts.get(0).getText();
 
                     // check
                     if (isInternalLink(loginURL)) {
