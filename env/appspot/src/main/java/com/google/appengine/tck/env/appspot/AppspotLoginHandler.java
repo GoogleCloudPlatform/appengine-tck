@@ -15,6 +15,8 @@
 
 package com.google.appengine.tck.env.appspot;
 
+import java.util.List;
+
 import com.google.appengine.tck.driver.LoginContext;
 import com.google.appengine.tck.driver.LoginHandler;
 import org.openqa.selenium.By;
@@ -34,12 +36,21 @@ public class AppspotLoginHandler implements LoginHandler {
                 email.sendKeys(context.getEmail());
             }
 
-            WebElement password = driver.findElement(By.id("Passwd"));
-            password.sendKeys(context.getPassword());
-
-            driver.findElement(By.name("signIn")).click();
+            password(driver, context, 0);
         } catch (NoSuchElementException e) {
             throw new IllegalStateException(String.format("URL[%s]\n\n%s", driver.getCurrentUrl(), driver.getPageSource()), e);
+        }
+    }
+
+    private void password(WebDriver driver, LoginContext context, int step) {
+        List<WebElement> elements = driver.findElements(By.id("Passwd"));
+        if (elements.isEmpty() || elements.get(0).isDisplayed() == false) {
+            driver.findElement(By.name("signIn")).click();
+            password(driver, context, step + 1);
+        } else {
+            WebElement password = elements.get(0);
+            password.sendKeys(context.getPassword());
+            driver.findElement(By.name("signIn")).click();
         }
     }
 }
