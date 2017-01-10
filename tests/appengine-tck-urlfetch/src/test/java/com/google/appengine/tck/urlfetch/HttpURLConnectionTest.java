@@ -15,6 +15,8 @@
 
 package com.google.appengine.tck.urlfetch;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,8 +30,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
-
 /**
  * HttpURLConnection tests
  */
@@ -39,7 +39,7 @@ public class HttpURLConnectionTest extends URLFetchTestBase {
 
     @Test
     public void fetchExistingPage() throws Exception {
-        fetchUrl("http://www.google.org/", OK);
+        fetchUrl("http://www.nba.com/", OK);
     }
 
     @Test
