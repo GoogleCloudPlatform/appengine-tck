@@ -20,9 +20,11 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import com.google.appengine.tck.base.TestBase;
 import com.google.appengine.tck.driver.DefaultLoginHandler;
+import com.google.appengine.tck.driver.LoginContext;
 import com.google.appengine.tck.driver.LoginHandler;
 import org.jboss.arquillian.container.spi.client.protocol.ProtocolDescription;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
@@ -48,6 +50,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
  * @author Ales Justin
  */
 public class UserLogin {
+    static final Logger log = Logger.getLogger(UserLogin.class.getName());
     static final String USER_LOGIN_SERVLET_PATH = "user-login-builtin";
 
     @Inject
@@ -77,6 +80,10 @@ public class UserLogin {
         }
 
         if (userIsLoggedIn != null) {
+            final LoginContext context = new UserLoginContext(userIsLoggedIn);
+
+            log.info(String.format("Found @UserIsLoggedIn: %s [%s]", context.getEmail(), userIsLoggedIn.location()));
+
             final URI baseUri = getBaseURI(before.getTestMethod());
             final WebDriver driver = createWebDriver();
             try {
@@ -103,7 +110,8 @@ public class UserLogin {
                 if (loginHandler == null) {
                     loginHandler = new DefaultLoginHandler();
                 }
-                loginHandler.login(driver, new UserLoginContext(userIsLoggedIn));
+                loginHandler.login(driver, context);
+                log.info("Logged-in: " + context.getEmail());
                 // copy cookies
                 Set<Cookie> cookies = driver.manage().getCookies();
                 for (Cookie cookie : cookies) {
