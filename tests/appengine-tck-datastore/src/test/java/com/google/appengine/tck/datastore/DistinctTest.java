@@ -15,6 +15,10 @@
 
 package com.google.appengine.tck.datastore;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -30,10 +34,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * datastore Queries test, Projection, setFilter.
@@ -118,7 +118,7 @@ public class DistinctTest extends DatastoreTestBase {
         Query query = new Query(kindName, rootKey);
         query.addProjection(new PropertyProjection("intList", Integer.class));
         query.setDistinct(true);
-        assertEquals(24, service.prepare(query).countEntities(fo));
+        assertEquals("Expecting 24 entities: " + service.prepare(query).asList(fo), 24, service.prepare(query).countEntities(fo));
         assertTrue(query.getDistinct());
         // distinct false
         query = new Query(kindName, rootKey);
