@@ -291,7 +291,7 @@
         <repository>
             <id>jetbrains-all</id>
             <name>JetBrains Maven Repository</name>
-            <url>http://repository.jetbrains.com/all</url>
+            <url>https://repository.jetbrains.com/all</url>
         </repository>
         <!-- repository>
             <id>jboss-staging-repository-group</id>
