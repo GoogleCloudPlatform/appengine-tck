@@ -92,7 +92,7 @@
         <version.javax.jdo>3.0.1</version.javax.jdo>
         <version.javax.jpa>1.0</version.javax.jpa>
         <version.org.datanucleus>3.1.3</version.org.datanucleus>
-        <version.org.log4j>2.16.0</version.org.log4j>
+        <version.org.log4j>2.17.0</version.org.log4j>
         <version.org.easymock>2.4</version.org.easymock>
         <!-- MapReduce -->
         <version.com.google.gae.mapreduce>0.7.1</version.com.google.gae.mapreduce>
